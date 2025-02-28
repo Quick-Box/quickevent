@@ -40,7 +40,7 @@ jobs:
       - name: Setup CMake
         uses: ./.github/actions/cmake
         with:
-          qt_version: 6.8.0
+          qt_version: 6.8.2
           qt_arch: win64_mingw
           use_qt6: ON
           modules: qtserialport qtmultimedia
