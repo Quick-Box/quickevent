@@ -23,7 +23,7 @@ jobs:
       - name: Setup CMake
         uses: ./.github/actions/cmake
         with:
-          qt_version: 6.7.2
+          qt_version: 6.7.1
           use_qt6: ON
           modules: qtserialport qtmultimedia
           additional_cmake_args: -DCMAKE_INSTALL_PREFIX='${{ github.workspace }}/install/usr'
