@@ -96,7 +96,10 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QTableView" name="changes_table_view"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="service_description">
         <property name="text">
          <string>Start lists and Results are exported at given interval.
 Both Results and Start list can be exported manually using the buttons bellow. In addition, if the service is running, individual competitor data is send after readout and after saving competitor dialog.
