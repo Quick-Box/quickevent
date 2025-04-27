@@ -52,7 +52,8 @@ private:
     void onExportTimerTimeOut();
     void init();
     void sendFile(QString name, QString request_path, QString file, std::function<void()> on_success = nullptr);
-    void sendCompetitorChange(QString jsonBody, int competitor_id);
+    void sendCompetitorChange(QString json_body, int competitor_id);
+    void sendNewCompetitor(QString json_body);
     void onCompetitorEdited(int competitor_id);
     void onCompetitorReadOut(int competitor_id);
 };

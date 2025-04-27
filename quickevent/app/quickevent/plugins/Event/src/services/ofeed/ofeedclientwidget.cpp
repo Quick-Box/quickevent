@@ -6,6 +6,7 @@
 #include <qf/qmlwidgets/dialogs/messagebox.h>
 
 #include <qf/core/assert.h>
+#include <qf/core/log.h>
 
 #include <QFileDialog>
 
@@ -76,6 +77,7 @@ void OFeedClientWidget::onBtExportResultsXml30Clicked()
     OFeedClient *svc = service();
 	if(svc) {
 		saveSettings();
+		qfInfo() << "OFeed [results - manual upload]";
 		svc->exportResultsIofXml3();
 	}
 }
@@ -85,6 +87,7 @@ void OFeedClientWidget::onBtExportStartListXml30Clicked()
     OFeedClient *svc = service();
 	if(svc) {
 		saveSettings();
+		qfInfo() << "OFeed [startlist - manual upload]";
 		svc->exportStartListIofXml3();
 	}
 }
