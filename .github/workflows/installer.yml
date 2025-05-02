@@ -2,7 +2,7 @@ name: Installer
 
 on:
   push:
-    branches: [ "master", "qe3" ]
+    branches: [ "master", "qe3", "qe3-win-ci" ]
   pull_request:
     branches: [ "master", "qe3" ]
 
@@ -16,19 +16,40 @@ jobs:
         with:
           submodules: true
 
-#       - name: Cache libraries
-#         id: cache-libs
-#         uses: actions/cache@v3
-#         with:
-#           path: |
-#             C:/openssl/bin/libssl-1_1-x64.dll
-#             C:/openssl/bin/libcrypto-1_1-x64.dll
-#             C:/Program Files/PostgreSQL/14/bin/libiconv-2.dll
-#             C:/Program Files/PostgreSQL/14/bin/libintl-9.dll
-#             C:/Program Files/PostgreSQL/14/bin/liblz4.dll
-#             C:/Program Files/PostgreSQL/14/bin/zlib1.dll
-#             C:/Program Files/PostgreSQL/14/bin/libpq.dll
-#           key: ${{ runner.os }}-library-cache
+#     - name: Cache libraries
+#       id: cache-libs
+#       uses: actions/cache@v3
+#       with:
+#         path: |
+#           C:/openssl/bin/libssl-1_1-x64.dll
+#           C:/openssl/bin/libcrypto-1_1-x64.dll
+#           C:/Program Files/PostgreSQL/14/bin/libiconv-2.dll
+#           C:/Program Files/PostgreSQL/14/bin/libintl-9.dll
+#           C:/Program Files/PostgreSQL/14/bin/liblz4.dll
+#           C:/Program Files/PostgreSQL/14/bin/zlib1.dll
+#           C:/Program Files/PostgreSQL/14/bin/libpq.dll
+#         key: ${{ runner.os }}-library-cache
+
+      - name: Setup MinGW cache
+        uses: actions/cache@v4
+        with:
+          key: x86_64-13.1.0-release-posix-seh-msvcrt-rt_v11-rev1.7z
+          path: ${{github.workspace}}/x86_64-13.1.0-release-posix-seh-msvcrt-rt_v11-rev1.7z
+
+      - name: Install MinGW
+        # WinMain apps fail to link with the default MinGW compiler on GH actions. I suspect it is because Qt (since
+        # 6.8) uses msvcrt, but GH Actions uses the ucrt version. Furthermore, GH Actions might have an older MinGW
+        # version which might make things even less compatible. I don't know the exact reasoning. This works, and that's
+        # all that matters for me.
+        run: |
+          MINGW_FILE_NAME='x86_64-13.1.0-release-posix-seh-msvcrt-rt_v11-rev1.7z'
+          if ! [[ -f '${{github.workspace}}'/"$MINGW_FILE_NAME" ]]; then
+            curl -L "https://github.com/niXman/mingw-builds-binaries/releases/download/13.1.0-rt_v11-rev1/$MINGW_FILE_NAME" -o '${{github.workspace}}'/"$MINGW_FILE_NAME"
+          fi
+          7z x '${{github.workspace}}'/"$MINGW_FILE_NAME"
+          echo 'CC=${{github.workspace}}/mingw64/bin/gcc.exe' >> "$GITHUB_ENV"
+          echo 'CXX=${{github.workspace}}/mingw64/bin/g++.exe' >> "$GITHUB_ENV"
+        shell: bash
 
       - name: Get libraries
 #         if: steps.cache-libs.outputs.cache-hit != 'true'
