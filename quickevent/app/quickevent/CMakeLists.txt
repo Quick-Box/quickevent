@@ -6,6 +6,8 @@ add_executable(quickevent
     plugins/CardReader/src/cardreaderwidget.cpp
     plugins/CardReader/src/services/mqttpunches.cpp
     plugins/CardReader/src/services/mqttpuncheswidget.cpp
+    plugins/CardReader/src/services/qropunch.cpp
+    plugins/CardReader/src/services/qropunchwidget.cpp
     plugins/CardReader/src/services/racomclient.cpp
     plugins/CardReader/src/services/racomclientwidget.cpp
     plugins/CardReader/src/cardreadersettingspage.cpp
@@ -63,6 +65,7 @@ add_executable(quickevent
     plugins/Oris/src/orisimporter.cpp
     plugins/Oris/src/orisplugin.cpp
     plugins/Oris/src/txtimporter.cpp
+    plugins/Oris/src/xmlimporter.cpp
     plugins/Receipts/src/receiptsplugin.cpp
     plugins/Receipts/src/receiptsprinter.cpp
     #plugins/Receipts/src/receiptsprinteroptions.cpp
