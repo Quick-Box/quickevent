@@ -17,15 +17,15 @@ class OFeedClientWidget : public qf::qmlwidgets::framework::DialogWidget
 
 	using Super = qf::qmlwidgets::framework::DialogWidget;
 public:
-    explicit OFeedClientWidget(QWidget *parent = nullptr);
-    ~OFeedClientWidget();
+	explicit OFeedClientWidget(QWidget *parent = nullptr);
+	~OFeedClientWidget();
 private:
 	void onBtExportResultsXml30Clicked();
 	void onBtExportStartListXml30Clicked();
-    OFeedClient* service();
+	OFeedClient* service();
 	bool saveSettings();
 private:
-    Ui::OFeedClientWidget *ui;
+	Ui::OFeedClientWidget *ui;
 	bool acceptDialogDone(int result);
 };
 

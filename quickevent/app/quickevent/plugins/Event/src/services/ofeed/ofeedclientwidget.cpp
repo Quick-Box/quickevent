@@ -18,22 +18,22 @@ namespace services {
 
 OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	: Super(parent)
-    , ui(new Ui::OFeedClientWidget)
+	, ui(new Ui::OFeedClientWidget)
 {
-    setPersistentSettingsId("OFeedClientWidget");
+	setPersistentSettingsId("OFeedClientWidget");
 	ui->setupUi(this);
 
-    OFeedClient *svc = service();
+	OFeedClient *svc = service();
 	if(svc) {
-        OFeedClientSettings ss = svc->settings();
+		OFeedClientSettings ss = svc->settings();
 		ui->edExportInterval->setValue(ss.exportIntervalSec());
-        ui->edHostUrl->setText(svc->hostUrl());
-        ui->edEventId->setText(svc->eventId());
-        ui->edEventPassword->setText(svc->eventPassword());
+		ui->edHostUrl->setText(svc->hostUrl());
+		ui->edEventId->setText(svc->eventId());
+		ui->edEventPassword->setText(svc->eventPassword());
 	}
 
-    connect(ui->btExportResultsXml30, &QPushButton::clicked, this, &OFeedClientWidget::onBtExportResultsXml30Clicked);
-    connect(ui->btExportStartListXml30, &QPushButton::clicked, this, &OFeedClientWidget::onBtExportStartListXml30Clicked);
+	connect(ui->btExportResultsXml30, &QPushButton::clicked, this, &OFeedClientWidget::onBtExportResultsXml30Clicked);
+	connect(ui->btExportStartListXml30, &QPushButton::clicked, this, &OFeedClientWidget::onBtExportStartListXml30Clicked);
 }
 
 OFeedClientWidget::~OFeedClientWidget()
@@ -53,20 +53,20 @@ bool OFeedClientWidget::acceptDialogDone(int result)
 
 OFeedClient *OFeedClientWidget::service()
 {
-    OFeedClient *svc = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
-    QF_ASSERT(svc, OFeedClient::serviceName() + " doesn't exist", return nullptr);
+	OFeedClient *svc = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
+	QF_ASSERT(svc, OFeedClient::serviceName() + " doesn't exist", return nullptr);
 	return svc;
 }
 
 bool OFeedClientWidget::saveSettings()
 {
-    OFeedClient *svc = service();
+	OFeedClient *svc = service();
 	if(svc) {
-        OFeedClientSettings ss = svc->settings();
+		OFeedClientSettings ss = svc->settings();
 		ss.setExportIntervalSec(ui->edExportInterval->value());
-        svc->setHostUrl(ui->edHostUrl->text().trimmed());
-        svc->setEventId(ui->edEventId->text().trimmed());
-        svc->setEventPassword(ui->edEventPassword->text().trimmed());
+		svc->setHostUrl(ui->edHostUrl->text().trimmed());
+		svc->setEventId(ui->edEventId->text().trimmed());
+		svc->setEventPassword(ui->edEventPassword->text().trimmed());
 		svc->setSettings(ss);
 	}
 	return true;
@@ -74,7 +74,7 @@ bool OFeedClientWidget::saveSettings()
 
 void OFeedClientWidget::onBtExportResultsXml30Clicked()
 {
-    OFeedClient *svc = service();
+	OFeedClient *svc = service();
 	if(svc) {
 		saveSettings();
 		qfInfo() << "OFeed [results - manual upload]";
@@ -84,7 +84,7 @@ void OFeedClientWidget::onBtExportResultsXml30Clicked()
 
 void OFeedClientWidget::onBtExportStartListXml30Clicked()
 {
-    OFeedClient *svc = service();
+	OFeedClient *svc = service();
 	if(svc) {
 		saveSettings();
 		qfInfo() << "OFeed [startlist - manual upload]";
