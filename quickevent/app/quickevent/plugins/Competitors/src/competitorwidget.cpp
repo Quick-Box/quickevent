@@ -189,18 +189,6 @@ CompetitorWidget::CompetitorWidget(QWidget *parent) :
 	//ui->tblRuns->setContextMenuPolicy(Qt::CustomContextMenu);
 	//connect(ui->tblRuns, &qfw::TableView::customContextMenuRequested, this, &CompetitorWidget::onRunsTableCustomContextMenuRequest);
 
-	{
-		int stage_cnt = getPlugin<EventPlugin>()->stageCount();
-		auto *ly = new QHBoxLayout(ui->grpStartTimes);
-		for (int i = 1; i <= stage_cnt; ++i) {
-			QPushButton *bt = new QPushButton(tr("E&%1").arg(i));
-			ly->addWidget(bt);
-			connect(bt, &QPushButton::clicked, this, [this, i]() {
-				this->showRunsTable(i);
-			});
-		}
-	}
-
 	// if there is only one run propagate widget SI card change from competitors to runs
 	connect(ui->edSiId, qOverload<int>(&QSpinBox::valueChanged), this, [this](int new_si_number) // widget SIcard edit box
 	{
@@ -354,18 +342,18 @@ QString CompetitorWidget::guessClassFromRegistration(const QString &registration
 	return candidate ? gender + QString::number(candidate) : QString();
 }
 
-void CompetitorWidget::showRunsTable(int stage_id)
-{
-	if(!saveData())
-		return;
+// void CompetitorWidget::showRunsTable(int stage_id)
+// {
+// 	if(!saveData())
+// 		return;
 
-	qf::core::model::DataDocument*doc = dataController()->document();
-	int competitor_id = doc->value("competitors.id").toInt();
-	int class_id = ui->cbxClass->currentData().toInt();
-	QString sort_col = QStringLiteral("runs.startTimeMs");
-	getPlugin<RunsPlugin>()->showRunsTable(stage_id, class_id, false, sort_col, competitor_id);
-	loadRunsTable();
-}
+// 	qf::core::model::DataDocument*doc = dataController()->document();
+// 	int competitor_id = doc->value("competitors.id").toInt();
+// 	int class_id = ui->cbxClass->currentData().toInt();
+// 	QString sort_col = QStringLiteral("runs.startTimeMs");
+// 	getPlugin<RunsPlugin>()->showRunsTable(stage_id, class_id, false, sort_col, competitor_id);
+// 	loadRunsTable();
+// }
 
 void CompetitorWidget::onRegistrationSelected(const QVariantMap &values)
 {
@@ -404,6 +392,12 @@ void CompetitorWidget::loadFromRegistrations(int siid)
 	else {
 		dataController()->document()->setValue(QStringLiteral("competitors.siid"), siid);
 	}
+}
+
+void CompetitorWidget::save()
+{
+	saveData();
+	loadRunsTable();
 }
 
 bool CompetitorWidget::saveData()

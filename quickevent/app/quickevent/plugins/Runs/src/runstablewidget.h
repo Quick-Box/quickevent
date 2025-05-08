@@ -4,6 +4,7 @@
 
 class RunsTableModel;
 class RunsTableItemDelegate;
+namespace qf::qmlwidgets { class TableView; }
 
 namespace Ui {
 class RunsTableWidget;
@@ -23,6 +24,7 @@ public:
 	void reload();
 
 	RunsTableModel* runsModel() {return m_runsModel;}
+	qf::qmlwidgets::TableView* tableView();
 private:
 	void updateStartTimeHighlight() const;
 	void editCompetitor(const QVariant &id, int mode);

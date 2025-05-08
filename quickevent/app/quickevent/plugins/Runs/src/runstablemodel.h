@@ -30,6 +30,7 @@ public:
 		col_runs_timeMs,
 		col_runFlags,
 		col_cardFlags,
+		col_rankingPos,
 		col_competitors_note,
 		col_COUNT,
 	};

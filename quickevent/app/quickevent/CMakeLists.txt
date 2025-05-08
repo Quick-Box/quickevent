@@ -45,18 +45,8 @@ add_executable(quickevent
 	plugins/Classes/src/importcoursedef.cpp
 
 	plugins/Competitors/src/competitordocument.cpp
-	plugins/Competitors/src/competitorsplugin.cpp
-	plugins/Competitors/src/competitorswidget.cpp
-	plugins/Competitors/src/competitorswidget.ui
 	plugins/Competitors/src/competitorwidget.cpp
 	plugins/Competitors/src/competitorwidget.ui
-	plugins/Competitors/src/findregistrationedit.cpp
-	plugins/Competitors/src/lentcardssettingspage.cpp
-	plugins/Competitors/src/lentcardssettingspage.ui
-	plugins/Competitors/src/registrationswidget.cpp
-	plugins/Competitors/src/registrationswidget.ui
-	plugins/Competitors/src/stationsbackupmemorywidget.cpp
-	plugins/Competitors/src/stationsbackupmemorywidget.ui
 
 	plugins/Core/src/coreplugin.cpp
 	plugins/Core/src/reportssettings.cpp
@@ -80,7 +70,11 @@ add_executable(quickevent
 	plugins/Event/src/stagedocument.cpp
 	plugins/Event/src/stagewidget.cpp
 	plugins/Event/src/stagewidget.ui
-
+	plugins/Event/src/findregistrationedit.cpp
+	plugins/Event/src/lentcardssettingspage.cpp
+	plugins/Event/src/lentcardssettingspage.ui
+	plugins/Event/src/registrationswidget.cpp
+	plugins/Event/src/registrationswidget.ui
 	plugins/Event/src/services/emmaclient.cpp
 	plugins/Event/src/services/emmaclientwidget.cpp
 	plugins/Event/src/services/emmaclientwidget.ui
@@ -185,7 +179,7 @@ add_executable(quickevent
 	quickevent.rc
 
 	plugins/Classes/qml/reports/table.qml
-	plugins/Competitors/qml/reports/competitorsStatistics.qml
+
 	plugins/Event/qml/DbSchema.qml
 	plugins/Event/qml/sql/def/Boolean.qml
 	plugins/Event/qml/sql/def/Date.qml
@@ -203,16 +197,19 @@ add_executable(quickevent
 	plugins/Event/qml/sql/def/Table.qml
 	plugins/Event/qml/sql/def/Time.qml
 	plugins/Event/qml/sql/def/private/FieldType.qml
+
 	plugins/Receipts/qml/reports/error.qml
 	plugins/Receipts/qml/reports/sicard.qml
 	plugins/Receipts/qml/reports/receipts/Classic.qml
 	plugins/Receipts/qml/reports/receipts/ClassicLottery.qml
 	plugins/Receipts/qml/reports/receipts/Default.qml
 	plugins/Receipts/qml/reports/receipts/private/LotteryTicket.qml
+
 	plugins/Relays/qml/reports/results.qml
 	plugins/Relays/qml/reports/results_condensed.qml
 	plugins/Relays/qml/reports/startList_classes.qml
 	plugins/Relays/qml/reports/startList_clubs.qml
+
 	plugins/Runs/qml/reports/competitorsWithCardRent.qml
 	plugins/Runs/qml/reports/results_nstages.qml
 	plugins/Runs/qml/reports/results_nstagesSpeaker.qml
@@ -229,6 +226,8 @@ add_executable(quickevent
 	plugins/Runs/qml/reports/awards/results_stage_awards-hsh-2023.qml
 	plugins/Runs/qml/reports/awards/results_stage_awards-hsh.qml
 	plugins/Runs/qml/reports/awards/results_stage_awards.qml
+	plugins/Runs/qml/reports/competitorsStatistics.qml
+
 	plugins/shared/qml/reports/Cell.qml
 	plugins/shared/qml/reports/HeaderCell.qml
 	plugins/shared/qml/reports/QfObject.qml
@@ -267,6 +266,6 @@ install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_BINDIR}/translations)
 
 #install(DIRECTORY plugins/Runs/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/Runs/qml)
 #install(DIRECTORY plugins/Receipts/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/Receipts/qml)
-foreach(plugin IN ITEMS Classes Competitors Runs Relays Receipts shared)
+foreach(plugin IN ITEMS Classes Runs Relays Receipts shared)
 	install(DIRECTORY plugins/${plugin}/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/${plugin}/qml)
 endforeach()

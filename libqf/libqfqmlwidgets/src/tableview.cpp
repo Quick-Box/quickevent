@@ -57,12 +57,12 @@ TableView::TableView(QWidget *parent) :
 	qfLogFuncFrame() << this;
 	setItemDelegate(new TableItemDelegate(this));
 	{
-		HeaderView *h = new HeaderView(Qt::Horizontal, this);
+		auto *h = new HeaderView(Qt::Horizontal, this);
 		setHorizontalHeader(h);
 		connect(this, &TableView::seekStringChanged, h, &HeaderView::setSeekString);
 	}
 	{
-		HeaderView *h = new HeaderView(Qt::Vertical, this);
+		auto *h = new HeaderView(Qt::Vertical, this);
 		setVerticalHeader(h);
 	}
 	setSortingEnabled(true);
@@ -132,7 +132,7 @@ QAbstractProxyModel* TableView::lastProxyModel() const
 {
 	QAbstractProxyModel *ret = nullptr;
 	for(auto m=Super::model(); m; ) {
-		QAbstractProxyModel *pxm = qobject_cast<QAbstractProxyModel*>(m);
+		auto *pxm = qobject_cast<QAbstractProxyModel*>(m);
 		if(pxm) {
 			ret = pxm;
 			m = pxm->sourceModel();
@@ -156,7 +156,7 @@ void TableView::setModel(QAbstractItemModel *model)
 
 qf::core::model::TableModel *TableView::tableModel() const
 {
-	qf::core::model::TableModel *ret = qobject_cast<qf::core::model::TableModel *>(lastProxyModel()->sourceModel());
+	auto *ret = qobject_cast<qf::core::model::TableModel *>(lastProxyModel()->sourceModel());
 	return ret;
 }
 
@@ -355,8 +355,9 @@ void TableView::setDirtyRowsMenuSectionEnabled(bool b)
 
 void TableView::setReadOnly(bool ro)
 {
-	if(ro == isReadOnly())
+	if(ro == isReadOnly()) {
 		return;
+	}
 	m_isReadOnly = ro;
 
 	setEditRowsMenuSectionEnabled(!ro);
@@ -523,7 +524,7 @@ void TableView::paste()
 	try {
 		dialogs::Dialog dlg(this);
 		dlg.setButtons(QDialogButtonBox::Ok);
-		internal::TableViewCopyToDialogWidget *w = new internal::TableViewCopyToDialogWidget();
+		auto *w = new internal::TableViewCopyToDialogWidget();
 		dlg.setCentralWidget(w);
 		int col_cnt = 0;
 		{
@@ -567,7 +568,7 @@ void TableView::paste()
 					r.clearEditFlags();
 				}
 				TableView *tv = w->tableView();
-				qfm::TableModel *tm = new qfm::TableModel(tv);
+				auto *tm = new qfm::TableModel(tv);
 				tm->setTable(t);
 				tv->setTableModel(tm);
 				tv->setContextMenuActions(tv->contextMenuActionsForGroups(AllActions));
@@ -698,7 +699,7 @@ void TableView::editCellContentInEditor()
 			cell_text = QString::fromUtf8(cell_value.toByteArray());
 		else
 			cell_text = cell_value.toString();
-		TextEditWidget *w = new TextEditWidget(this);
+		auto *w = new TextEditWidget(this);
 		w->setText(cell_text);
 		w->setSuggestedFileName("new_file.txt");
 		/*
@@ -708,7 +709,7 @@ void TableView::editCellContentInEditor()
 		}
 		*/
 		dialogs::Dialog dlg(this);
-		DialogButtonBox *bb = new DialogButtonBox(QDialogButtonBox::Cancel, this);
+		auto *bb = new DialogButtonBox(QDialogButtonBox::Cancel, this);
 		QAbstractButton *bt_save = bb->addButton(QDialogButtonBox::Save);
 		connect(bt_save, &QAbstractButton::clicked, &dlg, &QDialog::accept);
 		dlg.setButtonBox(bb);
@@ -742,13 +743,13 @@ void TableView::exportCSV()
 	if(!m)
 		return;
 
-	qf::qmlwidgets::ExportCsvTableViewWidget *w = new qf::qmlwidgets::ExportCsvTableViewWidget(this, this);
+	auto *w = new qf::qmlwidgets::ExportCsvTableViewWidget(this, this);
 	if(!persistentSettingsPath().isEmpty()) {
 		w->setPersistentOptionsPath(persistentSettingsPath() + "/exportCSV");
 		w->loadPersistentOptions();
 	}
 	dialogs::Dialog dlg(this);
-	DialogButtonBox *bb = new DialogButtonBox(QDialogButtonBox::Cancel, this);
+	auto *bb = new DialogButtonBox(QDialogButtonBox::Cancel, this);
 	QAbstractButton *bt_apply = bb->addButton(QDialogButtonBox::Apply);
 	connect(bt_apply, &QAbstractButton::clicked, w, &qf::qmlwidgets::ExportCsvTableViewWidget::applyOptions, Qt::QueuedConnection);
 	dlg.setButtonBox(bb);
@@ -762,13 +763,13 @@ void TableView::exportCSV()
 void TableView::exportReport()
 {
 	qfLogFuncFrame();
-	reports::PrintTableViewWidget *w = new reports::PrintTableViewWidget(this);
+	auto *w = new reports::PrintTableViewWidget(this);
 	if(!persistentSettingsPath().isEmpty()) {
 		w->setPersistentOptionsPath(persistentSettingsPath() + "/exportReport");
 		w->loadPersistentOptions();
 	}
 	dialogs::Dialog dlg(this);
-	DialogButtonBox *bb = new DialogButtonBox(QDialogButtonBox::Cancel, this);
+	auto *bb = new DialogButtonBox(QDialogButtonBox::Cancel, this);
 	QAbstractButton *bt_apply = bb->addButton(QDialogButtonBox::Apply);
 	connect(bt_apply, &QAbstractButton::clicked, w, &reports::PrintTableViewWidget::applyOptions, Qt::QueuedConnection);
 	dlg.setButtonBox(bb);
@@ -931,7 +932,7 @@ void TableView::exportReport_helper(const QVariant& _options)
 
 		//qfInfo() << ttable.toString();
 
-		reports::ReportViewWidget *rw = new reports::ReportViewWidget(nullptr);
+		auto *rw = new reports::ReportViewWidget(nullptr);
 		rw->setTableData(QString(), ttable);
 		QString report_fn = opts.value("report").toMap().value("fileName").toString();
 		rw->setReport(report_fn);
@@ -1341,7 +1342,7 @@ void TableView::savePersistentSettings()
 	if(!path.isEmpty()) {
 		QSettings settings;
 		settings.beginGroup(path);
-		HeaderView *horiz_header = qobject_cast<HeaderView*>(horizontalHeader());
+		auto *horiz_header = qobject_cast<HeaderView*>(horizontalHeader());
 
 		QByteArray header_state = horiz_header->saveState();
 		settings.setValue("horizontalheader", QString::fromLatin1(header_state.toBase64()));
@@ -1357,7 +1358,7 @@ void TableView::onSqlException(const QString &what, const QString &where, const 
 
 void TableView::keyPressEvent(QKeyEvent *e)
 {
-	qfLogFuncFrame() << "key:" << e->key() << "modifiers:" << e->modifiers();
+	// qfLogFuncFrame() << "key:" << e->key() << "modifiers:" << e->modifiers();
 	if(!model()) {
 		e->ignore();
 		return;
@@ -1375,12 +1376,12 @@ void TableView::keyPressEvent(QKeyEvent *e)
 			e->accept();
 			return;
 		}
-		else if(e->key() == Qt::Key_V) {
+		if(e->key() == Qt::Key_V) {
 			paste();
 			e->accept();
 			return;
 		}
-		else if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
+		if(e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
 			qfDebug() << "\tCTRL+ENTER";
 			postRow();
 			e->accept();
@@ -1458,9 +1459,7 @@ void TableView::keyPressEvent(QKeyEvent *e)
 		e->accept();
 		return;
 	}
-	else {
-		cancelSeek();
-	}
+	cancelSeek();
 	//bool event_should_be_accepted = false;
 	/// nejedna se o inkrementalni vyhledavani, zkusime editaci
 	if(state() == EditingState) {
@@ -1808,7 +1807,7 @@ void TableView::createActions()
 		a->setOid("select");
 		m_actionGroups[SelectActions] << a->oid();
 		m_actions[a->oid()] = a;
-		QMenu *m = new QMenu(this);
+		auto *m = new QMenu(this);
 		a->setMenu(m);
 		{
 			a = new Action(tr("Select current column"), this);
@@ -1835,7 +1834,7 @@ void TableView::createActions()
 		a->setOid("calculate");
 		m_actionGroups[CalculateActions] << a->oid();
 		m_actions[a->oid()] = a;
-		QMenu *m = new QMenu(this);
+		auto *m = new QMenu(this);
 		a->setMenu(m);
 		{
 			a = new Action(tr("Sum column"), this);
@@ -1855,7 +1854,7 @@ void TableView::createActions()
 		a->setOid("export");
 		m_actionGroups[ExportActions] << a->oid();
 		m_actions[a->oid()] = a;
-		QMenu *m = new QMenu(this);
+		auto *m = new QMenu(this);
 		a->setMenu(m);
 		{
 			a = new Action(tr("Report"), this);
@@ -1900,7 +1899,7 @@ void TableView::createActions()
 		a->setOid("import");
 		m_actionGroups[ImportActions] << a->oid();
 		m_actions[a->oid()] = a;
-		QMenu *m = new QMenu(this);
+		auto *m = new QMenu(this);
 		a->setMenu(m);
 		{
 			a = new Action(tr("CSV"), this);
@@ -2126,7 +2125,7 @@ void TableView::insertRowInline()
 		if(tri < 0) {
 			qfWarning() << "Valid proxy model index has invalid table model index!";
 			/// this can happen when one inserts to empty table ???? why ????
-			tri = ri = 0;
+			tri = 0;
 		}
 	}
 	tableModel()->insertRow(tri);

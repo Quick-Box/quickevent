@@ -284,6 +284,7 @@ QByteArray QxClientService::zlibCompress(QByteArray data)
 
 void QxClientService::connectToSSE(int event_id)
 {
+	Q_UNUSED(event_id);
 	// auto url = exchangeServerUrl();
 	// url.setPath(QStringLiteral("/api/event/%1/run/changes/sse").arg(event_id));
 	// QNetworkRequest request(url);

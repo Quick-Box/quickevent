@@ -29,12 +29,13 @@ protected:
 class QFQMLWIDGETS_DECL_EXPORT TableViewToolBar : public QToolBar
 {
 	Q_OBJECT
+
+	using Super = QToolBar;
+
 	Q_PROPERTY(qf::qmlwidgets::TableView* tableView READ tableView WRITE setTableView FINAL)
-private:
-	typedef QToolBar Super;
 public:
 	explicit TableViewToolBar(QWidget *parent = nullptr);
-	~TableViewToolBar() Q_DECL_OVERRIDE;
+	~TableViewToolBar() Q_DECL_OVERRIDE = default;
 public:
 	void setTableView(TableView *table_view);
 	qf::qmlwidgets::TableView* tableView() const { return m_tableView; }

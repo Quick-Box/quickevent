@@ -56,13 +56,19 @@ public:
 	void export_results_overall_csos();
 	void export_results_stage_csv();
 
-private slots:
+public:
+	void editCompetitor(const QVariant &id, int mode) {editCompetitor_helper(id, mode, 0);}
+	void editCompetitors(int mode);
+	void editCompetitorOnPunch(int siid);
+private:
+	void report_competitorsStatistics();
+
+	void editCompetitor_helper(const QVariant &id, int mode, int siid);
+
 	void on_btDraw_clicked();
 	void on_btDrawRemove_clicked();
 	void onCbxStageCurrentIndexChanged();
 private:
-
-	Q_SLOT void lazyInit();
 
 	/**
 	 * @brief runnersInClubsHistogram
@@ -91,6 +97,7 @@ private:
 	QAction *m_toolbarActionLabelLeg = nullptr;
 	QAction *m_toolbarActionComboLeg = nullptr;
 	QCheckBox *m_chkShowOffRace = nullptr;
+	bool m_editCompetitorLock = false;
 };
 
 #endif // RUNSWIDGET_H

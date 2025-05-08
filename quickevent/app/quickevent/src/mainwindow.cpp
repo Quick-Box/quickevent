@@ -10,7 +10,6 @@
 #include <plugins/Core/src/coreplugin.h>
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Classes/src/classesplugin.h>
-#include <plugins/Competitors/src/competitorsplugin.h>
 #include <plugins/Runs/src/runsplugin.h>
 #include <plugins/Oris/src/orisplugin.h>
 #include <plugins/CardReader/src/cardreaderplugin.h>
@@ -91,10 +90,10 @@ void MainWindow::loadPlugins()
 		auto *plugin = new Classes::ClassesPlugin(this);
 		registerPlugin(plugin);
 	}
-	{
-		auto *plugin = new Competitors::CompetitorsPlugin(this);
-		registerPlugin(plugin);
-	}
+	// {
+	// 	auto *plugin = new Competitors::CompetitorsPlugin(this);
+	// 	registerPlugin(plugin);
+	// }
 	{
 		auto *plugin = new Runs::RunsPlugin(this);
 		registerPlugin(plugin);

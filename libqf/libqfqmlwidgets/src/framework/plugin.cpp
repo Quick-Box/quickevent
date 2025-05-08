@@ -57,12 +57,12 @@ QString Plugin::findReportFile(const QString &report_file_path) const
 	search_paths << effectiveReportsDir() + '/' + m_featureId + "/qml/reports";
 	//search_paths << qmlReportsDir();
 	for(const QString &dir : search_paths) {
-		//qfInfo() << "search_path:" << dir;
+		qfMessage() << "search_path:" << dir;
 		auto fn = dir + '/' + report_file_path;
-		//qfInfo() << "trying:" << fn;
+		qfMessage() << "trying:" << fn;
 		QFileInfo fi(fn);
 		if(fi.isFile()) {
-			//qfInfo() << "HIT:" << fn;
+			qfMessage() << "HIT:" << fn;
 			return fn;
 		}
 	}

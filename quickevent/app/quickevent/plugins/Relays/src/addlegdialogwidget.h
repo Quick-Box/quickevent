@@ -30,7 +30,7 @@ private:
 
 	void updateLegAddedStatus(const QString &msg);
 
-	int findFreeLeg();
+	int findFreeLeg() const;
 private:
 	Ui::AddLegDialogWidget *ui;
 	QTimer *m_updateStatusTimer = nullptr;

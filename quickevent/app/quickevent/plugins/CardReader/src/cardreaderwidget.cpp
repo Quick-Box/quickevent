@@ -3,7 +3,6 @@
 #include "cardreadersettings.h"
 
 #include "cardreaderplugin.h"
-#include "cardreaderplugin.h"
 
 #include <quickevent/gui/og/itemdelegate.h>
 #include <quickevent/gui/audio/player.h>
@@ -48,8 +47,9 @@
 #include <plugins/Receipts/src/receiptsplugin.h>
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Runs/src/findrunnerwidget.h>
-#include <plugins/Competitors/src/competitorsplugin.h>
+// #include <plugins/Competitors/src/competitorsplugin.h>
 #include <plugins/Runs/src/runflagsdialog.h>
+#include <plugins/Runs/src/runsplugin.h>
 
 #include <QSettings>
 #include <QFile>
@@ -72,7 +72,8 @@ using qf::qmlwidgets::framework::getPlugin;
 using Event::EventPlugin;
 using CardReader::CardReaderPlugin;
 using Receipts::ReceiptsPlugin;
-using Competitors::CompetitorsPlugin;
+// using Competitors::CompetitorsPlugin;
+using Runs::RunsPlugin;
 
 namespace {
 class Model : public quickevent::core::og::SqlTableModel
@@ -196,10 +197,10 @@ QVariant Model::value(int row_ix, int column_ix) const
 			sl << tr("OT", "OverTime");
 		if(is_disqualified && !mis_punch && !bad_check && !not_start && !not_finish && !is_disqualified_by_organizer && !over_time)
 			sl << tr("DSQ", "Disqualified");
-		if(sl.isEmpty())
+		if(sl.isEmpty()) {
 			return QStringLiteral("");
-		else
-			return sl.join(',');
+		}
+		return sl.join(',');
 	}
 	return Super::value(row_ix, column_ix);
 }
@@ -379,11 +380,11 @@ void CardReaderWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		//a_station->addActionInto(m_actSettings);
 		//a_station->addActionInto(m_actCommOpen);
 		{
-			QAction *a = new QAction(tr("Station info"));
+			auto *a = new QAction(tr("Station info"));
 			a->setEnabled(false);
 			connect(commPort(), &siut::CommPort::openChanged, a, &QAction::setEnabled);
 			connect(a, &QAction::triggered, [this]() {
-				siut::SiTaskStationConfig *cmd = new siut::SiTaskStationConfig();
+				auto *cmd = new siut::SiTaskStationConfig();
 				connect(cmd, &siut::SiTaskStationConfig::finished, this, [this](bool ok, QVariant result) {
 					if(ok) {
 						siut::SiStationConfig cfg(result.toMap());
@@ -396,7 +397,7 @@ void CardReaderWidget::settleDownInPartWidget(::PartWidget *part_widget)
 			a_station->addActionInto(a);
 		}
 		{
-			QAction *a = new QAction(tr("Read station memory"));
+			auto *a = new QAction(tr("Read station memory"));
 			a->setEnabled(false);
 			connect(commPort(), &siut::CommPort::openChanged, a, &QAction::setEnabled);
 			connect(a, &QAction::triggered, this, &CardReaderWidget::readStationBackupMemory);
@@ -427,18 +428,19 @@ void CardReaderWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		{
 			auto *m_import_cards = a_tools->addMenuInto("importCards", tr("Import cards"));
 			{
-				qfw::Action *a = new qfw::Action(tr("Laps only CSV"));
+				auto *a = new qfw::Action(tr("Laps only CSV"));
 				connect(a, &qf::qmlwidgets::Action::triggered, this, &CardReaderWidget::importCards_lapsOnlyCsv);
 				m_import_cards->addActionInto(a);
 			}
 			{
-				qfw::Action *a = new qfw::Action(tr("SI reader backup memory CSV"));
+				auto *a = new qfw::Action(tr("SI reader backup memory CSV"));
 				connect(a, &qf::qmlwidgets::Action::triggered, this, &CardReaderWidget::importCards_SIReaderBackupMemoryCsv);
+				m_import_cards->addActionInto(a);
 				m_import_cards->addActionInto(a);
 			}
 		}
 		{
-			qfw::Action *a = new qfw::Action(tr("Test audio"));
+			auto *a = new qfw::Action(tr("Test audio"));
 			connect(a, &qf::qmlwidgets::Action::triggered, this, &CardReaderWidget::operatorAudioNotify);
 			a_tools->addActionInto(a);
 		}
@@ -535,7 +537,7 @@ siut::CommPort *CardReaderWidget::commPort()
 void CardReaderWidget::onComOpenChanged(bool comm_is_open)
 {
 	if(comm_is_open) {
-		siut::SiTaskSetDirectRemoteMode *cmd = new siut::SiTaskSetDirectRemoteMode(siut::SiTaskSetDirectRemoteMode::Mode::Direct);
+		auto *cmd = new siut::SiTaskSetDirectRemoteMode(siut::SiTaskSetDirectRemoteMode::Mode::Direct);
 		connect(cmd, &siut::SiTaskSetDirectRemoteMode::finished, this, [this](bool ok) {
 			if(ok) {
 				ui->lblConnectionInfo->setText(tr("Connected to %1 in direct mode.").arg(this->commPort()->portName()));
@@ -585,7 +587,7 @@ void CardReaderWidget::appendLog(NecroLog::Level level, const QString& msg)
 void CardReaderWidget::onSiTaskFinished(int task_type, QVariant result)
 {
 	qfLogFuncFrame();
-	siut::SiTask::Type tt = static_cast<siut::SiTask::Type>(task_type);
+	auto tt = static_cast<siut::SiTask::Type>(task_type);
 	if(tt == siut::SiTask::Type::CardRead) {
 		siut::SICard card(result.toMap());
 		if(card.isEmpty())
@@ -631,7 +633,7 @@ void CardReaderWidget::processSICard(const siut::SICard &card)
 	appendLog(NecroLog::Level::Info, tr("card: %1").arg(card.cardNumber()));
 
 	if(currentReaderMode() == CardReaderSettings::ReaderMode::EditOnPunch) {
-		getPlugin<CompetitorsPlugin>()->editCompetitorOnPunch(card.cardNumber());
+		getPlugin<RunsPlugin>()->editCompetitorOnPunch(card.cardNumber());
 		return;
 	}
 
@@ -1149,9 +1151,9 @@ void CardReaderWidget::importCards_SIReaderBackupMemoryCsv()
 
 void CardReaderWidget::readStationBackupMemory()
 {
-	siut::SiTaskReadStationBackupMemory *si_task = new siut::SiTaskReadStationBackupMemory();
+	auto *si_task = new siut::SiTaskReadStationBackupMemory();
 	connect(si_task, &siut::SiTaskStationConfig::progress, this, [this, si_task](int phase, int count) {
-		QProgressDialog *progress_dlg = this->findChild<QProgressDialog*>(QString(), Qt::FindDirectChildrenOnly);
+		auto *progress_dlg = this->findChild<QProgressDialog*>(QString(), Qt::FindDirectChildrenOnly);
 		if(progress_dlg == nullptr) {
 			progress_dlg = new QProgressDialog(tr("Downloading station backup ..."), "Abort", 0, count, this);
 			connect(progress_dlg, &QProgressDialog::canceled, si_task, [si_task]() {
@@ -1221,8 +1223,8 @@ void CardReaderWidget::readStationBackupMemory()
 					q2.prepare("UPDATE runs SET checkTimeMs=:checkTimeMs"
 							  " WHERE siId=:siId AND checkTimeMs IS NULL AND stageId=" QF_IARG(stage_id)
 							  , qfc::Exception::Throw);
-					for (int i = 0; i < punches.size(); i++) {
-						QVariantList punch = punches[i].toList();
+					for (const auto & plist : punches) {
+						QVariantList punch = plist.toList();
 						q1.bindValue(QStringLiteral(":stageId"), stage_id);
 						q1.bindValue(QStringLiteral(":stationNumber"), station_number);
 						int si = punch.value(0).toInt();

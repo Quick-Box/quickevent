@@ -23,7 +23,7 @@ public:
 	bool load(const QVariant &id = QVariant(), int mode = qf::core::model::DataDocument::ModeEdit) Q_DECL_OVERRIDE;
 	void loadFromRegistrations(int siid);
 	//Q_SIGNAL void editStartListRequest(int stage_id, int class_id, int competitor_id);
-
+	void save();
 private slots:
 	void onRegistrationSelected(const QVariantMap &values);
 	void onSwitchNames();
@@ -35,7 +35,7 @@ private:
 
 	QString guessClassFromRegistration(const QString &registration);
 
-	void showRunsTable(int stage_id);
+	// void showRunsTable(int stage_id);
 private:
 	Ui::CompetitorWidget *ui;
 	quickevent::core::og::SqlTableModel *m_runsModel;

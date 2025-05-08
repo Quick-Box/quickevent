@@ -9,13 +9,15 @@
 #include <qf/core/assert.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/model/sqltablemodel.h>
-#include <plugins/Competitors/src/competitorsplugin.h>
+#include <plugins/Event/src/eventplugin.h>
+// #include <plugins/Competitors/src/competitorsplugin.h>
 #include <plugins/Competitors/src/competitordocument.h>
 
 #include <QTimer>
 
 using qf::qmlwidgets::framework::getPlugin;
-using Competitors::CompetitorsPlugin;
+// using Competitors::CompetitorsPlugin;
+using Event::EventPlugin;
 
 AddLegDialogWidget::AddLegDialogWidget(QWidget *parent)
 	: Super(parent)
@@ -29,7 +31,7 @@ AddLegDialogWidget::AddLegDialogWidget(QWidget *parent)
 
 	m_defaultStatusText = ui->lblStatus->text();
 
-	qf::core::model::SqlTableModel *competitors_model = new qf::core::model::SqlTableModel(this);
+	auto *competitors_model = new qf::core::model::SqlTableModel(this);
 	//competitors_model->addColumn("relays.club", tr("Club"));
 	competitors_model->addColumn("relayName", tr("Name"));
 	competitors_model->addColumn("runs.leg", tr("Leg"));
@@ -55,7 +57,7 @@ AddLegDialogWidget::AddLegDialogWidget(QWidget *parent)
 	ui->tblCompetitors->setReadOnly(true);
 	competitors_model->reload();
 
-	auto *reg_model = getPlugin<CompetitorsPlugin>()->registrationsModel();
+	auto *reg_model = getPlugin<EventPlugin>()->registrationsModel();
 	ui->tblRegistrations->setTableModel(reg_model);
 	ui->tblRegistrations->setReadOnly(true);
 	connect(reg_model, &qf::core::model::SqlTableModel::reloaded, this, [this]() {
@@ -165,7 +167,7 @@ void AddLegDialogWidget::updateLegAddedStatus(const QString &msg)
 	m_updateStatusTimer->start();
 }
 
-int AddLegDialogWidget::findFreeLeg()
+int AddLegDialogWidget::findFreeLeg() const
 {
 	qf::core::sql::Query q;
 	q.exec("SELECT leg FROM runs WHERE leg IS NOT NULL AND relayId=" + QString::number(relayId()) + " ORDER BY leg", qf::core::Exception::Throw);

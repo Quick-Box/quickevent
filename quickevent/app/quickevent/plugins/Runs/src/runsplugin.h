@@ -78,7 +78,7 @@ public:
 	bool exportStartListCurrentStageCsvSime(const QString &file_name, bool bibs, QString sql_where);
 	bool exportStartListCurrentStageTvGraphics(const QString &file_name);
 
-        QString qxExportRunsCsv(int stage_id);
+	QString qxExportRunsCsv(int stage_id);
 
 	//bool exportResultsHtmlStage(int stage_id, const QString &file_name);
 	Q_INVOKABLE bool exportResultsIofXml30Stage(int stage_id, const QString &file_name);
@@ -97,6 +97,9 @@ public:
 	qf::core::utils::TreeTable startListStartersTable(const QString &where_expr);
 	qf::core::utils::TreeTable startListClassesNStagesTable(const int stages_count, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	qf::core::utils::TreeTable startListClubsNStagesTable(const int stages_count, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
+
+	void editCompetitorOnPunch(int siid) { emit editCompetitorOnPunchRequest(siid); }
+	Q_SIGNAL void editCompetitorOnPunchRequest(int siid);
 public:
 	void report_startListClasses();
 	void report_startListClubs();

@@ -4,15 +4,18 @@
 #include "eventconfig.h"
 #include "stage.h"
 
-#include <qf/core/utils.h>
 #include <qf/qmlwidgets/framework/plugin.h>
+
+#include <qf/core/utils.h>
+#include <qf/core/utils/table.h>
 
 #include <QVariantMap>
 #include <QSqlDriver>
 
-namespace qf { namespace core { namespace sql { class Query; class Connection; }}}
-namespace qf { namespace qmlwidgets { class Action; } }
-namespace qf { namespace qmlwidgets { namespace framework { class DockWidget; }}}
+namespace qf::core::sql { class Query; class Connection; }
+namespace qf::qmlwidgets { class Action; }
+namespace qf::qmlwidgets::framework { class DockWidget; }
+namespace qf::core::model { class SqlTableModel; }
 
 class QComboBox;
 class DbSchema;
@@ -108,6 +111,10 @@ public:
 	static int dbVersion();
 
 	Q_SLOT void onInstalled();
+
+	qf::core::model::SqlTableModel* registrationsModel();
+	const qf::core::utils::Table& registrationsTable();
+
 public:
 	ConnectionType connectionType() const;
 	bool isSingleUser() const;
@@ -127,7 +134,10 @@ private:
 
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 
+	void onRegistrationsDockVisibleChanged(bool on = true);
+
 	void updateWindowTitle();
+	void reloadRegistrationsModel();
 
 	//bool runSqlScript(qf::core::sql::Query &q, const QStringList &sql_lines);
 	void repairStageStarts(const qf::core::sql::Connection &from_conn, const qf::core::sql::Connection &to_conn);
@@ -151,6 +161,10 @@ private:
 	QMap<int, QString> m_classNameCache;
 
 	qf::qmlwidgets::framework::DockWidget *m_servicesDockWidget = nullptr;
+	qf::qmlwidgets::framework::DockWidget *m_registrationsDockWidget = nullptr;
+
+	qf::core::model::SqlTableModel *m_registrationsModel = nullptr;
+	qf::core::utils::Table m_registrationsTable;
 };
 
 }

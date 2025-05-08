@@ -105,7 +105,7 @@
       <item row="3" column="3">
        <widget class="quickevent::gui::si::SiIdEdit" name="edSiId">
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="dataId" stdset="0">
          <string notr="true">competitors.siId</string>
@@ -196,7 +196,7 @@
       <item row="4" column="1">
        <widget class="qf::qmlwidgets::SpinBox" name="edIofId">
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="maximum">
          <number>999999999</number>
@@ -249,7 +249,7 @@
         <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -262,13 +262,6 @@
        </layout>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="grpStartTimes">
-     <property name="title">
-      <string>Start times</string>
-     </property>
     </widget>
    </item>
    <item>
@@ -330,7 +323,7 @@
   <customwidget>
    <class>FindRegistrationEdit</class>
    <extends>QLineEdit</extends>
-   <header location="global">plugins/Competitors/src/findregistrationedit.h</header>
+   <header location="global">plugins/Event/src/findregistrationedit.h</header>
   </customwidget>
   <customwidget>
    <class>qf::qmlwidgets::SpinBox</class>

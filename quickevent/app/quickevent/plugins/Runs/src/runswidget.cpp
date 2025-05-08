@@ -3,6 +3,10 @@
 #include "runstablemodel.h"
 #include "runsplugin.h"
 
+#include <plugins/Competitors/src/competitorwidget.h>
+#include <plugins/Competitors/src/competitordocument.h>
+#include <plugins/Event/src/eventplugin.h>
+
 #include <quickevent/core/og/sqltablemodel.h>
 #include <quickevent/gui/og/itemdelegate.h>
 #include <quickevent/core/exporters/stageresultscsvexporter.h>
@@ -16,6 +20,8 @@
 #include <qf/qmlwidgets/action.h>
 #include <qf/qmlwidgets/toolbar.h>
 #include <qf/qmlwidgets/combobox.h>
+#include <qf/qmlwidgets/tableview.h>
+#include <qf/qmlwidgets/dialogbuttonbox.h>
 
 #include <qf/core/model/sqltablemodel.h>
 #include <qf/core/sql/querybuilder.h>
@@ -24,7 +30,6 @@
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/assert.h>
-#include <plugins/Event/src/eventplugin.h>
 
 #include <QCheckBox>
 #include <QDateTime>
@@ -41,6 +46,8 @@ static const auto SkipEmptyParts = QString::SkipEmptyParts;
 static const auto SkipEmptyParts = Qt::SkipEmptyParts;
 #endif
 
+namespace qfc = qf::core;
+namespace qfu = qf::core::utils;
 namespace qfs = qf::core::sql;
 namespace qfw = qf::qmlwidgets;
 namespace qff = qf::qmlwidgets::framework;
@@ -81,16 +88,13 @@ RunsWidget::RunsWidget(QWidget *parent) :
 			ui->cbxDrawMethod->addItem(tr("Grouped by ranking (PSOB DH21L)"), static_cast<int>(DrawMethod::GroupedRanking));
 		}
 	});
-	QMetaObject::invokeMethod(this, &RunsWidget::lazyInit, Qt::QueuedConnection);
+	connect(ui->wRunsTableWidget->tableView(), &qfw::TableView::editRowInExternalEditor, this, &RunsWidget::editCompetitor, Qt::QueuedConnection);
+	connect(ui->wRunsTableWidget->tableView(), &qfw::TableView::editSelectedRowsInExternalEditor, this, &RunsWidget::editCompetitors, Qt::QueuedConnection);
 }
 
 RunsWidget::~RunsWidget()
 {
 	delete ui;
-}
-
-void RunsWidget::lazyInit()
-{
 }
 
 void RunsWidget::reset(int class_id)
@@ -141,8 +145,10 @@ void RunsWidget::reload()
 void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 {
 	qfLogFuncFrame();
-	connect(part_widget, SIGNAL(resetPartRequest()), this, SLOT(reset()));
-	connect(part_widget, SIGNAL(reloadPartRequest()), this, SLOT(reload()));
+	connect(part_widget, &::PartWidget::resetPartRequest, this, [this]() { reset(); });
+	connect(part_widget, &::PartWidget::reloadPartRequest, this, &RunsWidget::reload);
+
+	connect(getPlugin<RunsPlugin>(), &Runs::RunsPlugin::editCompetitorOnPunchRequest, this, &RunsWidget::editCompetitorOnPunch);
 
 	auto *a_print = part_widget->menuBar()->actionForPath("print", true);
 	a_print->setText(tr("&Print"));
@@ -217,6 +223,12 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	}
 	a_print->addSeparatorInto();
 	{
+		auto *a = new qfw::Action(tr("Competitors statistics"));
+		//a->setShortcut("ctrl+L");
+		connect(a, &qfw::Action::triggered, this, &RunsWidget::report_competitorsStatistics);
+		a_print->addActionInto(a);
+	}
+	{
 		auto *a = new qfw::Action(tr("&Competitors with rented cards"));
 		connect(a, &qfw::Action::triggered, [this]() {
 			qff::MainWindow *fwk = qff::MainWindow::frameWork();
@@ -250,7 +262,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	a_import->setText(tr("&Import"));
 
 	qfw::Action *a_import_start_times = a_import->addMenuInto("startTimes", tr("Start times"));
-	qfw::Action *a_import_start_times_ob2000 = new qfw::Action("ob2000", tr("OB 2000"));
+	auto *a_import_start_times_ob2000 = new qfw::Action("ob2000", tr("OB 2000"));
 	a_import_start_times->addActionInto(a_import_start_times_ob2000);
 	connect(a_import_start_times_ob2000, &qfw::Action::triggered, this, &RunsWidget::import_start_times_ob2000);
 
@@ -332,7 +344,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	qfw::ToolBar *main_tb = part_widget->toolBar("main", true);
 	//main_tb->addAction(m_actCommOpen);
 	{
-		QLabel *lbl = new QLabel(tr("Stage "));
+		auto *lbl = new QLabel(tr("Stage "));
 		main_tb->addWidget(lbl);
 	}
 	{
@@ -357,7 +369,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	}
 	lbl_classes->setBuddy(m_cbxClasses);
 	{
-		QLabel *lbl_leg = new QLabel(tr("&Leg "));
+		auto *lbl_leg = new QLabel(tr("&Leg "));
 		m_toolbarActionLabelLeg = main_tb->addWidget(lbl_leg);
 		m_cbxLeg = new QComboBox();
 		{
@@ -1021,4 +1033,182 @@ void RunsWidget::export_results_stage_csv()
 	exp.setSimplePath(true);
 	exp.setWithDidNotStart(true);
 	exp.generateCsvSingle();
+}
+
+void RunsWidget::editCompetitors(int mode)
+{
+	if(mode == qfm::DataDocument::ModeDelete) {
+		auto *tv = ui->wRunsTableWidget->tableView();
+		QList<int> sel_rows = tv->selectedRowsIndexes();
+		if(sel_rows.count() <= 1)
+			return;
+		if(qfd::MessageBox::askYesNo(this, tr("Really delete all the selected competitors? This action cannot be reverted."), false)) {
+			qfs::Transaction transaction;
+			int n = 0;
+			for(int ix : sel_rows) {
+				int id = tv->tableRow(ix).value(tv->idColumnName()).toInt();
+				if(id > 0) {
+					Competitors::CompetitorDocument doc;
+					doc.load(id, qfm::DataDocument::ModeDelete);
+					doc.drop();
+					n++;
+				}
+			}
+			if(n > 0) {
+				if(qfd::MessageBox::askYesNo(this, tr("Confirm deletion of %1 competitors.").arg(n), false)) {
+					transaction.commit();
+					tv->reload();
+				}
+				else {
+					transaction.rollback();
+				}
+			}
+		}
+	}
+}
+
+void RunsWidget::editCompetitorOnPunch(int siid)
+{
+	qfs::Query q;
+	q.exec("SELECT id FROM competitors WHERE siId=" + QString::number(siid), qfc::Exception::Throw);
+	if(q.next()) {
+		int competitor_id = q.value(0).toInt();
+		if(competitor_id > 0) {
+			editCompetitor_helper(competitor_id, qfm::DataDocument::ModeEdit, 0);
+		}
+	}
+	else {
+		editCompetitor_helper(QVariant(), qfm::DataDocument::ModeInsert, siid);
+	}
+}
+
+void RunsWidget::report_competitorsStatistics()
+{
+	qfLogFuncFrame();
+	int stage_cnt = getPlugin<EventPlugin>()->stageCount();
+
+	qfs::QueryBuilder qb;
+	qb.select2("classes", "id, name").from("classes").orderBy("classes.name");
+	qf::core::model::SqlTableModel m;
+	m.setQueryBuilder(qb);
+	m.reload();
+	qfu::TreeTable tt = m.toTreeTable();
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	for (int stage_id = 1; stage_id <= stage_cnt; ++stage_id) {
+		QString prefix = "e" + QString::number(stage_id) + "_";
+		QString col_runs_count = prefix + "runCount";
+		QString col_map_count = prefix + "mapCount";
+		tt.appendColumn(col_runs_count, QMetaType(QMetaType::Int));
+		tt.appendColumn(col_map_count, QMetaType(QMetaType::Int));
+		{
+			qfs::QueryBuilder qb;
+			qb.select2("classes", "name")
+				.select("COUNT(runs.id) AS runCount")
+				.select("MAX(classdefs.mapCount) as mapCount") // classdefs.mapCount must be in any agregation function in PSQL, MIN can be here as well
+				.from("classes")
+				.joinRestricted("classes.id", "classdefs.classid", "classdefs.stageId={{stage_id}}")
+				.join("classes.id", "competitors.classId")
+				.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning AND runs.stageId={{stage_id}}")
+				.groupBy("classes.name")
+				.orderBy("classes.name");
+			QVariantMap qpm;
+			qpm["stage_id"] = stage_id;
+			qfs::Query q;
+			q.execThrow(qb.toString(qpm));
+			int i = 0;
+			while(q.next()) {
+				qf::core::utils::TreeTableRow tt_row = tt.row(i);
+				tt_row.setValue(col_runs_count, q.value("runCount"));
+				tt_row.setValue(col_map_count, q.value("mapCount"));
+				tt.setRow(i, tt_row);
+				i++;
+			}
+		}
+	}
+	qfDebug() << tt.toString();
+	QVariantMap props;
+	//props["isBreakAfterEachClass"] = (opts.breakType() != (int)quickevent::gui::ReportOptionsDialog::BreakType::None);
+	//props["isColumnBreak"] = (opts.breakType() == (int)quickevent::gui::ReportOptionsDialog::BreakType::Column);
+	props["stageCount"] = stage_cnt;
+	QString rep_fn = getPlugin<RunsPlugin>()->findReportFile("competitorsStatistics.qml");
+	qf::qmlwidgets::reports::ReportViewWidget::showReport(this
+								, rep_fn
+								, tt.toVariant()
+								, tr("Competitors statistics")
+								, "competitorsStatistics"
+								, props
+								);
+}
+
+void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
+{
+	qfLogFuncFrame() << "id:" << id << "mode:" << mode;
+	//qf::core::sql::Transaction transaction;
+	if (m_editCompetitorLock) {
+		qfDebug() << "Another competitor dialog is opened, ignoring editOnPunch..";
+		return;
+	}
+
+	class EditGuard
+	{
+	public:
+		EditGuard(bool &lock) : m_lock(lock) { m_lock = true; }
+		~EditGuard() { m_lock = false; }
+	private:
+		bool &m_lock;
+	};
+	bool ok = false;
+	bool save_and_next = false;
+
+	{
+		EditGuard guard(m_editCompetitorLock);
+		auto *w = new CompetitorWidget();
+		w->setWindowTitle(tr("Edit Competitor"));
+		qfd::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+		dlg.setDefaultButton(QDialogButtonBox::Ok);
+		if(mode == qf::core::model::DataDocument::ModeInsert || mode == qf::core::model::DataDocument::ModeEdit) {
+			QPushButton *bt_save = dlg.buttonBox()->addButton(tr("Save"), QDialogButtonBox::ApplyRole);
+			connect(dlg.buttonBox(), &qf::qmlwidgets::DialogButtonBox::clicked, [w, bt_save](QAbstractButton *button) {
+				if (button == bt_save) {
+					w->save();
+				}
+			});
+			QPushButton *bt_save_and_next = dlg.buttonBox()->addButton(tr("Ok and &next"), QDialogButtonBox::AcceptRole);
+			connect(dlg.buttonBox(), &qf::qmlwidgets::DialogButtonBox::clicked, [&save_and_next, bt_save_and_next](QAbstractButton *button) {
+				save_and_next = (button == bt_save_and_next);
+			});
+		}
+		dlg.setCentralWidget(w);
+		w->load(id, mode);
+		auto *doc = qobject_cast<Competitors::CompetitorDocument*>(w->dataController()->document());
+		QF_ASSERT(doc != nullptr, "Document is null!", return);
+		if(mode == qfm::DataDocument::ModeInsert) {
+			if(siid == 0) {
+				bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+				if(!is_relays) {
+					int class_id = m_cbxClasses->currentData().toInt();
+					if(class_id > 0)
+						doc->setValue("competitors.classId", class_id);
+					else
+						doc->setValue("competitors.classId", QVariant());
+				}
+			}
+			else {
+				w->loadFromRegistrations(siid);
+			}
+		}
+		connect(doc, &Competitors::CompetitorDocument::saved, ui->wRunsTableWidget->tableView(), &qf::qmlwidgets::TableView::rowExternallySaved, Qt::QueuedConnection);
+		// connect(doc, &Competitors::CompetitorDocument::saved, getPlugin<CompetitorsPlugin>(), &Competitors::CompetitorsPlugin::competitorEdited, Qt::QueuedConnection);
+		ok = dlg.exec();
+		//if(ok)
+		//	transaction.commit();
+		//else
+		//	transaction.rollback();
+
+	}
+	if(ok && save_and_next) {
+		QTimer::singleShot(0, [this]() {
+			this->editCompetitor(QVariant(), qf::core::model::DataDocument::ModeInsert);
+		});
+	}
 }
