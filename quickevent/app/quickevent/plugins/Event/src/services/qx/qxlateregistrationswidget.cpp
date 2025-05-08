@@ -10,9 +10,6 @@
 #include <qf/core/model/sqltablemodel.h>
 #include <qf/core/log.h>
 
-namespace qfc = qf::core;
-namespace qfw = qf::qmlwidgets;
-namespace qfd = qf::qmlwidgets::dialogs;
 namespace qfm = qf::core::model;
 namespace qfs = qf::core::sql;
 using qf::qmlwidgets::framework::getPlugin;
@@ -167,8 +164,8 @@ void QxLateRegistrationsWidget::applyCurrentChange()
 	if (status != STATUS_PENDING) {
 		return;
 	}
-	auto run_id = m_model->value(row, COL_RUN_ID).toInt();
-	int competitor_id = 0;
+	//auto run_id = m_model->value(row, COL_RUN_ID).toInt();
+	//int competitor_id = 0;
 	// int result = getPlugin<Competitors::CompetitorsPlugin>()->editCompetitor(competitor_id, run_id == 0? Mode::Insert: Mode::Edit);
 
 }

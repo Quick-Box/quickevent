@@ -1,8 +1,8 @@
 #include "ofeedclientwidget.h"
 #include "ui_ofeedclientwidget.h"
 #include "ofeedclient.h"
-#include <qf/qmlwidgets/framework/mainwindow.h>
 
+#include <qf/qmlwidgets/framework/mainwindow.h>
 #include <qf/qmlwidgets/dialogs/messagebox.h>
 
 #include <qf/core/assert.h>
@@ -11,10 +11,8 @@
 #include <QFileDialog>
 
 #include <plugins/Event/src/eventplugin.h>
-using qf::qmlwidgets::framework::getPlugin;
 
-namespace Event {
-namespace services {
+namespace Event::services {
 
 OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	: Super(parent)
@@ -53,7 +51,7 @@ bool OFeedClientWidget::acceptDialogDone(int result)
 
 OFeedClient *OFeedClientWidget::service()
 {
-	OFeedClient *svc = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
+	auto *svc = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
 	QF_ASSERT(svc, OFeedClient::serviceName() + " doesn't exist", return nullptr);
 	return svc;
 }
@@ -91,5 +89,6 @@ void OFeedClientWidget::onBtExportStartListXml30Clicked()
 		svc->exportStartListIofXml3();
 	}
 }
-}}
+
+}
 
