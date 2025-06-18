@@ -50,6 +50,9 @@ runs:
     #  with:
     #    # ninja version to download. Default: 1.10.0
     #    version: 1.10.0
+
+    - name: Get Git SHA
+      run: echo "COMMIT_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
     
     - name: Configure CMake
       run: |
@@ -66,6 +69,7 @@ runs:
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
         -DCMAKE_BUILD_TYPE=Debug \
         -DUSE_QT6=${{ inputs.use_qt6 }} \
+        -DCOMMIT_SHA=${{ env.COMMIT_SHA }} \
         ${{ env.cmake_extra_args }} \
         ${{ inputs.additional_cmake_args }}
       shell: bash

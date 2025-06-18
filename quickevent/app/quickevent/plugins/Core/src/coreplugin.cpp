@@ -199,11 +199,18 @@ void CorePlugin::aboutQuickEvent()
 	QString db_version_string;
 	QMetaObject::invokeMethod(fwk, "dbVersionString", Qt::DirectConnection
 							  , Q_RETURN_ARG(QString, db_version_string));
+
+	auto commit_sha = QStringLiteral(COMMIT_SHA);
+	if (commit_sha.isEmpty()) {
+		commit_sha = "N/A";
+	}
+
 	QMessageBox::about(fwk
 					   , tr("About Quick Event")
 					   , tr("The <b>Quick Event</b> is an application which helps you to organize the orienteering events."
 							"<br/><br/>"
 							"version: %1<br/>"
+							"commit: %7<br/>"
 							"min. db version: %2<br/>"
 							"build: %3 %4<br/>"
 							"SSL build: %5<br/>"
@@ -214,6 +221,7 @@ void CorePlugin::aboutQuickEvent()
 					   .arg(__DATE__).arg(__TIME__)
 					   .arg(QSslSocket::sslLibraryBuildVersionString())
 					   .arg(QSslSocket::sslLibraryVersionString())
+					   .arg(commit_sha)
 					   );
 }
 
