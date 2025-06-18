@@ -152,7 +152,7 @@ void CorePlugin::onInstalled()
 		auto *a_help = fwk->menuBar()->actionForPath("help", true);
 		a_help->setText(tr("&Help"));
 		{
-			auto *a = new qfw::Action(tr("&About Quick event"));
+			auto *a = new qfw::Action(tr("&About Quick Event"));
 			connect(a, &qfw::Action::triggered, this, &CorePlugin::aboutQuickEvent);
 			a_help->addActionInto(a);
 		}
