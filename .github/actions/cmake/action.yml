@@ -53,7 +53,8 @@ runs:
 
     - name: Get Git SHA
       run: echo "COMMIT_SHA=${GITHUB_SHA}" >> $GITHUB_ENV
-    
+      shell: bash
+
     - name: Configure CMake
       run: |
         # Enable these when all warnings are fixed :^)
