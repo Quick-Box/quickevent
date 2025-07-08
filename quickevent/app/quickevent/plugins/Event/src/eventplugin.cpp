@@ -182,7 +182,7 @@ void EventPlugin::setCurrentStageId(int stage_id)
 	emit currentStageIdChanged(stage_id);
 }
 
-int EventPlugin::currentStageId()
+int EventPlugin::currentStageId() const
 {
 	return m_currentStageId;
 }
@@ -234,7 +234,7 @@ int EventPlugin::msecToStageStartAM(int si_am_time_sec, int msec, int stage_id)
 	if(stage_id == 0)
 		stage_id = currentStageId();
 	int stage_start_msec = stageStartMsec(stage_id);
-	int time_msec = quickevent::core::og::TimeMs::msecIntervalAM(stage_start_msec, si_am_time_sec * 1000 + msec);
+	int time_msec = quickevent::core::og::TimeMs::msecIntervalAM(stage_start_msec, (si_am_time_sec * 1000) + msec);
 	return time_msec;
 }
 
@@ -412,7 +412,7 @@ void EventPlugin::onInstalled()
 	}
 }
 
-void EventPlugin::updateWindowTitle()
+void EventPlugin::updateWindowTitle() const
 {
 	QString title = QStringLiteral("%1 E%2").arg(eventName()).arg(currentStageId());
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
@@ -1057,7 +1057,8 @@ void EventPlugin::setSqlServerConnected(bool ok)
 	}
 }
 
-static QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qfs::Connection &from_conn, qfs::Connection &to_conn)
+namespace {
+QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qfs::Connection &from_conn, qfs::Connection &to_conn)
 {
 	qfLogFuncFrame() << table_name;
 	qfInfo() << "Copying table:" << table_name;
@@ -1154,7 +1155,7 @@ static QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_
 	}
 	return QString();
 }
-
+}
 void EventPlugin::exportEvent_qbe()
 {
 	qfLogFuncFrame();

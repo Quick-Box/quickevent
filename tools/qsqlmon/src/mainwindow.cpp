@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 	//loadPersistentData();
 
-	QWidget *g = new QWidget(this);
+	auto *g = new QWidget(this);
 	//g->setMinimumSize(400, 400);
 	setCentralWidget(g);
 
@@ -92,7 +92,7 @@ void MainWindow::init()
 	szs << size.width()/3 << (size.width() - size.width()/3);
 	ui.splitter01->setSizes(szs);
 	*/
-	ServerTreeModel *model = new ServerTreeModel(this);
+	auto *model = new ServerTreeModel(this);
 	//qfDebug() << "MODEL" << qobject_cast<QFObjectItemModel*>(model) << model;
 	//model->dumpObjectInfo();
 	model->loadSettings();
@@ -127,8 +127,8 @@ void MainWindow::lazyInit()
 
 qf::core::model::SqlTableModel* MainWindow::queryViewModel()
 {
-	qf::core::model::TableModel *m1 = ui.queryView->tableView()->tableModel();
-	qf::core::model::SqlTableModel *m = qobject_cast<qf::core::model::SqlTableModel*>(m1);
+	auto *m1 = ui.queryView->tableView()->tableModel();
+	auto *m = qobject_cast<qf::core::model::SqlTableModel*>(m1);
 	qfDebug() << "model:" << m1 << m;
 	//QF_CHECK(m!=nullptr, "Model is NULL or not a kind of qf::core::model::SqlTableModel.");
 	return m;
@@ -182,7 +182,7 @@ qf::core::sql::Connection MainWindow::setActiveConnection1(const qf::core::sql::
 		foreach(QString s, c.connectOptions().split(';')) {
 			QString opt = "QF_CODEC_NAME";
 			QStringList sl = s.split('=');
-			if(sl.size() > 0 && sl[0].trimmed() == opt) {
+			if(!sl.isEmpty() && sl[0].trimmed() == opt) {
 				setStatusText("codec: " + sl[1], 1);
 			}
 		}
@@ -209,7 +209,7 @@ qf::core::sql::Connection MainWindow::setActiveConnection1(const qf::core::sql::
 	QObject *old_model = queryViewModel();
 	qfDebug() << "\t deletenig old model:" << old_model;
 	QF_SAFE_DELETE(old_model);
-	qf::core::model::SqlTableModel *m = new qf::core::model::SqlTableModel(this);
+	auto *m = new qf::core::model::SqlTableModel(this);
 	m->setConnectionName(c.connectionName());
 	qfDebug() << "\t new table model created:" << m;
 	setQueryViewModel(m);
@@ -267,7 +267,7 @@ qf::core::sql::Connection MainWindow::setActiveConnection1(const qf::core::sql::
 		{
 			QStringList sl = QFSqlSyntaxHighlighter::keyWords().values();
 			foreach(QString s, sl) {
-				QStandardItem *item = new QStandardItem(s);
+				auto *item = new QStandardItem(s);
 				root_item->appendRow(item);
 			}
 		}
@@ -283,7 +283,7 @@ qf::core::sql::Connection MainWindow::setActiveConnection1(const qf::core::sql::
 
 void MainWindow::setStatusText(const QString& s, int where)
 {
-	QFStatusBar *sb = qobject_cast<QFStatusBar*>(statusBar());
+	auto *sb = qobject_cast<QFStatusBar*>(statusBar());
 	if(sb) sb->setLabelText(where, s);
 }
 
@@ -593,9 +593,7 @@ bool MainWindow::execQuery(const QString& query_str)
 					is_select = true;
 					continue;
 				}
-				else {
-					appendInfo(tr("affected rows: %1").arg(q.numRowsAffected()));
-				}
+				appendInfo(tr("affected rows: %1").arg(q.numRowsAffected()));
 			}
 		}
 		break;
@@ -748,7 +746,7 @@ void MainWindow::setDbSearchPath(const QString &path)
 {
 	if(activeConnection().driverName().endsWith("MYSQL")) {
 		if(!path.isEmpty()) {
-			QFHttpMySqlDriver *http_proxy_driver = qobject_cast<QFHttpMySqlDriver*>(activeConnection().driver());
+			auto *http_proxy_driver = qobject_cast<QFHttpMySqlDriver*>(activeConnection().driver());
 			if(http_proxy_driver) {
 				http_proxy_driver->setCurrentDatabase(path);
 			}
@@ -777,22 +775,22 @@ void MainWindow::setDbSearchPath(const QString &path)
 
 void MainWindow::treeNodeExpanded(const QModelIndex &index)
 {
-	const ServerTreeModel *model = qobject_cast<const ServerTreeModel*>(index.model());
+	auto *model = qobject_cast<const ServerTreeModel*>(index.model());
 	QObject *o = model->index2object(index);
 	setDbSearchPath(QString());
 	if(o) do {
 		Ui::ServerTreeWidget &ui_srv = serverDock->ui;
 		ui_srv.treeServers->resizeColumnToContents(0);
-		if(Connection *c = qobject_cast<Connection*>(o)) {
+		if(auto *c = qobject_cast<Connection*>(o)) {
 			Q_UNUSED(c);
 			break;
 		}
-		if(Database *d = qobject_cast<Database*>(o)) {
+		if(auto *d = qobject_cast<Database*>(o)) {
 			// aktivni je to pripojeni, ktere bylo naposledy expandovano
 			setActiveConnection2(d);
 			break;
 		}
-		if(Schema *s = qobject_cast<Schema*>(o)) {
+		if(auto *s = qobject_cast<Schema*>(o)) {
 			Database *d = s->database();
 			setActiveConnection2(d);
 			setDbSearchPath(s->objectName());
@@ -805,13 +803,13 @@ void MainWindow::treeNodeCollapsed(const QModelIndex &index)
 {
 	// POZOR sem nedavat nic, co maze objekty, protoze QTreeView::rowsAboutToBeRemoved()
 	// vola tuhle funkci, takze jsem si to mazal pod prdeli
-	const ServerTreeModel *model = qobject_cast<const ServerTreeModel*>(index.model());
+	auto *model = qobject_cast<const ServerTreeModel*>(index.model());
 	QObject *o = model->index2object(index);
 	if(!o) return;
-	if(Connection *c = qobject_cast<Connection*>(o)) {
+	if(auto *c = qobject_cast<Connection*>(o)) {
 		Q_UNUSED(c);
 	}
-	else if(Database *d = qobject_cast<Database*>(o)) {
+	else if(auto *d = qobject_cast<Database*>(o)) {
 		Q_UNUSED(d);
 	}
 }
@@ -820,11 +818,11 @@ void MainWindow::treeNodeDoubleClicked(const QModelIndex &index)
 {
 	/// double click pripojuje/odpojuje
 	Ui::ServerTreeWidget &ui_srv = serverDock->ui;
-	const ServerTreeModel *model = qobject_cast<const ServerTreeModel*>(index.model());
+	auto *model = qobject_cast<const ServerTreeModel*>(index.model());
 	QObject *o = model->index2object(index);
 	if(o) {
 		//if(activeConnection.isOpen()) queryModel->clear();
-		if(Connection *c = qobject_cast<Connection*>(o)) {
+		if(auto *c = qobject_cast<Connection*>(o)) {
 			// pokud ma deti, je pripojen, tak at se odpoji
 			if(c->isOpen()) {
 				/// vymaz vsechny deti
@@ -842,7 +840,7 @@ void MainWindow::treeNodeDoubleClicked(const QModelIndex &index)
 				ui_srv.treeServers->setExpanded(ix, true);
 			}
 		}
-		else if(Database *d = qobject_cast<Database*>(o)) {
+		else if(auto *d = qobject_cast<Database*>(o)) {
 			if(d->isOpen()) {
 				d->close();
 				setActiveConnection1(qf::core::sql::Connection());
@@ -857,7 +855,7 @@ void MainWindow::treeNodeDoubleClicked(const QModelIndex &index)
 				//ui_srv.treeServers->setExpanded(index, true);
 			}
 		}
-		else if(Schema *s = qobject_cast<Schema*>(o)) {
+		else if(auto *s = qobject_cast<Schema*>(o)) {
 			Database *d = s->database();
 			Q_ASSERT(d != nullptr);
 			setActiveConnection2(d);
@@ -876,7 +874,7 @@ void MainWindow::treeNodeDoubleClicked(const QModelIndex &index)
 			}
 			ui_srv.treeServers->resizeColumnToContents(0);
 		}
-		else if(Table *t = qobject_cast<Table*>(o)) {
+		else if(auto *t = qobject_cast<Table*>(o)) {
 			Database *d = t->database();
 			Q_ASSERT(d != nullptr);
 			setActiveConnection2(d);
@@ -923,11 +921,11 @@ void MainWindow::treeServersContextMenuRequest(const QPoint& point)
 			menu.exec(ui_srv.treeServers->viewport()->mapToGlobal(point));
 		}
 		else {
-			ServerTreeModel *model = qobject_cast<ServerTreeModel*>(ui_srv.treeServers->model());
+			auto *model = qobject_cast<ServerTreeModel*>(ui_srv.treeServers->model());
 			Q_ASSERT(model != nullptr);
 			QObject *o = model->index2object(mi);
 			Q_ASSERT(o != nullptr);
-			if(Connection *connection = qobject_cast<Connection*>(o)) {
+			if(auto *connection = qobject_cast<Connection*>(o)) {
 				QMenu menu(this);
 				menu.setTitle(tr("Connection menu"));
 				menu.addAction(action("addServer"));
@@ -959,7 +957,7 @@ void MainWindow::treeServersContextMenuRequest(const QPoint& point)
 					}
 				}
 			}
-			else if(Database *d = qobject_cast<Database*>(o)) {
+			else if(auto *d = qobject_cast<Database*>(o)) {
 				QMenu menu(this);
 				menu.setTitle(tr("Database menu"));
 				QAction *actCreateTable = menu.addAction(tr("Create schema"));
@@ -983,7 +981,7 @@ void MainWindow::treeServersContextMenuRequest(const QPoint& point)
 					}
 				}
 			}
-			else if(Schema *current_schema = qobject_cast<Schema*>(o)) {
+			else if(auto *current_schema = qobject_cast<Schema*>(o)) {
 				Q_UNUSED(current_schema);
 				QMenu menu(this);
 				menu.setTitle(tr("Schema menu"));
@@ -1013,7 +1011,7 @@ void MainWindow::treeServersContextMenuRequest(const QPoint& point)
 							}
 							bool ok = execCommand(qs);
 							if(ok) {
-								Table *t = new Table(nullptr, s, QSql::Tables);
+								auto *t = new Table(nullptr, s, QSql::Tables);
 								model->append(t, mi);
 								ui_srv.treeServers->setExpanded(mi, false);
 								ui_srv.treeServers->setExpanded(mi, true);
@@ -1085,8 +1083,8 @@ void MainWindow::treeServersContextMenuRequest(const QPoint& point)
 					*/
 				}
 			}
-			else if(Table *table = qobject_cast<Table*>(o)) {
-				Schema *current_schema = qobject_cast<Schema*>(table->parent());
+			else if(auto *table = qobject_cast<Table*>(o)) {
+				auto *current_schema = qobject_cast<Schema*>(table->parent());
 				QF_ASSERT(current_schema != nullptr, "Parent schema is NULL", return);
 				QString full_table_name = current_schema->objectName() + '.' + table->objectName();
 
@@ -1118,7 +1116,7 @@ void MainWindow::treeServersContextMenuRequest(const QPoint& point)
 				if(!a) {
 					return;
 				}
-				else if(a == actDescribeTable) {
+				if(a == actDescribeTable) {
 					if(activeConnection().driverName().endsWith("SQLITE")) {
 						QString s = "PRAGMA table_info(%1)";
 						execQuery(s.arg(table->objectName()));
@@ -1202,14 +1200,14 @@ void MainWindow::treeServersContextMenuRequest(const QPoint& point)
 				}
 				else if(a == actColumnSelector) {
 					qf::core::sql::Connection conn = activeConnection();
-					ColumnSelectorWidget *w = new ColumnSelectorWidget(table->objectName(), conn);
+					auto *w = new ColumnSelectorWidget(table->objectName(), conn);
 					qf::qmlwidgets::dialogs::Dialog dlg(this);
 					dlg.setCentralWidget(w);
 					connect(w, SIGNAL(columnNamesCopiedToClipboard(QString)), sqlDock->sqlTextEdit(), SLOT(paste()));
 					if(dlg.exec() == QDialog::Accepted) {}
 				}
 				else if(a == actAlterTable) {
-					DlgAlterTable *dlg = new DlgAlterTable(this, table->parent()->objectName(), table->objectName());
+					auto *dlg = new DlgAlterTable(this, table->parent()->objectName(), table->objectName());
 					dlg->show();
 				}
 				else if(a == actRenameTable) {
@@ -1281,12 +1279,12 @@ void MainWindow::addServer(Connection *connection_to_copy)
 	//qf::qmlwidgets::dialogs::MessageBox::showError(this, "NIY");
 
 	Ui::ServerTreeWidget &ui_srv = serverDock->ui;
-	ServerTreeModel *model = qobject_cast<ServerTreeModel*>(ui_srv.treeServers->model());
+	auto *model = qobject_cast<ServerTreeModel*>(ui_srv.treeServers->model());
 	DlgEditConnection dlg(this);
 	if(connection_to_copy)
 		dlg.setParams(connection_to_copy->params());
 	if(dlg.exec() == QDialog::Accepted) {
-		Connection *c = new Connection(dlg.params());
+		auto *c = new Connection(dlg.params());
 		//theApp()->config()->dataDocument().cd("/servers").appendChild(c->m_params);
 		//theApp()->config()->setDataDirty(true);
 		model->append(c, QModelIndex());
@@ -1364,7 +1362,7 @@ void MainWindow::checkDrivers()
 
 void MainWindow::tearOffTable()
 {
-	QDialog *dlg = new QDialog();
+	auto *dlg = new QDialog();
 	dlg->setWindowFlags(windowFlags() | Qt::WindowMaximizeButtonHint);
 	tearOffDialogs << dlg;
 	dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -1381,7 +1379,7 @@ void MainWindow::tearOffTable()
 		//ui.queryView->setContextMenuPolicy();
 		connect(ui.queryView, &TableViewWidget::statusBarAction, this, &MainWindow::onTableStatusBarAction);
 		ly->addWidget(ui.queryView);
-		qf::core::model::SqlTableModel *m = new qf::core::model::SqlTableModel(ui.queryView);
+		auto *m = new qf::core::model::SqlTableModel(ui.queryView);
 		m->setConnectionName(activeConnection().connectionName());
 		setQueryViewModel(m);
 	}
@@ -1424,7 +1422,7 @@ void MainWindow::onTableStatusBarAction(const QString &_text)
 
 void MainWindow::setProgressValue(double val, const QString & label_text)
 {
-	QFStatusBar *sb = qobject_cast<QFStatusBar*>(statusBar());
+	auto *sb = qobject_cast<QFStatusBar*>(statusBar());
 	if(sb) sb->setProgressValue(val, label_text);
 }
 

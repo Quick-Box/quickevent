@@ -65,7 +65,7 @@ public:
 	int stageCount();
 
 	Q_SLOT void setCurrentStageId(int stage_id);
-	int currentStageId();
+	int currentStageId() const;
 	Q_SIGNAL void currentStageIdChanged(int current_stage);
 
 	Q_INVOKABLE int stageIdForRun(int run_id);
@@ -134,7 +134,7 @@ private:
 
 	void onRegistrationsDockVisibleChanged(bool on = true);
 
-	void updateWindowTitle();
+	void updateWindowTitle() const;
 	void reloadRegistrationsModel();
 
 	//bool runSqlScript(qf::core::sql::Query &q, const QStringList &sql_lines);
