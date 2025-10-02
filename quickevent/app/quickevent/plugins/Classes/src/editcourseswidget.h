@@ -15,7 +15,7 @@ class EditCoursesWidget : public qf::gui::framework::DialogWidget
 private:
 	typedef qf::gui::framework::DialogWidget Super;
 public:
-	explicit EditCoursesWidget(QWidget *parent = 0);
+	explicit EditCoursesWidget(int stage_id, QWidget *parent = 0);
 	~EditCoursesWidget() Q_DECL_OVERRIDE;
 
 	void editCourseCodes(const QModelIndex &ix);

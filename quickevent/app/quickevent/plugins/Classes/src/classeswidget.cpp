@@ -297,7 +297,8 @@ void ClassesWidget::settleDownInPartWidget(::PartWidget *part_widget)
 void ClassesWidget::edit_courses()
 {
 	qf::gui::dialogs::Dialog dlg(QDialogButtonBox::Close, this);
-	auto *w = new EditCoursesWidget();
+	int stage_id = selectedStageId();
+	auto *w = new EditCoursesWidget(stage_id);
 	dlg.setCentralWidget(w);
 	dlg.exec();
 	reload();

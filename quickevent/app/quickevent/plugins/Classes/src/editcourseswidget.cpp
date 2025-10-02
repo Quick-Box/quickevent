@@ -62,7 +62,7 @@ public:
 	}
 };
 
-EditCoursesWidget::EditCoursesWidget(QWidget *parent)
+EditCoursesWidget::EditCoursesWidget(int stage_id, QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::EditCoursesWidget)
 {
@@ -122,7 +122,7 @@ EditCoursesWidget::EditCoursesWidget(QWidget *parent)
 				.join("classdefs.classId", "classes.id")
 				.join("classes.id", "competitors.classId")
 				.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning")
-				.where("classdefs.stageId=runs.stageId")
+				.where("classdefs.stageId=" QF_IARG(stage_id))
 				.groupBy("courses.id")
 				.orderBy("courses.name");
 
