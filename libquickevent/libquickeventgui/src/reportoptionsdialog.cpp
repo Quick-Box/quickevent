@@ -44,14 +44,15 @@ ReportOptionsDialog::ReportOptionsDialog(QWidget *parent)
 
 	{
 		// fill start numbers from courses
+		// TODO: will work for single stage events only
 		ui->cbxStartNumber->addItem(QString("All"), 0);
-		QString query_str = "SELECT codes.code FROM codes ORDER BY id";
+		QString query_str = "SELECT code FROM codes ORDER BY id";
 		qf::core::sql::Query q;
 		q.exec(query_str, qf::core::Exception::Throw);
 		while (q.next()) {
 			auto code = q.value(0).toInt();
 			if(auto n = core::CodeDef::codeToStartNumber(code); n.has_value()) {
-				ui->cbxStartNumber->addItem(QString("Start %1").arg(n.value()),n.value());
+				ui->cbxStartNumber->addItem(QString("Start %1").arg(n.value()), n.value());
 			}
 		}
 	}
@@ -153,7 +154,7 @@ QString ReportOptionsDialog::getClassesForStartNumber(const int number, const in
 
 		QString query_str = "SELECT classes.name FROM classes, classdefs, coursecodes, codes"
 							" WHERE classdefs.classId = classes.id AND classdefs.courseId = coursecodes.courseId AND"
-							" coursecodes.position = 0 AND coursecodes.codeId = codes.id AND classdefs.stageId = %2 AND codes.code = %1";
+							" coursecodes.codeId = codes.id AND classdefs.stageId = %2 AND codes.code = %1";
 		qf::core::sql::Query q;
 		q.exec(query_str.arg(start_code).arg(stage_id), qf::core::Exception::Throw);
 		while (q.next()) {
@@ -169,7 +170,7 @@ QString ReportOptionsDialog::sqlWhereExpression(const ReportOptionsDialog::Optio
 {
 	QStringList conditions;
 	if (opts.startNumber() > 0) {
-		qf::core::String s = getClassesForStartNumber(opts.startNumber(),stage_id);
+		qf::core::String s = getClassesForStartNumber(opts.startNumber(), stage_id);
 		QStringList sl = s.splitAndTrim(',');
 		conditions << QString("classes.name IN('%2')").arg(sl.join("','"));
 	}
