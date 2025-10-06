@@ -23,11 +23,19 @@ void TableViewProxyModel::setRowFilterString(const QString &s)
 {
 	qfLogFuncFrame() << s;
 	QByteArray ba = qf::core::Collator::toAscii7(QLocale::Czech, s, true);
-	qfDebug() << ba;
-	if(ba == m_rowFilterString)
+	if(ba == m_rowFilterString) {
 		return;
+	}
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+	beginFilterChange();
+#endif
 	m_rowFilterString = ba;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+	endFilterChange(QSortFilterProxyModel::Direction::Rows);
+#else
 	invalidateFilter();
+#endif
+
 }
 
 QString TableViewProxyModel::rowFilterString() const

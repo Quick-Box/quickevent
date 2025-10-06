@@ -53,12 +53,26 @@ public:
 
 	}
 	void setThreshold(int level) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+		beginFilterChange();
+#endif
 		m_treshold = level;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+		endFilterChange(QSortFilterProxyModel::Direction::Rows);
+#else
 		invalidateFilter();
+#endif
 	}
 	void setFilterString(const QString &filter_string) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+		beginFilterChange();
+#endif
 		m_filterString = filter_string;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+		endFilterChange(QSortFilterProxyModel::Direction::Rows);
+#else
 		invalidateFilter();
+#endif
 	}
 	bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const Q_DECL_OVERRIDE;
 private:
