@@ -114,6 +114,7 @@ add_library(libqfgui SHARED
 
 qt6_add_translation(QM_FILES
 	libqfgui-cs_CZ.ts
+	libqfgui-sk_SK.ts
 	libqfgui-fr_FR.ts
 	libqfgui-nb_NO.ts
 	libqfgui-nl_BE.ts
@@ -124,6 +125,7 @@ qt6_add_translation(QM_FILES
 
 qt6_add_lupdate(libqfgui TS_FILES
 	libqfgui-cs_CZ.ts
+	libqfgui-sk_SK.ts
 	libqfgui-fr_FR.ts
 	libqfgui-nb_NO.ts
 	libqfgui-nl_BE.ts

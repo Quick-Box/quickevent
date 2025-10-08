@@ -3,6 +3,6 @@ lib/qml/qf  /usr/lib/${DEB_HOST_MULTIARCH}/qt5/lib/qml
 lib/libqfcore.so.1 /usr/lib/${DEB_HOST_MULTIARCH}/
 lib/libqfcore.so.1.0 /usr/lib/${DEB_HOST_MULTIARCH}/
 lib/libqfcore.so.1.0.0 /usr/lib/${DEB_HOST_MULTIARCH}/
-lib/libqfqmlwidgets.so.1 /usr/lib/${DEB_HOST_MULTIARCH}/
-lib/libqfqmlwidgets.so.1.0 /usr/lib/${DEB_HOST_MULTIARCH}/
-lib/libqfqmlwidgets.so.1.0.0 /usr/lib/${DEB_HOST_MULTIARCH}/
+lib/libqfgui.so.1 /usr/lib/${DEB_HOST_MULTIARCH}/
+lib/libqfgui.so.1.0 /usr/lib/${DEB_HOST_MULTIARCH}/
+lib/libqfgui.so.1.0.0 /usr/lib/${DEB_HOST_MULTIARCH}/

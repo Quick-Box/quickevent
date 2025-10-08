@@ -15,7 +15,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::ExportTableViewWidget</name>
+    <name>qf::gui::ExportTableViewWidget</name>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="14"/>
         <source>Form</source>
@@ -103,7 +103,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::HeaderView</name>
+    <name>qf::gui::HeaderView</name>
     <message>
         <location filename="src/headerview.cpp" line="65"/>
         <source>Resize section to contents</source>
@@ -131,7 +131,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::HtmlViewWidget</name>
+    <name>qf::gui::HtmlViewWidget</name>
     <message>
         <location filename="src/htmlviewwidget.ui" line="14"/>
         <source>Form</source>
@@ -139,7 +139,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::SaveOptionsWidget</name>
+    <name>qf::gui::SaveOptionsWidget</name>
     <message>
         <location filename="src/saveoptionswidget.ui" line="14"/>
         <source>Form</source>
@@ -153,7 +153,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::TableView</name>
+    <name>qf::gui::TableView</name>
     <message>
         <location filename="src/tableview.cpp" line="77"/>
         <source>Left click selects all, right click for menu.</source>
@@ -475,7 +475,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::TableViewToolBar</name>
+    <name>qf::gui::TableViewToolBar</name>
     <message>
         <location filename="src/tableviewtoolbar.cpp" line="67"/>
         <source>Filter</source>
@@ -483,7 +483,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::TextEditWidget</name>
+    <name>qf::gui::TextEditWidget</name>
     <message>
         <location filename="src/texteditwidget.ui" line="14"/>
         <source>Form</source>
@@ -552,7 +552,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::dialogs::Dialog</name>
+    <name>qf::gui::dialogs::Dialog</name>
     <message>
         <location filename="src/dialogs/dialog.cpp" line="137"/>
         <source>Delete</source>
@@ -565,7 +565,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::dialogs::MessageBox</name>
+    <name>qf::gui::dialogs::MessageBox</name>
     <message>
         <location filename="src/dialogs/messagebox.cpp" line="27"/>
         <source>Show this message again</source>
@@ -598,7 +598,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::dialogs::PreviewDialog</name>
+    <name>qf::gui::dialogs::PreviewDialog</name>
     <message>
         <location filename="src/dialogs/previewdialog.cpp" line="43"/>
         <location filename="src/dialogs/previewdialog.cpp" line="54"/>
@@ -612,7 +612,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::dialogs::internal::CaptionFrame</name>
+    <name>qf::gui::dialogs::internal::CaptionFrame</name>
     <message>
         <location filename="src/dialogs/internal/captionframe.cpp" line="110"/>
         <source>Delete </source>
@@ -625,7 +625,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::framework::DialogWidget</name>
+    <name>qf::gui::framework::DialogWidget</name>
     <message>
         <location filename="src/framework/dialogwidget.cpp" line="50"/>
         <source>Cannot find action name &apos;%1&apos;</source>
@@ -633,7 +633,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::framework::LogWidget</name>
+    <name>qf::gui::framework::LogWidget</name>
     <message>
         <location filename="src/framework/logwidget.ui" line="14"/>
         <source>Form</source>
@@ -691,7 +691,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::framework::LogWidgetTableView</name>
+    <name>qf::gui::framework::LogWidgetTableView</name>
     <message>
         <location filename="src/framework/logwidget.cpp" line="32"/>
         <source>Copy</source>
@@ -705,7 +705,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::framework::MainWindow</name>
+    <name>qf::gui::framework::MainWindow</name>
     <message>
         <location filename="src/framework/mainwindow.cpp" line="301"/>
         <source>Plugin for feature id: &apos;%1&apos; is not installed!</source>
@@ -713,7 +713,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::framework::PartSwitch</name>
+    <name>qf::gui::framework::PartSwitch</name>
     <message>
         <location filename="src/framework/partswitch.cpp" line="33"/>
         <source>Part switch</source>
@@ -721,7 +721,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::internal::DlgTableViewCopySpecial</name>
+    <name>qf::gui::internal::DlgTableViewCopySpecial</name>
     <message>
         <location filename="src/internal/dlgtableviewcopyspecial.ui" line="14"/>
         <source>Dialog</source>
@@ -785,7 +785,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::internal::TableViewChooseColumnsWidget</name>
+    <name>qf::gui::internal::TableViewChooseColumnsWidget</name>
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="14"/>
         <source>Form</source>
@@ -865,7 +865,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::internal::TableViewCopyToDialogWidget</name>
+    <name>qf::gui::internal::TableViewCopyToDialogWidget</name>
     <message>
         <location filename="src/internal/tableviewcopytodialogwidget.ui" line="14"/>
         <source>Form</source>
@@ -878,7 +878,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::reports::ItemValueEditorWidget</name>
+    <name>qf::gui::reports::ItemValueEditorWidget</name>
     <message>
         <location filename="src/reports/widgets/itemvalueeditorwidget.ui" line="14"/>
         <source>Form</source>
@@ -891,7 +891,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::reports::PrintTableViewWidget</name>
+    <name>qf::gui::reports::PrintTableViewWidget</name>
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.ui" line="14"/>
         <source>Form</source>
@@ -964,7 +964,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::reports::ReportProcessor</name>
+    <name>qf::gui::reports::ReportProcessor</name>
     <message>
         <location filename="src/reports/processor/reportprocessor.cpp" line="70"/>
         <source>QML component</source>
@@ -972,7 +972,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::reports::ReportViewWidget</name>
+    <name>qf::gui::reports::ReportViewWidget</name>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="523"/>
         <source>&amp;File</source>
@@ -1079,7 +1079,7 @@
     </message>
 </context>
 <context>
-    <name>qf::qmlwidgets::reports::ReportViewWidget::PainterWidget</name>
+    <name>qf::gui::reports::ReportViewWidget::PainterWidget</name>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="298"/>
         <source>Item menu</source>

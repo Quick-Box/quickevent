@@ -1,4 +1,4 @@
 <RCC>
-    <qresource prefix="/qf/qmlwidgets/reports">
+    <qresource prefix="/qf/gui/reports">
     </qresource>
 </RCC>
