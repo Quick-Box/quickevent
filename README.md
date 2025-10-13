@@ -28,7 +28,7 @@ The QuickBox is built upon the Qt framework, targeted for Linux and Windows and 
 * results print and export (PDF | [IOF XML](https://github.com/international-orienteering-federation/datastandard-v3))
 * export results for Liveresultat and Emma client
 * [Weblate localization](https://hosted.weblate.org/projects/quickbox/) - thanks to Michal Cihar and https://weblate.org/ for free localization hosting
-* integration with [ORIS](https://oris.orientacnisporty.cz/) - Czech orienteering federation information system
+* integration with [ORIS](https://oris.ceskyorientak.cz/) - Czech orienteering federation information system
   * import events
   * sync entries
   * import clubs and registrations

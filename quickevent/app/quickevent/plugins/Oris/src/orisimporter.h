@@ -16,6 +16,8 @@ class OrisImporter : public QObject
 public:
 	explicit OrisImporter(QObject *parent = nullptr);
 
+	static QString orisDomainName();
+
 	void chooseAndImport();
 	void importEvent(int event_id, std::function<void()> success_callback = nullptr);
 	void syncCurrentEventEntries(std::function<void()> success_callback = nullptr);
