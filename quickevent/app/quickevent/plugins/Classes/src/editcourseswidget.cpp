@@ -2,7 +2,11 @@
 #include "editcourseswidget.h"
 #include "ui_editcourseswidget.h"
 
+#include "../../Event/src/eventplugin.h"
+
 #include <quickevent/core/codedef.h>
+
+#include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/model/sqltablemodel.h>
 #include <qf/core/sql/connection.h>
 #include <qf/gui/dialogs/dialog.h>
@@ -10,6 +14,7 @@
 
 #include <QPushButton>
 
+using qf::gui::framework::getPlugin;
 namespace qfw = qf::gui;
 namespace qfm = qf::gui::model;
 namespace qfs = qf::core::sql;
@@ -113,18 +118,27 @@ EditCoursesWidget::EditCoursesWidget(int stage_id, QWidget *parent)
 		}
 
 		qfs::QueryBuilder qb;
-		qb.select2("courses", "*")
-				.select("COUNT(runs.id) AS run_count")
-				.select(code_list_query + "AS code_list")
-				.select(qb_code_count.toString())
-				.from("courses")
-				.join("courses.id", "classdefs.courseId", qf::core::sql::QueryBuilder::INNER_JOIN)
-				.join("classdefs.classId", "classes.id")
-				.join("classes.id", "competitors.classId")
-				.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning")
-				.where("classdefs.stageId=" QF_IARG(stage_id))
-				.groupBy("courses.id")
-				.orderBy("courses.name");
+		if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+			qb.select2("courses", "*")
+					.select("0 AS run_count")
+					.select(code_list_query + "AS code_list")
+					.select(qb_code_count.toString())
+					.from("courses")
+					.orderBy("courses.name");
+		} else {
+			qb.select2("courses", "*")
+					.select("COUNT(runs.id) AS run_count")
+					.select(code_list_query + "AS code_list")
+					.select(qb_code_count.toString())
+					.from("courses")
+					.join("courses.id", "classdefs.courseId", qf::core::sql::QueryBuilder::INNER_JOIN)
+					.join("classdefs.classId", "classes.id")
+					.join("classes.id", "competitors.classId")
+					.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning")
+					.where("classdefs.stageId=" QF_IARG(stage_id))
+					.groupBy("courses.id")
+					.orderBy("courses.name");
+		}
 
 		m_coursesModel->setQueryBuilder(qb, false);
 		m_coursesModel->reload();
