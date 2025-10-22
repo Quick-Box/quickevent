@@ -84,15 +84,24 @@ QVariant SqlTableModel::editValueToRaw(int column_index, const QVariant &val) co
 #endif
 	}
 	else if(type == qMetaTypeId<core::si::SiId>()) {
-		auto id = (int)val.value<core::si::SiId>();
-		if(id == 0)
+		int siid = 0;
+		if (val.userType() == qMetaTypeId<QString>()) {
+			siid = val.toString().toInt();
+		}
+		else if (val.userType() == qMetaTypeId<core::si::SiId>()) {
+			siid = (int)val.value<core::si::SiId>();
+		}
+		else {
+			siid = val.toInt();
+		}
+		if(siid == 0)
 #if QT_VERSION_MAJOR >= 6
 			ret = QVariant(QMetaType(QMetaType::Int));
 #else
 			ret = QVariant(QVariant::Int);
 #endif
 		else
-			ret = id;
+			ret = siid;
 	}
 	//qfInfo() << val << ret;
 	return ret;
