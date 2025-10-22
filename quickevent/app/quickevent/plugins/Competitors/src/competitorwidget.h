@@ -22,10 +22,11 @@ public:
 	bool load(const QVariant &id = QVariant(), int mode = qf::gui::model::DataDocument::ModeEdit) override;
 	void loadFromRegistrations(int siid);
 	void save();
-private slots:
+
+	std::optional<int> runId(int stage_id) const;
+private:
 	void onRegistrationSelected(const QVariantMap &values);
 	void onSwitchNames();
-private:
 	bool loadRunsTable();
 	bool saveRunsTable();
 	// void onRunsTableCustomContextMenuRequest(const QPoint &pos);

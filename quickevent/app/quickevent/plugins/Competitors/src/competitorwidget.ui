@@ -284,6 +284,13 @@
         </item>
        </layout>
       </item>
+      <item row="6" column="3">
+       <widget class="QPushButton" name="btCreateRuns">
+        <property name="text">
+         <string>Create runs</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

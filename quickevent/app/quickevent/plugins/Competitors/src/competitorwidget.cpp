@@ -49,7 +49,8 @@ public:
 	CompetitorRunsModel(QObject *parent = nullptr);
 
 	enum Columns {
-		col_runs_isRunning = 0,
+		col_runs_id = 0,
+		col_runs_isRunning,
 		col_runs_stageId,
 		col_classes_name,
 		col_relays_name,
@@ -134,6 +135,7 @@ CompetitorRunsModel::CompetitorRunsModel(QObject *parent)
 	: Super(parent)
 {
 	clearColumns(col_COUNT);
+	setColumn(col_runs_id, ColumnDefinition("runs.id", tr("Id", "runs.id")).setToolTip(tr("Run Id")).setReadOnly(true));
 	setColumn(col_runs_isRunning, ColumnDefinition("runs.isRunning", tr("Running", "runs.isRunning")).setToolTip(tr("Is running")));
 	setColumn(col_runs_stageId, ColumnDefinition("runs.stageId", tr("Stage")).setReadOnly(true));
 	setColumn(col_relays_name, ColumnDefinition("relayName", tr("Relay")).setReadOnly(true));
@@ -176,6 +178,7 @@ CompetitorWidget::CompetitorWidget(QWidget *parent) :
 
 	connect(ui->edFind, &FindRegistrationEdit::registrationSelected, this, &CompetitorWidget::onRegistrationSelected);
 	connect(ui->btnSwitchNames, &QPushButton::clicked, this, &CompetitorWidget::onSwitchNames);
+	connect(ui->btCreateRuns, &QPushButton::clicked, this, &CompetitorWidget::save);
 
 	dataController()->setDocument(new Competitors::CompetitorDocument(this));
 	m_runsModel = new CompetitorRunsModel(this);
@@ -220,7 +223,7 @@ CompetitorWidget::CompetitorWidget(QWidget *parent) :
 					items << quickevent::core::og::TimeMs(t).toString();
 				}
 				bool ok;
-				auto item = QInputDialog::getItem(this, tr("Quick Event get start time"),
+				auto item = QInputDialog::getItem(this, tr("Select competitor's start time"),
 													 tr("New start time:"), items, 0, false, &ok);
 				if (ok && !item.isEmpty()) {
 					auto ix = items.indexOf(item);
@@ -312,14 +315,16 @@ void CompetitorWidget::onRunsTableCustomContextMenuRequest(const QPoint &pos)
 bool CompetitorWidget::load(const QVariant &id, int mode)
 {
 	ui->chkFind->setChecked(mode == qf::gui::model::DataDocument::ModeInsert);
+	ui->btCreateRuns->setVisible(mode == qf::gui::model::DataDocument::ModeInsert);
 	if(mode == qf::gui::model::DataDocument::ModeInsert) {
 		ui->edFind->setFocus();
 	}
 	else if(mode == qf::gui::model::DataDocument::ModeView || mode == qf::gui::model::DataDocument::ModeDelete) {
 		ui->frmFind->hide();
 	}
-	if(Super::load(id, mode))
+	if(Super::load(id, mode)) {
 		return loadRunsTable();
+	}
 	return false;
 }
 
@@ -520,6 +525,16 @@ void CompetitorWidget::save()
 {
 	saveData();
 	loadRunsTable();
+}
+
+std::optional<int> CompetitorWidget::runId(int stage_id) const
+{
+	for (auto i = 0; i < m_runsModel->rowCount(); ++i) {
+		if (m_runsModel->value(i, CompetitorRunsModel::col_runs_stageId).toInt() == stage_id) {
+			return m_runsModel->value(i, CompetitorRunsModel::col_runs_id).toInt();
+		}
+	}
+	return {};
 }
 
 bool CompetitorWidget::saveData()
