@@ -285,7 +285,7 @@ void RelaysWidget::editRelays(int mode)
 			qfs::Transaction transaction;
 			int n = 0;
 			for(int ix : sel_rows) {
-				int id = ui->tblRelays->tableRow(ix).value(ui->tblRelays->idColumnName()).toInt();
+				int id = ui->tblRelays->tableRow(ix).value(ui->tblRelays->tableModel()->idColumnName()).toInt();
 				if(id > 0) {
 					Relays:: RelayDocument doc;
 					doc.load(id, qfm::DataDocument::ModeDelete);

@@ -290,7 +290,7 @@ void RunsTableWidget::onCustomContextMenuRequest(const QPoint &pos)
 				QList<int> rows = ui->tblRuns->selectedRowsIndexes();
 				for(int ix : rows) {
 					qf::core::utils::TableRow row = ui->tblRuns->tableRow(ix);
-					int id = row.value(ui->tblRuns->idColumnName()).toInt();
+					int id = row.value(ui->tblRuns->tableModel()->idColumnName()).toInt();
 					q.bindValue(QStringLiteral(":offset"), offset_msec);
 					q.bindValue(QStringLiteral(":id"), id);
 					//qfInfo() << id << "->" << offset_msec;
@@ -312,7 +312,7 @@ void RunsTableWidget::onCustomContextMenuRequest(const QPoint &pos)
 			QList<int> rows = ui->tblRuns->selectedRowsIndexes();
 			for(int ix : rows) {
 				qf::core::utils::TableRow row = ui->tblRuns->tableRow(ix);
-				int id = row.value(ui->tblRuns->idColumnName()).toInt();
+				int id = row.value(ui->tblRuns->tableModel()->idColumnName()).toInt();
 				q.bindValue(QStringLiteral(":id"), id);
 				//qfInfo() << id << "->" << offset_msec;
 				q.exec(qf::core::Exception::Throw);
