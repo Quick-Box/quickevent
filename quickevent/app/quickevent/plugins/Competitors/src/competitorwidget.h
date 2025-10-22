@@ -22,8 +22,6 @@ public:
 	bool load(const QVariant &id = QVariant(), int mode = qf::gui::model::DataDocument::ModeEdit) override;
 	void loadFromRegistrations(int siid);
 	void save();
-
-	std::optional<int> runId(int stage_id) const;
 private:
 	void onRegistrationSelected(const QVariantMap &values);
 	void onSwitchNames();
@@ -31,6 +29,8 @@ private:
 	bool saveRunsTable();
 	// void onRunsTableCustomContextMenuRequest(const QPoint &pos);
 	bool saveData() override;
+
+	bool acceptDialogDone(int result) override;
 
 	QString guessClassFromRegistration(const QString &registration);
 

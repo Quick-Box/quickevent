@@ -585,14 +585,15 @@ void TableView::paste()
 			int origin_view_row = origin_ix.row();
 			bool insert_rows = w->isInsert();
 			int dest_row = toTableModelRowNo(origin_view_row);
-			for(int src_row=0; src_row<src_tm->rowCount(); src_row++) {
+			for(int src_row = 0; src_row < src_tm->rowCount(); src_row++) {
 				if(insert_rows) {
 					qfDebug() << "insert row:" << dest_row << "model row count:" << dest_tm->rowCount();
 					dest_tm->insertRow(++dest_row);
 				}
 				else {
-					if((origin_view_row + src_row) >= dest_tm->rowCount())
+					if((origin_view_row + src_row) >= dest_tm->rowCount()) {
 						break;
+					}
 					dest_row = toTableModelRowNo(origin_view_row + src_row);
 				}
 				int dest_col = origin_ix.column();
@@ -1119,9 +1120,9 @@ QList<int> TableView::selectedColumnsIndexes() const
 	return ret;
 }
 
-void TableView::rowExternallySaved(const QVariant &id, int mode)
+void TableView::rowExternallySaved(const QVariant &id)
 {
-	qfLogFuncFrame() << "id:" << id.toString() << "mode:" << mode;
+	qfLogFuncFrame() << "id:" << id.toString();
 	auto table_model = qobject_cast<qf::gui::model::SqlTableModel*>(tableModel());
 	if (!table_model) {
 		qfWarning() << "Not SqlTableModel.";

@@ -29,6 +29,23 @@ CompetitorDocument::CompetitorDocument(QObject *parent)
 	setQueryBuilder(qb);
 }
 
+bool CompetitorDocument::loadData()
+{
+	m_runsIds.clear();
+	if (Super::loadData()) {
+		if (auto competitor_id = dataId().toInt(); competitor_id > 0) {
+			qf::core::sql::Query q(sqlModel()->connectionName());
+			q.exec(QStringLiteral("SELECT id FROM runs WHERE competitorId = %1 ORDER BY stageId").arg(competitor_id));
+			while(q.next()) {
+				int run_id = q.value(0).toInt();
+				m_runsIds << run_id;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
 bool CompetitorDocument::saveData()
 {
 	qfLogFuncFrame();
@@ -57,18 +74,18 @@ bool CompetitorDocument::saveData()
 			int stage_count = getPlugin<EventPlugin>()->stageCount();
 			qf::core::sql::Query q(sqlModel()->connectionName());
 			q.prepare("INSERT INTO runs (competitorId, stageId, siId) VALUES (:competitorId, :stageId, :siId)");
-			m_lastInsertedRunsIds.clear();
-			for(int i=0; i<stage_count; i++) {
+			m_runsIds.clear();
+			for(int i = 0; i < stage_count; i++) {
 				q.bindValue(":competitorId", competitor_id);
 				q.bindValue(":stageId", i + 1);
 				if(siid_dirty)
 					q.bindValue(":siId", siid());
 				q.exec(qf::core::Exception::Throw);
-				m_lastInsertedRunsIds << q.lastInsertId().toInt();
+				m_runsIds << q.lastInsertId().toInt();
 			}
 			if(m_isEmitDbEventsOnSave) {
 				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_COUNTS_CHANGED);
-				for (auto run_id : m_lastInsertedRunsIds) {
+				for (auto run_id : m_runsIds) {
 					auto rec = runs_plugin->runsRecord(run_id);
 					getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, rec});
 				}
@@ -167,4 +184,5 @@ QVariant CompetitorDocument::siid() const
 {
 	return value(SIID);
 }
+
 

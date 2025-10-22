@@ -527,16 +527,6 @@ void CompetitorWidget::save()
 	loadRunsTable();
 }
 
-std::optional<int> CompetitorWidget::runId(int stage_id) const
-{
-	for (auto i = 0; i < m_runsModel->rowCount(); ++i) {
-		if (m_runsModel->value(i, CompetitorRunsModel::col_runs_stageId).toInt() == stage_id) {
-			return m_runsModel->value(i, CompetitorRunsModel::col_runs_id).toInt();
-		}
-	}
-	return {};
-}
-
 bool CompetitorWidget::saveData()
 {
 	try {
@@ -546,13 +536,28 @@ bool CompetitorWidget::saveData()
 			qf::gui::dialogs::MessageBox::showWarning(this, tr("Class should be entered."));
 			return false;
 		}
-		if(Super::saveData())
+		if(Super::saveData()) {
 			return saveRunsTable();
+		}
 	}
 	catch (const qf::core::Exception &e) {
 		QMessageBox::warning(this, tr("SQL error"), e.message());
 	}
 	return false;
+}
+
+bool CompetitorWidget::acceptDialogDone(int result)
+{
+	if (result == QDialog::Accepted) {
+		auto *doc = qobject_cast<Competitors::CompetitorDocument*>(dataController()->document());
+		if (doc->mode() != Competitors::CompetitorDocument::ModeDelete) {
+			if (doc->value("classId").toInt() == 0) {
+				QMessageBox::information(this, tr("Competitor form check"), tr("Class must be set."));
+				return false;
+			}
+		}
+	}
+	return Super::acceptDialogDone(result);
 }
 
 void CompetitorWidget::onSwitchNames()

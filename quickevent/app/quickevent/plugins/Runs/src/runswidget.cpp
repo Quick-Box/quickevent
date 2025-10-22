@@ -1050,7 +1050,7 @@ void RunsWidget::editCompetitors(int mode)
 			qfs::Transaction transaction;
 			int n = 0;
 			for(int ix : sel_rows) {
-				int id = tv->tableRow(ix).value(tv->tableModel()->idColumnName()).toInt();
+				int id = tv->tableRow(ix).value("competitors.id").toInt();
 				if(id > 0) {
 					Competitors::CompetitorDocument doc;
 					doc.load(id, qfm::DataDocument::ModeDelete);
@@ -1180,9 +1180,9 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 				w->loadFromRegistrations(siid);
 			}
 		}
-		connect(doc, &Competitors::CompetitorDocument::saved, this, [this, w](const QVariant &, int mode) {
-			if (auto run_id = w->runId(selectedStageId()); run_id.has_value()) {
-				ui->wRunsTableWidget->tableView()->rowExternallySaved(run_id.value(), mode);
+		connect(doc, &Competitors::CompetitorDocument::saved, this, [this, doc]() {
+			if (auto run_id = doc->runsIds().value(selectedStageId() - 1); run_id > 0) {
+				ui->wRunsTableWidget->tableView()->rowExternallySaved(run_id);
 			}
 		});
 		ok = dlg.exec();
