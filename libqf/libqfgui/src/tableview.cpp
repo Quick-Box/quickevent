@@ -1171,7 +1171,7 @@ void TableView::rowExternallySaved(const QVariant &id)
 			table_model->insertRow(curr_row);
 			table_model->setValue(curr_row, tableModel()->idColumnName(), id);
 			table_model->reloadRow(curr_row);
-			new_ix = table_model->index(curr_row, curr_col);
+			new_ix = table_model->index(curr_row, curr_col >= 0? curr_col: 0);
 			setCurrentIndex(m_proxyModel->mapFromSource(new_ix));
 		}
 		else if (row_with_id_index && !row_exists_in_db) {
