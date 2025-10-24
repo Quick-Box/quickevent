@@ -138,7 +138,7 @@ void AddLegDialogWidget::onRegistrationSelected()
 	doc.setValue("siid", row.value("siid"));
 	doc.setValue("classId", classId());
 	doc.save();
-	int run_id = doc.lastInsertedRunsIds().value(0);
+	int run_id = doc.runsIds().value(0);
 	QF_ASSERT(run_id > 0, "Bad insert", return);
 	int free_leg = findFreeLeg();
 	qf::core::sql::Query q;
@@ -197,7 +197,7 @@ void AddLegDialogWidget::onUnregistredRunnerAdded()
 	doc.setValue("classId", classId());
 	doc.save();
 	QString name = lastName + " " + firstName;
-	int run_id = doc.lastInsertedRunsIds().value(0);
+	int run_id = doc.runsIds().value(0);
 	QF_ASSERT(run_id > 0, "Bad insert", return);
 	int free_leg = findFreeLeg();
 	qf::core::sql::Query q;

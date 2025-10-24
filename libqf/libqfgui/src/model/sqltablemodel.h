@@ -50,6 +50,7 @@ public:
 	void revertRow(int row_no) Q_DECL_OVERRIDE;
 	int reloadRow(int row_no) Q_DECL_OVERRIDE;
 	int reloadInserts(const QString &id_column_name) Q_DECL_OVERRIDE;
+	QString reloadRowQuery(const QVariant &record_id);
 public:
 	void setQueryBuilder(const qf::core::sql::QueryBuilder &qb, bool clear_columns = false);
 	const qf::core::sql::QueryBuilder& queryBuilder() const;

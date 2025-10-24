@@ -113,8 +113,9 @@ void Dialog::done(int result)
 	if(dw) {
 		ok = dw->acceptDialogDone(result);
 	}
-	if(ok)
+	if(ok) {
 		Super::done(result);
+	}
 	/*
 	QVariant ok = true;
 	QMetaObject::invokeMethod(this, "doneRequest_qml",

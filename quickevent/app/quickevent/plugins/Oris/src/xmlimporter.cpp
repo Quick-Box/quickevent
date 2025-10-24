@@ -370,7 +370,7 @@ bool XmlImporter::importEntries(QXmlStreamReader &reader, const XmlCreators crea
 					if (!doc.save())
 						continue;
 					items_processed++;
-					int run_id = doc.lastInsertedRunsIds().first();
+					int run_id = doc.runsIds().first();
 					q.execThrow("UPDATE runs SET"
 								" relayId=" + QString::number(relay_id) + ","
 								" leg=" + QString::number(leg.first) + ","

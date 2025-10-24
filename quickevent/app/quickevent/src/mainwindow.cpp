@@ -67,11 +67,11 @@ void MainWindow::loadPlugins()
 	// 	registerPlugin(plugin);
 	// }
 	{
-		auto *plugin = new Runs::RunsPlugin(this);
+		auto *plugin = new Classes::ClassesPlugin(this);
 		registerPlugin(plugin);
 	}
 	{
-		auto *plugin = new Classes::ClassesPlugin(this);
+		auto *plugin = new Runs::RunsPlugin(this);
 		registerPlugin(plugin);
 	}
 	{

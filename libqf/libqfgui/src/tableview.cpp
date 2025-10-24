@@ -24,6 +24,7 @@
 #include <qf/core/collator.h>
 #include <qf/core/assert.h>
 #include <qf/core/exception.h>
+#include <qf/core/sql/query.h>
 #include <qf/gui/model/sqltablemodel.h>
 #include <qf/gui/model/tablemodel.h>
 #include <qf/core/utils/treetable.h>
@@ -413,7 +414,7 @@ void TableView::cloneRow()
 		cloneRowInline();
 	}
 	else {
-		QVariant id = selectedRow().value(idColumnName());
+		QVariant id = selectedRow().value(tableModel()->idColumnName());
 		qfDebug() << "\t emit editRowInExternalEditor(ModeCopy)";
 		emit editRowInExternalEditor(id, ModeCopy);
 		emit editSelectedRowsInExternalEditor(ModeCopy);
@@ -431,7 +432,7 @@ void TableView::removeSelectedRows()
 		else {
 			QList<int> sel_rows = selectedRowsIndexes();
 			if(sel_rows.count() == 1) {
-				QVariant id = tableRow(sel_rows.value(0)).value(idColumnName());
+				QVariant id = tableRow(sel_rows.value(0)).value(tableModel()->idColumnName());
 				if(id.isValid())
 					emit editRowInExternalEditor(id, ModeDelete);
 			}
@@ -584,14 +585,15 @@ void TableView::paste()
 			int origin_view_row = origin_ix.row();
 			bool insert_rows = w->isInsert();
 			int dest_row = toTableModelRowNo(origin_view_row);
-			for(int src_row=0; src_row<src_tm->rowCount(); src_row++) {
+			for(int src_row = 0; src_row < src_tm->rowCount(); src_row++) {
 				if(insert_rows) {
 					qfDebug() << "insert row:" << dest_row << "model row count:" << dest_tm->rowCount();
 					dest_tm->insertRow(++dest_row);
 				}
 				else {
-					if((origin_view_row + src_row) >= dest_tm->rowCount())
+					if((origin_view_row + src_row) >= dest_tm->rowCount()) {
 						break;
+					}
 					dest_row = toTableModelRowNo(origin_view_row + src_row);
 				}
 				int dest_col = origin_ix.column();
@@ -1118,122 +1120,78 @@ QList<int> TableView::selectedColumnsIndexes() const
 	return ret;
 }
 
-void TableView::rowExternallySaved(const QVariant &id, int mode)
+void TableView::rowExternallySaved(const QVariant &id)
 {
-	qfLogFuncFrame() << "id:" << id.toString() << "mode:" << mode;
-	qfm::TableModel *tmd = tableModel();
-	if(tmd) {
-		if(mode == ModeInsert || mode == ModeCopy) {
-			/// ModeInsert or ModeCopy
-			qfDebug() << "\t ModeInsert or ModeCopy";
-			//qfDebug() << "\tri:" << ri;
-			//qfDebug() << "\tmodel->rowCount():" << ri;
-			QModelIndex curr_ix = currentIndex();
-			int ri = curr_ix.row() + 1;
-			if(ri >= 0 && ri < model()->rowCount())
-				ri = toTableModelRowNo(ri);
-			else
-				ri = tmd->rowCount();
-			ri = std::min(ri, tmd->rowCount());
-			qfDebug() << "\tri:" << ri;
-			if(ri < 0) {
-				qfWarning() << "Invalid row number:" << ri;
-				ri = 0;
+	qfLogFuncFrame() << "id:" << id.toString();
+	auto table_model = qobject_cast<qf::gui::model::SqlTableModel*>(tableModel());
+	if (!table_model) {
+		qfWarning() << "Not SqlTableModel.";
+		return;
+	}
+	if(table_model) {
+		std::optional<int> row_with_id_index;
+		for(int ri = 0; ri < table_model->rowCount(); ri++) {
+			auto v = table_model->value(ri, tableModel()->idColumnName());
+			//qfDebug() << "\t row" << ri << "id:" << v.toString();
+			if(v == id) {
+				row_with_id_index = ri;
+				break;
 			}
-			tmd->insertRow(ri);
-			tmd->setValue(ri, idColumnName(), id);
-			//qfu::TableRow &row_ref = tmd->table().rowRef(ri);
-			//row_ref.setValue(idColumnName(), id);
-			//row_ref.setInsert(false);
-			int reloaded_row_cnt = tmd->reloadRow(ri);
-			if(reloaded_row_cnt == 0) {
-				//inserted row cannot be reloaded, it can happen if it doesn't meet WHERE contition of query
-				// remove just inserted row from table
-				qfWarning() << "Inserted/Copied row id:" << id.toString() << "cannot be reloaded, it will be deleted in table.";
-				tmd->qfm::TableModel::removeRowNoOverload(ri, !qf::core::Exception::Throw);
-				return;
+		}
+		auto query_str = table_model->reloadRowQuery(id);
+		if (query_str.isEmpty()) {
+			return;
+		}
+		qf::core::sql::Query q;
+		bool ok = q.exec(query_str);
+		if (!ok) {
+			qfInfo() << "Query:" << query_str;
+			qfWarning() << "SQL error:" << q.lastErrorText();
+			return;
+		}
+		int row_cnt = 0;
+		while (q.next()) {
+			row_cnt++;
+		}
+		if (row_cnt > 1) {
+			qfWarning() << "More rows returned for id:" << id;
+			return;
+		}
+		auto row_exists_in_db = row_cnt == 1;
+
+		auto curr_col = currentIndex().column();
+		auto curr_row = std::max(0, toTableModelRowNo(currentIndex().row()));
+		QModelIndex new_ix;
+		if (row_with_id_index && row_exists_in_db) {
+			// edit
+			table_model->reloadRow(row_with_id_index.value());
+		}
+		else if (!row_with_id_index && row_exists_in_db) {
+			// insert
+			table_model->insertRow(curr_row);
+			table_model->setValue(curr_row, tableModel()->idColumnName(), id);
+			table_model->reloadRow(curr_row);
+			new_ix = table_model->index(curr_row, curr_col >= 0? curr_col: 0);
+			setCurrentIndex(m_proxyModel->mapFromSource(new_ix));
+		}
+		else if (row_with_id_index && !row_exists_in_db) {
+			// delete
+			table_model->qfm::TableModel::removeRowNoOverload(row_with_id_index.value(), !qf::core::Exception::Throw);
+			auto row = currentIndex().row();
+			if (row >= model()->rowCount()) {
+				row = model()->rowCount() - 1;
 			}
-			if(reloaded_row_cnt != 1) {
-				qfWarning() << "Inserted/Copied row id:" << id.toString() << "reloaded in" << reloaded_row_cnt << "instances.";
-				return;
-			}
-			if(curr_ix.isValid()) {
-				updateRow(curr_ix.row());
-				setCurrentIndex(curr_ix.sibling(ri, curr_ix.column()));
-			}
-			else {
-				setCurrentIndex(model()->index(ri, 0, QModelIndex()));
-			}
-			updateRow(currentIndex().row());
+			setCurrentIndex(model()->index(row, curr_col));
 		}
 		else {
-			/// find row with id
-			/// start with currentRow, because id value is most probabbly here
-			int ri = currentIndex().row();
-			if(ri >= 0) {
-				QVariant v = tmd->value(ri, idColumnName());
-				//qfDebug() << "\t found id:" << v.toString();
-				if(v != id)
-					ri = -1;
-			}
-			if(ri < 0) for(ri=0; ri<tmd->rowCount(); ri++) {
-				QVariant v = tmd->value(ri, idColumnName());
-				//qfDebug() << "\t row" << ri << "id:" << v.toString();
-				if(v == id) {
-					break;
-				}
-			}
-			if((ri < 0 || ri >= tmd->rowCount()) && currentIndex().row() >= 0) {
-				// this can happen if ID column value is changed
-				// reload current row to do the best
-				ri = currentIndex().row();
-				// set ID value to the new one
-				tmd->setValue(ri, idColumnName(), id);
-				tmd->setDirty(ri, idColumnName(), false);
-			}
-			if(ri >= 0 && ri < tmd->rowCount()) {
-				if(mode == ModeEdit || mode == ModeView) {
-					int reloaded_row_cnt = tmd->reloadRow(ri);
-					if(reloaded_row_cnt != 1) {
-						qfWarning() << "Edited row index:" << ri << "id:" << id.toString() << "reloaded in" << reloaded_row_cnt << "instances.";
-					}
-					updateRow(currentIndex().row());
-				}
-				else if(mode == ModeDelete) {
-					int reloaded_row_cnt = tmd->reloadRow(ri);
-					if(reloaded_row_cnt > 0) {
-						qfWarning() << "Deleted row id:" << id.toString() << "still exists.";
-					}
-					else {
-						tmd->qfm::TableModel::removeRowNoOverload(ri, !qf::core::Exception::Throw);
-						if(ri >= tmd->rowCount())
-							ri = tmd->rowCount() - 1;
-						QModelIndex ix = currentIndex();
-						if(ri >= 0) {
-							ix = tmd->index(ri, (ix.column() >= 0)? ix.column(): 0);
-							//qfInfo() << "ix row:" << ix.row() << "col:" << ix.column();
-							setCurrentIndex(ix);
-						}
-					}
-				}
-			}
+			// nor in table neither in database
 		}
 	}
 	else {
 		qfError() << "Feature not defined for this model type:" << model();
 	}
 }
-/*
-qf::core::utils::Table::SortDef TableView::seekSortDefinition() const
-{
-	qfLogFuncFrame();
-	qf::core::utils::Table::SortDef ret;
-	if(tableModel()) {
-		ret = tableModel()->table().tableProperties().sortDefinition().value(0);
-	}
-	return ret;
-}
-*/
+
 int TableView::seekColumn() const
 {
 	int ret = -1;
@@ -2249,7 +2207,7 @@ bool TableView::edit(const QModelIndex& index, EditTrigger trigger, QEvent* even
 				if(trigger == QTableView::DoubleClicked || trigger == QTableView::EditKeyPressed) {
 					if(!read_only) {
 						emit editCellRequest(index);
-						QVariant id = selectedRow().value(idColumnName());
+						QVariant id = selectedRow().value(tableModel()->idColumnName());
 						if(id.isValid()) {
 							emit editRowInExternalEditor(id, ModeEdit);
 						}

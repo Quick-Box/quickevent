@@ -40,7 +40,7 @@ void ClassesTableView::removeSelectedRows()
 	try {
 		qf::core::sql::Transaction transaction;
 		for(int i : selectedRowsIndexes()) {
-			int class_id = tableRow(i).value(idColumnName()).toInt();
+			int class_id = tableRow(i).value(tableModel()->idColumnName()).toInt();
 			getPlugin<ClassesPlugin>()->dropClass(class_id);
 		}
 		transaction.commit();

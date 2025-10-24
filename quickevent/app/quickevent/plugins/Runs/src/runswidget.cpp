@@ -1050,7 +1050,7 @@ void RunsWidget::editCompetitors(int mode)
 			qfs::Transaction transaction;
 			int n = 0;
 			for(int ix : sel_rows) {
-				int id = tv->tableRow(ix).value(tv->idColumnName()).toInt();
+				int id = tv->tableRow(ix).value("competitors.id").toInt();
 				if(id > 0) {
 					Competitors::CompetitorDocument doc;
 					doc.load(id, qfm::DataDocument::ModeDelete);
@@ -1156,13 +1156,7 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 		qfd::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
 		dlg.setDefaultButton(QDialogButtonBox::Ok);
 		if(mode == qf::gui::model::DataDocument::ModeInsert || mode == qf::gui::model::DataDocument::ModeEdit) {
-			QPushButton *bt_save = dlg.buttonBox()->addButton(tr("Save"), QDialogButtonBox::ApplyRole);
-			connect(dlg.buttonBox(), &qf::gui::DialogButtonBox::clicked, &dlg, [w, bt_save](QAbstractButton *button) {
-				if (button == bt_save) {
-					w->save();
-				}
-			});
-			QPushButton *bt_save_and_next = dlg.buttonBox()->addButton(tr("Ok and &next"), QDialogButtonBox::AcceptRole);
+			QPushButton *bt_save_and_next = dlg.buttonBox()->addButton(tr("Ok and &next"), QDialogButtonBox::ActionRole);
 			connect(dlg.buttonBox(), &qf::gui::DialogButtonBox::clicked, &dlg, [&save_and_next, bt_save_and_next](QAbstractButton *button) {
 				save_and_next = (button == bt_save_and_next);
 			});
@@ -1186,7 +1180,11 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 				w->loadFromRegistrations(siid);
 			}
 		}
-		connect(doc, &Competitors::CompetitorDocument::saved, ui->wRunsTableWidget->tableView(), &qf::gui::TableView::rowExternallySaved, Qt::QueuedConnection);
+		connect(doc, &Competitors::CompetitorDocument::saved, this, [this, doc]() {
+			if (auto run_id = doc->runsIds().value(selectedStageId() - 1); run_id > 0) {
+				ui->wRunsTableWidget->tableView()->rowExternallySaved(run_id);
+			}
+		});
 		ok = dlg.exec();
 
 	}

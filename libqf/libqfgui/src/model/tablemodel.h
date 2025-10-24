@@ -20,6 +20,8 @@ class QFGUI_DECL_EXPORT TableModel : public QAbstractTableModel
 {
 	Q_OBJECT
 	Q_PROPERTY(bool nullReportedAsString READ isNullReportedAsString WRITE setNullReportedAsString NOTIFY nullReportedAsStringChanged)
+
+	QF_PROPERTY_IMPL2(QString, i, I, dColumnName, QStringLiteral("id"))
 public:
 	explicit TableModel(QObject *parent = nullptr);
 private:

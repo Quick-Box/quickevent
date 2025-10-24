@@ -28,7 +28,6 @@ class QFGUI_DECL_EXPORT TableView : public QTableView, public framework::IPersis
 	Q_PROPERTY(qf::gui::model::TableModel* model READ tableModel WRITE setTableModel)
 	Q_PROPERTY(RowEditorMode rowEditorMode READ rowEditorMode WRITE setRowEditorMode NOTIFY rowEditorModeChanged)
 	Q_PROPERTY(InlineEditSaveStrategy inlineEditSaveStrategy READ inlineEditSaveStrategy WRITE setInlineEditSaveStrategy NOTIFY inlineEditSaveStrategyChanged)
-	Q_PROPERTY(QString idColumnName READ idColumnName WRITE setIdColumnName)
 	Q_PROPERTY(bool showExceptionDialog READ isShowExceptionDialog WRITE setShowExceptionDialog NOTIFY showExceptionDialogChanged)
 	Q_PROPERTY(bool readOnly READ isReadOnly WRITE setReadOnly NOTIFY readOnlyChanged)
 private:
@@ -61,7 +60,6 @@ public:
 
 	QF_PROPERTY_IMPL2(InlineEditSaveStrategy, i, I, nlineEditSaveStrategy, OnEditedValueCommit)
 	QF_PROPERTY_IMPL2(RowEditorMode, r, R, owEditorMode, EditRowsInline)
-	QF_PROPERTY_IMPL2(QString, i, I, dColumnName, QStringLiteral("id"))
 	QF_PROPERTY_BOOL_IMPL2(s, S, howExceptionDialog, true)
 	//QF_PROPERTY_BOOL_IMPL(r, R, eadOnly)
 
@@ -141,7 +139,7 @@ public:
 	Q_SIGNAL void editCellRequest(const QModelIndex &table_view_index);
 	Q_SIGNAL void editRowInExternalEditor(const QVariant &id, int mode);
 	Q_SIGNAL void editSelectedRowsInExternalEditor(int mode);
-	Q_SLOT virtual void rowExternallySaved(const QVariant &id, int mode);
+	Q_SLOT virtual void rowExternallySaved(const QVariant &id);
 
 	Q_SIGNAL void filterDialogRequest();
 	Q_SLOT void filterByString(const QString &s);

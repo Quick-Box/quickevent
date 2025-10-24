@@ -20,6 +20,8 @@ using Event::EventPlugin;
 RunsTableModel::RunsTableModel(QObject *parent)
 	: Super(parent)
 {
+	setIdColumnName("runs.id");
+
 	clearColumns(col_COUNT);
 	setColumn(col_runs_isRunning, ColumnDefinition("runs.isRunning", tr("Running")));
 	setColumn(col_runs_id, ColumnDefinition("runs.id", tr("id")).setReadOnly(true));

@@ -451,9 +451,26 @@ void SqlTableModel::revertRow(int row_no)
 	Super::revertRow(row_no);
 }
 
+QString SqlTableModel::reloadRowQuery(const QVariant &record_id)
+{
+	qf::core::sql::QueryBuilder qb = m_queryBuilder;
+	if(qb.isEmpty()) {
+		qfWarning() << "Empty queryBuilder";
+		return {};
+	}
+	auto sql_id_str = qMetaTypeId<QString>() == record_id.userType()? '\'' + record_id.toString() + '\'': QString::number(record_id.toInt());
+	qb.where(idColumnName() + "=" + sql_id_str);
+	qfs::QueryBuilder::BuildOptions opts;
+	opts.setConnectionName(connectionName());
+	QString query_str = qb.toString(opts);
+	query_str = replaceQueryParameters(query_str);
+	return query_str;
+}
+
 int SqlTableModel::reloadRow(int row_no)
 {
 	qfLogFuncFrame() << "row:" << row_no << "row count:" << rowCount();
+#ifdef NO_RELOAD_ROW_QUERY
 	qf::core::sql::QueryBuilder qb = m_queryBuilder;
 	if(qb.isEmpty()) {
 		qfWarning() << "Empty queryBuilder";
@@ -462,9 +479,9 @@ int SqlTableModel::reloadRow(int row_no)
 	qfu::TableRow &row_ref = m_table.rowRef(row_no);
 	qf::core::sql::Connection sql_conn = sqlConnection();
 	QSqlDriver *sqldrv = sql_conn.driver();
-	Q_FOREACH(QString table_id, tableIds(m_table.fields())) {
+	for (const auto &table_id : tableIds(m_table.fields())) {
 		qfDebug() << "\ttableid:" << table_id;
-		Q_FOREACH(QString fld_name, sql_conn.primaryIndexFieldNames(table_id)) {
+		for (const auto &fld_name : sql_conn.primaryIndexFieldNames(table_id)) {
 			QString full_fld_name = table_id + '.' + fld_name;
 			int fld_ix = m_table.fields().fieldIndex(full_fld_name);
 			if(fld_ix < 0) {
@@ -492,12 +509,18 @@ int SqlTableModel::reloadRow(int row_no)
 		if(!isIncludeJoinedTablesIdsToReloadRowQuery())
 			break;
 	}
-	qfs::Query q = qfs::Query(sql_conn);
 	qfs::QueryBuilder::BuildOptions opts;
 	opts.setConnectionName(connectionName());
 	QString query_str = qb.toString(opts);
 	query_str = replaceQueryParameters(query_str);
+#else
+	qfu::TableRow &row_ref = m_table.rowRef(row_no);
+	auto id = row_ref.value(idColumnName());
+	auto query_str = reloadRowQuery(id);
+	qf::core::sql::Connection sql_conn = sqlConnection();
+#endif
 	qfDebug() << "\t reload row query:" << query_str;
+	qfs::Query q = qfs::Query(sql_conn);
 	bool ok = q.exec(query_str);
 	QF_ASSERT(ok == true,
 			  QString("SQL Error: %1\n%2").arg(q.lastError().text()).arg(query_str),
