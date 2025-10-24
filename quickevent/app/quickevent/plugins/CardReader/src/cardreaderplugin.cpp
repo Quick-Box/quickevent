@@ -383,7 +383,8 @@ void CardReaderPlugin::updateCheckedCardValuesSql(const quickevent::core::si::Ch
 	//	}
 	//}
 	QString qs = "UPDATE runs SET checkTimeMs=:checkTimeMs, timeMs=:timeMs, finishTimeMs=:finishTimeMs, penaltyTimeMs=NULL,"
-				 " misPunch=:misPunch, badCheck=:badCheck"
+				 " misPunch=:misPunch, badCheck=:badCheck,"
+				 " notStart=:notStart"
 				 " WHERE id=" + QString::number(run_id);
 	q.prepare(qs, qf::core::Exception::Throw);
 	q.bindValue(QStringLiteral(":checkTimeMs"), checked_card.checkTimeMs());
@@ -391,7 +392,7 @@ void CardReaderPlugin::updateCheckedCardValuesSql(const quickevent::core::si::Ch
 	q.bindValue(QStringLiteral(":finishTimeMs"), checked_card.finishTimeMs());
 	q.bindValue(QStringLiteral(":misPunch"), checked_card.isMisPunch());
 	q.bindValue(QStringLiteral(":badCheck"), checked_card.isBadCheck());
-	//q.bindValue(QStringLiteral(":disqualified"), should_be_disq || !checked_card.isOk());
+	q.bindValue(QStringLiteral(":notStart"), false);
 	q.exec(qf::core::Exception::Throw);
 	if(q.numRowsAffected() != 1) {
 		qfError() << "Update runs error, query:" << qs;

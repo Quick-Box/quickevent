@@ -27,15 +27,8 @@ private:
 public:
 	CardReaderPlugin(QObject *parent = nullptr);
 
-	//static const int FINISH_PUNCH_CODE;
-	//static const int FINISH_PUNCH_POS;
-
-	//QF_PROPERTY_IMPL2(int, c, C, urrentCardCheckerIndex, 0)
-
 	const QList<CardReader::CardChecker*>& cardCheckers() {return m_cardCheckers;}
 	CardReader::CardChecker* currentCardChecker();
-
-	//Q_INVOKABLE QString settingsPrefix();
 
 	int currentStageId();
 	int cardIdToSiId(int card_id);
@@ -46,8 +39,6 @@ public:
 	quickevent::core::si::CheckedCard checkCard(const quickevent::core::si::ReadCard &read_card);
 	int saveCardToSql(const quickevent::core::si::ReadCard &read_card);
 	int savePunchRecordToSql(const quickevent::core::si::PunchRecord &punch_record);
-	//ReadCard loadCardFromSql(int card_id);
-	//bool updateCheckedCardValuesSqlSafe(const quickevent::core::si::CheckedCard &checked_card);
 
 	Q_INVOKABLE bool reloadTimesFromCard(int card_id, int run_id = 0, bool in_transaction = true);
 	void assignCardToRun(int card_id, int run_id);
