@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>675</height>
+    <width>469</width>
+    <height>805</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -169,11 +169,14 @@
    </item>
    <item row="9" column="1">
     <widget class="QSpinBox" name="ed_handicapLength">
+     <property name="specialValueText">
+      <string>No handicap</string>
+     </property>
      <property name="suffix">
       <string> min</string>
      </property>
      <property name="minimum">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="maximum">
       <number>99999</number>
@@ -182,7 +185,7 @@
       <number>10</number>
      </property>
      <property name="value">
-      <number>50</number>
+      <number>0</number>
      </property>
     </widget>
    </item>
@@ -383,7 +386,7 @@
 source - ORIS-&gt;Event-&gt;Information-&gt;Event key</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -404,7 +407,7 @@ source - ORIS-&gt;Event-&gt;Information-&gt;Event key</string>
       <item row="1" column="1">
        <widget class="QLineEdit" name="ed_orisImportId">
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
         <property name="readOnly">
          <bool>true</bool>
