@@ -1,26 +1,7 @@
 QMenu,QMenuBar {
 	background-color: #525252;
-	color: white;
-	border: 1px solid gray;
 }
 
-QMenu::item, QMenuBar::item {
-	background-color: transparent;
-}
-
-QMenu::item:disabled, QMenuBar::item:disabled {
-	color: gray;
-}
-
-QMenu::item:selected, QMenuBar::item:selected {
-	color: black;
-	background: #FDE364;
-}
-
-QMenu::item:pressed, QMenuBar::item:pressed {
-	background: darkgray;
-}
- 
 qf--gui--framework--PartSwitch {
 	background: #525252;
 }
@@ -29,7 +10,6 @@ QToolButton.PartSwitchToolButton {
 	background-color: #525252;
 	color: white;
 	padding: 2px;
-	border: none;
 }
 QToolButton.PartSwitchToolButton:hover {
 	background-color: #858585;
@@ -52,4 +32,10 @@ qf--gui--dialogs--internal--CaptionFrame QLabel {
 	color:black;
 }
 
+QLabel.filterLabel {
+	background-color: #525252;
+}
+
+QToolButton		{background-color: #656565; border-radius: 4px;}
+QToolButton:hover	{background-color: #b5b5b5; }
 QToolButton:checked	{background-color: #ffa500;}

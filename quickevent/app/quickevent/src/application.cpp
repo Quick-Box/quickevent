@@ -24,14 +24,15 @@ Application::Application(int &argc, char **argv, AppCliOptions *cli_opts)
 	}
 
 	auto *style = qf::gui::Style::instance();
-	if (qf::gui::isDarkTheme()) {
-		style->addIconSearchPath(":/qf/gui/images/dark");
-	} else {
-		style->addIconSearchPath(":/qf/gui/images/flat");
-	}
+	style->addIconSearchPath(":/qf/gui/images/flat");
 	style->addIconSearchPath(":/qf/gui/images");
 
-	loadStyleSheet();
+	if (qf::gui::isDarkTheme()) {
+		loadStyleSheet(":/quickevent/style/dark.css");
+	}
+	else {
+		loadStyleSheet(":/quickevent/style/default.css");
+	}
 
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	QString http_proxy = env.value(QStringLiteral("http_proxy"));

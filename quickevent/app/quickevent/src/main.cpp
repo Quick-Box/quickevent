@@ -16,8 +16,10 @@
 #include <QtQml>
 #include <QLocale>
 
+namespace {
 NecroLog::MessageHandler old_message_handler;
 bool send_log_entry_recursion_lock = false;
+}
 
 void send_log_entry_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {

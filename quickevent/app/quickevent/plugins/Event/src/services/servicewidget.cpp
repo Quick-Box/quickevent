@@ -10,8 +10,8 @@ ServiceWidget::ServiceWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	connect(ui->btPlay, &QPushButton::clicked, this, &ServiceWidget::onBtPlayClicked);
-	connect(ui->btShowDetail, &QPushButton::clicked, this, &ServiceWidget::showDetail);
+	connect(ui->btPlay, &QAbstractButton::clicked, this, &ServiceWidget::onBtPlayClicked);
+	connect(ui->btShowDetail, &QAbstractButton::clicked, this, &ServiceWidget::showDetail);
 }
 
 ServiceWidget::~ServiceWidget()

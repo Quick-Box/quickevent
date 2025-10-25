@@ -1,5 +1,6 @@
 <RCC>
 	<qresource prefix="/quickevent/style">
 		<file>default.css</file>
+		<file>dark.css</file>
 	</qresource>
 </RCC>

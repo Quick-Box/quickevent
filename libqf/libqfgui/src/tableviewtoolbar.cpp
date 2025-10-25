@@ -41,35 +41,29 @@ TableViewToolBar::TableViewToolBar(QWidget *parent) :
 #endif
 }
 
-
-
 void TableViewToolBar::setTableView(TableView *table_view)
 {
 	qfLogFuncFrame() << m_filterCombo;
 	if(table_view) {
-		m_pendingActions = table_view->toolBarActions();
-		/// cannot add actions here from QML context because of bug in Qt5.3.1
-		QMetaObject::invokeMethod(this, "addPendingActions", Qt::QueuedConnection);
+		QList<QAction*> lst;
+		for (auto a : table_view->toolBarActions()) {
+			lst << a;
+		}
+		addActions(lst);
+		auto *lbl = new QLabel(tr("Filter"));
+		auto *style = Style::instance();
+		QPixmap px = style->pixmap("find");
+		lbl->setPixmap(px);
+		lbl->setProperty("class", "filterLabel");
+		addWidget(lbl);
+		addWidget(m_filterCombo);
+
 		connect(this, &TableViewToolBar::filterStringChanged, table_view, &TableView::filterByString);
 		connect(table_view, &TableView::filterDialogRequest, this, &TableViewToolBar::onFilterDialogRequest);
 		if(m_filterCombo) {
 			connect(m_filterCombo, &FilterCombo::filterFocusReleased, table_view, [table_view]() { table_view->setFocus(); });
 		}
 	}
-}
-
-void TableViewToolBar::addPendingActions()
-{
-	QList<QAction*> lst;
-	Q_FOREACH(auto a, m_pendingActions)
-		lst << a;
-	addActions(lst);
-	auto *lbl = new QLabel(tr("Filter"));
-	auto *style = Style::instance();
-	QPixmap px = style->pixmap("find");
-	lbl->setPixmap(px);
-	addWidget(lbl);
-	addWidget(m_filterCombo);
 }
 
 void TableViewToolBar::emitFilterStringChanged()

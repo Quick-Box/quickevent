@@ -42,12 +42,10 @@ public:
 signals:
 	void filterStringChanged(const QString &s);
 private:
-	Q_SLOT void addPendingActions();
-	Q_SLOT void emitFilterStringChanged();
-	Q_SLOT void onFilterDialogRequest();
+	void emitFilterStringChanged();
+	void onFilterDialogRequest();
 private:
 	qf::gui::TableView* m_tableView = nullptr;
-	QList<Action*> m_pendingActions;
 	FilterCombo *m_filterCombo = nullptr;
 };
 

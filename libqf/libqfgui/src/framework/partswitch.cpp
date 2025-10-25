@@ -2,7 +2,6 @@
 #include "partwidget.h"
 #include "stackedcentralwidget.h"
 #include "mainwindow.h"
-#include "plugin.h"
 
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
@@ -14,6 +13,7 @@ using namespace qf::gui::framework;
 PartSwitchToolButton::PartSwitchToolButton(QWidget *parent)
 	: Super(parent), m_partIndex()
 {
+	setProperty("class", "PartSwitchToolButton");
 	setAutoFillBackground(false); /// musi bejt off
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
