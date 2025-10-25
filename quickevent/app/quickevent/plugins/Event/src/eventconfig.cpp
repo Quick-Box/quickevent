@@ -36,6 +36,7 @@ EventConfig::EventConfig(QObject *parent)
 	: QObject(parent)
 {
 }
+
 QVariant EventConfig::value(const QStringList &path, const QVariant &default_value) const
 {
 	//QF_ASSERT(knownKeys().contains(key), "Key " + key + " is not known key!", return QVariant());
