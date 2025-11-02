@@ -358,8 +358,7 @@ void EventPlugin::onInstalled()
 		act_stage->setVisible(false);
 
 
-		auto *style = qf::gui::Style::instance();
-		QIcon ico(style->icon("settings"));
+		QIcon ico(qf::gui::Style::icon("settings"));
 		m_actEditStage = new qfw::Action(ico, "Stage settings");
 		m_actEditStage->setVisible(false);
 		connect(m_actEditStage, &QAction::triggered, this, &EventPlugin::editStage);
@@ -918,7 +917,7 @@ bool EventPlugin::createEvent(const QString &event_name, const QVariantMap &even
 	if(ok) {
 		ok = openEvent(event_id);
 	}
-	return ok;	
+	return ok;
 }
 
 void EventPlugin::editEvent()

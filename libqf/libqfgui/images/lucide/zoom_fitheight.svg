@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="24"
+  height="24"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  >
+  <rect
+     width="18.149662"
+     height="21.970978"
+     x="2.9810476"
+     y="1.0479748"
+     id="rect1" />
+
+
+  <g
+     id="g11"
+     transform="matrix(0,1,1,0,8.810316,16.369226)">
+    <path
+       id="arrow3"
+       d="M -10.59825,6.2235162 -13.632082,3.189684 -10.605318,0.16292006"
+        />
+    <path
+
+       d="m -12.985928,3.189684 h 5.2320819"
+       id="path11"
+        />
+  </g>
+  <g
+     id="g13"
+     transform="rotate(-90,8.1737505,-0.63656523)">
+    <path
+       id="arrow4"
+       d="M -10.59825,6.2235162 -13.632082,3.189684 -10.605318,0.16292006"
+        />
+    <path
+
+       d="m -12.985928,3.189684 h 5.2320819"
+       id="path13"
+        />
+  </g>
+</svg>

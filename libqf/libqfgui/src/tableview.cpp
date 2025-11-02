@@ -71,10 +71,9 @@ TableView::TableView(QWidget *parent) :
 
 	createActions();
 	{
-		auto *style = Style::instance();
 		auto *bt = new QToolButton(this);
 		bt->setAutoRaise(true);
-		bt->setIcon(style->icon("menu"));
+		bt->setIcon(qf::gui::Style::icon("menu"));
 		bt->setToolTip(tr("Left click selects all, right click for menu."));
 		QObject::connect(bt, &QPushButton::clicked, this, &QTableView::selectAll);
 		//qfInfo() << "addidng actions";
@@ -970,7 +969,9 @@ void TableView::exportCSV_helper(const QVariant &export_options)
 
 		QTextStream ts(&f);
 #if QT_VERSION_MAJOR >= 6
-		ts.setEncoding(QStringConverter::encodingForName(text_export_opts.codecName().toLatin1().constData()).value());
+		if (auto enc = QStringConverter::encodingForName(text_export_opts.codecName().toLatin1().constData()); enc.has_value()) {
+			ts.setEncoding(enc.value());
+		}
 #else
 		ts.setCodec(text_export_opts.codecName().toLatin1().constData());
 #endif
@@ -1448,6 +1449,8 @@ void TableView::keyPressEvent(QKeyEvent *e)
 			//qfDebug().color(QFLog::Yellow) << "set focus to table view";
 			//setFocus(); /// jinak se mi zavre delegat a focus skoci na jinej widget
 			break;
+		default:
+			break;
 		}
 	}
 	else {
@@ -1525,11 +1528,10 @@ void TableView::updateGeometries()
 
 void TableView::createActions()
 {
-	auto *style = Style::instance();
 	Action *a;
 	{
 		a = new Action(tr("Resize columns to contents"), this);
-		a->setIcon(style->icon("zoom_fitwidth"));
+		a->setIcon(qf::gui::Style::icon("zoom_fitwidth"));
 		//a->setShortcut(QKeySequence(tr("Ctrl+R", "reload SQL table")));
 		////a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("resizeColumnsToContents");
@@ -1549,7 +1551,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Reload"), this);
-		a->setIcon(style->icon("reload"));
+		a->setIcon(qf::gui::Style::icon("reload"));
 		a->setShortcut(QKeySequence(tr("Ctrl+R", "reload SQL table")));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("reload");
@@ -1560,7 +1562,7 @@ void TableView::createActions()
 	{
 		a = new Action(tr("Copy"), this);
 		a->setObjectName("TableView_Copy");
-		a->setIcon(style->icon("copy"));
+		a->setIcon(qf::gui::Style::icon("copy"));
 		a->setShortcut(QKeySequence(tr("Ctrl+C", "Copy selection")));
 		a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("copy");
@@ -1570,7 +1572,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Copy special"), this);
-		a->setIcon(style->icon("copy"));
+		a->setIcon(qf::gui::Style::icon("copy"));
 		//a->setShortcut(QKeySequence(tr("Ctrl+C", "Copy selection")));
 		////a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("copySpecial");
@@ -1580,7 +1582,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Paste"), this);
-		a->setIcon(style->icon("paste"));
+		a->setIcon(qf::gui::Style::icon("paste"));
 		a->setShortcut(QKeySequence(tr("Ctrl+V", "Paste rows")));
 		a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("paste");
@@ -1589,7 +1591,7 @@ void TableView::createActions()
 		connect(a, &Action::triggered, this, &TableView::paste, Qt::QueuedConnection); /// hazelo mi to vyjjimky v evendloopu
 	}
 	{
-		a = new Action(style->icon("insert-row"), tr("Insert row"), this);
+		a = new Action(qf::gui::Style::icon("insert-row"), tr("Insert row"), this);
 		a->setShortcut(QKeySequence(tr("Ctrl+Ins", "insert row SQL table")));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("insertRow");
@@ -1598,7 +1600,7 @@ void TableView::createActions()
 		connect(a, &Action::triggered, this, &TableView::insertRow);
 	}
 	{
-		a = new Action(style->icon("delete-row"), tr("Delete selected rows"), this);
+		a = new Action(qf::gui::Style::icon("delete-row"), tr("Delete selected rows"), this);
 		a->setShortcut(QKeySequence(tr("Ctrl+Del", "delete row SQL table")));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("removeSelectedRows");
@@ -1608,7 +1610,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Post row edits"), this);
-		a->setIcon(style->icon("save"));
+		a->setIcon(qf::gui::Style::icon("save"));
 		a->setShortcut(QKeySequence(tr("Ctrl+Return", "post row SQL table")));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("postRow");
@@ -1618,7 +1620,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Revert row edits"), this);
-		a->setIcon(style->icon("revert"));
+		a->setIcon(qf::gui::Style::icon("revert"));
 		a->setShortcut(QKeySequence(tr("Ctrl+Z", "revert edited row")));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		a->setOid("revertRow");
@@ -1628,7 +1630,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Clone row"), this);
-		a->setIcon(style->icon("clone-row"));
+		a->setIcon(qf::gui::Style::icon("clone-row"));
 		a->setOid("cloneRow");
 		//a->setVisible(false);
 		m_actionGroups[RowActions] << a->oid();
@@ -1647,7 +1649,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Zobrazit ve formulari"), this);
-		a->setIcon(style->icon("view"));
+		a->setIcon(qf::gui::Style::icon("view"));
 		a->setToolTip(tr("Zobrazit radek v formulari pro cteni"));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		//connect(a, &Action::triggered, this, &TableView::emitViewRowInExternalEditor()));
@@ -1656,7 +1658,7 @@ void TableView::createActions()
 	}
 	{
 		a = new Action(tr("Upravit ve formulari"), this);
-		a->setIcon(style->icon("edit"));
+		a->setIcon(qf::gui::Style::icon("edit"));
 		a->setToolTip(tr("Upravit radek ve formulari"));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		//connect(a, &Action::triggered, this, &TableView::emitEditRowInExternalEditor()));
@@ -1665,7 +1667,7 @@ void TableView::createActions()
 	}
 	/*
 	{
-		a = new Action(style->icon("sort-asc"), tr("Sort ascending"), this);
+		a = new Action(qf::gui::Style::icon("sort-asc"), tr("Sort ascending"), this);
 		a->setOid("sortAsc");
 		a->setCheckable(true);
 		//a->setToolTip(tr("Upravit radek v externim editoru"));
@@ -1675,7 +1677,7 @@ void TableView::createActions()
 		m_actions[a->oid()] = a;
 	}
 	{
-		a = new Action(style->icon("sort-desc"), tr("Sort descending"), this);
+		a = new Action(qf::gui::Style::icon("sort-desc"), tr("Sort descending"), this);
 		a->setOid("sortDesc");
 		a->setCheckable(true);
 		//a->setToolTip(tr("Upravit radek v externim editoru"));
@@ -1686,7 +1688,7 @@ void TableView::createActions()
 	}
 	*/
 	{
-		a = new Action(style->icon("find"), tr("Filter table"), this);
+		a = new Action(qf::gui::Style::icon("find"), tr("Filter table"), this);
 		a->setOid("filter");
 		a->setCheckable(false);
 		//a->setToolTip(tr("Upravit radek v externim editoru"));

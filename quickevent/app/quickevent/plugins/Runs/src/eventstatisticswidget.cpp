@@ -13,6 +13,7 @@
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/reports/widgets/reportviewwidget.h>
+#include <qf/gui/style.h>
 #include <qf/gui/log.h>
 
 #include <qf/core/sql/querybuilder.h>
@@ -385,13 +386,20 @@ void FooterView::syncSectionSizes()
 }
 
 //============================================================
-//                EventStatisticsWidget
+// EventStatisticsWidget
 //============================================================
 EventStatisticsWidget::EventStatisticsWidget(QWidget *parent)
 	: QWidget(parent)
 	, ui(new Ui::EventStatisticsWidget)
 {
 	ui->setupUi(this);
+
+	ui->btClearNewInSelectedRows->setIcon(qf::gui::Style::icon("clear"));
+	ui->btPrintResultsSelected->setIcon(qf::gui::Style::icon("print-selected"));
+	ui->btPrintResultsNew->setIcon(qf::gui::Style::icon("print"));
+	ui->btOptions->setIcon(qf::gui::Style::icon("settings"));
+	ui->btReload->setIcon(qf::gui::Style::icon("reload"));
+
 	ui->tableView->setPersistentSettingsId("tblEventStatistics");
 	ui->tableView->setReadOnly(true);
 

@@ -40,9 +40,6 @@
 #include <QDir>
 #include <QApplication>
 #include <QTextStream>
-//#include <QStyle>
-
-#include <typeinfo>
 
 using namespace qf::gui::reports;
 
@@ -137,7 +134,7 @@ void ReportViewWidget::ScrollArea::wheelEvent(QWheelEvent * ev)
 				ev->accept();
 				return;
 			}
-	
+
 	}
 	QScrollArea::wheelEvent(ev);
 }
@@ -558,68 +555,67 @@ void ReportViewWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 
 qf::gui::framework::DialogWidget::ActionMap ReportViewWidget::createActions()
 {
-	auto *style = Style::instance();
 	ActionMap ret;
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("First page"), this);
-		a->setIcon(style->icon("frev"));
+		a->setIcon(qf::gui::Style::icon("skip-back"));
 		ret[QStringLiteral("view.firstPage")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::view_firstPage);
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Prev page"), this);
-		a->setIcon(style->icon("rev"));
+		a->setIcon(qf::gui::Style::icon("step-back"));
 		ret[QStringLiteral("view.prevPage")] = a;
 		connect(a, &QAction::triggered, this, [this]() { view_prevPage(); });
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Next page"), this);
-		a->setIcon(style->icon("fwd"));
+		a->setIcon(qf::gui::Style::icon("step-forward"));
 		ret[QStringLiteral("view.nextPage")] = a;
 		connect(a, &QAction::triggered, this, [this]() { view_nextPage(); });
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Last page"), this);
-		a->setIcon(style->icon("ffwd"));
+		a->setIcon(qf::gui::Style::icon("skip-forward"));
 		ret[QStringLiteral("view.lastPage")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::view_lastPage);
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Zoom in"), this);
-		a->setIcon(style->icon("zoom_in"));
+		a->setIcon(qf::gui::Style::icon("zoom-in"));
 		ret[QStringLiteral("view.zoomIn")] = a;
 		connect(a, &QAction::triggered, this, [this]() { view_zoomIn(); });
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Zoom out"), this);
-		a->setIcon(style->icon("zoom_out"));
+		a->setIcon(qf::gui::Style::icon("zoom-out"));
 		ret[QStringLiteral("view.zoomOut")] = a;
 		connect(a, &QAction::triggered, this, [this]() { view_zoomOut(); });
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Zoom to fit width"), this);
-		a->setIcon(style->icon("zoom_fitwidth"));
+		a->setIcon(qf::gui::Style::icon("zoom-fitwidth"));
 		ret[QStringLiteral("view.zoomFitWidth")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::view_zoomToFitWidth);
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Zoom to fit height"), this);
-		a->setIcon(style->icon("zoom_fitheight"));
+		a->setIcon(qf::gui::Style::icon("zoom-fitheight"));
 		ret[QStringLiteral("view.zoomFitHeight")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::view_zoomToFitHeight);
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("&Print"), this);
-		a->setIcon(style->icon("printer"));
+		a->setIcon(qf::gui::Style::icon("printer"));
 		//a->setTooltip(tr("Tisk"));
 		ret[QStringLiteral("file.print")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::file_print);
@@ -627,14 +623,14 @@ qf::gui::framework::DialogWidget::ActionMap ReportViewWidget::createActions()
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Print pre&view"), this);
-		a->setIcon(style->icon("print-preview"));
+		a->setIcon(qf::gui::Style::icon("print-preview"));
 		ret[QStringLiteral("file.printPreview")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::file_printPreview);
 	}
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Export PD&F"), this);
-		a->setIcon(style->icon("acrobat"));
+		a->setIcon(qf::gui::Style::icon("acrobat"));
 		a->setToolTip(tr("Export in the Adobe Acrobat PDF format"));
 		ret[QStringLiteral("file.export.pdf")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::file_export_pdf);
@@ -642,7 +638,7 @@ qf::gui::framework::DialogWidget::ActionMap ReportViewWidget::createActions()
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Export &HTML"), this);
-		a->setIcon(style->icon("network"));
+		a->setIcon(qf::gui::Style::icon("network"));
 		a->setToolTip(tr("Export data in HTML"));
 		ret[QStringLiteral("file.export.html")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::file_export_html);
