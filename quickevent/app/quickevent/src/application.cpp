@@ -24,6 +24,7 @@ Application::Application(int &argc, char **argv, AppCliOptions *cli_opts)
 	}
 
 	auto *style = qf::gui::Style::instance();
+	style->addIconSearchPath(":/qf/gui/images/lucide");
 	style->addIconSearchPath(":/qf/gui/images/flat");
 	style->addIconSearchPath(":/qf/gui/images");
 

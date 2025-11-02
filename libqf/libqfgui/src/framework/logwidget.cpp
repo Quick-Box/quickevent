@@ -25,11 +25,10 @@ namespace qf::gui::framework {
 LogWidgetTableView::LogWidgetTableView(QWidget *parent)
 	: Super(parent)
 {
-	auto *style = qf::gui::Style::instance();
 	{
 		m_copySelectionToClipboardAction = new QAction(tr("Copy"));
 		m_copySelectionToClipboardAction->setObjectName("LogWidgetTableView copy action");
-		m_copySelectionToClipboardAction->setIcon(style->icon("copy"));
+		m_copySelectionToClipboardAction->setIcon(qf::gui::Style::icon("copy"));
 		m_copySelectionToClipboardAction->setShortcut(QKeySequence(tr("Ctrl+C", "Copy selection")));
 		m_copySelectionToClipboardAction->setShortcutContext(Qt::WidgetShortcut);
 		connect(m_copySelectionToClipboardAction, &QAction::triggered, this, &LogWidgetTableView::copy);
@@ -241,7 +240,7 @@ bool LogWidget::isAutoScroll()
 		}
 					//fprintf(stderr, "TOP scrollbar min: %d max: %d value: %d\n", sb->minimum(), sb->maximum(), sb->value());
 			return (sb->value() == sb->minimum());
-	
+
 	}
 	return false;
 }

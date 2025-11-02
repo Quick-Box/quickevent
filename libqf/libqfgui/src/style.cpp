@@ -44,6 +44,9 @@ QPixmap Style::pixmapFromSvg(const QString &file_name, const QSize &pixmap_size)
 	if(f.open(QFile::ReadOnly)) {
 		qfDebug() << "OK";
 		QByteArray ba = f.readAll();
+		if (isDarkTheme()) {
+			ba.replace("\"currentColor\"", "\"lightgray\"");
+		}
 		QSvgRenderer rnd(ba);
 		ret = QPixmap(px_sz);
 		ret.fill(Qt::transparent);
@@ -96,6 +99,11 @@ QIcon Style::icon(const QString &name, const QSize &pixmap_size)
 	return ret;
 }
 
+QIcon Style::icon(const QString &name)
+{
+	return instance()->icon(name, QSize());
+}
+
 Style *Style::instance()
 {
 	QCoreApplication *app = QCoreApplication::instance();
@@ -126,9 +134,9 @@ QFileInfo Style::findFile(const QString &path, const QString &default_extension)
 		for(const auto &prefix : m_iconSearchPaths) {
 			auto fn2 = prefix + '/' + fn;
 			QFileInfo fi2(fn2);
-			// qfInfo() << "checking:" << fn2;
+//			qfInfo() << "checking:" << fn2;
 			if(fi2.isReadable()) {
-				// qfInfo() << "\t\tHHIITT" << fn2;
+//				qfInfo() << "\t\tHHIITT" << fn2;
 				return fi2;
 			}
 		}

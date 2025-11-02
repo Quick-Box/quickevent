@@ -27,11 +27,13 @@ public:
 
 	QPixmap pixmap(const QString &name, const QSize &pixmap_size = QSize());
 	QPixmap pixmap(const QString &name, int height);
-	QIcon icon(const QString &name, const QSize &pixmap_size = QSize());
+	QIcon icon(const QString &name, const QSize &pixmap_size);
+	static QIcon icon(const QString &name);
 
 	static Style* instance();
 private:
 	QPixmap pixmapFromSvg(const QString &file_name, const QSize &pixmap_size = QSize()) const;
+	QPixmap pixmapFromSvg(const QByteArray &svg_data, const QSize &pixmap_size = QSize()) const;
 	QFileInfo findFile(const QString &path, const QString &default_extension) const;
 private:
 	QSize m_defaultIconSize;

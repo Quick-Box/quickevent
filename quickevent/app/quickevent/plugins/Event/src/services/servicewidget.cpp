@@ -1,6 +1,7 @@
 #include "servicewidget.h"
 #include "ui_servicewidget.h"
 
+#include <qf/gui/style.h>
 
 namespace Event::services {
 
@@ -10,8 +11,11 @@ ServiceWidget::ServiceWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 
+	ui->btPlay->setIcon(qf::gui::Style::icon("media-play"));
+	ui->btSettings->setIcon(qf::gui::Style::icon("settings"));
+
 	connect(ui->btPlay, &QAbstractButton::clicked, this, &ServiceWidget::onBtPlayClicked);
-	connect(ui->btShowDetail, &QAbstractButton::clicked, this, &ServiceWidget::showDetail);
+	connect(ui->btSettings, &QAbstractButton::clicked, this, &ServiceWidget::showDetail);
 }
 
 ServiceWidget::~ServiceWidget()
@@ -22,8 +26,8 @@ ServiceWidget::~ServiceWidget()
 void ServiceWidget::setStatus(Service::Status st)
 {
 	m_isRunning = (st == Service::Status::Running);
-	static QIcon ico_play(":/qf/gui/images/flat/media-play");
-	static QIcon ico_stop(":/qf/gui/images/flat/media-stop");
+	static QIcon ico_play = qf::gui::Style::icon("media-play");
+	static QIcon ico_stop = qf::gui::Style::icon("media-stop");
 	ui->btPlay->setIcon(m_isRunning? ico_stop: ico_play);
 	switch (st) {
 	case Service::Status::Running:

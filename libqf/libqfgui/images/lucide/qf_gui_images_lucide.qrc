@@ -1,0 +1,61 @@
+<RCC>
+	<qresource prefix="/qf/gui/images/lucide">
+		<file>acrobat.svg</file>
+		<file alias="home.svg">house.svg</file>
+		<file alias="new.svg">file-plus-corner.svg</file>
+		<file alias="open.svg">folder-open.svg</file>
+		<file>save.svg</file>
+		<file alias="reload.svg">refresh-ccw.svg</file>
+		<file alias="revert.svg">undo-2.svg</file>
+		<file alias="delete.svg">trash-2.svg</file>
+		<file alias="clear.svg">delete.svg</file>
+		<file alias="find.svg">search.svg</file>
+		<file alias="sort-asc.svg">arrow-down-a-z.svg</file>
+		<file alias="sort-desc.svg">arrow-down-z-a.svg</file>
+		<file alias="insert-row.svg">copy.svg</file>
+		<file alias="clone-row.svg">copy-plus.svg</file>
+		<file alias="delete-row.svg">copy-minus.svg</file>
+		<file>copy.svg</file>
+		<file alias="cut.svg">scissors.svg</file>
+		<file alias="paste.svg">clipboard-paste.svg</file>
+		<file alias="printer.svg">printer.svg</file>
+		<file alias="print.svg">printer.svg</file>
+		<file alias="print-selected.svg">printer-check.svg</file>
+		<file alias="settings.svg">settings.svg</file>
+		<file alias="left.svg">arrow-big-left.svg</file>
+		<file alias="right.svg">arrow-big-right.svg</file>
+		<file alias="up.svg">arrow-big-up.svg</file>
+		<file alias="down.svg">arrow-big-down.svg</file>
+		<file alias="menu.svg">menu.svg</file>
+
+		<file alias="zoom_in.svg">zoom-in.svg</file>
+		<file alias="zoom_out.svg">zoom-out.svg</file>
+		<file alias="zoom_fitall.svg">zoom_fitall.svg</file>
+		<file alias="zoom_fitwidth.svg">zoom_fitwidth.svg</file>
+		<file alias="zoom_fitheight.svg">zoom_fitheight.svg</file>
+
+		<file>zoom-in.svg</file>
+		<file>zoom-out.svg</file>
+		<file alias="zoom-fitall.svg">zoom_fitall.svg</file>
+		<file alias="zoom-fitwidth.svg">zoom_fitwidth.svg</file>
+		<file alias="zoom-fitheight.svg">zoom_fitheight.svg</file>
+
+		<file alias="media-pause.svg">pause.svg</file>
+        <file alias="media-play.svg">play.svg</file>
+        <file alias="media-record.svg">disc.svg</file>
+        <file alias="media-skip-backward.svg">skip-back.svg</file>
+        <file alias="media-skip-forward.svg">skip-forward.svg</file>
+        <file alias="media-step-backward.svg">step-back.svg</file>
+        <file alias="media-step-forward.svg">step-forward.svg</file>
+
+		<file>pause.svg</file>
+        <file>play.svg</file>
+        <file alias="record.svg">disc.svg</file>
+		<file>skip-back.svg</file>
+        <file>skip-forward.svg</file>
+        <file>step-back.svg</file>
+        <file>step-forward.svg</file>
+
+		<file alias="media-stop.svg">square.svg</file>
+	</qresource>
+</RCC>

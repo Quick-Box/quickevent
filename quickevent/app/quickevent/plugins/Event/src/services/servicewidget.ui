@@ -93,29 +93,23 @@
       </item>
       <item>
        <widget class="QToolButton" name="btPlay">
-        <property name="minimumSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
         <property name="icon">
          <iconset resource="../../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
           <normaloff>:/qf/gui/images/flat/media-play.svg</normaloff>:/qf/gui/images/flat/media-play.svg</iconset>
         </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="btShowDetail">
-        <property name="minimumSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
+       <widget class="QToolButton" name="btSettings">
         <property name="icon">
          <iconset resource="../../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
           <normaloff>:/qf/gui/images/flat/settings.svg</normaloff>:/qf/gui/images/flat/settings.svg</iconset>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
