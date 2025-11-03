@@ -273,6 +273,14 @@ qt6_add_lupdate(quickevent TS_FILES
 target_sources(quickevent PRIVATE ${QM_FILES})
 target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(quickevent PUBLIC libquickeventcore libquickeventgui libqfgui libsiut)
+if (QF_WITH_LIBSHV)
+	target_link_libraries(quickevent PUBLIC libshviotqt)
+	target_compile_definitions(quickevent PRIVATE QF_WITH_LIBSHV)
+endif()
+
+foreach(plugin IN ITEMS Classes Runs Relays Receipts shared)
+	install(DIRECTORY plugins/${plugin}/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/${plugin}/qml)
+endforeach()
 
 # Extract version from appversion.h
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/appversion.h" APP_VERSION_H)

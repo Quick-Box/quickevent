@@ -21,7 +21,7 @@ public:
 	~ServiceWidget();
 
 	void setStatus(Service::Status st);
-	void setServiceId(const QString &id, const QString &display_name);
+	void setService(Service *service);
 	QString serviceId() const;
 	void setMessage(const QString &m);
 
