@@ -204,6 +204,11 @@ QAbstractButton *LogWidget::clearButton()
 	return ui->btClearLog;
 }
 
+QHBoxLayout *LogWidget::horizontalLayout()
+{
+	return ui->horizontalLayout;
+}
+
 void LogWidget::filterStringChanged(const QString &filter_string)
 {
 	m_filterModel->setFilterString(filter_string);

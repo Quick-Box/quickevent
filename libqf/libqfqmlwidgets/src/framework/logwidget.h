@@ -8,6 +8,7 @@
 #include <QTableView>
 
 class QAbstractButton;
+class QHBoxLayout;
 
 namespace qf {
 namespace core {
@@ -82,6 +83,7 @@ private:
 protected:
 	qf::core::model::LogTableModel* m_logTableModel = nullptr;
 	LogFilterProxyModel* m_filterModel = nullptr;
+	QHBoxLayout *horizontalLayout();
 private:
 	Ui::LogWidget *ui;
 	bool m_logCategoriesRegistered = false;
