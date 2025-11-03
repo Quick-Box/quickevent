@@ -40,9 +40,6 @@
 #include <QDir>
 #include <QApplication>
 #include <QTextStream>
-//#include <QStyle>
-
-#include <typeinfo>
 
 using namespace qf::gui::reports;
 
@@ -137,7 +134,7 @@ void ReportViewWidget::ScrollArea::wheelEvent(QWheelEvent * ev)
 				ev->accept();
 				return;
 			}
-	
+
 	}
 	QScrollArea::wheelEvent(ev);
 }

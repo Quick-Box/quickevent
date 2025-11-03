@@ -7,6 +7,10 @@ class QNetworkReply;
 class QUrlQuery;
 class QTimer;
 
+namespace shv::iotqt::node { class ShvNodeTree; }
+namespace shv::iotqt::rpc { class ClientConnection; }
+namespace shv::chainpack { class RpcMessage; class RpcError; }
+
 namespace Event::services::qx {
 
 class QxClientServiceSettings : public ServiceSettings
@@ -68,6 +72,14 @@ public:
 	QUrl exchangeServerUrl() const;
 
 	int eventId() const;
+private: // shv
+	void onBrokerConnectedChanged(bool is_connected);
+	void onRpcMessageReceived(const shv::chainpack::RpcMessage &msg);
+	void onBrokerSocketError(const QString &err);
+	void onBrokerLoginError(const shv::chainpack::RpcError &err);
+
+	void subscribeChanges();
+	void testRpcCall() const;
 private:
 	void loadSettings() override;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
@@ -84,6 +96,10 @@ private:
 	void pollQxChanges();
 
 	EventInfo eventInfo() const;
+private: // shv
+	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
+	shv::iotqt::node::ShvNodeTree *m_shvTree = nullptr;
+
 private:
 	QNetworkAccessManager *m_networkManager = nullptr;
 	QNetworkReply *m_replySSE = nullptr;

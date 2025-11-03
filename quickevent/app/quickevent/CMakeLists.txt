@@ -266,12 +266,14 @@ qt6_add_lupdate(quickevent TS_FILES
 target_sources(quickevent PRIVATE ${QM_FILES})
 target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(quickevent PUBLIC libquickeventcore libquickeventgui libqfgui libsiut)
+if (QF_WITH_LIBSHV)
+	target_link_libraries(quickevent PUBLIC libshviotqt)
+	target_compile_definitions(quickevent PRIVATE QF_WITH_LIBSHV)
+endif()
 
 install(TARGETS quickevent)
 install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_BINDIR}/translations)
 
-#install(DIRECTORY plugins/Runs/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/Runs/qml)
-#install(DIRECTORY plugins/Receipts/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/Receipts/qml)
 foreach(plugin IN ITEMS Classes Runs Relays Receipts shared)
 	install(DIRECTORY plugins/${plugin}/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/${plugin}/qml)
 endforeach()

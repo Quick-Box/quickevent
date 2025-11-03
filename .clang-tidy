@@ -40,6 +40,7 @@ Checks:
     -cppcoreguidelines-pro-type-union-access,
     -cppcoreguidelines-pro-type-vararg,
     -cppcoreguidelines-special-member-functions,
+    -cppcoreguidelines-use-enum-class
     -hicpp-avoid-c-arrays,
     -hicpp-avoid-goto,
     -hicpp-braces-around-statements,
