@@ -1,6 +1,6 @@
-#include "qxclientservicewidget.h"
-#include "ui_qxclientservicewidget.h"
-#include "qxclientservice.h"
+#include "qxeventservicewidget.h"
+#include "ui_qxeventservicewidget.h"
+#include "qxeventservice.h"
 
 #include <plugins/Event/src/eventplugin.h>
 
@@ -19,14 +19,14 @@ using qf::gui::framework::getPlugin;
 
 namespace Event::services::qx {
 
-QxClientServiceWidget::QxClientServiceWidget(QWidget *parent)
+QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	: Super(parent)
-	, ui(new Ui::QxClientServiceWidget)
+	, ui(new Ui::QxEventServiceWidget)
 {
 	setPersistentSettingsId("QxClientServiceWidget");
 	ui->setupUi(this);
-	connect(ui->edServerUrl, &QLineEdit::textChanged, this, &QxClientServiceWidget::updateOCheckListPostUrl);
-	connect(ui->edApiToken, &QLineEdit::textChanged, this, &QxClientServiceWidget::updateOCheckListPostUrl);
+	connect(ui->edServerUrl, &QLineEdit::textChanged, this, &QxEventServiceWidget::updateOCheckListPostUrl);
+	connect(ui->edApiToken, &QLineEdit::textChanged, this, &QxEventServiceWidget::updateOCheckListPostUrl);
 
 	setMessage("");
 
@@ -38,18 +38,18 @@ QxClientServiceWidget::QxClientServiceWidget(QWidget *parent)
 	ui->edServerUrl->setText(settings.exchangeServerUrl());
 	ui->edApiToken->setText(svc->apiToken());
 	ui->edCurrentStage->setValue(current_stage);
-	connect(ui->btTestConnection, &QAbstractButton::clicked, this, &QxClientServiceWidget::testConnection);
-	connect(ui->btExportEventInfo, &QAbstractButton::clicked, this, &QxClientServiceWidget::exportEventInfo);
-	connect(ui->btExportStartList, &QAbstractButton::clicked, this, &QxClientServiceWidget::exportStartList);
-	connect(ui->btExportRuns, &QAbstractButton::clicked, this, &QxClientServiceWidget::exportRuns);
+	connect(ui->btTestConnection, &QAbstractButton::clicked, this, &QxEventServiceWidget::testConnection);
+	connect(ui->btExportEventInfo, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportEventInfo);
+	connect(ui->btExportStartList, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportStartList);
+	connect(ui->btExportRuns, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportRuns);
 }
 
-QxClientServiceWidget::~QxClientServiceWidget()
+QxEventServiceWidget::~QxEventServiceWidget()
 {
 	delete ui;
 }
 
-void QxClientServiceWidget::setMessage(const QString &msg, MessageType msg_type)
+void QxEventServiceWidget::setMessage(const QString &msg, MessageType msg_type)
 {
 	if (msg.isEmpty()) {
 		ui->lblStatus->setStyleSheet({});
@@ -70,7 +70,7 @@ void QxClientServiceWidget::setMessage(const QString &msg, MessageType msg_type)
 	ui->lblStatus->setText(msg);
 }
 
-bool QxClientServiceWidget::acceptDialogDone(int result)
+bool QxEventServiceWidget::acceptDialogDone(int result)
 {
 	if(result == QDialog::Accepted) {
 		if(!saveSettings()) {
@@ -80,14 +80,14 @@ bool QxClientServiceWidget::acceptDialogDone(int result)
 	return true;
 }
 
-QxClientService *QxClientServiceWidget::service()
+QxEventService *QxEventServiceWidget::service()
 {
-	auto *svc = qobject_cast<QxClientService*>(Service::serviceByName(QxClientService::serviceId()));
-	QF_ASSERT(svc, QxClientService::serviceId() + " doesn't exist", return nullptr);
+	auto *svc = qobject_cast<QxEventService*>(Service::serviceByName(QxEventService::serviceId()));
+	QF_ASSERT(svc, QxEventService::serviceId() + " doesn't exist", return nullptr);
 	return svc;
 }
 
-bool QxClientServiceWidget::saveSettings()
+bool QxEventServiceWidget::saveSettings()
 {
 	auto *svc = service();
 	if(svc) {
@@ -104,14 +104,14 @@ bool QxClientServiceWidget::saveSettings()
 	return true;
 }
 
-void QxClientServiceWidget::updateOCheckListPostUrl()
+void QxEventServiceWidget::updateOCheckListPostUrl()
 {
 	auto url = QStringLiteral("%1/api/event/current/oc").arg(ui->edServerUrl->text());
 	ui->edOChecklistUrl->setText(url);
 	ui->edOChecklistUrlHeader->setText(QStringLiteral("qx-api-token=%1").arg(ui->edApiToken->text()));
 }
 
-void QxClientServiceWidget::testConnection()
+void QxEventServiceWidget::testConnection()
 {
 	auto *svc = service();
 	Q_ASSERT(svc);
@@ -131,7 +131,7 @@ void QxClientServiceWidget::testConnection()
 	});
 }
 
-void QxClientServiceWidget::exportEventInfo()
+void QxEventServiceWidget::exportEventInfo()
 {
 	auto *svc = service();
 	Q_ASSERT(svc);
@@ -151,7 +151,7 @@ void QxClientServiceWidget::exportEventInfo()
 	});
 }
 
-void QxClientServiceWidget::exportStartList()
+void QxEventServiceWidget::exportStartList()
 {
 	auto *svc = service();
 	Q_ASSERT(svc);
@@ -167,7 +167,7 @@ void QxClientServiceWidget::exportStartList()
 	});
 }
 
-void QxClientServiceWidget::exportRuns()
+void QxEventServiceWidget::exportRuns()
 {
 	auto *svc = service();
 	Q_ASSERT(svc);

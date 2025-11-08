@@ -13,13 +13,13 @@ namespace shv::chainpack { class RpcMessage; class RpcError; }
 
 namespace Event::services::qx {
 
-class QxClientServiceSettings : public ServiceSettings
+class QxEventServiceSettings : public ServiceSettings
 {
 	using Super = ServiceSettings;
 
 	QF_VARIANTMAP_FIELD2(QString, e, setE, xchangeServerUrl, "http://localhost:8000")
 public:
-	QxClientServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
+	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
 };
 
 class EventInfo : public QVariantMap
@@ -38,7 +38,7 @@ public:
 	EventInfo(const QVariantMap &data = QVariantMap()) : QVariantMap(data) {}
 };
 
-class QxClientService : public Service
+class QxEventService : public Service
 {
 	Q_OBJECT
 
@@ -46,14 +46,14 @@ class QxClientService : public Service
 public:
 	static constexpr auto QX_API_TOKEN = "qx-api-token";
 public:
-	QxClientService(QObject *parent);
+	QxEventService(QObject *parent);
 
 	static QString serviceId();
 	QString serviceDisplayName() const override;
 
 	void run() override;
 	void stop() override;
-	QxClientServiceSettings settings() const {return QxClientServiceSettings(m_settings);}
+	QxEventServiceSettings settings() const {return QxEventServiceSettings(m_settings);}
 
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 	QNetworkAccessManager* networkManager();

@@ -87,11 +87,8 @@ add_executable(quickevent
 	plugins/Event/src/services/serviceswidget.cpp
 	plugins/Event/src/services/servicewidget.cpp
 	plugins/Event/src/services/servicewidget.ui
-	plugins/Event/src/services/qx/qxclientservice.cpp
-	plugins/Event/src/services/qx/qxclientservice.h
-	plugins/Event/src/services/qx/qxclientservicewidget.cpp
-	plugins/Event/src/services/qx/qxclientservicewidget.h
-	plugins/Event/src/services/qx/qxclientservicewidget.ui
+	plugins/Event/src/services/qx/qxeventservice.cpp plugins/Event/src/services/qx/qxeventservice.h plugins/Event/src/services/qx/qxeventservicewidget.cpp plugins/Event/src/services/qx/qxeventservicewidget.h
+	plugins/Event/src/services/qx/qxeventservicewidget.ui
 	plugins/Event/src/services/qx/qxlateregistrationswidget.h
 	plugins/Event/src/services/qx/qxlateregistrationswidget.cpp
 	plugins/Event/src/services/qx/qxlateregistrationswidget.ui

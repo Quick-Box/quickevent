@@ -1,7 +1,7 @@
 #include "runchangedialog.h"
 #include "ui_runchangedialog.h"
 
-#include "qxclientservice.h"
+#include "qxeventservice.h"
 #include "runchange.h"
 
 #include <plugins/Competitors/src/competitordocument.h>
@@ -72,9 +72,9 @@ RunChangeDialog::~RunChangeDialog()
 	delete ui;
 }
 
-QxClientService *RunChangeDialog::service()
+QxEventService *RunChangeDialog::service()
 {
-	auto *svc = qobject_cast<QxClientService*>(Service::serviceByName(QxClientService::serviceId()));
+	auto *svc = qobject_cast<QxEventService*>(Service::serviceByName(QxEventService::serviceId()));
 	Q_ASSERT(svc);
 	return svc;
 }
@@ -220,7 +220,7 @@ void RunChangeDialog::resolveChanges(bool is_accepted)
 	url.setQuery(query);
 
 	request.setUrl(url);
-	request.setRawHeader(QxClientService::QX_API_TOKEN, svc->apiToken());
+	request.setRawHeader(QxEventService::QX_API_TOKEN, svc->apiToken());
 	auto *reply = nm->get(request);
 	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
 		if (reply->error() == QNetworkReply::NetworkError::NoError) {
