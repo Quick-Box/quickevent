@@ -1,5 +1,5 @@
-#include "qxclientservice.h"
-#include "qxclientservicewidget.h"
+#include "qxeventservice.h"
+#include "qxeventservicewidget.h"
 
 #include "../../eventplugin.h"
 #include "../../../../Runs/src/runsplugin.h"
@@ -56,24 +56,24 @@ namespace Event::services::qx {
 //===============================================
 // QxClientService
 //===============================================
-QxClientService::QxClientService(QObject *parent)
-	: Super(QxClientService::serviceId(), parent)
+QxEventService::QxEventService(QObject *parent)
+	: Super(QxEventService::serviceId(), parent)
 {
 	auto *event_plugin = getPlugin<EventPlugin>();
-	connect(event_plugin, &Event::EventPlugin::dbEventNotify, this, &QxClientService::onDbEventNotify, Qt::QueuedConnection);
+	connect(event_plugin, &Event::EventPlugin::dbEventNotify, this, &QxEventService::onDbEventNotify, Qt::QueuedConnection);
 }
 
-QString QxClientService::serviceDisplayName() const
+QString QxEventService::serviceDisplayName() const
 {
 	return tr("QE Exchange");
 }
 
-QString QxClientService::serviceId()
+QString QxEventService::serviceId()
 {
 	return QStringLiteral("qx");
 }
 
-void QxClientService::run() {
+void QxEventService::run() {
 	using namespace shv::iotqt::rpc;
 
 	auto ss = settings();
@@ -82,10 +82,10 @@ void QxClientService::run() {
 	m_rpcConnection = new ClientConnection(this);
 	m_rpcConnection->setConnectionString(ss.exchangeServerUrl());
 
-	connect(m_rpcConnection, &ClientConnection::brokerConnectedChanged, this, &QxClientService::onBrokerConnectedChanged);
-	connect(m_rpcConnection, &ClientConnection::socketError, this, &QxClientService::onBrokerSocketError);
-	connect(m_rpcConnection, &ClientConnection::brokerLoginError, this, &QxClientService::onBrokerLoginError);
-	connect(m_rpcConnection, &ClientConnection::rpcMessageReceived, this, &QxClientService::onRpcMessageReceived);
+	connect(m_rpcConnection, &ClientConnection::brokerConnectedChanged, this, &QxEventService::onBrokerConnectedChanged);
+	connect(m_rpcConnection, &ClientConnection::socketError, this, &QxEventService::onBrokerSocketError);
+	connect(m_rpcConnection, &ClientConnection::brokerLoginError, this, &QxEventService::onBrokerLoginError);
+	connect(m_rpcConnection, &ClientConnection::rpcMessageReceived, this, &QxEventService::onRpcMessageReceived);
 
 	m_rpcConnection->open();
 
@@ -111,7 +111,7 @@ void QxClientService::run() {
 //	});
 }
 
-void QxClientService::stop()
+void QxEventService::stop()
 {
 	disconnectSSE();
 	if (m_pollChangesTimer) {
@@ -120,13 +120,13 @@ void QxClientService::stop()
 	Super::stop();
 }
 
-qf::gui::framework::DialogWidget *QxClientService::createDetailWidget()
+qf::gui::framework::DialogWidget *QxEventService::createDetailWidget()
 {
-	auto *w = new QxClientServiceWidget();
+	auto *w = new QxEventServiceWidget();
 	return w;
 }
 
-void QxClientService::loadSettings()
+void QxEventService::loadSettings()
 {
 	Super::loadSettings();
 	auto ss = settings();
@@ -136,7 +136,7 @@ void QxClientService::loadSettings()
 	m_settings = ss;
 }
 
-void QxClientService::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
+void QxEventService::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
 {
 	Q_UNUSED(connection_id)
 	Q_UNUSED(data)
@@ -183,7 +183,7 @@ void QxClientService::onDbEventNotify(const QString &domain, int connection_id, 
 	}
 }
 
-QNetworkAccessManager *QxClientService::networkManager()
+QNetworkAccessManager *QxEventService::networkManager()
 {
 	if (!m_networkManager) {
 		m_networkManager = new QNetworkAccessManager(this);
@@ -191,7 +191,7 @@ QNetworkAccessManager *QxClientService::networkManager()
 	return m_networkManager;
 }
 
-QNetworkReply *QxClientService::getRemoteEventInfo(const QString &qxhttp_host, const QString &api_token)
+QNetworkReply *QxEventService::getRemoteEventInfo(const QString &qxhttp_host, const QString &api_token)
 {
 	auto *nm = networkManager();
 	QNetworkRequest request;
@@ -202,7 +202,7 @@ QNetworkReply *QxClientService::getRemoteEventInfo(const QString &qxhttp_host, c
 	return nm->get(request);
 }
 
-QNetworkReply *QxClientService::postEventInfo(const QString &qxhttp_host, const QString &api_token)
+QNetworkReply *QxEventService::postEventInfo(const QString &qxhttp_host, const QString &api_token)
 {
 	auto *nm = networkManager();
 	QNetworkRequest request;
@@ -218,7 +218,7 @@ QNetworkReply *QxClientService::postEventInfo(const QString &qxhttp_host, const 
 	return nm->post(request, data);
 }
 
-void QxClientService::postStartListIofXml3(QObject *context, std::function<void (QString)> call_back)
+void QxEventService::postStartListIofXml3(QObject *context, std::function<void (QString)> call_back)
 {
 	auto *ep = getPlugin<EventPlugin>();
 	int current_stage = ep->currentStageId();
@@ -229,7 +229,7 @@ void QxClientService::postStartListIofXml3(QObject *context, std::function<void 
 	}
 }
 
-void QxClientService::postRuns(QObject *context, std::function<void (QString)> call_back)
+void QxEventService::postRuns(QObject *context, std::function<void (QString)> call_back)
 {
 	auto *ep = getPlugin<EventPlugin>();
 	int current_stage = ep->currentStageId();
@@ -241,7 +241,7 @@ void QxClientService::postRuns(QObject *context, std::function<void (QString)> c
 	}
 }
 
-void QxClientService::getHttpJson(const QString &path, const QUrlQuery &query, QObject *context, const std::function<void (QVariant, QString)> &call_back)
+void QxEventService::getHttpJson(const QString &path, const QUrlQuery &query, QObject *context, const std::function<void (QVariant, QString)> &call_back)
 {
 	auto url = exchangeServerUrl();
 	url.setPath(path);
@@ -270,7 +270,7 @@ void QxClientService::getHttpJson(const QString &path, const QUrlQuery &query, Q
 	});
 }
 
-QNetworkReply* QxClientService::getQxChangesReply(int from_id)
+QNetworkReply* QxEventService::getQxChangesReply(int from_id)
 {
 	auto url = exchangeServerUrl();
 
@@ -282,7 +282,7 @@ QNetworkReply* QxClientService::getQxChangesReply(int from_id)
 	return networkManager()->get(request);
 }
 
-int QxClientService::eventId() const
+int QxEventService::eventId() const
 {
 	if (m_eventId == 0) {
 		throw qf::core::Exception(tr("Event ID is not loaded, service is not probably running."));
@@ -290,7 +290,7 @@ int QxClientService::eventId() const
 	return m_eventId;
 }
 
-QByteArray QxClientService::apiToken() const
+QByteArray QxEventService::apiToken() const
 {
 	// API token must not be cached to enable service point
 	// always to current stage event on qxhttpd
@@ -299,13 +299,13 @@ QByteArray QxClientService::apiToken() const
 	return event_plugin->stageData(current_stage).qxApiToken().toUtf8();
 }
 
-QUrl QxClientService::exchangeServerUrl() const
+QUrl QxEventService::exchangeServerUrl() const
 {
 	auto ss = settings();
 	return QUrl(ss.exchangeServerUrl());
 }
 
-void QxClientService::postFileCompressed(std::optional<QString> path, std::optional<QString> name, QByteArray data, QObject *context , std::function<void (QString)> call_back)
+void QxEventService::postFileCompressed(std::optional<QString> path, std::optional<QString> name, QByteArray data, QObject *context , std::function<void (QString)> call_back)
 {
 	auto url = exchangeServerUrl();
 
@@ -333,7 +333,7 @@ void QxClientService::postFileCompressed(std::optional<QString> path, std::optio
 	});
 }
 
-void QxClientService::uploadSpecFile(SpecFile file, QByteArray data, QObject *context, const std::function<void (QString)> &call_back)
+void QxEventService::uploadSpecFile(SpecFile file, QByteArray data, QObject *context, const std::function<void (QString)> &call_back)
 {
 	switch (file) {
 	case SpecFile::StartListIofXml3:
@@ -345,7 +345,7 @@ void QxClientService::uploadSpecFile(SpecFile file, QByteArray data, QObject *co
 	}
 }
 
-QByteArray QxClientService::zlibCompress(QByteArray data)
+QByteArray QxEventService::zlibCompress(QByteArray data)
 {
 	QByteArray compressedData = qCompress(data);
 	// strip the 4-byte length put on by qCompress
@@ -354,7 +354,7 @@ QByteArray QxClientService::zlibCompress(QByteArray data)
 	return compressedData;
 }
 
-void QxClientService::httpPostJson(const QString &path, const QString &query, QVariantMap json, QObject *context, const std::function<void (QString)> &call_back)
+void QxEventService::httpPostJson(const QString &path, const QString &query, QVariantMap json, QObject *context, const std::function<void (QString)> &call_back)
 {
 	if (!isRunning()) {
 		return;
@@ -394,7 +394,7 @@ void QxClientService::httpPostJson(const QString &path, const QString &query, QV
 	}
 }
 
-void QxClientService::connectToSSE(int event_id)
+void QxEventService::connectToSSE(int event_id)
 {
 	Q_UNUSED(event_id);
 	// auto url = exchangeServerUrl();
@@ -417,7 +417,7 @@ void QxClientService::connectToSSE(int event_id)
 	// });
 }
 
-void QxClientService::disconnectSSE()
+void QxEventService::disconnectSSE()
 {
 	if (m_replySSE) {
 		qfInfo() << "Disconnecting SSE:" << m_replySSE;
@@ -426,7 +426,7 @@ void QxClientService::disconnectSSE()
 	}
 }
 
-void QxClientService::pollQxChanges()
+void QxEventService::pollQxChanges()
 {
 	auto event_plugin = getPlugin<EventPlugin>();
 	if(!getPlugin<EventPlugin>()->isEventOpen()) {
@@ -501,7 +501,7 @@ void QxClientService::pollQxChanges()
 	}
 }
 
-EventInfo QxClientService::eventInfo() const
+EventInfo QxEventService::eventInfo() const
 {
 	auto *event_plugin = getPlugin<EventPlugin>();
 	auto *event_config = event_plugin->eventConfig();
@@ -582,12 +582,12 @@ EventInfo QxClientService::eventInfo() const
 //	return csv;
 //}
 //}
-int QxClientService::currentConnectionId()
+int QxEventService::currentConnectionId()
 {
 	return qf::core::sql::Connection::forName().connectionId();
 }
 
-void QxClientService::onBrokerConnectedChanged(bool is_connected)
+void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
 		setStatus(Status::Running);
@@ -601,17 +601,17 @@ void QxClientService::onBrokerConnectedChanged(bool is_connected)
 
 }
 
-void QxClientService::onBrokerSocketError(const QString &err)
+void QxEventService::onBrokerSocketError(const QString &err)
 {
 	setStatusMessage(tr("Broker socket error: %1").arg(err));
 }
 
-void QxClientService::onBrokerLoginError(const shv::chainpack::RpcError &err)
+void QxEventService::onBrokerLoginError(const shv::chainpack::RpcError &err)
 {
 	setStatusMessage(tr("Broker login error: %1").arg(err.toString()));
 }
 
-void QxClientService::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)
+void QxEventService::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)
 {
 //	shvLogFuncFrame() << msg.toCpon();
 	if(msg.isRequest()) {
@@ -631,7 +631,7 @@ void QxClientService::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg
 	}
 }
 
-void QxClientService::subscribeChanges()
+void QxEventService::subscribeChanges()
 {
 	Q_ASSERT(m_rpcConnection);
 	QString shv_path = "test";
@@ -653,7 +653,7 @@ void QxClientService::subscribeChanges()
 	rpc_call->start();
 }
 
-void QxClientService::testRpcCall() const
+void QxEventService::testRpcCall() const
 {
 	Q_ASSERT(m_rpcConnection);
 	auto *rpc_call = RpcCall::create(m_rpcConnection)
