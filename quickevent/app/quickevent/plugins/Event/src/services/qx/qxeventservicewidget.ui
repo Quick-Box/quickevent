@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Event::services::qx::QxClientServiceWidget</class>
- <widget class="QWidget" name="Event::services::qx::QxClientServiceWidget">
+ <class>Event::services::qx::QxEventServiceWidget</class>
+ <widget class="QWidget" name="Event::services::qx::QxEventServiceWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
