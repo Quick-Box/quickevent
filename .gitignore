@@ -41,3 +41,7 @@ build
 
 _work/*
 doc/book
+
+.cache
+
+compile_commands.json
