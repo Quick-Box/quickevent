@@ -21,10 +21,10 @@ QRect DesktopUtils::moveRectToVisibleDesktopScreen(const QRect &rect)
 	if (!screen_rect.contains(rect.topLeft())) {
 		ret.moveTopLeft(screen_rect.topLeft());
 	}
-	if (ret.size().width() < screen_rect.size().width()) {
+	if (ret.size().width() > screen_rect.size().width()) {
 		ret.setWidth(screen_rect.width());
 	}
-	if (ret.size().height() < screen_rect.size().height()) {
+	if (ret.size().height() > screen_rect.size().height()) {
 		ret.setHeight(screen_rect.height());
 	}
 	return ret;

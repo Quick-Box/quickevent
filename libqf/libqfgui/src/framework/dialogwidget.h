@@ -32,7 +32,7 @@ private:
 	typedef Frame Super;
 public:
 	explicit DialogWidget(QWidget *parent = nullptr);
-	~DialogWidget() Q_DECL_OVERRIDE;
+	~DialogWidget() override;
 
 	QF_PROPERTY_IMPL(QString, t, T, itle)
 	QF_PROPERTY_IMPL(QString, i, I, conSource)

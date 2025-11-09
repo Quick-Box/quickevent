@@ -9,13 +9,13 @@
 
 using namespace qf::gui::framework;
 
-DialogWidget::DialogWidget(QWidget *parent) :
-	Super(parent), IPersistentSettings(this)
+DialogWidget::DialogWidget(QWidget *parent)
+	: Super(parent)
+	, IPersistentSettings(this)
 {
 }
 
-DialogWidget::~DialogWidget()
-= default;
+DialogWidget::~DialogWidget() = default;
 
 bool DialogWidget::acceptDialogDone(int result)
 {
@@ -23,12 +23,7 @@ bool DialogWidget::acceptDialogDone(int result)
 	Q_UNUSED(result);
 	return true;
 }
-/*
-QVariant DialogWidget::acceptDialogDone_qml(const QVariant &result)
-{
-	return acceptDialogDone(result.toBool());
-}
-*/
+
 void DialogWidget::settleDownInDialog_qml(const QVariant &dlg)
 {
 	auto *o = dlg.value<QObject*>();
