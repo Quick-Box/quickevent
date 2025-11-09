@@ -23,7 +23,7 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::QxEventServiceWidget)
 {
-	setPersistentSettingsId("QxClientServiceWidget");
+	setPersistentSettingsId("QxEventServiceWidget");
 	ui->setupUi(this);
 	connect(ui->edServerUrl, &QLineEdit::textChanged, this, &QxEventServiceWidget::updateOCheckListPostUrl);
 	connect(ui->edApiToken, &QLineEdit::textChanged, this, &QxEventServiceWidget::updateOCheckListPostUrl);
@@ -35,7 +35,7 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	auto *event_plugin = getPlugin<EventPlugin>();
 	auto current_stage = event_plugin->currentStageId();
 	auto settings = svc->settings();
-	ui->edServerUrl->setText(settings.exchangeServerUrl());
+	ui->edServerUrl->setText(settings.shvBrokerUrl());
 	ui->edApiToken->setText(svc->apiToken());
 	ui->edCurrentStage->setValue(current_stage);
 	connect(ui->btTestConnection, &QAbstractButton::clicked, this, &QxEventServiceWidget::testConnection);
@@ -92,7 +92,7 @@ bool QxEventServiceWidget::saveSettings()
 	auto *svc = service();
 	if(svc) {
 		auto ss = svc->settings();
-		ss.setExchangeServerUrl(ui->edServerUrl->text());
+		ss.setShvBrokerUrl(ui->edServerUrl->text());
 		svc->setSettings(ss);
 		auto *event_plugin = getPlugin<EventPlugin>();
 
