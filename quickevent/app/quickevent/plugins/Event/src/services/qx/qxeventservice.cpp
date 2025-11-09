@@ -51,24 +51,8 @@ QxEventService::QxEventService(QObject *parent)
 	: Super(QxEventService::serviceId(), parent)
 	, m_rootNode(new shv::iotqt::node::ShvRootNode(this))
 {
-	auto *event_plugin = getPlugin<EventPlugin>();
-	// connect(event_plugin, &Event::EventPlugin::dbEventNotify, this, &QxEventService::onDbEventNotify, Qt::QueuedConnection);
-
 	new DotAppNode(m_rootNode);
-	connect(event_plugin, &EventPlugin::eventOpenChanged, this, [this](bool is_open) {
-		if (is_open) {
-			new SqlApiNode(m_rootNode);
-			auto *event = new EventNode(m_rootNode);
-			auto *current_stage = new shv::iotqt::node::ShvNode("currentStage", event);
-			new CurrentStageConfigNode(current_stage);
-			//new CurrentStageStartListNode(current_stage);
-			new CurrentStageRunsNode(current_stage);
-			new CurrentStageClassesNode(current_stage);
-		}
-		else {
-			qDeleteAll(m_rootNode->findChildren<EventNode*>());
-		}
-	});
+	new SqlApiNode(m_rootNode);
 
 	connect(m_rootNode, &shv::iotqt::node::ShvNode::sendRpcMessage, this, &QxEventService::sendRpcMessage);
 }
