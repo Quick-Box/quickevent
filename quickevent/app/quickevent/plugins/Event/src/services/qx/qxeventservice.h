@@ -7,8 +7,8 @@ class QNetworkReply;
 class QUrlQuery;
 class QTimer;
 
-namespace shv::iotqt::node { class ShvNodeTree; }
-namespace shv::iotqt::rpc { class ClientConnection; }
+namespace shv::iotqt::node { class ShvNodeTree; class ShvRootNode; }
+namespace shv::iotqt::rpc { class DeviceConnection; }
 namespace shv::chainpack { class RpcMessage; class RpcError; }
 
 namespace Event::services::qx {
@@ -17,7 +17,7 @@ class QxEventServiceSettings : public ServiceSettings
 {
 	using Super = ServiceSettings;
 
-	QF_VARIANTMAP_FIELD2(QString, e, setE, xchangeServerUrl, "http://localhost:8000")
+	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "http://localhost:8000")
 public:
 	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
 };
@@ -69,12 +69,13 @@ public:
 
 	QByteArray apiToken() const;
 	static int currentConnectionId();
-	QUrl exchangeServerUrl() const;
+	QUrl shvBrokerUrl() const;
 
 	int eventId() const;
 private: // shv
 	void onBrokerConnectedChanged(bool is_connected);
 	void onRpcMessageReceived(const shv::chainpack::RpcMessage &msg);
+	void sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg);
 	void onBrokerSocketError(const QString &err);
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
 
@@ -97,9 +98,8 @@ private:
 
 	EventInfo eventInfo() const;
 private: // shv
-	shv::iotqt::rpc::ClientConnection *m_rpcConnection = nullptr;
-	shv::iotqt::node::ShvNodeTree *m_shvTree = nullptr;
-
+	shv::iotqt::rpc::DeviceConnection *m_rpcConnection = nullptr;
+	shv::iotqt::node::ShvRootNode *m_rootNode;
 private:
 	QNetworkAccessManager *m_networkManager = nullptr;
 	QNetworkReply *m_replySSE = nullptr;

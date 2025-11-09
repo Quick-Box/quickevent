@@ -208,7 +208,7 @@ void RunChangeDialog::resolveChanges(bool is_accepted)
 	auto *svc = service();
 	auto *nm = svc->networkManager();
 	QNetworkRequest request;
-	auto url = svc->exchangeServerUrl();
+	auto url = svc->shvBrokerUrl();
 	// qfInfo() << "url " << url.toString();
 	url.setPath("/api/event/current/changes/resolve-change");
 

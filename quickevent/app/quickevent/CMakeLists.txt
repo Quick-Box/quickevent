@@ -1,3 +1,5 @@
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_executable(quickevent
 	plugins/CardReader/src/cardchecker.cpp
 	plugins/CardReader/src/cardcheckerclassiccpp.cpp
@@ -87,11 +89,13 @@ add_executable(quickevent
 	plugins/Event/src/services/serviceswidget.cpp
 	plugins/Event/src/services/servicewidget.cpp
 	plugins/Event/src/services/servicewidget.ui
-	plugins/Event/src/services/qx/qxeventservice.cpp plugins/Event/src/services/qx/qxeventservice.h plugins/Event/src/services/qx/qxeventservicewidget.cpp plugins/Event/src/services/qx/qxeventservicewidget.h
-	plugins/Event/src/services/qx/qxeventservicewidget.ui
-	plugins/Event/src/services/qx/qxlateregistrationswidget.h
-	plugins/Event/src/services/qx/qxlateregistrationswidget.cpp
-	plugins/Event/src/services/qx/qxlateregistrationswidget.ui
+
+	plugins/Event/src/services/qx/qxnode.cpp
+	plugins/Event/src/services/qx/sqlapinode.cpp
+	plugins/Event/src/services/qx/nodes.cpp
+	plugins/Event/src/services/qx/qxeventservice.cpp plugins/Event/src/services/qx/qxeventservice.h
+	plugins/Event/src/services/qx/qxeventservicewidget.cpp plugins/Event/src/services/qx/qxeventservicewidget.h plugins/Event/src/services/qx/qxeventservicewidget.ui
+	plugins/Event/src/services/qx/qxlateregistrationswidget.h plugins/Event/src/services/qx/qxlateregistrationswidget.cpp plugins/Event/src/services/qx/qxlateregistrationswidget.ui
 	plugins/Event/src/services/qx/runchangedialog.h plugins/Event/src/services/qx/runchangedialog.cpp plugins/Event/src/services/qx/runchangedialog.ui
 	plugins/Event/src/services/qx/runchange.h plugins/Event/src/services/qx/runchange.cpp
 
@@ -265,7 +269,8 @@ target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAK
 target_link_libraries(quickevent PUBLIC libquickeventcore libquickeventgui libqfgui libsiut)
 if (QF_WITH_LIBSHV)
 	target_link_libraries(quickevent PUBLIC libshviotqt)
-	target_compile_definitions(quickevent PRIVATE QF_WITH_LIBSHV)
+target_link_libraries(quickevent PRIVATE Qt6::Core)
+target_compile_definitions(quickevent PRIVATE QF_WITH_LIBSHV)
 endif()
 
 install(TARGETS quickevent)
