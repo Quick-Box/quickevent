@@ -20,6 +20,12 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
 
+#include <plugins/Event/src/services/qx/sqlapi.h>
+#include <plugins/Event/src/eventplugin.h>
+#include <plugins/CardReader/src/cardreaderplugin.h>
+#include <plugins/Receipts/src/receiptsplugin.h>
+#include <plugins/Receipts/src/receiptsplugin.h>
+
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/log.h>
@@ -129,6 +135,8 @@ RunsTableWidget::RunsTableWidget(QWidget *parent) :
 			}
 		}
 	}, Qt::QueuedConnection);
+
+	connect(Event::services::qx::SqlApi::instance(), &Event::services::qx::SqlApi::recchng, this, &RunsTableWidget::onQxRecChng);
 }
 
 RunsTableWidget::~RunsTableWidget()
@@ -428,6 +436,26 @@ void RunsTableWidget::onTableViewSqlException(const QString &what, const QString
 void RunsTableWidget::onBadTableDataInput(const QString &message)
 {
 	qf::gui::dialogs::MessageBox::showError(this, message);
+}
+
+void RunsTableWidget::onQxRecChng(const Event::services::qx::QxRecChng &chng)
+{
+	std::optional<int> run_id;
+	if (chng.table == "competitors") {
+		auto *m = m_runsModel;
+		for (auto i=0; i<m->rowCount(); ++i) {
+			if (m->table().row(i).value("competitors.id").toInt() == chng.id) {
+				run_id = m->value(i, "runs.id").toInt();
+				break;
+			}
+		}
+	}
+	else if (chng.table == "runs") {
+		run_id = chng.id;
+	}
+	if (run_id.has_value()) {
+		ui->tblRuns->rowExternallySaved(run_id.value());
+	}
 }
 
 

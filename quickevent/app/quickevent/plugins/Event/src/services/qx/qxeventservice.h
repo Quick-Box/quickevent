@@ -13,11 +13,13 @@ namespace shv::chainpack { class RpcMessage; class RpcError; }
 
 namespace Event::services::qx {
 
+struct QxRecChng;
+
 class QxEventServiceSettings : public ServiceSettings
 {
 	using Super = ServiceSettings;
 
-	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "http://localhost:8000")
+	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "tcp://localhost?user=test&password=test")
 public:
 	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
 };
@@ -78,9 +80,9 @@ private: // shv
 	void sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg);
 	void onBrokerSocketError(const QString &err);
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
+	void onRecchg(const QxRecChng &chng);
 
 	void subscribeChanges();
-	void testRpcCall() const;
 private:
 	void loadSettings() override;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;

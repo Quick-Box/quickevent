@@ -1,5 +1,6 @@
 #include "qxeventservicewidget.h"
 #include "ui_qxeventservicewidget.h"
+
 #include "qxeventservice.h"
 
 #include <plugins/Event/src/eventplugin.h>
@@ -7,6 +8,8 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/core/assert.h>
+
+#include <shv/iotqt/rpc/deviceconnection.h>
 
 #include <QFileDialog>
 #include <QUrlQuery>
@@ -113,22 +116,27 @@ void QxEventServiceWidget::updateOCheckListPostUrl()
 
 void QxEventServiceWidget::testConnection()
 {
-	auto *svc = service();
-	Q_ASSERT(svc);
-	auto *reply = svc->getRemoteEventInfo(ui->edServerUrl->text(), ui->edApiToken->text());
-	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-		if (reply->error() == QNetworkReply::NetworkError::NoError) {
-			auto data = reply->readAll();
-			auto doc = QJsonDocument::fromJson(data);
-			EventInfo event_info(doc.toVariant().toMap());
-			ui->edEventId->setValue(event_info.id());
+	using namespace shv::iotqt::rpc;
+	using namespace shv::chainpack;
+
+	auto *rpc = new DeviceConnection(this);
+	rpc->setConnectionString(ui->edServerUrl->text());
+
+	connect(rpc, &ClientConnection::brokerConnectedChanged, this, [this, rpc](bool is_connected) {
+		if (is_connected) {
+			rpc->deleteLater();
 			setMessage(tr("Connected OK"));
 		}
-		else {
-			setMessage(tr("Connection error: %1").arg(reply->errorString()), MessageType::Error);
-		}
-		reply->deleteLater();
 	});
+	connect(rpc, &ClientConnection::socketError, this, [this, rpc](const QString &error) {
+		rpc->deleteLater();
+		setMessage(tr("Connection error: %1").arg(error), MessageType::Error);
+	});
+	connect(rpc, &ClientConnection::brokerLoginError, this, [this, rpc](const auto &error) {
+		rpc->deleteLater();
+		setMessage(tr("Login error: %1").arg(QString::fromStdString(error.toString())), MessageType::Error);
+	});
+	rpc->open();
 }
 
 void QxEventServiceWidget::exportEventInfo()
