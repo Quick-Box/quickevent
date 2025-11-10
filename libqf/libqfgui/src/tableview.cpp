@@ -1146,7 +1146,7 @@ void TableView::rowExternallySaved(const QVariant &id)
 		qf::core::sql::Query q;
 		bool ok = q.exec(query_str);
 		if (!ok) {
-			qfInfo() << "Query:" << query_str;
+			qfMessage() << "Query:" << query_str;
 			qfWarning() << "SQL error:" << q.lastErrorText();
 			return;
 		}

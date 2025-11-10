@@ -5,6 +5,7 @@
 class RunsTableModel;
 class RunsTableItemDelegate;
 namespace qf::gui { class TableView; }
+namespace Event::services::qx { struct QxRecChng; }
 
 namespace Ui {
 class RunsTableWidget;
@@ -32,6 +33,8 @@ private:
 	void onCustomContextMenuRequest(const QPoint &pos);
 	void onTableViewSqlException(const QString &what, const QString &where, const QString &stack_trace);
 	void onBadTableDataInput(const QString &message);
+
+	void onQxRecChng(const Event::services::qx::QxRecChng &chng);
 private:
 	Ui::RunsTableWidget *ui;
 	RunsTableModel *m_runsModel;
