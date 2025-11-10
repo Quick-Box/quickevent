@@ -2,6 +2,7 @@
 #include "qxeventservicewidget.h"
 #include "nodes.h"
 #include "sqlapinode.h"
+#include "sqlapi.h"
 
 #include "../../eventplugin.h"
 #include "../../../../Runs/src/runsplugin.h"
@@ -77,7 +78,7 @@ void QxEventService::run() {
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
 	RpcValue::Map opts;
 	RpcValue::Map device;
-	device["mountPoint"] = "test/quickbox";
+	device["mountPoint"] = "test/quickevent";
 	opts["device"] = device;
 	m_rpcConnection->setConnectionOptions(opts);
 
@@ -86,28 +87,9 @@ void QxEventService::run() {
 	connect(m_rpcConnection, &ClientConnection::brokerLoginError, this, &QxEventService::onBrokerLoginError);
 	connect(m_rpcConnection, &ClientConnection::rpcMessageReceived, this, &QxEventService::onRpcMessageReceived);
 
-	m_rpcConnection->open();
+	connect(SqlApi::instance(), &SqlApi::recchng, this, &QxEventService::onRecchg);
 
-//	connect(reply, &QNetworkReply::finished, this, [this, reply, ss]() {
-//		if (reply->error() == QNetworkReply::NetworkError::NoError) {
-//			auto data = reply->readAll();
-//			auto doc = QJsonDocument::fromJson(data);
-//			EventInfo event_info(doc.toVariant().toMap());
-//			setStatusMessage(event_info.name() + (event_info.stage_count() > 1? QStringLiteral(" E%1").arg(event_info.stage()): QString()));
-//			m_eventId = event_info.id();
-//			connectToSSE(m_eventId);
-//			if (!m_pollChangesTimer) {
-//				m_pollChangesTimer = new QTimer(this);
-//				connect(m_pollChangesTimer, &QTimer::timeout, this, &QxClientService::pollQxChanges);
-//			}
-//			pollQxChanges();
-//			m_pollChangesTimer->start(10000);
-//			Super::run();
-//		}
-//		else {
-//			qfWarning() << "Cannot run QX service, network error:" << reply->errorString();
-//		}
-//	});
+	m_rpcConnection->open();
 }
 
 void QxEventService::stop()
@@ -615,6 +597,10 @@ void QxEventService::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)
 //	shvLogFuncFrame() << msg.toCpon();
 	if(msg.isRequest()) {
 		RpcRequest rq(msg);
+		if (rq.shvPath().asString().starts_with(".broker/")) {
+			// ignore broker discovery messages
+			return;
+		}
 		qfMessage() << "RPC request received:" << rq.toPrettyString();
 		m_rootNode->handleRpcRequest(rq);
 	}
@@ -641,36 +627,22 @@ void QxEventService::subscribeChanges()
 	QString shv_path = "test";
 	QString signal_name = shv::chainpack::Rpc::SIG_VAL_CHANGED;
 	auto *rpc_call = RpcCall::createSubscriptionRequest(m_rpcConnection, shv_path, signal_name);
-	connect(rpc_call, &RpcCall::maybeResult, this, [this, shv_path, signal_name](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+	connect(rpc_call, &RpcCall::maybeResult, this, [shv_path, signal_name](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 		if(error.isValid()) {
 			qfError() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribe error:" << error.toString();
 		}
 		else {
 			qfMessage() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribed successfully" << result.toCpon();
-			// generate data change without ret value check
-			m_rpcConnection->callShvMethod((shv_path + "/someInt").toStdString(), "set", 123);
-			QTimer::singleShot(500, this, [this, shv_path]() {
-				m_rpcConnection->callShvMethod((shv_path + "/someInt").toStdString(), "set", 321);
-			});
 		}
 	});
 	rpc_call->start();
 }
 
-void QxEventService::testRpcCall() const
+void QxEventService::onRecchg(const QxRecChng &chng)
 {
-	Q_ASSERT(m_rpcConnection);
-	auto *rpc_call = RpcCall::create(m_rpcConnection)
-			->setShvPath("test")
-			->setMethod("ls");
-//			->setTimeout(5000);
-	connect(rpc_call, &RpcCall::maybeResult, [](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
-		if(error.isValid())
-			qfError() << "RPC call error:" << error.toString();
-		else
-			qfInfo() << "Got RPC response, result:" << result.toCpon();
-	});
-	rpc_call->start();
+	if (isRunning()) {
+		m_rpcConnection->sendShvSignal("sql", "recchng", chng.toRpcValue());
+	}
 }
 
 } // namespace Event::services::qx
