@@ -53,14 +53,14 @@ struct SqlQueryAndParams
 	static SqlQueryAndParams fromRpcValue(const shv::chainpack::RpcValue &rv);
 };
 
-enum class RecOp { Insert, Update, Delete, };
+enum class QxRecOp { Insert, Update, Delete, };
 
 struct QxRecChng
 {
 	QString table;
 	int64_t id;
 	QVariant record;
-	RecOp op;
+	QxRecOp op;
 
 	shv::chainpack::RpcValue toRpcValue() const;
 };
