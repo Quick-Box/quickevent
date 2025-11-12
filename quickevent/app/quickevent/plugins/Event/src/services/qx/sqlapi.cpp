@@ -152,11 +152,11 @@ RpcValue QxRecChng::toRpcValue() const
 	ret["table"] = table.toStdString();
 	ret["id"] = id;
 	ret["record"] = shv::coreqt::rpc::qVariantToRpcValue(record);
-	auto rec_op_string = [](RecOp op) {
+	auto rec_op_string = [](QxRecOp op) {
 		switch (op) {
-		case RecOp::Insert: return "Insert";
-		case RecOp::Update: return "Update";
-		case RecOp::Delete: return "Delete";
+		case QxRecOp::Insert: return "Insert";
+		case QxRecOp::Update: return "Update";
+		case QxRecOp::Delete: return "Delete";
 		}
 		return "";
 	};
@@ -328,7 +328,7 @@ int64_t SqlApi::create(const std::string &table, const SqlRecord &record)
 		.table = QString::fromStdString(table),
 		.id = id,
 		.record = shv::coreqt::rpc::rpcValueToQVariant(record),
-		.op = RecOp::Insert
+		.op = QxRecOp::Insert
 	});
 	return id;
 }
@@ -378,7 +378,7 @@ bool SqlApi::update(const std::string &table, int64_t id, const SqlRecord &recor
 			.table = QString::fromStdString(table),
 			.id = id,
 			.record = shv::coreqt::rpc::rpcValueToQVariant(record),
-			.op = RecOp::Update
+			.op = QxRecOp::Update
 		});
 	}
 	return updated;
@@ -397,7 +397,7 @@ bool SqlApi::drop(const std::string &table, int64_t id)
 			.table = QString::fromStdString(table),
 			.id = id,
 			.record = {},
-			.op = RecOp::Delete
+			.op = QxRecOp::Delete
 		});
 	}
 	return is_drop;
