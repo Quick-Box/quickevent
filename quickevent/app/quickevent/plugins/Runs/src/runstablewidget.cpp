@@ -379,20 +379,36 @@ void RunsTableWidget::onBadTableDataInput(const QString &message)
 void RunsTableWidget::onQxRecChng(const Event::services::qx::QxRecChng &chng)
 {
 	std::optional<int> run_id;
+	int row = 0;
 	if (chng.table == "competitors") {
 		auto *m = m_runsModel;
 		for (auto i=0; i<m->rowCount(); ++i) {
 			if (m->table().row(i).value("competitors.id").toInt() == chng.id) {
 				run_id = m->value(i, "runs.id").toInt();
+				row = i;
 				break;
 			}
 		}
 	}
 	else if (chng.table == "runs") {
 		run_id = chng.id;
+		auto *m = m_runsModel;
+		for (auto i=0; i<m->rowCount(); ++i) {
+			if (m->table().row(i).value("runs.id").toInt() == chng.id) {
+				row = i;
+				break;
+			}
+		}
 	}
 	if (run_id.has_value()) {
-		ui->tblRuns->rowExternallySaved(run_id.value());
+		if (chng.op == Event::services::qx::QxRecOp::Update) {
+			for (const auto &[k, v] : chng.record.toMap().asKeyValueRange()) {
+				m_runsModel->setValue(row, k, v);
+				m_runsModel->setDirty(row, k, false);
+			}
+		} else {
+			ui->tblRuns->rowExternallySaved(run_id.value());
+		}
 	}
 }
 
