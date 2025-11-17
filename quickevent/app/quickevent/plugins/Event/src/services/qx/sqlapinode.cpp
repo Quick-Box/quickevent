@@ -1,5 +1,5 @@
 #include "sqlapinode.h"
-#include "sqlapi.h"
+#include "src/qx/sqlapi.h"
 
 #include <qf/core/exception.h>
 #include <qf/core/sql/query.h>
@@ -58,17 +58,17 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 	//eyascore::utils::UserId user_id = eyascore::utils::UserId::makeUserName(QString::fromStdString(rq.userId().toMap().value("userName").toString()));
 	if(shv_path.empty()) {
 		if(method == METH_EXEC) {
-			auto res = SqlApi::exec(SqlQueryAndParams::fromRpcValue(params));
+			auto res = ::qx::SqlApi::exec(::qx::SqlQueryAndParams::fromRpcValue(params));
 			return res.toRpcValue();
 		}
 		if(method == METH_QUERY) {
-			auto res = SqlApi::exec(SqlQueryAndParams::fromRpcValue(params));
+			auto res = ::qx::SqlApi::exec(::qx::SqlQueryAndParams::fromRpcValue(params));
 			return res.toRpcValue();
 		}
 		if(method == METH_TRANSACTION) {
 			auto sql_query = params.asList().valref(0).asString();
 			const auto &sql_params = params.asList().valref(0);
-			SqlApi::transaction(sql_query, sql_params.asList());
+			::qx::SqlApi::transaction(sql_query, sql_params.asList());
 			return RpcValue(nullptr);
 		}
 		if(method == METH_LIST) {
@@ -80,14 +80,14 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			}
 			auto ids_above = map.contains("ids_above")? std::optional<int64_t>(map.value("ids_above").toInt64()): std::optional<int64_t>();
 			auto limit = map.contains("limit")? std::optional<int64_t>(map.value("limit").toInt64()): std::optional<int64_t>();
-			auto res = SqlApi::list(table, fields, ids_above, limit);
+			auto res = ::qx::SqlApi::list(table, fields, ids_above, limit);
 			return res.toRecordList();
 		}
 		if(method == METH_CREATE) {
 			const auto &map = params.asMap();
 			const auto &table = map.value("table").asString();
 			const auto &record = map.valref("record").asMap();
-			auto res = SqlApi::create(table, record);
+			auto res = ::qx::SqlApi::create(table, record);
 			return res;
 		}
 		if(method == METH_READ) {
@@ -98,7 +98,7 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			for (const auto &fn : map.valref("fields").asList()) {
 				fields.push_back(fn.asString());
 			}
-			auto res = SqlApi::read(table, id, fields);
+			auto res = ::qx::SqlApi::read(table, id, fields);
 			if (res.has_value()) {
 				return res.value();
 			}
@@ -109,14 +109,14 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			const auto &table = map.value("table").asString();
 			auto id = map.value("id").toInt64();
 			const auto &record = map.valref("record").asMap();
-			auto res = SqlApi::update(table, id, record);
+			auto res = ::qx::SqlApi::update(table, id, record);
 			return res;
 		}
 		if(method == METH_DELETE) {
 			const auto &map = params.asMap();
 			const auto &table = map.value("table").asString();
 			auto id = map.valref("id").toInt();
-			auto res = SqlApi::drop(table, id);
+			auto res = ::qx::SqlApi::drop(table, id);
 			return res;
 		}
 	}
