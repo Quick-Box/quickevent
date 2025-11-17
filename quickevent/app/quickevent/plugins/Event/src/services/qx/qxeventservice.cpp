@@ -2,7 +2,7 @@
 #include "qxeventservicewidget.h"
 #include "nodes.h"
 #include "sqlapinode.h"
-#include "sqlapi.h"
+#include "src/qx/sqlapi.h"
 
 #include "../../eventplugin.h"
 #include "../../../../Runs/src/runsplugin.h"
@@ -78,7 +78,7 @@ void QxEventService::run() {
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
 	RpcValue::Map opts;
 	RpcValue::Map device;
-	device["mountPoint"] = "test/quickevent";
+	device["mountPoint"] = "test/qx/event/1";
 	opts["device"] = device;
 	m_rpcConnection->setConnectionOptions(opts);
 
@@ -87,7 +87,7 @@ void QxEventService::run() {
 	connect(m_rpcConnection, &ClientConnection::brokerLoginError, this, &QxEventService::onBrokerLoginError);
 	connect(m_rpcConnection, &ClientConnection::rpcMessageReceived, this, &QxEventService::onRpcMessageReceived);
 
-	connect(SqlApi::instance(), &SqlApi::recchng, this, &QxEventService::onRecchg);
+	connect(::qx::SqlApi::instance(), &::qx::SqlApi::recchng, this, &QxEventService::sendRecchgShvSignal);
 
 	m_rpcConnection->open();
 }
@@ -638,10 +638,10 @@ void QxEventService::subscribeChanges()
 	rpc_call->start();
 }
 
-void QxEventService::onRecchg(const QxRecChng &chng)
+void QxEventService::sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng)
 {
 	if (isRunning()) {
-		m_rpcConnection->sendShvSignal("sql", "recchng", chng.toRpcValue());
+		m_rpcConnection->sendShvSignal("sql", "recchng", ::qx::qxRecChngToRpcValue(chng));
 	}
 }
 

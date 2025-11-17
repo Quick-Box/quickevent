@@ -7,6 +7,8 @@
 #include "runflagsdialog.h"
 #include "cardflagsdialog.h"
 
+#include "src/qx/sqlapi.h"
+
 #include <quickevent/core/si/siid.h>
 #include <quickevent/core/og/timems.h>
 
@@ -15,12 +17,12 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
 
+#include <qf/core/sql/qxrecchng.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
 #include <plugins/Event/src/eventplugin.h>
-#include <plugins/Event/src/services/qx/sqlapi.h>
 #include <plugins/CardReader/src/cardreaderplugin.h>
 #include <plugins/Receipts/src/receiptsplugin.h>
 
@@ -118,7 +120,7 @@ RunsTableWidget::RunsTableWidget(QWidget *parent) :
 		}
 	}, Qt::QueuedConnection);
 
-	connect(Event::services::qx::SqlApi::instance(), &Event::services::qx::SqlApi::recchng, this, &RunsTableWidget::onQxRecChng);
+	connect(::qx::SqlApi::instance(), &::qx::SqlApi::recchng, this, &RunsTableWidget::onQxRecChng);
 }
 
 RunsTableWidget::~RunsTableWidget()
@@ -376,7 +378,7 @@ void RunsTableWidget::onBadTableDataInput(const QString &message)
 	qf::gui::dialogs::MessageBox::showError(this, message);
 }
 
-void RunsTableWidget::onQxRecChng(const Event::services::qx::QxRecChng &chng)
+void RunsTableWidget::onQxRecChng(const qf::core::sql::QxRecChng &chng)
 {
 	std::optional<int> run_id;
 	int row = 0;
@@ -401,10 +403,17 @@ void RunsTableWidget::onQxRecChng(const Event::services::qx::QxRecChng &chng)
 		}
 	}
 	if (run_id.has_value()) {
-		if (chng.op == Event::services::qx::QxRecOp::Update) {
+		if (chng.op == qf::core::sql::QxRecOp::Update) {
 			for (const auto &[k, v] : chng.record.toMap().asKeyValueRange()) {
-				m_runsModel->setValue(row, k, v);
-				m_runsModel->setDirty(row, k, false);
+				if (k == "firstname" || k == "lastname") {
+					auto &r = m_runsModel->tableRowRef(row);
+					r.setValue("competitors." + k, v);
+					auto ix = m_runsModel->index(row, RunsTableModel::col_competitorName);
+					m_runsModel->dataChanged(ix, ix);
+				} else {
+					m_runsModel->setValue(row, k, v);
+					m_runsModel->setDirty(row, k, false);
+				}
 			}
 		} else {
 			ui->tblRuns->rowExternallySaved(run_id.value());

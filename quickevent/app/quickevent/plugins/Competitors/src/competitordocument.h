@@ -1,24 +1,22 @@
 #ifndef COMPETITORS_COMPETITORDOCUMENT_H
 #define COMPETITORS_COMPETITORDOCUMENT_H
 
-#include <qf/gui/model/sqldatadocument.h>
+#include "src/qx/sqldatadocument.h"
 
 #include <QVector>
 
 namespace Competitors {
 
-class CompetitorDocument : public qf::gui::model::SqlDataDocument
+class CompetitorDocument : public qx::SqlDataDocument
 {
 	Q_OBJECT
 private:
-	typedef qf::gui::model::SqlDataDocument Super;
+	typedef qx::SqlDataDocument Super;
 public:
 	CompetitorDocument(QObject *parent = nullptr);
 
-	//bool isSaveSiidToRuns() const {return m_saveSiidToRuns;}
 	void setEmitDbEventsOnSave(bool b) {m_isEmitDbEventsOnSave = b;}
 
-	//void setSiid(const QVariant &siid, bool save_siid_to_runs);
 	void setSiid(const QVariant &siid);
 	QVariant siid() const;
 	const QVector<int>& runsIds() const {return m_runsIds;}

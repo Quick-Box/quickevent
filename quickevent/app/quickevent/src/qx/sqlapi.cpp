@@ -4,6 +4,7 @@
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/exception.h>
+#include <qf/core/sql/qxrecchng.h>
 
 #include <shv/chainpack/rpcvalue.h>
 #include <shv/coreqt/rpc.h>
@@ -16,7 +17,7 @@
 
 using namespace shv::chainpack;
 
-namespace Event::services::qx {
+namespace qx {
 
 //==============================================
 // RpcSqlField
@@ -146,21 +147,22 @@ SqlQueryAndParams SqlQueryAndParams::fromRpcValue(const shv::chainpack::RpcValue
 	return SqlQueryAndParams { .query = sql_query, .params = sql_params.asMap() };
 }
 
-RpcValue QxRecChng::toRpcValue() const
+
+RpcValue qxRecChngToRpcValue(const qf::core::sql::QxRecChng &chng)
 {
 	RpcValue::Map ret;
-	ret["table"] = table.toStdString();
-	ret["id"] = id;
-	ret["record"] = shv::coreqt::rpc::qVariantToRpcValue(record);
-	auto rec_op_string = [](QxRecOp op) {
+	ret["table"] = chng.table.toStdString();
+	ret["id"] = chng.id;
+	ret["record"] = shv::coreqt::rpc::qVariantToRpcValue(chng.record);
+	auto rec_op_string = [](qf::core::sql::QxRecOp op) {
 		switch (op) {
-		case QxRecOp::Insert: return "Insert";
-		case QxRecOp::Update: return "Update";
-		case QxRecOp::Delete: return "Delete";
+		case qf::core::sql::QxRecOp::Insert: return "Insert";
+		case qf::core::sql::QxRecOp::Update: return "Update";
+		case qf::core::sql::QxRecOp::Delete: return "Delete";
 		}
 		return "";
 	};
-	ret["op"] = rec_op_string(op);
+	ret["op"] = rec_op_string(chng.op);
 	return ret;
 }
 
@@ -177,6 +179,12 @@ SqlApi *SqlApi::instance()
 {
 	static auto *api = new SqlApi(QCoreApplication::instance());
 	return api;
+}
+
+void SqlApi::emitRecChng(const qf::core::sql::QxRecChng &chng)
+{
+	qfInfo() << "REC_CHNG:" << qxRecChngToRpcValue(chng).toCpon();
+	emit recchng(chng);
 }
 
 namespace {
@@ -303,7 +311,27 @@ RpcSqlResult SqlApi::list(const std::string &table, const std::vector<std::strin
 	auto res = rpcSqlQuery(SqlQueryAndParams { .query = sql_query.toStdString(), .params = {}});
 	return res;
 }
+namespace {
+std::string to_lower(const std::string &s)
+{
+	std::string result;
+	result.reserve(s.size());
 
+	std::transform(s.begin(), s.end(), std::back_inserter(result),
+				   [](unsigned char c) { return std::tolower(c); });
+
+	return result;
+}
+
+SqlRecord normalizeFieldNames(const SqlRecord &rec)
+{
+	SqlRecord ret;
+	for (const auto &[k, v] : rec) {
+		ret[to_lower(k)] = v;
+	}
+	return ret;
+}
+}
 int64_t SqlApi::create(const std::string &table, const SqlRecord &record)
 {
 	QStringList fields;
@@ -324,11 +352,11 @@ int64_t SqlApi::create(const std::string &table, const SqlRecord &record)
 	}
 	q.exec(qf::core::Exception::Throw);
 	auto id = q.lastInsertId().toInt();
-	emit SqlApi::instance()->recchng(QxRecChng {
+	SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
 		.table = QString::fromStdString(table),
 		.id = id,
-		.record = shv::coreqt::rpc::rpcValueToQVariant(record),
-		.op = QxRecOp::Insert
+		.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)),
+		.op = qf::core::sql::QxRecOp::Insert
 	});
 	return id;
 }
@@ -374,11 +402,11 @@ bool SqlApi::update(const std::string &table, int64_t id, const SqlRecord &recor
 	q.exec(qf::core::Exception::Throw);
 	bool updated = q.numRowsAffected() == 1;
 	if (updated) {
-		emit SqlApi::instance()->recchng(QxRecChng {
+		SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
 			.table = QString::fromStdString(table),
 			.id = id,
-			.record = shv::coreqt::rpc::rpcValueToQVariant(record),
-			.op = QxRecOp::Update
+			.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)),
+			.op = qf::core::sql::QxRecOp::Update
 		});
 	}
 	return updated;
@@ -393,11 +421,11 @@ bool SqlApi::drop(const std::string &table, int64_t id)
 	q.exec(sql_query, qf::core::Exception::Throw);
 	bool is_drop = q.numRowsAffected() == 1;
 	if (is_drop) {
-		emit SqlApi::instance()->recchng(QxRecChng {
+		SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
 			.table = QString::fromStdString(table),
 			.id = id,
 			.record = {},
-			.op = QxRecOp::Delete
+			.op = qf::core::sql::QxRecOp::Delete
 		});
 	}
 	return is_drop;

@@ -10,12 +10,10 @@
 #include <QMap>
 #include <QSqlError>
 
-namespace qf {
-namespace gui {
-namespace sql {
-class Connection;
-}
-namespace model {
+namespace qf::core::sql { struct QxRecChng; }
+namespace qf::gui::sql { class Connection; }
+
+namespace qf::gui::model {
 
 class QFGUI_DECL_EXPORT SqlTableModel : public TableModel
 {
@@ -51,6 +49,8 @@ public:
 	int reloadRow(int row_no) Q_DECL_OVERRIDE;
 	int reloadInserts(const QString &id_column_name) Q_DECL_OVERRIDE;
 	QString reloadRowQuery(const QVariant &record_id);
+
+	Q_SIGNAL void qxRecChng(const qf::core::sql::QxRecChng &recchng);
 public:
 	void setQueryBuilder(const qf::core::sql::QueryBuilder &qb, bool clear_columns = false);
 	const qf::core::sql::QueryBuilder& queryBuilder() const;
@@ -100,5 +100,5 @@ protected:
 	QMap<QString, QString> m_foreignKeyDependencies;
 };
 
-}}}
+}
 

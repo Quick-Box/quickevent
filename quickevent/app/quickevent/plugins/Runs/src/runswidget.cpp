@@ -408,19 +408,19 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		connect(bt, &QPushButton::toggled, ui->frmDrawing, &QFrame::setVisible);
 	}
 }
-
-static bool list_length_greater_than(const QList<int> &lst1, const QList<int> &lst2)
+namespace {
+bool list_length_greater_than(const QList<int> &lst1, const QList<int> &lst2)
 {
 	return lst1.count() > lst2.count();
 }
 
-static void shuffle(QList<int> &lst)
+void shuffle(QList<int> &lst)
 {
 	std::random_device rd;
 	std::mt19937 g(rd());
 	std::shuffle(lst.begin(), lst.end(), g);
 }
-
+}
 QList< QList<int> > RunsWidget::runnersByClubSortedByCount(int stage_id, int class_id, QMap<int, QString> &runner_id_to_club)
 {
 	qfLogFuncFrame();

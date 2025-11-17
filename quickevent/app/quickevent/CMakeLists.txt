@@ -88,7 +88,6 @@ add_executable(quickevent
 	plugins/Event/src/services/servicewidget.cpp
 	plugins/Event/src/services/servicewidget.ui
 
-	plugins/Event/src/services/qx/sqlapi.h plugins/Event/src/services/qx/sqlapi.cpp
 	plugins/Event/src/services/qx/qxnode.cpp
 	plugins/Event/src/services/qx/sqlapinode.cpp
 	plugins/Event/src/services/qx/nodes.cpp
@@ -169,6 +168,10 @@ add_executable(quickevent
 	plugins/Relays/Relays.qrc
 	plugins/Runs/Runs.qrc
 	plugins/CardReader/CardReader.qrc
+
+	src/qx/sqlapi.cpp src/qx/sqlapi.h
+	src/qx/sqltablemodel.h src/qx/sqltablemodel.cpp
+	src/qx/sqldatadocument.h src/qx/sqldatadocument.cpp
 
 	src/appclioptions.cpp
 	src/application.cpp
