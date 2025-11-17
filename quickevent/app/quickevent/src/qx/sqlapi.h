@@ -1,11 +1,15 @@
 #pragma once
 
 #include <shv/chainpack/rpcvalue.h>
+// #include <qf/core/sql/qxrecchng.h>
+#include <qf/gui/model/sqltablemodel.h>
 
 #include <QObject>
 #include <QVariantMap>
 
-namespace Event::services::qx {
+namespace qf::core::sql { struct QxRecChng; }
+
+namespace qx {
 
 struct RpcSqlField
 {
@@ -27,7 +31,6 @@ struct RpcSqlResult
 	std::vector<Row> rows;
 
 	RpcSqlResult() = default;
-	// explicit RpcSqlResult(const QSqlQuery &q);
 
 	std::optional<size_t> columnIndex(const std::string &name) const;
 	const shv::chainpack::RpcValue& value(size_t row, size_t col) const;
@@ -38,8 +41,6 @@ struct RpcSqlResult
 	bool isSelect() const {return !fields.empty();}
 	shv::chainpack::RpcValue toRpcValue() const;
 	shv::chainpack::RpcValue::List toRecordList() const;
-	// QVariant toVariant() const;
-	// static RpcSqlResult fromVariant(const QVariant &v);
 	static RpcSqlResult fromRpcValue(const shv::chainpack::RpcValue &rv);
 };
 
@@ -53,17 +54,8 @@ struct SqlQueryAndParams
 	static SqlQueryAndParams fromRpcValue(const shv::chainpack::RpcValue &rv);
 };
 
-enum class QxRecOp { Insert, Update, Delete, };
+shv::chainpack::RpcValue qxRecChngToRpcValue(const qf::core::sql::QxRecChng &chng);
 
-struct QxRecChng
-{
-	QString table;
-	int64_t id;
-	QVariant record;
-	QxRecOp op;
-
-	shv::chainpack::RpcValue toRpcValue() const;
-};
 
 class SqlApi : public QObject
 {
@@ -71,7 +63,8 @@ class SqlApi : public QObject
 public:
 	static SqlApi* instance();
 
-	Q_SIGNAL void recchng(const QxRecChng &chng);
+	Q_SIGNAL void recchng(const qf::core::sql::QxRecChng &chng);
+	void emitRecChng(const qf::core::sql::QxRecChng &chng);
 
 	static RpcSqlResult exec(const SqlQueryAndParams &params);
 	static RpcSqlResult query(const SqlQueryAndParams &params);

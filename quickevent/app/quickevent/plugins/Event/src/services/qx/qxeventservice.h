@@ -10,10 +10,9 @@ class QTimer;
 namespace shv::iotqt::node { class ShvNodeTree; class ShvRootNode; }
 namespace shv::iotqt::rpc { class DeviceConnection; }
 namespace shv::chainpack { class RpcMessage; class RpcError; }
+namespace qf::core::sql { struct QxRecChng; }
 
 namespace Event::services::qx {
-
-struct QxRecChng;
 
 class QxEventServiceSettings : public ServiceSettings
 {
@@ -80,7 +79,7 @@ private: // shv
 	void sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg);
 	void onBrokerSocketError(const QString &err);
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
-	void onRecchg(const QxRecChng &chng);
+	void sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng);
 
 	void subscribeChanges();
 private:
