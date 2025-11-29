@@ -32,23 +32,23 @@ add_executable(qsqlmon
     )
 
 qt6_add_translation(QM_FILES
-	qsqlmon-cs_CZ.ts
-	qsqlmon-fr_FR.ts
-	qsqlmon-nb_NO.ts
-	qsqlmon-nl_BE.ts
-	qsqlmon-pl_PL.ts
-	qsqlmon-ru_RU.ts
-	qsqlmon-uk_UA.ts
+	qsqlmon_cs_CZ.ts
+	qsqlmon_fr_FR.ts
+	qsqlmon_nb_NO.ts
+	qsqlmon_nl_BE.ts
+	qsqlmon_pl_PL.ts
+	qsqlmon_ru_RU.ts
+	qsqlmon_uk_UA.ts
 	)
 
 qt6_add_lupdate(qsqlmon TS_FILES
-	qsqlmon-cs_CZ.ts
-	qsqlmon-fr_FR.ts
-	qsqlmon-nb_NO.ts
-	qsqlmon-nl_BE.ts
-	qsqlmon-pl_PL.ts
-	qsqlmon-ru_RU.ts
-	qsqlmon-uk_UA.ts
+	qsqlmon_cs_CZ.ts
+	qsqlmon_fr_FR.ts
+	qsqlmon_nb_NO.ts
+	qsqlmon_nl_BE.ts
+	qsqlmon_pl_PL.ts
+	qsqlmon_ru_RU.ts
+	qsqlmon_uk_UA.ts
 	)
 
 target_sources(qsqlmon PRIVATE ${QM_FILES})

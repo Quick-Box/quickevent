@@ -244,23 +244,23 @@ add_executable(quickevent
 )
 
 qt6_add_translation(QM_FILES
-	quickevent-cs_CZ.ts
-	quickevent-fr_FR.ts
-	quickevent-nb_NO.ts
-	quickevent-nl_BE.ts
-	quickevent-pl_PL.ts
-	quickevent-ru_RU.ts
-	quickevent-uk_UA.ts
+	quickevent_cs_CZ.ts
+	quickevent_fr_FR.ts
+	quickevent_nb_NO.ts
+	quickevent_nl_BE.ts
+	quickevent_pl_PL.ts
+	quickevent_ru_RU.ts
+	quickevent_uk_UA.ts
 )
 
 qt6_add_lupdate(quickevent TS_FILES
-	quickevent-cs_CZ.ts
-	quickevent-fr_FR.ts
-	quickevent-nb_NO.ts
-	quickevent-nl_BE.ts
-	quickevent-pl_PL.ts
-	quickevent-ru_RU.ts
-	quickevent-uk_UA.ts
+	quickevent_cs_CZ.ts
+	quickevent_fr_FR.ts
+	quickevent_nb_NO.ts
+	quickevent_nl_BE.ts
+	quickevent_pl_PL.ts
+	quickevent_ru_RU.ts
+	quickevent_uk_UA.ts
 )
 
 target_sources(quickevent PRIVATE ${QM_FILES})

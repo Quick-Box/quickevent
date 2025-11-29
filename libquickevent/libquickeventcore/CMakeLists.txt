@@ -18,23 +18,23 @@ add_library(libquickeventcore SHARED
     )
 
 qt6_add_translation(QM_FILES
-	libquickeventcore-cs_CZ.ts
-	libquickeventcore-fr_FR.ts
-	libquickeventcore-nb_NO.ts
-	libquickeventcore-nl_BE.ts
-	libquickeventcore-pl_PL.ts
-	libquickeventcore-ru_RU.ts
-	libquickeventcore-uk_UA.ts
+	libquickeventcore_cs_CZ.ts
+	libquickeventcore_fr_FR.ts
+	libquickeventcore_nb_NO.ts
+	libquickeventcore_nl_BE.ts
+	libquickeventcore_pl_PL.ts
+	libquickeventcore_ru_RU.ts
+	libquickeventcore_uk_UA.ts
 	)
 
 qt6_add_lupdate(libquickeventcore TS_FILES
-	libquickeventcore-cs_CZ.ts
-	libquickeventcore-fr_FR.ts
-	libquickeventcore-nb_NO.ts
-	libquickeventcore-nl_BE.ts
-	libquickeventcore-pl_PL.ts
-	libquickeventcore-ru_RU.ts
-	libquickeventcore-uk_UA.ts
+	libquickeventcore_cs_CZ.ts
+	libquickeventcore_fr_FR.ts
+	libquickeventcore_nb_NO.ts
+	libquickeventcore_nl_BE.ts
+	libquickeventcore_pl_PL.ts
+	libquickeventcore_ru_RU.ts
+	libquickeventcore_uk_UA.ts
 	)
 
 target_sources(libquickeventcore PRIVATE ${QM_FILES})

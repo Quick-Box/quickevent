@@ -11,23 +11,23 @@ add_executable(quickshow
     )
 
 qt6_add_translation(QM_FILES
-	quickshow-cs_CZ.ts
-	quickshow-fr_FR.ts
-	quickshow-nb_NO.ts
-	quickshow-nl_BE.ts
-	quickshow-pl_PL.ts
-	quickshow-ru_RU.ts
-	quickshow-uk_UA.ts
+	quickshow_cs_CZ.ts
+	quickshow_fr_FR.ts
+	quickshow_nb_NO.ts
+	quickshow_nl_BE.ts
+	quickshow_pl_PL.ts
+	quickshow_ru_RU.ts
+	quickshow_uk_UA.ts
 	)
 
 qt6_add_lupdate(quickshow TS_FILES
-	quickshow-cs_CZ.ts
-	quickshow-fr_FR.ts
-	quickshow-nb_NO.ts
-	quickshow-nl_BE.ts
-	quickshow-pl_PL.ts
-	quickshow-ru_RU.ts
-	quickshow-uk_UA.ts
+	quickshow_cs_CZ.ts
+	quickshow_fr_FR.ts
+	quickshow_nb_NO.ts
+	quickshow_nl_BE.ts
+	quickshow_pl_PL.ts
+	quickshow_ru_RU.ts
+	quickshow_uk_UA.ts
 	)
 
 target_sources(quickshow PRIVATE ${QM_FILES})

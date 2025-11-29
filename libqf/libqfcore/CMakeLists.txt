@@ -27,23 +27,23 @@ add_library(libqfcore SHARED
     )
 
 qt6_add_translation(QM_FILES
-	libqfcore-cs_CZ.ts
-	libqfcore-fr_FR.ts
-	libqfcore-nb_NO.ts
-	libqfcore-nl_BE.ts
-	libqfcore-pl_PL.ts
-	libqfcore-ru_RU.ts
-	libqfcore-uk_UA.ts
+	libqfcore_cs_CZ.ts
+	libqfcore_fr_FR.ts
+	libqfcore_nb_NO.ts
+	libqfcore_nl_BE.ts
+	libqfcore_pl_PL.ts
+	libqfcore_ru_RU.ts
+	libqfcore_uk_UA.ts
 	)
 
 qt6_add_lupdate(libqfcore TS_FILES
-	libqfcore-cs_CZ.ts
-	libqfcore-fr_FR.ts
-	libqfcore-nb_NO.ts
-	libqfcore-nl_BE.ts
-	libqfcore-pl_PL.ts
-	libqfcore-ru_RU.ts
-	libqfcore-uk_UA.ts
+	libqfcore_cs_CZ.ts
+	libqfcore_fr_FR.ts
+	libqfcore_nb_NO.ts
+	libqfcore_nl_BE.ts
+	libqfcore_pl_PL.ts
+	libqfcore_ru_RU.ts
+	libqfcore_uk_UA.ts
 	)
 
 target_sources(libqfcore PRIVATE ${QM_FILES})

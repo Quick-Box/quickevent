@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 				QStringLiteral("quickevent"),
 		}) {
 			auto *translator = new QTranslator(&app);
-			bool ok = translator->load(QLocale(lc_name), file_name, QString("-"), lc_dir);
+			bool ok = translator->load(QLocale(lc_name), file_name, QString("_"), lc_dir);
 			if (ok) {
 				ok = QCoreApplication::installTranslator(translator);
 			}

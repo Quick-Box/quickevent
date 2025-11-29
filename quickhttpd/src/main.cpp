@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
 		for(QString file_name : {"libqfcore", "libquickeventcore", "libsiut"}) {
 			QTranslator *translator = new QTranslator(&app);
-			bool ok = translator->load(QLocale(lc_name), file_name, QString("-"), QString(":/i18n"));
+			bool ok = translator->load(QLocale(lc_name), file_name, QString("_"), QString(":/i18n"));
 			if (ok) {
 				ok = QCoreApplication::installTranslator(translator);
 			}

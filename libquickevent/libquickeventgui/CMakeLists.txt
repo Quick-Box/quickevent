@@ -9,25 +9,24 @@ add_library(libquickeventgui SHARED
     libquickeventgui.qrc
     )
 
-
 qt6_add_translation(QM_FILES
-	libquickeventgui-cs_CZ.ts
-	libquickeventgui-fr_FR.ts
-	libquickeventgui-nb_NO.ts
-	libquickeventgui-nl_BE.ts
-	libquickeventgui-pl_PL.ts
-	libquickeventgui-ru_RU.ts
-	libquickeventgui-uk_UA.ts
+	libquickeventgui_cs_CZ.ts
+	libquickeventgui_fr_FR.ts
+	libquickeventgui_nb_NO.ts
+	libquickeventgui_nl_BE.ts
+	libquickeventgui_pl_PL.ts
+	libquickeventgui_ru_RU.ts
+	libquickeventgui_uk_UA.ts
 	)
 
 qt6_add_lupdate(libquickeventgui TS_FILES
-	libquickeventgui-cs_CZ.ts
-	libquickeventgui-fr_FR.ts
-	libquickeventgui-nb_NO.ts
-	libquickeventgui-nl_BE.ts
-	libquickeventgui-pl_PL.ts
-	libquickeventgui-ru_RU.ts
-	libquickeventgui-uk_UA.ts
+	libquickeventgui_cs_CZ.ts
+	libquickeventgui_fr_FR.ts
+	libquickeventgui_nb_NO.ts
+	libquickeventgui_nl_BE.ts
+	libquickeventgui_pl_PL.ts
+	libquickeventgui_ru_RU.ts
+	libquickeventgui_uk_UA.ts
 	)
 
 target_sources(libquickeventgui PRIVATE ${QM_FILES})

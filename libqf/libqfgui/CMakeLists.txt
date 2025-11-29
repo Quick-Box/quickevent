@@ -113,23 +113,23 @@ add_library(libqfgui SHARED
     )
 
 qt6_add_translation(QM_FILES
-	libqfgui-cs_CZ.ts
-	libqfgui-fr_FR.ts
-	libqfgui-nb_NO.ts
-	libqfgui-nl_BE.ts
-	libqfgui-pl_PL.ts
-	libqfgui-ru_RU.ts
-	libqfgui-uk_UA.ts
+	libqfgui_cs_CZ.ts
+	libqfgui_fr_FR.ts
+	libqfgui_nb_NO.ts
+	libqfgui_nl_BE.ts
+	libqfgui_pl_PL.ts
+	libqfgui_ru_RU.ts
+	libqfgui_uk_UA.ts
 	)
 
 qt6_add_lupdate(libqfgui TS_FILES
-	libqfgui-cs_CZ.ts
-	libqfgui-fr_FR.ts
-	libqfgui-nb_NO.ts
-	libqfgui-nl_BE.ts
-	libqfgui-pl_PL.ts
-	libqfgui-ru_RU.ts
-	libqfgui-uk_UA.ts
+	libqfgui_cs_CZ.ts
+	libqfgui_fr_FR.ts
+	libqfgui_nb_NO.ts
+	libqfgui_nl_BE.ts
+	libqfgui_pl_PL.ts
+	libqfgui_ru_RU.ts
+	libqfgui_uk_UA.ts
 	)
 
 target_sources(libqfgui PRIVATE ${QM_FILES})
