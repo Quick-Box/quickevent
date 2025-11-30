@@ -78,7 +78,7 @@ void QxEventService::run() {
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
 	RpcValue::Map opts;
 	RpcValue::Map device;
-	device["mountPoint"] = "test/qx/event/1";
+	device["mountPoint"] = "test/hsh2025";
 	opts["device"] = device;
 	m_rpcConnection->setConnectionOptions(opts);
 
