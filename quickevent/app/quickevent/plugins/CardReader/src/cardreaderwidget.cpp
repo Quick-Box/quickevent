@@ -245,6 +245,7 @@ CardReaderWidget::CardReaderWidget(QWidget *parent)
 		ui->tblCards->setInlineEditSaveStrategy(qfw::TableView::OnEditedValueCommit);
 		ui->tblCards->setItemDelegate(new quickevent::gui::og::ItemDelegate(ui->tblCards));
 		auto m = new Model(this);
+		m->setIdColumnName("cards.id");
 		ui->tblCards->setTableModel(m);
 		m_cardsModel = m;
 	}
