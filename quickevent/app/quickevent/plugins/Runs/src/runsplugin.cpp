@@ -2622,14 +2622,12 @@ QString RunsPlugin::getClubAbbrFromName(QString name)
 	return "";
 }
 
-QString RunsPlugin::startListStageIofXml30(int stage_id)
+QString RunsPlugin::startListStageIofXml30(int stage_id, bool with_vacants)
 {
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
 	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
-	bool last_handicap_stage = event_config->stageCount() == selectedStageId() && event_config->isHandicap();
-	bool print_vacants = !last_handicap_stage;
 	//console.debug("print_vacants", print_vacants);
-	auto tt1 = startListClassesTable("", print_vacants, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
+	auto tt1 = startListClassesTable("", with_vacants, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
 	bool is_iof_race = event_config->isIofRace();
 	int iof_xml_race_number = event_config->iofXmlRaceNumber();
 
@@ -2652,7 +2650,7 @@ QString RunsPlugin::startListStageIofXml30(int stage_id)
 			QVariantList{"Time", start00.time().toString(Qt::ISODate)}
 		}
 	);
-	append_list(xml_event, 
+	append_list(xml_event,
 		QVariantList{"Official",
 			QVariantMap{{"type", "Director"}},
 			QVariantList{"Person",
@@ -2663,7 +2661,7 @@ QString RunsPlugin::startListStageIofXml30(int stage_id)
 			},
 		}
 	);
-	append_list(xml_event, 
+	append_list(xml_event,
 		QVariantList{"Official",
 			QVariantMap{{"type", "MainReferee"}},
 			QVariantList{"Person",
@@ -2764,14 +2762,14 @@ QString RunsPlugin::startListStageIofXml30(int stage_id)
 	return qf::core::utils::HtmlUtils::fromXmlList(xml_root, opts);
 }
 
-bool RunsPlugin::exportStartListStageIofXml30(int stage_id, const QString &file_name)
+bool RunsPlugin::exportStartListStageIofXml30(int stage_id, const QString &file_name, bool with_vacants)
 {
 	QFile f(file_name);
 	if(!f.open(QIODevice::WriteOnly)) {
 		qfError() << "Cannot open file" << f.fileName() << "for writing.";
 		return false;
 	}
-	QString str = startListStageIofXml30(stage_id);
+	QString str = startListStageIofXml30(stage_id, with_vacants);
 	f.write(str.toUtf8());
 	qfInfo() << "exported:" << file_name;
 	return true;

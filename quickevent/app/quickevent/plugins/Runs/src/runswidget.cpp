@@ -289,7 +289,12 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	{
 		{
 			auto *a = new qfw::Action(tr("&IOF-XML 3.0"));
-			connect(a, &qfw::Action::triggered, this, &RunsWidget::export_startList_stage_iofxml30);
+			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(false); });
+			m_export_stlist_xml->addActionInto(a);
+		}
+		{
+			auto *a = new qfw::Action(tr("IOF-XML 3.0 with &vacants"));
+			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(true); });
 			m_export_stlist_xml->addActionInto(a);
 		}
 	}
@@ -986,13 +991,13 @@ int RunsWidget::selectedStageId()
 	return getPlugin<RunsPlugin>()->selectedStageId();
 }
 
-void RunsWidget::export_startList_stage_iofxml30()
+void RunsWidget::export_startList_stage_iofxml30(bool with_vacants)
 {
 	int stage_id = selectedStageId();
 	QString fn = getSaveFileName(Event::START_LIST_IOFXML3_FILE, stage_id);
 	if(fn.isEmpty())
 		return;
-	getPlugin<RunsPlugin>()->exportStartListStageIofXml30(stage_id, fn);
+	getPlugin<RunsPlugin>()->exportStartListStageIofXml30(stage_id, fn, with_vacants);
 }
 
 

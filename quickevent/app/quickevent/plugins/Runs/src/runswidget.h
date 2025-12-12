@@ -47,7 +47,7 @@ public:
 
 	Q_INVOKABLE int selectedStageId();
 public:
-	void export_startList_stage_iofxml30();
+	void export_startList_stage_iofxml30(bool with_vacants);
 	void export_startList_stage_csv_sime();
 	void export_startList_stage_tv_graphics();
 

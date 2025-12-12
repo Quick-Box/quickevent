@@ -203,7 +203,7 @@ void QxClientService::postStartListIofXml3(QObject *context, std::function<void 
 	int current_stage = ep->currentStageId();
 	bool is_relays = ep->eventConfig()->isRelays();
 	if (!is_relays) {
-		auto xml = getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage);
+		auto xml = getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, false);
 		uploadSpecFile(SpecFile::StartListIofXml3, xml.toUtf8(), context, call_back);
 	}
 }
@@ -538,6 +538,7 @@ EventInfo QxClientService::eventInfo() const
 	return ei;
 }
 
+namespace {
 auto query_to_json_csv(QSqlQuery &q)
 {
 	QVariantList csv;
@@ -559,6 +560,7 @@ auto query_to_json_csv(QSqlQuery &q)
 		csv.insert(csv.length(), values);
 	}
 	return csv;
+}
 }
 
 int QxClientService::currentConnectionId()
