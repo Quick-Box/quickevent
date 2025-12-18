@@ -832,7 +832,7 @@ QString RelaysPlugin::startListIofXml30()
 {
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(1);
 	qfDebug() << "creating table";
-	qf::core::utils::TreeTable tt_classes = startListByClassesTableData(QString(),false);
+	qf::core::utils::TreeTable tt_classes = startListByClassesTableData(QString(), false);
 	QVariantList start_list{
 		"StartList",
 		QVariantMap{

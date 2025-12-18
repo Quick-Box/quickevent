@@ -22,6 +22,7 @@ public:
 private:
 	void onBtExportResultsXml30Clicked();
 	void onBtExportStartListXml30Clicked();
+	void onProcessChangesOnOffButtonClicked();
 	OFeedClient* service();
 	bool saveSettings();
 private:

@@ -74,7 +74,7 @@ public:
 
 	Q_INVOKABLE QVariantMap printAwardsOptionsWithDialog(const QVariantMap &opts);
 
-	bool exportStartListStageIofXml30(int stage_id, const QString &file_name);
+        bool exportStartListStageIofXml30(int stage_id, const QString &file_name, bool with_vacants);
 	bool exportStartListCurrentStageCsvSime(const QString &file_name, bool bibs, QString sql_where);
 	bool exportStartListCurrentStageTvGraphics(const QString &file_name);
 
@@ -121,9 +121,10 @@ public:
 	QString export_resultsHtmlStage(bool with_laps = false);
 	void export_resultsHtmlStageWithLaps();
 	void export_resultsHtmlNStages();
-	QString startListStageIofXml30(int stage_id);
+        QString startListStageIofXml30(int stage_id, bool with_vacants);
 	QString resultsIofXml30Stage(int stage_id);
 	int competitorForRun(int run_id);
+	int runForCompetitorStage(int competitor_id, int stage_id);
 private:
 	Q_SLOT void onInstalled();
 

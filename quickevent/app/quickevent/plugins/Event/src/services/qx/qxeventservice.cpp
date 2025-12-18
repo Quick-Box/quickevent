@@ -205,7 +205,7 @@ void QxEventService::postStartListIofXml3(QObject *context, std::function<void (
 	int current_stage = ep->currentStageId();
 	bool is_relays = ep->eventConfig()->isRelays();
 	if (!is_relays) {
-		auto xml = getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage);
+		auto xml = getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, false);
 		uploadSpecFile(SpecFile::StartListIofXml3, xml.toUtf8(), context, call_back);
 	}
 }
@@ -539,30 +539,32 @@ EventInfo QxEventService::eventInfo() const
 	// qfInfo() << qf::core::Utils::qvariantToJson(ei, false);
 	return ei;
 }
-//namespace {
-//auto query_to_json_csv(QSqlQuery &q)
-//{
-//	QVariantList csv;
-//	{
-//		// QStringList columns{"name", "control_count", "length", "climb", "start_time", "interval", "start_slot_count"};
-//		QStringList columns;
-//		auto rec = q.record();
-//		for (auto i = 0; i < rec.count(); ++i) {
-//			columns << rec.field(i).name();
-//		}
-//		csv.insert(csv.length(), columns);
-//	}
-//	while (q.next()) {
-//		QVariantList values;
-//		auto rec = q.record();
-//		for (auto i = 0; i < rec.count(); ++i) {
-//			values << q.value(i);
-//		}
-//		csv.insert(csv.length(), values);
-//	}
-//	return csv;
-//}
-//}
+/*
+namespace {
+auto query_to_json_csv(QSqlQuery &q)
+{
+	QVariantList csv;
+	{
+		// QStringList columns{"name", "control_count", "length", "climb", "start_time", "interval", "start_slot_count"};
+		QStringList columns;
+		auto rec = q.record();
+		for (auto i = 0; i < rec.count(); ++i) {
+			columns << rec.field(i).name();
+		}
+		csv.insert(csv.length(), columns);
+	}
+	while (q.next()) {
+		QVariantList values;
+		auto rec = q.record();
+		for (auto i = 0; i < rec.count(); ++i) {
+			values << q.value(i);
+		}
+		csv.insert(csv.length(), values);
+	}
+	return csv;
+}
+}
+*/
 int QxEventService::currentConnectionId()
 {
 	return qf::core::sql::Connection::forName().connectionId();

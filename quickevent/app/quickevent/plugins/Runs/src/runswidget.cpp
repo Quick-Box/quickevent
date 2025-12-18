@@ -289,7 +289,12 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	{
 		{
 			auto *a = new qfw::Action(tr("&IOF-XML 3.0"));
-			connect(a, &qfw::Action::triggered, this, &RunsWidget::export_startList_stage_iofxml30);
+			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(false); });
+			m_export_stlist_xml->addActionInto(a);
+		}
+		{
+			auto *a = new qfw::Action(tr("IOF-XML 3.0 with &vacants"));
+			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(true); });
 			m_export_stlist_xml->addActionInto(a);
 		}
 	}
@@ -986,13 +991,13 @@ int RunsWidget::selectedStageId()
 	return getPlugin<RunsPlugin>()->selectedStageId();
 }
 
-void RunsWidget::export_startList_stage_iofxml30()
+void RunsWidget::export_startList_stage_iofxml30(bool with_vacants)
 {
 	int stage_id = selectedStageId();
 	QString fn = getSaveFileName(Event::START_LIST_IOFXML3_FILE, stage_id);
 	if(fn.isEmpty())
 		return;
-	getPlugin<RunsPlugin>()->exportStartListStageIofXml30(stage_id, fn);
+	getPlugin<RunsPlugin>()->exportStartListStageIofXml30(stage_id, fn, with_vacants);
 }
 
 
@@ -1048,19 +1053,34 @@ void RunsWidget::editCompetitors(int mode)
 			return;
 		if(qfd::MessageBox::askYesNo(this, tr("Really delete all the selected competitors? This action cannot be reverted."), false)) {
 			qfs::Transaction transaction;
-			int n = 0;
+			QList<int> deleted_ids;
 			for(int ix : sel_rows) {
 				int id = tv->tableRow(ix).value("competitors.id").toInt();
 				if(id > 0) {
+					// Get runs_id instead of competitor_id
+					int current_stage = getPlugin<EventPlugin>()->currentStageId();
+					int run_id = getPlugin<RunsPlugin>()->runForCompetitorStage(id, current_stage);
+					
 					Competitors::CompetitorDocument doc;
 					doc.load(id, qfm::DataDocument::ModeDelete);
 					doc.drop();
-					n++;
+					
+					deleted_ids.append(run_id);
 				}
 			}
-			if(n > 0) {
-				if(qfd::MessageBox::askYesNo(this, tr("Confirm deletion of %1 competitors.").arg(n), false)) {
+			if(!deleted_ids.isEmpty()) {
+				if(qfd::MessageBox::askYesNo(this, tr("Confirm deletion of %1 competitors.").arg(deleted_ids.count()), false)) {
 					transaction.commit();
+					
+					// Invoke db delete event for selected rows
+					auto *plugin = getPlugin<EventPlugin>();
+					for (int run_id : deleted_ids) {
+						if (run_id > 0)
+						{
+							plugin->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_DELETED, run_id);
+						}
+                    }
+
 					tv->reload();
 				}
 				else {
@@ -1180,8 +1200,13 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 				w->loadFromRegistrations(siid);
 			}
 		}
-		connect(doc, &Competitors::CompetitorDocument::saved, this, [this, doc]() {
+		connect(doc, &Competitors::CompetitorDocument::saved, this, [this, doc, mode]() {
 			if (auto run_id = doc->runsIds().value(selectedStageId() - 1); run_id > 0) {
+				
+				// Invoke delete db event for single delete
+				if(mode == qfm::DataDocument::ModeDelete){
+					getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_DELETED, run_id);
+				}
 				ui->wRunsTableWidget->tableView()->rowExternallySaved(run_id);
 			}
 		});

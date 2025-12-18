@@ -118,8 +118,18 @@ bool CompetitorDocument::saveData()
 		else {
 			competitor_id = dataId().toInt();
 		}
-		if(m_isEmitDbEventsOnSave) {
-			getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_EDITED, competitor_id);
+
+		// Emit db event
+		if (m_isEmitDbEventsOnSave)
+		{
+			if (old_mode == DataDocument::ModeInsert)
+			{				
+				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_ADDED, competitor_id);
+			}
+			else if (old_mode == DataDocument::ModeEdit)
+			{				
+				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_EDITED, competitor_id);
+			}
 		}
 	}
 	return ret;

@@ -53,6 +53,8 @@ public:
 	static constexpr auto DBEVENT_COMPETITOR_COUNTS_CHANGED = "competitorCountsChanged";
 	static constexpr auto DBEVENT_CARD_READ = "cardRead";
 	static constexpr auto DBEVENT_COMPETITOR_EDITED = "competitorEdited";
+	static constexpr auto DBEVENT_COMPETITOR_ADDED = "competitorAdded";
+	static constexpr auto DBEVENT_COMPETITOR_DELETED = "competitorDeleted";
 	static constexpr auto DBEVENT_RUN_CHANGED = "runChanged";
 	static constexpr auto DBEVENT_CARD_PROCESSED_AND_ASSIGNED = "cardProcessedAndAssigned";
 	static constexpr auto DBEVENT_PUNCH_RECEIVED = "punchReceived";

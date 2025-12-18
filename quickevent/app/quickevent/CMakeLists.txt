@@ -83,6 +83,7 @@ add_executable(quickevent
 	plugins/Event/src/services/oresultsclientwidget.ui
 	plugins/Event/src/services/ofeed/ofeedclient.cpp
 	plugins/Event/src/services/ofeed/ofeedclientwidget.cpp
+	plugins/Event/src/services/ofeed/ofeedclientwidget.ui
 	plugins/Event/src/services/service.cpp
 	plugins/Event/src/services/serviceswidget.cpp
 	plugins/Event/src/services/servicewidget.cpp

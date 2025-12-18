@@ -217,7 +217,7 @@ void EmmaClient::exportStartListIofXml3()
 
 	QString str = is_relays
 			? getPlugin<RelaysPlugin>()->startListIofXml30()
-			: getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage);
+			: getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, false);
 
 	QFile f(file_name);
 	if(f.open(QFile::WriteOnly)) {

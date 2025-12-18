@@ -76,7 +76,7 @@ void OResultsClient::exportStartListIofXml3(std::function<void()> on_success)
 
 	QString str = is_relays
 			? getPlugin<RelaysPlugin>()->startListIofXml30()
-			: getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage);
+			: getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, false);
 
 	sendFile("start list upload", "/start-lists", str, on_success);
 }

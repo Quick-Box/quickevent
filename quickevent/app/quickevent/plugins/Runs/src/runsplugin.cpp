@@ -414,11 +414,35 @@ int RunsPlugin::competitorForRun(int run_id)
 				competitor_id = q.value(0).toInt();
 			}
 			else {
-				qfWarning() << "Cannot find card record for run id:" << run_id;
+				qfWarning() << "Cannot find commpetitor record for run id:" << run_id;
 			}
 		}
 	}
 	return competitor_id;
+}
+
+int RunsPlugin::runForCompetitorStage(int competitor_id, int stage_id)
+{
+	qfLogFuncFrame() << "competitor id:" << competitor_id << "stage id:" << stage_id;
+	if(!competitor_id)
+		return 0;
+	
+	int run_id = 0;
+	{
+		qf::core::sql::Query q;
+		if(q.exec("SELECT runs.id "
+		   "FROM runs "
+		   "INNER JOIN competitors ON competitors.id = runs.competitorId "
+		   "WHERE competitors.id=" QF_IARG(competitor_id) " AND runs.stageId=" QF_IARG(stage_id))) {
+			if(q.next()) {
+				run_id = q.value(0).toInt();
+			}
+			else {
+				qfWarning() << "Cannot find run id record for competitor id:" << competitor_id << "and stage id:" << stage_id;
+			}
+		}
+	}
+	return run_id;
 }
 
 QVariantList RunsPlugin::qxExportRunsCsvJson(int stage_id)
@@ -2622,14 +2646,12 @@ QString RunsPlugin::getClubAbbrFromName(QString name)
 	return "";
 }
 
-QString RunsPlugin::startListStageIofXml30(int stage_id)
+QString RunsPlugin::startListStageIofXml30(int stage_id, bool with_vacants)
 {
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
 	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
-	bool last_handicap_stage = event_config->stageCount() == selectedStageId() && event_config->isHandicap();
-	bool print_vacants = !last_handicap_stage;
 	//console.debug("print_vacants", print_vacants);
-	auto tt1 = startListClassesTable("", print_vacants, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
+	auto tt1 = startListClassesTable("", with_vacants, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
 	bool is_iof_race = event_config->isIofRace();
 	int iof_xml_race_number = event_config->iofXmlRaceNumber();
 
@@ -2764,14 +2786,14 @@ QString RunsPlugin::startListStageIofXml30(int stage_id)
 	return qf::core::utils::HtmlUtils::fromXmlList(xml_root, opts);
 }
 
-bool RunsPlugin::exportStartListStageIofXml30(int stage_id, const QString &file_name)
+bool RunsPlugin::exportStartListStageIofXml30(int stage_id, const QString &file_name, bool with_vacants)
 {
 	QFile f(file_name);
 	if(!f.open(QIODevice::WriteOnly)) {
 		qfError() << "Cannot open file" << f.fileName() << "for writing.";
 		return false;
 	}
-	QString str = startListStageIofXml30(stage_id);
+	QString str = startListStageIofXml30(stage_id, with_vacants);
 	f.write(str.toUtf8());
 	qfInfo() << "exported:" << file_name;
 	return true;
