@@ -584,11 +584,13 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 
 void QxEventService::onBrokerSocketError(const QString &err)
 {
+	qfWarning() << "onBrokerSocketError:" << err;
 	setStatusMessage(tr("Broker socket error: %1").arg(err));
 }
 
 void QxEventService::onBrokerLoginError(const shv::chainpack::RpcError &err)
 {
+	qfWarning() << "onBrokerLoginError:" << err.toString();
 	setStatusMessage(tr("Broker login error: %1").arg(err.toString()));
 }
 
