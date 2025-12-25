@@ -1,7 +1,7 @@
 #include "qxlateregistrationswidget.h"
 #include "ui_qxlateregistrationswidget.h"
 
-#include "qxclientservice.h"
+#include "qxeventservice.h"
 #include "runchangedialog.h"
 #include "runchange.h"
 
@@ -152,9 +152,9 @@ void QxLateRegistrationsWidget::onVisibleChanged(bool is_visible)
 	}
 }
 
-QxClientService *QxLateRegistrationsWidget::service()
+QxEventService *QxLateRegistrationsWidget::service()
 {
-	auto *svc = qobject_cast<QxClientService*>(Event::services::Service::serviceByName(QxClientService::serviceId()));
+	auto *svc = qobject_cast<QxEventService*>(Event::services::Service::serviceByName(QxEventService::serviceId()));
 	Q_ASSERT(svc);
 	return svc;
 }

@@ -1,8 +1,10 @@
 #include "runstablemodel.h"
 
+#include "../../Event/src/eventplugin.h"
+#include "src/qx/sqlapi.h"
+
 #include <quickevent/core/og/timems.h>
 #include <quickevent/core/si/siid.h>
-#include "../../Event/src/eventplugin.h"
 
 #include <qf/gui/log.h>
 #include <qf/gui/framework/mainwindow.h>
@@ -69,6 +71,12 @@ Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const
 
 QVariant RunsTableModel::value(int row_ix, int column_ix) const
 {
+	if(column_ix == col_competitorName) {
+		qf::core::utils::TableRow row = tableRow(row_ix);
+		auto first_name = row.value(QStringLiteral("firstName")).toString();
+		auto last_name = row.value(QStringLiteral("lastName")).toString();
+		return last_name + ' ' + first_name;
+	}
 	if(column_ix == col_runFlags) {
 		qf::core::utils::TableRow row = tableRow(row_ix);
 		bool mis_punch = row.value(QStringLiteral("runs.misPunch")).toBool();
