@@ -112,6 +112,7 @@ public:
 Model::Model(QObject *parent)
 	: Super(parent)
 {
+	setIdColumnName("cards.id");
 	clearColumns(col_COUNT);
 	setColumn(col_cards_id, ColumnDefinition("cards.id", "id").setReadOnly(true));
 	setColumn(col_cards_siId, ColumnDefinition("cards.siId", tr("SI")).setReadOnly(true).setCastType(qMetaTypeId<quickevent::core::si::SiId>()));

@@ -5,23 +5,23 @@
 namespace Event::services::qx {
 
 namespace Ui {
-class QxClientServiceWidget;
+class QxEventServiceWidget;
 }
 
-class QxClientService;
+class QxEventService;
 
-class QxClientServiceWidget : public qf::gui::framework::DialogWidget
+class QxEventServiceWidget : public qf::gui::framework::DialogWidget
 {
 	Q_OBJECT
 
 	using Super = qf::gui::framework::DialogWidget;
 public:
-	explicit QxClientServiceWidget(QWidget *parent = nullptr);
-	~QxClientServiceWidget() override;
+	explicit QxEventServiceWidget(QWidget *parent = nullptr);
+	~QxEventServiceWidget() override;
 private:
 	enum class MessageType { Ok, Error, Progress };
 	void setMessage(const QString &msg = {}, MessageType msg_type = MessageType::Ok);
-	QxClientService* service();
+	QxEventService* service();
 	bool saveSettings();
 	void updateOCheckListPostUrl();
 	void testConnection();
@@ -29,7 +29,7 @@ private:
 	void exportStartList();
 	void exportRuns();
 private:
-	Ui::QxClientServiceWidget *ui;
+	Ui::QxEventServiceWidget *ui;
 	bool acceptDialogDone(int result) override;
 };
 

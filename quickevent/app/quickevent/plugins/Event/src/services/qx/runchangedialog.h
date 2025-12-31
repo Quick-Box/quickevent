@@ -14,7 +14,7 @@ class RunChangeDialog;
 }
 
 struct RunChange;
-class QxClientService;
+class QxEventService;
 
 class RunChangeDialog : public QDialog
 {
@@ -25,7 +25,7 @@ public:
 	~RunChangeDialog() override;
 
 private:
-	QxClientService* service();
+	QxEventService* service();
 	void setMessage(const QString &msg, bool error);
 
 	void loadOrigValues();

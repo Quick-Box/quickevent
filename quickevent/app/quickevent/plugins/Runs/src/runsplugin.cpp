@@ -1294,7 +1294,7 @@ qf::core::sql::QueryBuilder RunsPlugin::runsQuery(int stage_id, int class_id, bo
 	qfs::QueryBuilder qb;
 	qb.select2("runs", "*")
 			.select2("classes", "name")
-			.select2("competitors", "id, iofId, registration, licence, ranking, siId, note")
+			.select2("competitors", "id, firstName, lastName, iofId, registration, licence, ranking, siId, note")
 			.select("COALESCE(lastName, '') || ' ' || COALESCE(firstName, '') AS competitorName")
 			.select("lentcards.siid IS NOT NULL AS cardInLentTable")
 
