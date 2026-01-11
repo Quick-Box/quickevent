@@ -66,6 +66,7 @@ runs:
         -B '${{github.workspace}}/build' \
         -DCMAKE_BUILD_TYPE=Release \
         -DQF_BUILD_QML_PLUGINS=ON \
+        -DQF_WITH_LIBSHV=ON \
         -DBUILD_TESTING=OFF \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
         -DUSE_QT6=${{ inputs.use_qt6 }} \

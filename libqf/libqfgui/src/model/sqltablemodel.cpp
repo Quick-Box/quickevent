@@ -7,6 +7,7 @@
 #include <qf/core/sql/dbenum.h>
 #include <qf/core/sql/dbenumcache.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxrecchng.h>
 
 #include <QSqlRecord>
 #include <QSqlIndex>
@@ -150,8 +151,7 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 			int serial_ix = -1;
 			bool serial_ix_explicitly_set = false;
 			int primary_ix = -1;
-			//QSqlIndex pri_ix = ti.primaryIndex();
-			//bool has_blob_field = false;
+			QVariantMap qx_record;
 			Q_FOREACH(const qf::core::utils::Table::Field &fld, row_ref.fields()) {
 				i++;
 				if(fld.tableId() != table_id)
@@ -186,6 +186,7 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					new_fld.setValue(v);
 					//qfInfo() << "\t\t" << "val is QString:" << (v.metaType().id() == QMetaType::QString);
 					rec.append(new_fld);
+					qx_record[fld.shortName().toLower()] = v;
 				}
 			}
 
@@ -201,40 +202,23 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 			}
 			else {
 				qs = sqldrv->sqlStatement(QSqlDriver::InsertStatement, table, rec, false);
-				//qs = fixSerialDefaultValue(qs, serial_ix, rec);
 			}
-			if(qs.isEmpty())
+			if(qs.isEmpty()) {
 				continue;
-			/*
-			qfDebug() << "\texecuting prepared query:" << qs;
-			bool ok = q.prepare(qs);
-			if(!ok) {
-				qfError() << "Cannot prepare query:" << qs;
 			}
-			else {
-				for(int i=0; i<rec.count(); i++) {
-					auto meta_type = rec.field(i).value().metaType();
-					//qfInfo() << "\t" << rec.field(i).name() << "bound type:" << QVariant::typeToName(type);
-					qfDebug() << "\t\t" << rec.field(i).name() << "bound type:" << meta_type.name() << "value:" << rec.field(i).value().toString().mid(0, 100);
-					q.addBindValue(rec.field(i).value());
-				}
-			}
-			ok = q.exec();
-			*/
 			qfDebug() << "\texecuting query:" << qs;
 			bool ok = q.exec(qs);
 			if(ok) {
 				qfDebug() << "\tnum rows affected:" << q.numRowsAffected();
 				int num_rows_affected = q.numRowsAffected();
-				//setNumRowsAffected(q.numRowsAffected());
 				QF_ASSERT(num_rows_affected == 1,
 						  tr("numRowsAffected() = %1, should be 1\n%2").arg(num_rows_affected).arg(qs),
 						  return false);
+				auto insert_id = q.lastInsertId();
 				if(serial_ix >= 0 && !serial_ix_explicitly_set) {
-					QVariant v = q.lastInsertId();
-					qfDebug() << "\tsetting serial index:" << serial_ix << "to generated value:" << v;
-					if(v.isValid()) {
-						row_ref.setValue(serial_ix, v);
+					qfDebug() << "\tsetting serial index:" << serial_ix << "to generated value:" << insert_id;
+					if(insert_id.isValid()) {
+						row_ref.setValue(serial_ix, insert_id);
 						row_ref.setDirty(serial_ix, false);
 					}
 					else {
@@ -250,6 +234,15 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					if(!slave_key.isEmpty()) {
 						qfDebug() << "\tsetting value of foreign key" << slave_key << "to value of master key:" << row_ref.value(master_key).toString();
 						row_ref.setValue(slave_key, row_ref.value(master_key));
+					}
+					if (!qx_record.isEmpty() && master_key == "id") {
+						qf::core::sql::QxRecChng chng {
+							.table = table_id,
+							.id = insert_id.toInt(),
+							.record = qx_record,
+							.op = qf::core::sql::QxRecOp::Insert,
+						};
+						emit qxRecChng(chng);
 					}
 				}
 			}
@@ -268,7 +261,7 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 		QSqlDriver *sqldrv = sql_conn.driver();
 		Q_FOREACH(QString table_id, tableIds(m_table.fields())) {
 			qfDebug() << "\ttableid:" << table_id;
-			//table = conn.fullTableNameToQtDriverTableName(table);
+			QVariantMap qx_record;
 			QSqlRecord edit_rec;
 			int i = -1;
 			Q_FOREACH(qfu::Table::Field fld, row_ref.fields()) {
@@ -286,12 +279,13 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 				//qfDebug() << "\ttableid:" << tableid << "fullTableName:" << fld.fullTableName();
 				qfDebug() << "\tdirty field" << fld.name() << "type:" << fld.type().id() << "orig val:" << row_ref.origValue(i).toString() << "new val:" << v.toString();
 				//qfDebug().noSpace() << "\tdirty value: '" << v.toString() << "' isNull(): " << v.isNull() << " type(): " << v.type();
-				QSqlField sqlfld(fld.shortName(), fld.type());
+				QSqlField sqlfld(fld.shortName().toLower(), fld.type());
 				sqlfld.setValue(v);
 				//if(sqlfld.type() == QVariant::ByteArray)
 				//	has_blob_field = true;
 				qfDebug() << "\tfield is null: " << sqlfld.isNull();
 				edit_rec.append(sqlfld);
+				qx_record[fld.shortName()] = v;
 			}
 			if(!edit_rec.isEmpty()) {
 				qfDebug() << "updating table edits:" << table_id;
@@ -300,7 +294,9 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 				query_str += " ";
 				QSqlRecord where_rec;
 				qfDebug() << "looking for primary index of table:" << table_id;
-				Q_FOREACH(auto fld_name, sql_conn.primaryIndexFieldNames(table_id)) {
+				std::optional<int> id_pri_key_value;
+				auto pri_keys = sql_conn.primaryIndexFieldNames(table_id);
+				for (const auto &fld_name : pri_keys) {
 					QString full_fld_name = table_id + '.' + fld_name;
 					qfDebug() << "\t checking value of field:" << full_fld_name;
 					int fld_ix = m_table.fields().fieldIndex(full_fld_name);
@@ -313,6 +309,9 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					sqlfld.setValue(row_ref.origValue(fld_ix));
 					qfDebug() << "\tpri index field" << full_fld_name << "type:" << sqlfld.metaType().id() << "orig val:" << row_ref.origValue(fld_ix) << "current val:" << row_ref.value(fld_ix);
 					where_rec.append(sqlfld);
+					if (auto id = sqlfld.value().toInt(); id > 0) {
+						id_pri_key_value = id;
+					}
 				}
 				QF_ASSERT(!where_rec.isEmpty(),
 						  QString("pri keys values not generated for table '%1'").arg(table_id),
@@ -334,6 +333,15 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					qfError() << QString("numRowsAffected() = %1, sholuld be 1 or 0\n%2").arg(num_rows_affected).arg(query_str);
 					ret = false;
 					break;
+				}
+				if (!qx_record.isEmpty() && pri_keys.size() == 1 && pri_keys[0] == "id" && id_pri_key_value.has_value()) {
+					qf::core::sql::QxRecChng chng {
+						.table = table_id,
+						.id = id_pri_key_value.value(),
+						.record = qx_record,
+						.op = qf::core::sql::QxRecOp::Update,
+					};
+					emit qxRecChng(chng);
 				}
 			}
 		}
@@ -436,6 +444,17 @@ bool SqlTableModel::removeTableRow(int row_no, bool throw_exc)
 				qfError() << QString("numRowsAffected() = %1, sholuld be 1\n%2").arg(num_rows_affected).arg(query_str);
 				ret = false;
 				break;
+			}
+			if (where_rec.count() == 1 && where_rec.field(0).name() == "id") {
+				if (auto id = where_rec.field(0).value().toInt(); id < 0) {
+					qf::core::sql::QxRecChng chng {
+						.table = table_id,
+						.id = id,
+						.record = {},
+						.op = qf::core::sql::QxRecOp::Delete,
+					};
+					emit qxRecChng(chng);
+				}
 			}
 		}
 	}

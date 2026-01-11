@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.18.4)
 
 set(QF_BUILD_QML_PLUGINS ON CACHE BOOL "Build with QML Plugins support")
+set(QF_WITH_LIBSHV OFF CACHE BOOL "Build with libshv")
 
 project(quickbox LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
@@ -25,6 +26,9 @@ endif (WIN32)
 
 if (NOT TARGET libnecrolog)
 	add_subdirectory(3rdparty/necrolog)
+endif()
+if (QF_WITH_LIBSHV)
+	add_subdirectory(3rdparty/libshv)
 endif()
 
 set(USE_QT6 ON)

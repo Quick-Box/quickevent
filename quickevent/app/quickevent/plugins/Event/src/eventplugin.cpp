@@ -11,7 +11,7 @@
 
 #include "services/serviceswidget.h"
 #include "services/emmaclient.h"
-#include "services/qx/qxclientservice.h"
+#include "services/qx/qxeventservice.h"
 
 #include <plugins/Core/src/widgets/settingsdialog.h>
 #include <plugins/Event/src/services/oresultsclient.h>
@@ -380,7 +380,7 @@ void EventPlugin::onInstalled()
 	auto *emma_client = new services::EmmaClient(this);
 	services::Service::addService(emma_client);
 
-	auto shvapi_client = new services::qx::QxClientService(this);
+	auto shvapi_client = new services::qx::QxEventService(this);
 	services::Service::addService(shvapi_client);
 
 	{

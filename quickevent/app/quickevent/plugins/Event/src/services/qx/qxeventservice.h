@@ -7,15 +7,20 @@ class QNetworkReply;
 class QUrlQuery;
 class QTimer;
 
+namespace shv::iotqt::node { class ShvNodeTree; class ShvRootNode; }
+namespace shv::iotqt::rpc { class DeviceConnection; }
+namespace shv::chainpack { class RpcMessage; class RpcError; }
+namespace qf::core::sql { struct QxRecChng; }
+
 namespace Event::services::qx {
 
-class QxClientServiceSettings : public ServiceSettings
+class QxEventServiceSettings : public ServiceSettings
 {
 	using Super = ServiceSettings;
 
-	QF_VARIANTMAP_FIELD2(QString, e, setE, xchangeServerUrl, "http://localhost:8000")
+	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "tcp://localhost?user=test&password=test")
 public:
-	QxClientServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
+	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
 };
 
 class EventInfo : public QVariantMap
@@ -34,7 +39,7 @@ public:
 	EventInfo(const QVariantMap &data = QVariantMap()) : QVariantMap(data) {}
 };
 
-class QxClientService : public Service
+class QxEventService : public Service
 {
 	Q_OBJECT
 
@@ -42,14 +47,14 @@ class QxClientService : public Service
 public:
 	static constexpr auto QX_API_TOKEN = "qx-api-token";
 public:
-	QxClientService(QObject *parent);
+	QxEventService(QObject *parent);
 
 	static QString serviceId();
 	QString serviceDisplayName() const override;
 
 	void run() override;
 	void stop() override;
-	QxClientServiceSettings settings() const {return QxClientServiceSettings(m_settings);}
+	QxEventServiceSettings settings() const {return QxEventServiceSettings(m_settings);}
 
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 	QNetworkAccessManager* networkManager();
@@ -65,9 +70,18 @@ public:
 
 	QByteArray apiToken() const;
 	static int currentConnectionId();
-	QUrl exchangeServerUrl() const;
+	QUrl shvBrokerUrl() const;
 
 	int eventId() const;
+private: // shv
+	void onBrokerConnectedChanged(bool is_connected);
+	void onRpcMessageReceived(const shv::chainpack::RpcMessage &msg);
+	void sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg);
+	void onBrokerSocketError(const QString &err);
+	void onBrokerLoginError(const shv::chainpack::RpcError &err);
+	void sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng);
+
+	void subscribeChanges();
 private:
 	void loadSettings() override;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
@@ -84,6 +98,9 @@ private:
 	void pollQxChanges();
 
 	EventInfo eventInfo() const;
+private: // shv
+	shv::iotqt::rpc::DeviceConnection *m_rpcConnection = nullptr;
+	shv::iotqt::node::ShvRootNode *m_rootNode;
 private:
 	QNetworkAccessManager *m_networkManager = nullptr;
 	QNetworkReply *m_replySSE = nullptr;

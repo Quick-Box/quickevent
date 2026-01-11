@@ -7,6 +7,8 @@
 #include "runflagsdialog.h"
 #include "cardflagsdialog.h"
 
+#include "src/qx/sqlapi.h"
+
 #include <quickevent/core/si/siid.h>
 #include <quickevent/core/og/timems.h>
 
@@ -15,6 +17,7 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
 
+#include <qf/core/sql/qxrecchng.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/log.h>
@@ -116,6 +119,8 @@ RunsTableWidget::RunsTableWidget(QWidget *parent) :
 			}
 		}
 	}, Qt::QueuedConnection);
+
+	connect(::qx::SqlApi::instance(), &::qx::SqlApi::recchng, this, &RunsTableWidget::onQxRecChng);
 }
 
 RunsTableWidget::~RunsTableWidget()
@@ -371,6 +376,49 @@ void RunsTableWidget::onTableViewSqlException(const QString &what, const QString
 void RunsTableWidget::onBadTableDataInput(const QString &message)
 {
 	qf::gui::dialogs::MessageBox::showError(this, message);
+}
+
+void RunsTableWidget::onQxRecChng(const qf::core::sql::QxRecChng &chng)
+{
+	std::optional<int> run_id;
+	int row = 0;
+	if (chng.table == "competitors") {
+		auto *m = m_runsModel;
+		for (auto i=0; i<m->rowCount(); ++i) {
+			if (m->table().row(i).value("competitors.id").toInt() == chng.id) {
+				run_id = m->value(i, "runs.id").toInt();
+				row = i;
+				break;
+			}
+		}
+	}
+	else if (chng.table == "runs") {
+		run_id = chng.id;
+		auto *m = m_runsModel;
+		for (auto i=0; i<m->rowCount(); ++i) {
+			if (m->table().row(i).value("runs.id").toInt() == chng.id) {
+				row = i;
+				break;
+			}
+		}
+	}
+	if (run_id.has_value()) {
+		if (chng.op == qf::core::sql::QxRecOp::Update) {
+			for (const auto &[k, v] : chng.record.toMap().asKeyValueRange()) {
+				if (k == "firstname" || k == "lastname") {
+					auto &r = m_runsModel->tableRowRef(row);
+					r.setValue("competitors." + k, v);
+					auto ix = m_runsModel->index(row, RunsTableModel::col_competitorName);
+					m_runsModel->dataChanged(ix, ix);
+				} else {
+					m_runsModel->setValue(row, k, v);
+					m_runsModel->setDirty(row, k, false);
+				}
+			}
+		} else {
+			ui->tblRuns->rowExternallySaved(run_id.value());
+		}
+	}
 }
 
 

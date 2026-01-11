@@ -12,7 +12,7 @@ on:
 
 jobs:
   ubuntu-qe3:
-    name: Qt 6.8 / Ubuntu 22.04
+    name: Qt 6.10 / Ubuntu 22.04
     runs-on: ubuntu-22.04
     steps:
       - name: Clone the repository
@@ -23,7 +23,7 @@ jobs:
       - name: Setup CMake
         uses: ./.github/actions/cmake
         with:
-          qt_version: 6.8.3
+          qt_version: 6.10.1
           use_qt6: ON
           modules: qtserialport qtmultimedia
           additional_cmake_args: -DCMAKE_INSTALL_PREFIX='${{ github.workspace }}/install/usr'
