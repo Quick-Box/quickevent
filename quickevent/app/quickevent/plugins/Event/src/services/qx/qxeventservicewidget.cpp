@@ -119,7 +119,7 @@ void QxEventServiceWidget::testConnection()
 	using namespace shv::iotqt::rpc;
 	using namespace shv::chainpack;
 
-	auto *rpc = new DeviceConnection(this);
+	auto *rpc = new DeviceConnection("QuickEventTest", this);
 	rpc->setConnectionString(ui->edServerUrl->text());
 
 	connect(rpc, &ClientConnection::brokerConnectedChanged, this, [this, rpc](bool is_connected) {

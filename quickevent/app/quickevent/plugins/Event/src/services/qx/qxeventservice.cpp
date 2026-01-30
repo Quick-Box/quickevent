@@ -74,7 +74,7 @@ void QxEventService::run() {
 	auto ss = settings();
 
 	delete m_rpcConnection;
-	m_rpcConnection = new DeviceConnection(this);
+	m_rpcConnection = new DeviceConnection("QuickEvent", this);
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
 	RpcValue::Map opts;
 	RpcValue::Map device;
