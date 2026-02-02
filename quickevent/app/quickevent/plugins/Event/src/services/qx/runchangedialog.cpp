@@ -220,7 +220,7 @@ void RunChangeDialog::resolveChanges(bool is_accepted)
 	url.setQuery(query);
 
 	request.setUrl(url);
-	request.setRawHeader(QxEventService::QX_API_TOKEN, svc->apiToken());
+	request.setRawHeader(QxEventService::QX_API_TOKEN, svc->apiToken().toUtf8());
 	auto *reply = nm->get(request);
 	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
 		if (reply->error() == QNetworkReply::NetworkError::NoError) {

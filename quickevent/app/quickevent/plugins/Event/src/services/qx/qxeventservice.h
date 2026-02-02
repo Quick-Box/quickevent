@@ -68,7 +68,7 @@ public:
 
 	QNetworkReply* getQxChangesReply(int from_id);
 
-	QByteArray apiToken() const;
+	QString apiToken() const;
 	static int currentConnectionId();
 	QUrl shvBrokerUrl() const;
 
@@ -105,6 +105,7 @@ private:
 	QNetworkAccessManager *m_networkManager = nullptr;
 	QNetworkReply *m_replySSE = nullptr;
 	int m_eventId = 0;
+	QString m_eventMountPoint;
 	QTimer *m_pollChangesTimer = nullptr;
 };
 
