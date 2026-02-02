@@ -74,11 +74,19 @@ void QxEventService::run() {
 	auto ss = settings();
 
 	delete m_rpcConnection;
+	m_eventId = 0;
+
+	auto api_token = apiToken();
+	if (api_token.isEmpty()) {
+		setStatus(Status::Stopped);
+		setStatusMessage(tr("API token is not set."));
+	}
+
 	m_rpcConnection = new DeviceConnection("QuickEvent", this);
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
 	RpcValue::Map opts;
 	RpcValue::Map device;
-	device["mountPoint"] = "test/hsh2025";
+	device["deviceId"] = api_token.toStdString();
 	opts["device"] = device;
 	m_rpcConnection->setConnectionOptions(opts);
 
@@ -94,6 +102,7 @@ void QxEventService::run() {
 
 void QxEventService::stop()
 {
+	m_eventId = 0;
 	disconnectSSE();
 	if (m_pollChangesTimer) {
 		m_pollChangesTimer->stop();
@@ -265,19 +274,19 @@ QNetworkReply* QxEventService::getQxChangesReply(int from_id)
 
 int QxEventService::eventId() const
 {
-	if (m_eventId == 0) {
-		throw qf::core::Exception(tr("Event ID is not loaded, service is not probably running."));
-	}
+	// if (m_eventId == 0) {
+	// 	throw qf::core::Exception(tr("Event ID is not loaded, service is not probably running."));
+	// }
 	return m_eventId;
 }
 
-QByteArray QxEventService::apiToken() const
+QString QxEventService::apiToken() const
 {
-	// API token must not be cached to enable service point
+	// API token must not be cached to enable service to point
 	// always to current stage event on qxhttpd
 	auto *event_plugin = getPlugin<EventPlugin>();
 	auto current_stage = event_plugin->currentStageId();
-	return event_plugin->stageData(current_stage).qxApiToken().toUtf8();
+	return event_plugin->stageData(current_stage).qxApiToken();
 }
 
 QUrl QxEventService::shvBrokerUrl() const
@@ -296,7 +305,7 @@ void QxEventService::postFileCompressed(std::optional<QString> path, std::option
 	}
 	QNetworkRequest request;
 	request.setUrl(url);
-	request.setRawHeader(QX_API_TOKEN, apiToken());
+	request.setRawHeader(QX_API_TOKEN, apiToken().toUtf8());
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/zip"));
 	auto zdata = zlibCompress(data);
 	QNetworkReply *reply = networkManager()->post(request, zdata);
@@ -347,7 +356,7 @@ void QxEventService::httpPostJson(const QString &path, const QString &query, QVa
 
 	QNetworkRequest request;
 	request.setUrl(url);
-	request.setRawHeader(QX_API_TOKEN, apiToken());
+	request.setRawHeader(QX_API_TOKEN, apiToken().toUtf8());
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/json"));
 	auto data = QJsonDocument::fromVariant(json).toJson(QJsonDocument::Compact);
 	qfInfo() << "HTTP POST JSON:" << url.toString() << "data:" << QString::fromUtf8(data);
@@ -571,11 +580,24 @@ int QxEventService::currentConnectionId()
 void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
-		setStatus(Status::Running);
-		QTimer::singleShot(0, this, [this]() {
-			subscribeChanges();
-//			testRpcCall();
+		auto *rpc_call = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
+				->setShvPath(".broker/currentClient")
+				->setMethod("info");
+		connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+			if (error.isValid()) {
+				setStatus(Status::Stopped);
+				setStatusMessage(tr("Client info discovery error: %1").arg(error.toString()));
+			}
+			else {
+				const auto &info = result.asMap();
+				m_eventMountPoint = info.value("mountPoint").to<QString>();
+				m_eventId = m_eventMountPoint.section('/', -1, -1).toInt();
+				setStatus(Status::Running);
+				setStatusMessage(tr("Event ID: %1").arg(m_eventId));
+				subscribeChanges();
+			}
 		});
+		rpc_call->start();
 	} else {
 		setStatus(Status::Stopped);
 	}
