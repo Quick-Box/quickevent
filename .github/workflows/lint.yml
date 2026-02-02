@@ -8,8 +8,8 @@ on:
 
 jobs:
   clang-tidy:
-    name: clang-tidy / Ubuntu 22.04
-    runs-on: ubuntu-22.04
+    name: clang-tidy / Ubuntu 24.04
+    runs-on: ubuntu-24.04
     env:
       CC: clang
       CXX: clang++
@@ -25,8 +25,8 @@ jobs:
           lint_program_with_args: clang-tidy --quiet --warnings-as-errors=*
 
   clazy:
-    name: clazy / Ubuntu 22.04
-    runs-on: ubuntu-22.04
+    name: clazy / Ubuntu 24.04
+    runs-on: ubuntu-24.04
     env:
       CC: clang
       CXX: clang++
