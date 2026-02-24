@@ -11,19 +11,11 @@ class QTextStream;
 class QLabel;
 
 namespace qf {
-namespace core {
-namespace model {
-class SqlTableModel;
-}
-}
-namespace gui {
-class ForeignKeyComboBox;
-}
+namespace core { namespace model { class SqlTableModel; } }
+namespace gui { class ForeignKeyComboBox; }
 }
 
-namespace Event {
-class EventPlugin;
-}
+namespace Event { class EventPlugin; }
 
 namespace Ui {
 class RunsWidget;
@@ -69,7 +61,6 @@ private:
 	void onDrawRemoveClicked();
 	void onCbxStageCurrentIndexChanged();
 private:
-
 	/**
 	 * @brief runnersInClubsHistogram
 	 * @return list of runs.id for each club sorted by their count, longest list of runners is first

@@ -39,6 +39,7 @@ runs:
         rm ${{ env.QT_ROOT_DIR }}/plugins/sqldrivers/libqsqlmimer.so
         rm ${{ env.QT_ROOT_DIR }}/plugins/sqldrivers/libqsqlmysql.so
         rm ${{ env.QT_ROOT_DIR }}/plugins/sqldrivers/libqsqlodbc.so
+        rm ${{ env.QT_ROOT_DIR }}/plugins/sqldrivers/libqsqloci.so
       shell: bash
 
     - name: Create AppImage

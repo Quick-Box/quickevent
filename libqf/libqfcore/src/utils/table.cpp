@@ -1310,7 +1310,8 @@ QVariant Table::sumValue(int field_ix) const
 	return ret;
 }
 
-static void setDomElementText(QDomDocument &owner_doc, QDomElement &el, const QString &str)
+namespace {
+void setDomElementText(QDomDocument &owner_doc, QDomElement &el, const QString &str)
 {
 	QDomNode nd = el.firstChild();
 	QDomText el_txt = nd.toText();
@@ -1321,6 +1322,7 @@ static void setDomElementText(QDomDocument &owner_doc, QDomElement &el, const QS
 	else {
 		el_txt.setData(str);
 	}
+}
 }
 
 QDomElement Table::toHtmlElement(QDomDocument &owner_doc, const QString & col_names, TextExportOptions opts) const
