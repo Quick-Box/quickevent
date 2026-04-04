@@ -3,12 +3,12 @@
  <class>Receipts::ReceiptsSettingsPage</class>
  <widget class="QWidget" name="Receipts::ReceiptsSettingsPage">
   <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>393</width>
-    <height>205</height>
-   </rect>
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>504</width>
+     <height>380</height>
+    </rect>
   </property>
   <property name="windowTitle">
    <string>CuteCom</string>
@@ -24,19 +24,6 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="0" column="1">
     <widget class="QCheckBox" name="chkThisReaderOnly">
      <property name="toolTip">
@@ -47,39 +34,220 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
+    <widget class="QLabel" name="lbReceiptSetup">
+     <property name="font">
+      <font>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Receipt setup</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QWidget" name="receiptSetupSpacer" native="true"/>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>When runner is not found</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="3" column="1">
     <widget class="QComboBox" name="cbxWhenRunnerNotFound"/>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Receipt</string>
+      <string>Template</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="cbxReceipt"/>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="cbxReceipt"/>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="lbPrinterSetup">
+      <property name="font">
+       <font>
+        <bold>true</bold>
+       </font>
+     </property>
+      <property name="text">
+       <string>Printer setup</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QWidget" name="printerSetupSpacer" native="true"/>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Printer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="QPushButton" name="btPrinterOptions">
+      <property name="text">
+       <string notr="true">printer options</string>
+      </property>
+     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_3">
+   <item row="4" column="0">
+    <widget class="QCheckBox" name="chkPrintReceiptQrCode">
+     <property name="toolTip">
+      <string>Print a QR code with a link at the bottom of receipts.</string>
+     </property>
      <property name="text">
-      <string>Printer</string>
+      <string>QR code with a link at the bottom</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QPushButton" name="btPrinterOptions">
-     <property name="text">
-      <string notr="true">printer options</string>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="edReceiptQrCodeBaseUrl">
+      <property name="toolTip">
+       <string>Base URL encoded into the printed QR code.</string>
+      </property>
+      <property name="placeholderText">
+       <string>https://example.com/events/&lt;eventId&gt;?tab=results</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="lbReceiptQrCodeCaption">
+      <property name="text">
+       <string>QR code caption</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="edReceiptQrCodeCaption">
+      <property name="toolTip">
+       <string>Caption printed under the QR code.</string>
+      </property>
+      <property name="placeholderText">
+       <string>Live Results</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QCheckBox" name="chkPrintReceiptImage">
+      <property name="toolTip">
+       <string>Print an image at the top of receipts.</string>
+      </property>
+      <property name="text">
+       <string>Image at top</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <layout class="QHBoxLayout" name="receiptImageLayout">
+      <item>
+       <widget class="QLineEdit" name="edReceiptImageFile">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       <property name="placeholderText">
+        <string>No image selected</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btSelectReceiptImage">
+       <property name="text">
+        <string>Select image...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btClearReceiptImage">
+       <property name="text">
+        <string>Clear</string>
+       </property>
+      </widget>
+     </item>
+     </layout>
+    </item>
+    <item row="7" column="0">
+      <widget class="QLabel" name="lbReceiptImageHeight">
+       <property name="text">
+        <string>Image height (max 60 mm)</string>
+       </property>
+      </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QSpinBox" name="edReceiptImageHeight">
+      <property name="toolTip">
+       <string>Maximum printed height of the receipt image.</string>
+      </property>
+     <property name="suffix">
+      <string> mm</string>
      </property>
-    </widget>
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>60</number>
+     </property>
+      <property name="value">
+       <number>18</number>
+      </property>
+     </widget>
+    </item>
+     <item row="10" column="1">
+      <layout class="QHBoxLayout" name="testPrintLayout">
+       <item>
+        <spacer name="horizontalSpacerLeft">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btTestPrint">
+         <property name="text">
+          <string>Test print</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacerRight">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="11" column="0">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+      </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
@@ -89,7 +257,15 @@
   <tabstop>chkThisReaderOnly</tabstop>
   <tabstop>cbxReceipt</tabstop>
   <tabstop>cbxWhenRunnerNotFound</tabstop>
+  <tabstop>chkPrintReceiptQrCode</tabstop>
+  <tabstop>edReceiptQrCodeBaseUrl</tabstop>
+  <tabstop>edReceiptQrCodeCaption</tabstop>
+  <tabstop>chkPrintReceiptImage</tabstop>
+  <tabstop>btSelectReceiptImage</tabstop>
+  <tabstop>btClearReceiptImage</tabstop>
+  <tabstop>edReceiptImageHeight</tabstop>
   <tabstop>btPrinterOptions</tabstop>
+  <tabstop>btTestPrint</tabstop>
  </tabstops>
  <resources/>
  <connections/>

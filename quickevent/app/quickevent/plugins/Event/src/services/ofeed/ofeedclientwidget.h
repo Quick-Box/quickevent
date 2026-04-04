@@ -23,11 +23,21 @@ private:
 	void onBtExportResultsXml30Clicked();
 	void onBtExportStartListXml30Clicked();
 	void onProcessChangesOnOffButtonClicked();
+	void onBtPasteSetupLinkClicked();
+	void onBtTestConnectionClicked();
+	void onBtRefreshEventImageClicked();
+	void onBtOpenEventWebsiteClicked();
+	void updateTestConnectionState();
+	void syncReceiptEventLinkWithDefaults();
+	QString defaultReceiptEventLink() const;
 	OFeedClient* service();
 	bool saveSettings();
 private:
 	Ui::OFeedClientWidget *ui;
 	bool acceptDialogDone(int result);
+	bool m_isTestConnectionRunning = false;
+	bool m_isImageRefreshRunning = false;
+	QString m_lastAutoReceiptEventLink;
 };
 
 }}

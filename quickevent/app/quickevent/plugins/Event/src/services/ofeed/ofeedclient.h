@@ -4,6 +4,7 @@
 #pragma once
 
 #include "../service.h"
+#include <functional>
 
 class QTimer;
 class QNetworkAccessManager;
@@ -54,14 +55,43 @@ public:
 	void setRunXmlValidation(bool runXmlValidation);
 	bool runChangesProcessing();
 	void setRunChangesProcessing(bool runChangesProcessing);
+	bool printEventImageOnReceipt() const;
+	void setPrintEventImageOnReceipt(bool on);
+	bool printEventQrCodeOnReceipt() const;
+	void setPrintEventQrCodeOnReceipt(bool on);
+	int receiptImageHeightMm() const;
+	void setReceiptImageHeightMm(int height_mm);
+	QString receiptEventLinkUrl() const;
+	QString defaultReceiptEventLinkUrl() const;
+	void setReceiptEventLinkUrl(QString link_url);
+	QString receiptEventQrCodeCaption() const;
+	QString defaultReceiptEventQrCodeCaption() const;
+	void setReceiptEventQrCodeCaption(QString caption);
+	bool hasCachedEventImage() const;
+	QString cachedEventImageBase64() const;
+	QString cachedEventImageFormat() const;
+	void refreshEventImageCache(std::function<void(bool success, const QString &message)> callback = nullptr);
+	void testConnection(const QString &hostUrl,
+						const QString &eventId,
+						const QString &eventPassword,
+						std::function<void(bool success, const QString &message)> callback);
 
-	private:
+private:
 	QTimer *m_exportTimer = nullptr;
 	QNetworkAccessManager *m_networkManager = nullptr;
-	private:
+	const QString OFEED_API_URL = "https://api.orienteerfeed.com";
+	bool m_eventImageStartupAttempted = false;
+
+private:
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 	void onExportTimerTimeOut();
 	void init();
+	void ensureEventImageCachedAtStartup();
+	QString receiptConfigKey(const QString &suffix) const;
+	QVariant receiptConfigValue(const QString &suffix, const QVariant &default_value = QVariant()) const;
+	void setReceiptConfigValue(const QString &suffix, const QVariant &value);
+	void setCachedEventImage(const QByteArray &raw_data, const QString &format);
+	void clearCachedEventImage();
 	void sendFile(QString name, QString request_path, QString file, std::function<void()> on_success = nullptr);
 	void sendCompetitorUpdate(QString json_body, int competitor_id, bool usingExternalId);
 	void sendCompetitorAdded(QString json_body);

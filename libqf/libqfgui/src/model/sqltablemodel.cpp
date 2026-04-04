@@ -688,6 +688,11 @@ bool SqlTableModel::reloadTable(const QString &query_str)
 #endif
 			table_fields << fld;
 		}
+		if(fld_cnt <= 0) {
+			m_recentlyExecutedQueryError = QStringLiteral("SELECT result has no columns.");
+			qfError() << QStringLiteral("SQL select result has no columns: %1").arg(query_str);
+			return false;
+		}
 		setSqlFlags(table_fields, query_str);
 		m_table = qfu::Table(table_fields);
 		while(q.next()) {
@@ -888,3 +893,4 @@ QStringList SqlTableModel::tableIdsSortedAccordingToForeignKeys()
 }
 
 }
+

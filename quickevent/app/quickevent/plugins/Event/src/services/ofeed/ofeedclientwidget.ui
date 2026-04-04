@@ -85,10 +85,10 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OFeed instance url&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>https://api.orienteerfeed.com</string>
+          <string>https://orienteerfeed.com</string>
          </property>
          <property name="placeholderText">
-          <string>https://api.orienteerfeed.com</string>
+          <string>https://orienteerfeed.com</string>
          </property>
         </widget>
        </item>
@@ -100,14 +100,31 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="edEventId">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Event id provided in the Settings section on the web site. Can be copied from OFeed url as well.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="placeholderText">
-          <string>From OFeed settings page</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="eventIdLayout">
+         <item>
+          <widget class="QLineEdit" name="edEventId">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Event id provided in the Settings section on the web site. Can be copied from OFeed url as well.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="placeholderText">
+            <string>From OFeed settings page</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btOpenEventWebsite">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="toolTip">
+            <string>Fill Url and Event id to open event page</string>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="passwordLabel">
@@ -120,12 +137,59 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLineEdit" name="edEventPassword">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password that was generated in the Settings section.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <layout class="QHBoxLayout" name="eventPasswordLayout">
+         <item>
+          <widget class="QLineEdit" name="edEventPassword">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password that was generated in the Settings section.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="echoMode">
+            <enum>QLineEdit::EchoMode::Password</enum>
+           </property>
+           <property name="placeholderText">
+            <string>From OFeed settings page</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btToggleEventPasswordVisibility">
+           <property name="toolTip">
+            <string>Show or hide password value</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+        <item row="4" column="1">
+         <widget class="QPushButton" name="btPasteSetupLink">
+          <property name="toolTip">
+           <string>Paste OFeed setup link from clipboard and fill Url, Event id and Password.</string>
+          </property>
+          <property name="text">
+           <string>Paste setup link</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QPushButton" name="btTestConnection">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+          <string>Test connection</string>
          </property>
-         <property name="placeholderText">
-          <string>From OFeed settings page</string>
+        </widget>
+       </item>
+        <item row="6" column="1">
+         <widget class="QLabel" name="lbConnectionTestResult">
+          <property name="text">
+           <string/>
+          </property>
+         <property name="wordWrap">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -147,7 +211,7 @@
      <item>
       <widget class="QLabel" name="uploadDataDescription">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start lists and results are automatically exported at specified intervals, with changes such as edited competitor data or new competitors being synced in real time. Both results and start lists can also be exported manually using the buttons below. Additionally, when the service is active, individual competitor data is sent after readout and upon saving the competitor dialog. Refer to the &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;p&gt;If you encounter any unexpected errors, please &lt;a href=&quot;mailto:support@orienteerfeed.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;contact us&lt;/span&gt;&lt;/a&gt; or create an issue on our GitHub &lt;a href=&quot;https://github.com/orienteerfeed/ofeed/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;page&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start lists and results are automatically exported at specified intervals, with changes such as edited competitor data or new competitors being synced in real time. Both results and start lists can also be exported manually using the buttons below. Additionally, when the service is active, individual competitor data is sent after readout and upon saving the competitor dialog. Refer to the &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;p&gt;If you encounter any unexpected errors, check &lt;a href=&quot;https://docs.orienteerfeed.com/support&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;support&lt;/span&gt;&lt;/a&gt; page in the documentation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -273,7 +337,7 @@
      <item>
       <widget class="QLabel" name="processChangesDescription">
        <property name="text">
-        <string>Changes from the origin specified (permanent value at this moment) are processed automatically and visualized in &lt;b&gt;qxchange&lt;/b&gt; modul.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Changes from the origin specified (permanent value at this moment) are processed automatically and visualized in &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; modul.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -299,8 +363,8 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QCheckBox" name="additionalSettingsRunXmlValidation">
+      <item>
+       <widget class="QCheckBox" name="additionalSettingsRunXmlValidation">
        <property name="toolTip">
         <string extracomment="Should OFeed perform iof xml validation?"/>
        </property>
@@ -316,11 +380,117 @@
        <property name="tristate">
         <bool>false</bool>
        </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-  </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="additionalSettingsPrintEventImageOnReceipt">
+         <property name="text">
+          <string>Print the OFeed event image on receipts</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="receiptImageHeightLayout">
+         <item>
+          <widget class="QLabel" name="lbReceiptImageHeight">
+           <property name="text">
+             <string>Receipt image height (max 60 mm)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="edReceiptImageHeight">
+           <property name="toolTip">
+            <string>Maximum printed height of the OFeed event image on receipts</string>
+           </property>
+           <property name="suffix">
+            <string> mm</string>
+           </property>
+           <property name="minimum">
+            <number>10</number>
+           </property>
+           <property name="maximum">
+            <number>60</number>
+           </property>
+           <property name="value">
+            <number>18</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btRefreshEventImage">
+         <property name="toolTip">
+          <string>Download event image from OFeed and update local cache</string>
+         </property>
+         <property name="text">
+          <string>Refresh event image cache</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lbEventImageCacheStatus">
+         <property name="text">
+          <string>No cached image</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+        <item>
+         <widget class="QCheckBox" name="additionalSettingsPrintEventQrCodeOnReceipt">
+          <property name="text">
+           <string>Print QR code with event link on receipts</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="receiptEventLinkLayout">
+          <item>
+           <widget class="QLabel" name="lbReceiptEventLink">
+            <property name="text">
+             <string>Receipt event link</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="edReceiptEventLink">
+            <property name="toolTip">
+             <string>Link encoded into the printed QR code on receipts</string>
+            </property>
+            <property name="placeholderText">
+             <string>https://orienteerfeed.com/events/&lt;eventId&gt;?tab=results</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="receiptEventQrCodeCaptionLayout">
+          <item>
+           <widget class="QLabel" name="lbReceiptEventQrCodeCaption">
+            <property name="text">
+             <string>Receipt QR caption</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="edReceiptEventQrCodeCaption">
+            <property name="toolTip">
+             <string>Caption printed under the receipt QR code</string>
+            </property>
+            <property name="placeholderText">
+             <string>Live Results</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
  </widget>
  <tabstops>
   <tabstop>btExportStartListXml30</tabstop>

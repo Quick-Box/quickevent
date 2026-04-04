@@ -4,6 +4,7 @@
 #include <QDialog>
 
 class QButtonGroup;
+class QShowEvent;
 
 namespace Core {
 
@@ -24,6 +25,8 @@ public:
 	~SettingsDialog();
 
 	void addPage(SettingsPage *page);
+protected:
+	void showEvent(QShowEvent *event) override;
 private slots:
 	void onButtonBoxRejected();
 	//ReportsSettingsPage *reportsSettingsPage() const;

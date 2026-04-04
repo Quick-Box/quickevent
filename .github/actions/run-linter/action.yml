@@ -4,6 +4,10 @@ inputs:
   lint_program_with_args:
     description: "Which program to run"
     required: true
+  exclude_files_pattern:
+    description: "Extended regex for changed files to skip"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -36,6 +40,9 @@ runs:
         BASE_REF="${{github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before}}"
         git fetch --depth=1 origin "$BASE_REF"
         readarray -t CHANGED_FILES < <(git diff --name-only "$BASE_REF" | grep 'cpp$')
+        if [[ -n "${{ inputs.exclude_files_pattern }}" ]]; then
+          readarray -t CHANGED_FILES < <(printf '%s\n' "${CHANGED_FILES[@]}" | grep -Ev "${{ inputs.exclude_files_pattern }}" || true)
+        fi
         if [[ "${#CHANGED_FILES[@]}" -eq 0 ]]; then
           echo "No changed cpp files."
           exit 0

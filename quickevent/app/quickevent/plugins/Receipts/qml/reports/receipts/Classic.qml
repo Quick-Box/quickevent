@@ -55,27 +55,31 @@ Report {
 				}
 				Frame {
 					htmlExportAttributes: {"lpt_textAlign": "left", "lpt_borderTop": "=", "lpt_borderBottom": "-"}
+					id: receiptImageFrame
 					width: "%"
-					fill: Brush { color: Color { def: "powderblue" } }
-					topBorder: Pen { basedOn: "black2" }
-					bottomBorder: Pen { basedOn: "black1" }
-					hinset: 1
+					halign: Frame.AlignHCenter
+					hinset: 4
 					vinset: 1
 					Para {
+						omitEmptyText: true
 						textFn: function() {
-							var s = "";
-							var stage_cnt = bandCompetitor.data("stageCount")
-							if(stage_cnt > 1) {
-								s = qsTr("E") + bandCompetitor.data("currentStageId") + " - ";
-							}
-							s += bandCompetitor.data("event.name")
-							return s;
+							var path = bandCompetitor.data("event.receiptImagePath") || "";
+							var image_height = bandCompetitor.data("event.receiptImageHeightMm") || 18;
+							if(image_height < 10)
+								image_height = 10;
+							else if(image_height > 60)
+								image_height = 60;
+							receiptImage.visible = !!path;
+							receiptImage.height = path ? image_height : 0;
+							receiptImage.dataSource = path;
+							return "";
 						}
 					}
-					Para {
-						textFn: function() {
-							return TimeExt.dateToISOString(bandCompetitor.data("event.date")) + " " + bandCompetitor.data("event.place")
-						}
+					Image {
+						id: receiptImage
+						visible: false
+						height: 0
+						dataSource: ""
 					}
 				}
 				Frame {
@@ -89,7 +93,10 @@ Report {
 						layout: Frame.LayoutHorizontal
 						Para {
 							width: "%"
-							text: detailCompetitor.data(detailCompetitor.currentIndex, "competitorName")
+							textFn: function() {
+								var name = detailCompetitor.data(detailCompetitor.currentIndex, "competitorName");
+								return name ? name : "";
+							}
 						}
 						Para {
 							htmlExportAttributes: {"lpt_textWidth": "%", "lpt_textAlign": "right"}
@@ -108,7 +115,10 @@ Report {
 							htmlExportAttributes: {"lpt_textWidth": "%"}
 							width: "%"
 							//textHAlign: Frame.AlignLeft
-							text: detailCompetitor.data(detailCompetitor.currentIndex, "classes.name") //"SI: " + detailCompetitor.data(detailCompetitor.currentIndex, "runs.siId")
+							textFn: function() {
+								var class_name = detailCompetitor.data(detailCompetitor.currentIndex, "classes.name");
+								return class_name ? class_name : "";
+							} //"SI: " + detailCompetitor.data(detailCompetitor.currentIndex, "runs.siId")
 						}
 						Para {
 							textFn: function() {
@@ -305,7 +315,7 @@ Report {
 					omitEmptyText: true
 					textFn: function() {
 						var card_lent = bandCard.data("isCardLent");
-						cardLentFrame.visible = card_lent
+						cardLentFrame.visible = !!card_lent
 						return "";
 					}
 				}
@@ -412,6 +422,43 @@ Report {
 						if(battery_status)
 							return qsTr("Siac battery: ") + battery_status.voltage.toFixed(2) + "V - " + (battery_status.low? "LOW": "Ok");
 						return "";
+					}
+				}
+			}
+			Frame {
+				id: receiptQrCodeFrame
+				width: "%"
+				halign: Frame.AlignHCenter
+				hinset: 1
+				vinset: 2
+				Para {
+					omitEmptyText: true
+					textFn: function() {
+						var path = bandCard.data("event.receiptQrCodePath") || "";
+						receiptQrCodeImage.visible = !!path;
+						receiptQrCodeImage.width = path ? 24 : 0;
+						receiptQrCodeImage.height = path ? 24 : 0;
+						receiptQrCodeImage.dataSource = path;
+						return "";
+					}
+				}
+				Image {
+					id: receiptQrCodeImage
+					visible: false
+					width: 0
+					height: 0
+					dataSource: ""
+				}
+				Para {
+					omitEmptyText: true
+					width: "%"
+					htmlExportAttributes: {"lpt_textAlign": "center", "lpt_textWidth": "%"}
+					textHAlign: Frame.AlignHCenter
+					textFn: function() {
+						var path = bandCard.data("event.receiptQrCodePath") || "";
+						if(!path)
+							return "";
+						return bandCard.data("event.receiptQrCodeCaption") || "";
 					}
 				}
 			}

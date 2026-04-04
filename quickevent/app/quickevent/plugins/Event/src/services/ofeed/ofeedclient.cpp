@@ -20,9 +20,9 @@
 #include <quickevent/core/utils.h>
 
 #include <QCoreApplication>
-#include <QDir>
-#include <QFile>
+#include <QBuffer>
 #include <QHttpPart>
+#include <QImageReader>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QSettings>
@@ -49,6 +49,71 @@ using Runs::RunsPlugin;
 
 namespace Event::services {
 
+	namespace
+	{
+		const QString k_default_host_url = QStringLiteral("https://api.orienteerfeed.com");
+		const QString k_event_config_prefix = QStringLiteral("event");
+
+		QString normalized_base_host_url(QString host_url)
+		{
+			host_url = host_url.trimmed();
+			if (host_url.isEmpty())
+				host_url = k_default_host_url;
+
+			if (!host_url.contains("://"))
+				host_url.prepend(QStringLiteral("https://"));
+
+			QUrl parsed_url = QUrl::fromUserInput(host_url);
+			if (!parsed_url.isValid() || parsed_url.host().isEmpty())
+				parsed_url = QUrl(k_default_host_url);
+
+			QString host = parsed_url.host().toLower();
+			if (host == QStringLiteral("orienteerfeed.com") || host == QStringLiteral("www.orienteerfeed.com"))
+			{
+				parsed_url.setHost(QStringLiteral("api.orienteerfeed.com"));
+			}
+
+			QUrl base_url;
+			base_url.setScheme(parsed_url.scheme().isEmpty() ? QStringLiteral("https") : parsed_url.scheme());
+			base_url.setHost(parsed_url.host());
+			if (parsed_url.port() > 0)
+				base_url.setPort(parsed_url.port());
+			return base_url.toString();
+		}
+
+		QString normalized_receipt_host_url(QString host_url)
+		{
+			host_url = host_url.trimmed();
+			if (host_url.isEmpty())
+				host_url = QStringLiteral("https://orienteerfeed.com");
+
+			if (!host_url.contains("://"))
+				host_url.prepend(QStringLiteral("https://"));
+
+			QUrl parsed_url = QUrl::fromUserInput(host_url);
+			if (!parsed_url.isValid() || parsed_url.host().isEmpty())
+				parsed_url = QUrl(QStringLiteral("https://orienteerfeed.com"));
+
+			QString host = parsed_url.host().toLower();
+			if (host == QStringLiteral("api.orienteerfeed.com") || host == QStringLiteral("www.orienteerfeed.com"))
+			{
+				parsed_url.setHost(QStringLiteral("orienteerfeed.com"));
+			}
+
+			QUrl base_url;
+			base_url.setScheme(parsed_url.scheme().isEmpty() ? QStringLiteral("https") : parsed_url.scheme());
+			base_url.setHost(parsed_url.host());
+			if (parsed_url.port() > 0)
+				base_url.setPort(parsed_url.port());
+			return base_url.toString();
+		}
+
+		QString stageConfigKey(const QString &prefix, const QString &suffix, int stage)
+		{
+			return prefix + QLatin1Char('.') + suffix + QStringLiteral(".E") + QString::number(stage);
+		}
+	}
+
 OFeedClient::OFeedClient(QObject *parent)
 	: Super(OFeedClient::serviceName(), parent)
 {
@@ -67,6 +132,7 @@ QString OFeedClient::serviceName()
 void OFeedClient::run()
 {
 	Super::run();
+	ensureEventImageCachedAtStartup();
 	exportStartListIofXml3([this]()
 						   { exportResultsIofXml3(); });
 	m_exportTimer->start();
@@ -112,6 +178,7 @@ void OFeedClient::init()
 {
 	OFeedClientSettings ss = settings();
 	m_exportTimer->setInterval(ss.exportIntervalSec() * 1000);
+	ensureEventImageCachedAtStartup();
 }
 
 void OFeedClient::onExportTimerTimeOut()
@@ -182,7 +249,7 @@ QString OFeedClient::hostUrl() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	QString key = serviceName().toLower() + ".hostUrl.E" + QString::number(current_stage);
-	return getPlugin<EventPlugin>()->eventConfig()->value(key, "https://api.orienteerfeed.com").toString();
+	return normalized_base_host_url(getPlugin<EventPlugin>()->eventConfig()->value(key, k_default_host_url).toString());
 }
 
 QString OFeedClient::eventId() const
@@ -253,11 +320,256 @@ bool OFeedClient::runChangesProcessing ()
 	return getPlugin<EventPlugin>()->eventConfig()->value(key, "false").toBool();
 };
 
+QString OFeedClient::receiptConfigKey(const QString &suffix) const
+{
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	return stageConfigKey(k_event_config_prefix, suffix, current_stage);
+}
+
+QVariant OFeedClient::receiptConfigValue(const QString &suffix, const QVariant &default_value) const
+{
+	return getPlugin<EventPlugin>()->eventConfig()->value(receiptConfigKey(suffix), default_value);
+}
+
+void OFeedClient::setReceiptConfigValue(const QString &suffix, const QVariant &value)
+{
+	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
+	event_config->setValue(receiptConfigKey(suffix), value);
+	event_config->save(k_event_config_prefix);
+}
+
+bool OFeedClient::printEventImageOnReceipt() const
+{
+	return receiptConfigValue(QStringLiteral("receiptPrintEventImage"), false).toBool();
+}
+
+void OFeedClient::setPrintEventImageOnReceipt(bool on)
+{
+	setReceiptConfigValue(QStringLiteral("receiptPrintEventImage"), on);
+}
+
+bool OFeedClient::printEventQrCodeOnReceipt() const
+{
+	return receiptConfigValue(QStringLiteral("receiptPrintEventQrCode"), false).toBool();
+}
+
+void OFeedClient::setPrintEventQrCodeOnReceipt(bool on)
+{
+	setReceiptConfigValue(QStringLiteral("receiptPrintEventQrCode"), on);
+}
+
+int OFeedClient::receiptImageHeightMm() const
+{
+	bool ok = false;
+	int height_mm = receiptConfigValue(QStringLiteral("receiptImageHeightMm"), 18).toInt(&ok);
+	if(!ok)
+		return 18;
+	if(height_mm < 10)
+		return 10;
+	if(height_mm > 60)
+		return 60;
+	return height_mm;
+}
+
+void OFeedClient::setReceiptImageHeightMm(int height_mm)
+{
+	if(height_mm < 10)
+		height_mm = 10;
+	else if(height_mm > 60)
+		height_mm = 60;
+	setReceiptConfigValue(QStringLiteral("receiptImageHeightMm"), height_mm);
+}
+
+QString OFeedClient::receiptEventLinkUrl() const
+{
+	const QString custom_url = receiptConfigValue(QStringLiteral("receiptEventLinkUrl")).toString().trimmed();
+	if(!custom_url.isEmpty())
+		return custom_url;
+	return defaultReceiptEventLinkUrl();
+}
+
+QString OFeedClient::defaultReceiptEventLinkUrl() const
+{
+	QUrl event_url(normalized_receipt_host_url(hostUrl()));
+	const QString event_id = eventId().trimmed();
+	if(event_id.isEmpty())
+		return event_url.toString();
+	event_url.setPath(QStringLiteral("/events/%1").arg(event_id));
+	QUrlQuery query(event_url);
+	query.addQueryItem(QStringLiteral("tab"), QStringLiteral("results"));
+	event_url.setQuery(query);
+	return event_url.toString();
+}
+
+void OFeedClient::setReceiptEventLinkUrl(QString link_url)
+{
+	link_url = link_url.trimmed();
+	setReceiptConfigValue(QStringLiteral("receiptEventLinkUrl"), link_url);
+}
+
+QString OFeedClient::receiptEventQrCodeCaption() const
+{
+	return receiptConfigValue(QStringLiteral("receiptPrintEventQrCodeCaption"), defaultReceiptEventQrCodeCaption()).toString().trimmed();
+}
+
+QString OFeedClient::defaultReceiptEventQrCodeCaption() const
+{
+	return QStringLiteral("Live Results");
+}
+
+void OFeedClient::setReceiptEventQrCodeCaption(QString caption)
+{
+	caption = caption.trimmed();
+	setReceiptConfigValue(QStringLiteral("receiptPrintEventQrCodeCaption"), caption);
+}
+
+bool OFeedClient::hasCachedEventImage() const
+{
+	return !cachedEventImageBase64().isEmpty();
+}
+
+QString OFeedClient::cachedEventImageBase64() const
+{
+	return receiptConfigValue(QStringLiteral("receiptImageDataBase64")).toString();
+}
+
+QString OFeedClient::cachedEventImageFormat() const
+{
+	return receiptConfigValue(QStringLiteral("receiptImageFormat"), QStringLiteral("png")).toString().toLower();
+}
+
+void OFeedClient::setCachedEventImage(const QByteArray &raw_data, const QString &format)
+{
+	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
+	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageDataBase64")), QString::fromLatin1(raw_data.toBase64()));
+	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageFormat")), format.toLower());
+	event_config->save(k_event_config_prefix);
+}
+
+void OFeedClient::clearCachedEventImage()
+{
+	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
+	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageDataBase64")), QString());
+	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageFormat")), QString());
+	event_config->save(k_event_config_prefix);
+}
+
+void OFeedClient::ensureEventImageCachedAtStartup()
+{
+	if(m_eventImageStartupAttempted)
+		return;
+	if(!printEventImageOnReceipt())
+		return;
+	m_eventImageStartupAttempted = true;
+	refreshEventImageCache();
+}
+
+void OFeedClient::refreshEventImageCache(std::function<void(bool, const QString &)> callback)
+{
+	const QString trimmed_event_id = eventId().trimmed();
+	const QString trimmed_event_password = eventPassword().trimmed();
+	if(trimmed_event_id.isEmpty() || trimmed_event_password.isEmpty()) {
+		if(callback)
+			callback(false, tr("Missing OFeed event credentials."));
+		return;
+	}
+
+	QUrl base_url(hostUrl());
+	if(!base_url.isValid() || base_url.host().isEmpty()) {
+		if(callback)
+			callback(false, tr("Invalid OFeed URL."));
+		return;
+	}
+	base_url.setPath(QStringLiteral("/rest/v1/events/%1/image").arg(trimmed_event_id));
+
+	QNetworkRequest request(base_url);
+	const QString combined = trimmed_event_id + ":" + trimmed_event_password;
+	const QByteArray auth = "Basic " + combined.toUtf8().toBase64();
+	request.setRawHeader("Authorization", auth);
+
+	QNetworkReply *reply = m_networkManager->get(request);
+	connect(reply, &QNetworkReply::finished, this, [this, reply, callback]() {
+		const int http_status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		const QByteArray payload = reply->readAll();
+		const QString content_type = reply->header(QNetworkRequest::ContentTypeHeader).toString().toLower();
+
+		auto callback_result = [&](bool success, const QString &message) {
+			if(callback)
+				callback(success, message);
+		};
+
+		if(reply->error() != QNetworkReply::NoError) {
+			if(http_status == 404 || http_status == 204)
+				callback_result(false, tr("No event image is available in OFeed."));
+			else
+				callback_result(false, tr("Event image download failed: %1").arg(reply->errorString()));
+			reply->deleteLater();
+			return;
+		}
+		if(http_status != 200 || payload.isEmpty()) {
+			callback_result(false, tr("No event image payload received from OFeed."));
+			reply->deleteLater();
+			return;
+		}
+
+		const bool is_svg = content_type.contains("image/svg")
+			|| payload.startsWith("<svg")
+			|| payload.contains("<svg");
+		if(is_svg) {
+			setCachedEventImage(payload, "svg");
+			callback_result(true, tr("Event image cached as SVG."));
+			reply->deleteLater();
+			return;
+		}
+
+		QBuffer buffer;
+		buffer.setData(payload);
+		buffer.open(QIODevice::ReadOnly);
+		QImageReader reader(&buffer);
+		reader.setAutoTransform(true);
+		const QSize original_size = reader.size();
+		const int max_dimension = 1400;
+		if(original_size.isValid() && (original_size.width() > max_dimension || original_size.height() > max_dimension)) {
+			QSize scaled = original_size;
+			scaled.scale(max_dimension, max_dimension, Qt::KeepAspectRatio);
+			reader.setScaledSize(scaled);
+		}
+		QImage image = reader.read();
+		if(image.isNull()) {
+			callback_result(false, tr("Unsupported image format received from OFeed."));
+			reply->deleteLater();
+			return;
+		}
+		if(image.width() > max_dimension || image.height() > max_dimension) {
+			image = image.scaled(max_dimension, max_dimension, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		}
+		QByteArray png_data;
+		{
+			QBuffer out_buffer(&png_data);
+			out_buffer.open(QIODevice::WriteOnly);
+			if(!image.save(&out_buffer, "PNG")) {
+				callback_result(false, tr("Cannot encode cached event image."));
+				reply->deleteLater();
+				return;
+			}
+		}
+		if(png_data.isEmpty()) {
+			callback_result(false, tr("Cached image encoding produced empty payload."));
+			reply->deleteLater();
+			return;
+		}
+		setCachedEventImage(png_data, "png");
+		callback_result(true, tr("Event image cached (%1x%2).").arg(image.width()).arg(image.height()));
+		reply->deleteLater();
+	});
+}
+
 void OFeedClient::setHostUrl(QString hostUrl)
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".hostUrl.E" + QString::number(current_stage), hostUrl);
 	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	m_eventImageStartupAttempted = false;
 }
 
 void OFeedClient::setEventId(QString eventId)
@@ -265,6 +577,7 @@ void OFeedClient::setEventId(QString eventId)
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".eventId.E" + QString::number(current_stage), eventId);
 	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	m_eventImageStartupAttempted = false;
 }
 
 void OFeedClient::setEventPassword(QString eventPassword)
@@ -272,6 +585,7 @@ void OFeedClient::setEventPassword(QString eventPassword)
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".eventPassword.E" + QString::number(current_stage), eventPassword);
 	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	m_eventImageStartupAttempted = false;
 }
 
 void OFeedClient::setChangelogOrigin(QString changelogOrigin)
@@ -300,6 +614,117 @@ void OFeedClient::setRunChangesProcessing(bool runChangesProcessing)
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".runChangesProcessing.E" + QString::number(current_stage), runChangesProcessing);
 	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+}
+
+void OFeedClient::testConnection(const QString &host_url,
+								 const QString &event_id,
+								 const QString &event_password,
+								 std::function<void(bool, const QString &)> callback)
+{
+	const QString trimmed_host_url = host_url.trimmed();
+	const QString trimmed_event_id = event_id.trimmed();
+	const QString trimmed_event_password = event_password.trimmed();
+
+	if (trimmed_host_url.isEmpty() || trimmed_event_id.isEmpty() || trimmed_event_password.isEmpty()) {
+		callback(false, tr("Please fill URL, event id, and password."));
+		return;
+	}
+
+	QUrl base_url(normalized_base_host_url(trimmed_host_url));
+	if (!base_url.isValid() || base_url.scheme().isEmpty() || base_url.host().isEmpty()) {
+		callback(false, tr("Invalid OFeed URL."));
+		return;
+	}
+
+	base_url.setPath(QStringLiteral("/graphql"));
+
+	QNetworkRequest request(base_url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+	const QString combined = trimmed_event_id + ":" + trimmed_event_password;
+	const QByteArray auth = "Basic " + combined.toUtf8().toBase64();
+	request.setRawHeader("Authorization", auth);
+
+	QJsonObject payload;
+	payload["query"] = "query MyQuery($eventId: String!) { event(id: $eventId) { name organizer } }";
+	QJsonObject variables;
+	variables["eventId"] = trimmed_event_id;
+	payload["variables"] = variables;
+
+	QNetworkReply *reply = m_networkManager->post(request, QJsonDocument(payload).toJson(QJsonDocument::Compact));
+
+	connect(reply, &QNetworkReply::finished, this, [reply, callback]() {
+		const int http_status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		const QString http_reason = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+		const QByteArray response_bytes = reply->readAll();
+		const QString response_text = QString::fromUtf8(response_bytes).trimmed();
+
+		auto callback_error = [&](const QString &msg) {
+			const QString status_text = http_status > 0 ? QStringLiteral("HTTP %1").arg(http_status) : QStringLiteral("HTTP status unavailable");
+			const QString full_message = response_text.isEmpty()
+											 ? QStringLiteral("%1: %2").arg(status_text, msg)
+											 : QStringLiteral("%1: %2 | %3").arg(status_text, msg, response_text);
+			callback(false, full_message);
+		};
+
+		if (reply->error() != QNetworkReply::NoError) {
+			callback_error(reply->errorString());
+			reply->deleteLater();
+			return;
+		}
+
+		if (http_status != 200) {
+			const QString reason = http_reason.isEmpty() ? tr("Unexpected HTTP response") : http_reason;
+			callback_error(reason);
+			reply->deleteLater();
+			return;
+		}
+
+		QJsonParseError parse_error;
+		const QJsonDocument doc = QJsonDocument::fromJson(response_bytes, &parse_error);
+		if (parse_error.error != QJsonParseError::NoError || !doc.isObject()) {
+			callback_error(tr("Invalid JSON response."));
+			reply->deleteLater();
+			return;
+		}
+
+		const QJsonObject response_obj = doc.object();
+		if (response_obj.contains("errors") && response_obj.value("errors").isArray()) {
+			const QJsonArray errors = response_obj.value("errors").toArray();
+			QString first_error = tr("GraphQL error");
+			if (!errors.isEmpty() && errors.first().isObject()) {
+				const QString message = errors.first().toObject().value("message").toString().trimmed();
+				if (!message.isEmpty())
+					first_error = message;
+			}
+			callback_error(first_error);
+			reply->deleteLater();
+			return;
+		}
+
+		const QJsonObject data_obj = response_obj.value("data").toObject();
+		const QJsonObject event_obj = data_obj.value("event").toObject();
+		if (event_obj.isEmpty()) {
+			callback_error(tr("Missing event data in response."));
+			reply->deleteLater();
+			return;
+		}
+
+		const QString event_name = event_obj.value("name").toString().trimmed();
+		if (event_name.isEmpty()) {
+			callback_error(tr("Missing event name in response."));
+			reply->deleteLater();
+			return;
+		}
+
+		const QString organizer = event_obj.value("organizer").toString().trimmed();
+		QString success_message = event_name;
+		if (!organizer.isEmpty())
+			success_message = QStringLiteral("%1 (%2)").arg(event_name, organizer);
+
+		callback(true, success_message);
+		reply->deleteLater();
+	});
 }
 
 void OFeedClient::sendFile(QString name, QString request_path, QString file, std::function<void()> on_success)
@@ -887,16 +1312,17 @@ void OFeedClient::storeChange(const QJsonObject &change)
 	qf::core::sql::Query q;
 	try
 	{
-		q.prepare("INSERT INTO qxchanges (data_type, data, orig_data, source, user_id, stage_id, change_id, created, status_message)"
-				  " VALUES (:dataType, :data, :origData, :source, :userId, :stageId, :changeId, :created, :statusMessage)");
+		q.prepare("INSERT INTO qxchanges (data_type, data, orig_data, source, user_id, stage_id, change_id, created, status, status_message)"
+				  " VALUES (:dataType, :data, :origData, :source, :userId, :stageId, :changeId, :created, :status, :statusMessage)");
 		q.bindValue(":dataType", change["type"].toString());
 		q.bindValue(":data", new_value);
 		q.bindValue(":origData", previous_value);
-		q.bindValue(":source", change_json);
+		q.bindValue(":source", "OFeed");
 		q.bindValue(":userId", competitor_id);
 		q.bindValue(":stageId", current_stage);
 		q.bindValue(":changeId", change_id);
 		q.bindValue(":created", created);
+		q.bindValue(":status", "Accepted");
 		q.bindValue(":statusMessage", firstname + " " + lastname + ": " + previous_value + " -> " + new_value);
 		if (!q.exec(qf::core::Exception::Throw))
 		{

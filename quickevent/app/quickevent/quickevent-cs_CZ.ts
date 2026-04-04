@@ -1154,54 +1154,53 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
 <context>
     <name>Classic</name>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="69"/>
         <source>E</source>
-        <translation>E</translation>
+        <translation type="vanished">E</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="243"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="253"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="243"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="253"/>
         <source>DISQ</source>
         <translation>DISK</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="257"/>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="269"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="267"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="279"/>
         <source>-----</source>
         <translation>-----</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="325"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="335"/>
         <source>!!! RENTED CARD !!!</source>
         <oldsource>!!! CARD LENT !!!</oldsource>
         <translation>!!! ZAPŮJČENÝ ČIP !!!</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="340"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="350"/>
         <source>extra: </source>
         <translation>navíc: </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="352"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="362"/>
         <source>BAD CHECK !!!</source>
         <translation>ŠPATNÝ ČAS KONTROLY NULOVÁNÍ ČIPU !!!</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="372"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="382"/>
         <source>current overall loss: +</source>
         <translation>ztráta na nejlepší mezičasy: +</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="387"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="397"/>
         <source>standings: </source>
         <translation>pořadí: </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="413"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="423"/>
         <source>Siac battery: </source>
         <translation>Baterie Siac: </translation>
     </message>
@@ -2112,88 +2111,87 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
 <context>
     <name>Default</name>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="82"/>
         <source>E</source>
-        <translation>E</translation>
+        <translation type="vanished">E</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="111"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="110"/>
         <source>NO_REG</source>
         <translation>Neregistrovaný</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="158"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="160"/>
         <source>Relay:</source>
         <translation>Štafeta:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="173"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="175"/>
         <source>Leg:</source>
         <translation>Úsek:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="189"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="191"/>
         <source>Check:</source>
         <translation>Check:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="208"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="210"/>
         <source>SI:</source>
         <translation>SI:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="223"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="225"/>
         <source>Start:</source>
         <translation>Start:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="241"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="243"/>
         <source>Finish:</source>
         <translation>Cíl:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="323"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="325"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="323"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="325"/>
         <source>DISQ</source>
         <translation>DISK</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="343"/>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="407"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="345"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="409"/>
         <source>-----</source>
         <translation>-----</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="494"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="496"/>
         <source>!!! RENTED CARD !!!</source>
         <translation>!!! ZAPŮJČENÝ ČIP !!!</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="510"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="512"/>
         <source>current placement = </source>
         <translation>aktuální umístění = </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="518"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="520"/>
         <source>loss to leading runner = </source>
         <translation>ztráta na vedoucího závodníka = </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="531"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="533"/>
         <source>loss to best splits =  </source>
         <translation>ztráta na nejlepší mezičasy =  </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="539"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="541"/>
         <source>average pace = </source>
         <translation>průměrné tempo = </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="555"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="557"/>
         <source>extra punches = </source>
         <translation>navíc oraženo = </translation>
     </message>
@@ -2746,43 +2744,124 @@ Použij: Soubor --&gt; Importovat --&gt; Závod (*.qbe) pro konverzi dat do aktu
 <context>
     <name>Event::services::OFeedClient</name>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="90"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="156"/>
         <source>results upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="102"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="168"/>
         <source>start list upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="664"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="473"/>
+        <source>Missing OFeed event credentials.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="480"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="635"/>
+        <source>Invalid OFeed URL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="503"/>
+        <source>No event image is available in OFeed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="505"/>
+        <source>Event image download failed: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="510"/>
+        <source>No event image payload received from OFeed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="520"/>
+        <source>Event image cached as SVG.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="539"/>
+        <source>Unsupported image format received from OFeed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="551"/>
+        <source>Cannot encode cached event image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="557"/>
+        <source>Cached image encoding produced empty payload.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="562"/>
+        <source>Event image cached (%1x%2).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="629"/>
+        <source>Please fill URL, event id, and password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="677"/>
+        <source>Unexpected HTTP response</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="686"/>
+        <source>Invalid JSON response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="694"/>
+        <source>GraphQL error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="708"/>
+        <source>Missing event data in response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="715"/>
+        <source>Missing event name in response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1089"/>
         <source>Exception occurred while getting changes by origin: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="735"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="760"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="785"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1160"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1185"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1210"/>
         <source>Database query failed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="740"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="765"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="790"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1165"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1190"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1215"/>
         <source>Exception occurred while executing query: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="744"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="769"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="794"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1169"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1194"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1219"/>
         <source>Unknown exception occurred while executing query.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="861"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1286"/>
         <source>No data received or an error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2821,8 +2900,9 @@ Použij: Soubor --&gt; Importovat --&gt; Závod (*.qbe) pro konverzi dat do aktu
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="88"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="91"/>
-        <source>https://api.orienteerfeed.com</source>
-        <translation>https://api.orienteerfeed.com</translation>
+        <source>https://orienteerfeed.com</source>
+        <oldsource>https://api.orienteerfeed.com</oldsource>
+        <translation type="unfinished">https://api.orienteerfeed.com</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="98"/>
@@ -2830,23 +2910,29 @@ Použij: Soubor --&gt; Importovat --&gt; Závod (*.qbe) pro konverzi dat do aktu
         <translation>Id akce</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="105"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="107"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Event id provided in the Settings section on the web site. Can be copied from OFeed url as well.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Id akce zjistitelné na vastavení akce na OFeed webu. Je možné ho získat i vykopírováním z url.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="108"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="128"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="110"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="150"/>
         <source>From OFeed settings page</source>
         <translation>V sekci nastavení akce na webu OFeedu</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="115"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="120"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="422"/>
+        <source>Fill Url and Event id to open event page</source>
+        <translation type="unfinished">Vyplň URL a id akce pro možnost otevřít webovou stránku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="132"/>
         <source>Password</source>
         <translation>Heslo</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="125"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="144"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password that was generated in the Settings section.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vygenerované heslo v nastavení akce.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -2856,46 +2942,147 @@ Použij: Soubor --&gt; Importovat --&gt; Závod (*.qbe) pro konverzi dat do aktu
         <translation>Přihlašovací údaje</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="143"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="157"/>
+        <source>Show or hide password value</source>
+        <translation type="unfinished">Zobrazit či skrýt heslo</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="169"/>
+        <source>Paste OFeed setup link from clipboard and fill Url, Event id and Password.</source>
+        <translation type="unfinished">Vlož zkopírované přihlašovací údaje a naplň tak URL, id akce a heslo.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="172"/>
+        <source>Paste setup link</source>
+        <translation type="unfinished">Vlož přihlašovací údaje</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="182"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="357"/>
+        <source>Test connection</source>
+        <translation type="unfinished">Otestovat připojení</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="207"/>
         <source>Upload data</source>
         <translation>Nahrání dat</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="224"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="214"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start lists and results are automatically exported at specified intervals, with changes such as edited competitor data or new competitors being synced in real time. Both results and start lists can also be exported manually using the buttons below. Additionally, when the service is active, individual competitor data is sent after readout and upon saving the competitor dialog. Refer to the &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;p&gt;If you encounter any unexpected errors, check &lt;a href=&quot;https://docs.orienteerfeed.com/support&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;support&lt;/span&gt;&lt;/a&gt; page in the documentation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Výsledky se automaticky exportují v nastavených intervalech, přičemž změny, jako jsou upravené údaje o závodnících nebo noví závodníci, se synchronizují v reálném čase. Výsledky i startovky lze také exportovat ručně pomocí tlačítek níže. Navíc, když je služba aktivní, jsou data jednotlivých závodníků odeslána i po vyčtení a po uložení dialogového okna závodníka. Další podrobnosti najdeš v &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;dokumentaci&lt;/span&gt;&lt;/a&gt;. &lt;/p&gt;&lt;p&gt;Pokud narazíš na neočekávané chyby, podívej se na stránku &lt;a href=&quot;https://docs.orienteerfeed.com/support&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;podpory&lt;/span&gt;&lt;/a&gt; v dokumentaci.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="288"/>
         <source>Turn on/off changes processing</source>
         <translation>Přepnout on/off zpracování změn</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="233"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="297"/>
         <source>ON / OFF</source>
         <translation>ON / OFF</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="292"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="340"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Changes from the origin specified (permanent value at this moment) are processed automatically and visualized in &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; modul.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Změny oproti zadanému origin (v tuto chvíli trvalá hodnota) se zpracovávají automaticky a zobrazují v modulu &lt;span style=&quot; font-weight:700;&quot;&gt;Pozdní registrace&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="356"/>
         <source>Additional settings</source>
         <translation>Rozšířené nastavení</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="308"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="372"/>
         <source>Run IOF XML validation</source>
         <translation>Provést IOF XML validaci</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="388"/>
+        <source>Print the OFeed event image on receipts</source>
+        <translation type="unfinished">Tisknout obrázek z OFeedu navrchu lístečku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="397"/>
+        <source>Receipt image height (max 60 mm)</source>
+        <translation type="unfinished">Výška obrázku na lístečku (max 60 mm)</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="404"/>
+        <source>Maximum printed height of the OFeed event image on receipts</source>
+        <translation type="unfinished">Maximální tisknutelná výška obrázku z OFeedu na lísteček</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="407"/>
+        <source> mm</source>
+        <translation type="unfinished">mm</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="425"/>
+        <source>Download event image from OFeed and update local cache</source>
+        <translation type="unfinished">Stáhnout obrázek akce z OFeedu a aktualizovat uloženou hodnotu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="428"/>
+        <source>Refresh event image cache</source>
+        <translation type="unfinished">Obnovit uložený obrázek</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="435"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="173"/>
+        <source>No cached image</source>
+        <translation type="unfinished">Žádný uložený obrázek</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="445"/>
+        <source>Print QR code with event link on receipts</source>
+        <translation type="unfinished">Tisknout QR kód s odkazem na akci na spodku lístečku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="454"/>
+        <source>Receipt event link</source>
+        <translation type="unfinished">Odkaz na akci</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="461"/>
+        <source>Link encoded into the printed QR code on receipts</source>
+        <translation type="unfinished">Odkaz zakódovaný v tištěném QR kódu na lístečcích</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="464"/>
+        <source>https://orienteerfeed.com/events/&lt;eventId&gt;?tab=results</source>
+        <translation type="unfinished">https://orienteerfeed.com/events/&lt;eventId&gt;?tab=results</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="475"/>
+        <source>Receipt QR caption</source>
+        <translation type="unfinished">Popisek pod QR kódem</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="482"/>
+        <source>Caption printed under the receipt QR code</source>
+        <translation type="unfinished">Popis vytištěný pod QR kódem</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="485"/>
+        <source>Live Results</source>
+        <translation type="unfinished">Online výsledky</translation>
     </message>
     <message>
         <source>Upload Data</source>
         <translation type="obsolete">Nahrát data</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="150"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start lists and results are automatically exported at specified intervals, with changes such as edited competitor data or new competitors being synced in real time. Both results and start lists can also be exported manually using the buttons below. Additionally, when the service is active, individual competitor data is sent after readout and upon saving the competitor dialog. Refer to the &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;p&gt;If you encounter any unexpected errors, please &lt;a href=&quot;mailto:support@orienteerfeed.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;contact us&lt;/span&gt;&lt;/a&gt; or create an issue on our GitHub &lt;a href=&quot;https://github.com/orienteerfeed/ofeed/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;page&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Startovní listiny a výsledky se automaticky exportují v určených intervalech a změny, jako upravené údaje závodníků nebo noví závodníci, se synchronizují v reálném čase. Výsledky i startovní listiny lze také exportovat ručně pomocí tlačítek níže. Kromě toho, když je služba aktivní, jsou po načtení a po uložení dialogu závodníka odesílána i jednotlivá data závodníků. Více informací najdeš v &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;dokumentaci&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Pokud narazíš na chybu, &lt;a href=&quot;mailto:support@orienteerfeed.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;napiš nám&lt;/span&gt;&lt;/a&gt; prosím nebo ideálně vytvoř novou issue na &lt;a href=&quot;https://github.com/orienteerfeed/ofeed/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;GitHubu&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Startovní listiny a výsledky se automaticky exportují v určených intervalech a změny, jako upravené údaje závodníků nebo noví závodníci, se synchronizují v reálném čase. Výsledky i startovní listiny lze také exportovat ručně pomocí tlačítek níže. Kromě toho, když je služba aktivní, jsou po načtení a po uložení dialogu závodníka odesílána i jednotlivá data závodníků. Více informací najdeš v &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;dokumentaci&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Pokud narazíš na chybu, &lt;a href=&quot;mailto:support@orienteerfeed.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;napiš nám&lt;/span&gt;&lt;/a&gt; prosím nebo ideálně vytvoř novou issue na &lt;a href=&quot;https://github.com/orienteerfeed/ofeed/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;GitHubu&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="178"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="242"/>
         <source>Export start list</source>
         <translation>Exportovat startovku</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="185"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="249"/>
         <source>Export results</source>
         <translation>Exportovat výsledky</translation>
     </message>
@@ -2904,48 +3091,87 @@ Použij: Soubor --&gt; Importovat --&gt; Závod (*.qbe) pro konverzi dat do aktu
         <translation type="obsolete">Zpracování změn</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="276"/>
         <source>Changes from the origin specified (permanent value at this moment) are processed automatically and visualized in &lt;b&gt;qxchange&lt;/b&gt; modul.</source>
-        <translation>Změny z uvedeného místa (aktuálně pevně daná hodnota START) jsou zpracovávány automaticky a k zobrazení v &lt;b&gt;qxchange&lt;/b&gt; modulu.</translation>
+        <translation type="vanished">Změny z uvedeného místa (aktuálně pevně daná hodnota START) jsou zpracovávány automaticky a k zobrazení v &lt;b&gt;qxchange&lt;/b&gt; modulu.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="254"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="318"/>
         <source>Origin</source>
         <translation>Místo</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="200"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="264"/>
         <source>Process changes setup</source>
         <translation>Nastavení zpracování změn</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="261"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="267"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="325"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="331"/>
         <source>START</source>
         <translation>START</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="33"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="126"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="173"/>
+        <source>Cached image is available</source>
+        <translation type="unfinished">Obrázek je uložený</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="174"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="309"/>
         <source>ON</source>
         <translation>ON</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="33"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="126"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="174"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="309"/>
         <source>OFF</source>
         <translation>OFF</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="50"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="128"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="191"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="311"/>
         <source>Changes are automatically processed</source>
         <translation>Probíhá automatické zpracování změn</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="243"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="50"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="128"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="209"/>
+        <source>Hide password value</source>
+        <translation type="unfinished">Skrýt heslo</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="209"/>
+        <source>Show password value</source>
+        <translation type="unfinished">Zobrazit heslo</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="330"/>
+        <source>Setup link parsed. Credentials were filled in.</source>
+        <translation type="unfinished">Odkaz vložen. Přihlašovací údaje byly nastaveny.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="342"/>
+        <source>Testing...</source>
+        <translation type="unfinished">Zkouším...</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="344"/>
+        <source>Testing connection...</source>
+        <translation type="unfinished">Testování spojení</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="373"/>
+        <source>Refreshing image cache...</source>
+        <translation type="unfinished">Obnovuji uložený obrázek</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="422"/>
+        <source>Open event page in browser</source>
+        <translation type="unfinished">Otevřít akci v prohlížeči</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="307"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="191"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="311"/>
         <source>Processing changes is deactivated</source>
         <translation>Zpracování změn je vypnuté</translation>
     </message>
@@ -4295,38 +4521,91 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
     </message>
 </context>
 <context>
+    <name>QObject</name>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="108"/>
+        <source>Clipboard does not contain OFeed setup link.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="134"/>
+        <source>Unsupported auth type &apos;%1&apos; in setup link.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="139"/>
+        <source>Setup link must contain id and pwd (or password) query parameters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="31"/>
+        <source>Stored image (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="267"/>
+        <source>Test Runner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="273"/>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="287"/>
+        <source>Cannot open image file &apos;%1&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="293"/>
+        <source>Selected image file is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="311"/>
+        <source>Selected file is not a supported image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="318"/>
+        <source>Cannot prepare selected image for printing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Receipts::ReceiptsPlugin</name>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="54"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="314"/>
         <source>Receipts</source>
         <translation>Mezičasy</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="427"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="706"/>
         <source>Card</source>
         <translation>Čip</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="458"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="754"/>
         <source>Error</source>
         <translation>Chyba</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="492"/>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="516"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="788"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="812"/>
         <source>Warning</source>
         <translation>Upozornění</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="492"/>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="516"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="788"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="812"/>
         <source>Receipt report type is not defined.
 Please go to Settings-&gt;Receipts and set receipt type.</source>
         <translation>Typ mezičasů není definován.
 Přejděte do Nastavení -&gt; Mezičasy a nastavte typ mezičasů.</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="496"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="792"/>
         <source>Receipt</source>
         <translation>Mezičas</translation>
     </message>
@@ -4349,49 +4628,177 @@ Přejděte do Nastavení -&gt; Mezičasy a nastavte typ mezičasů.</translation
         <translation>Automatický tisk</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="43"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="30"/>
         <source>Print receipts only for reader used by this application.</source>
         <translation>Tisknout mezičasy pouze na tiskárně nastavené v této aplikaci.</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="46"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="33"/>
         <source>This reader only</source>
         <translation>Pouze tato tiskárna</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="53"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="45"/>
+        <source>Receipt setup</source>
+        <translation type="unfinished">Nastavení lístečku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="55"/>
         <source>When runner is not found</source>
         <translation>Pokud závodník není nalezen tisknout</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="63"/>
-        <source>Receipt</source>
-        <translation>Mezičas</translation>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="65"/>
+        <source>Template</source>
+        <translation type="unfinished">Šablona</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="73"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="80"/>
+        <source>Printer setup</source>
+        <translation type="unfinished">Nastavení tiskárny</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="104"/>
+        <source>Print a QR code with a link at the bottom of receipts.</source>
+        <translation type="unfinished">Tisknout QR kód s odkazem na konci lístečku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="107"/>
+        <source>QR code with a link at the bottom</source>
+        <translation type="unfinished">QR kód s odkazem na konci lístečku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="114"/>
+        <source>Base URL encoded into the printed QR code.</source>
+        <translation type="unfinished">Základní URL zakódovaná v tištěném QR kódu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="117"/>
+        <source>https://example.com/events/&lt;eventId&gt;?tab=results</source>
+        <translation type="unfinished">https://mojeadresa/akce/&lt;akceId&gt;?tab=results</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="124"/>
+        <source>QR code caption</source>
+        <translation type="unfinished">Popisek QR kódu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="131"/>
+        <source>Caption printed under the QR code.</source>
+        <translation type="unfinished">Popisek vytištěný pod QR kódem</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="134"/>
+        <source>Live Results</source>
+        <translation type="unfinished">Online výsledky</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="141"/>
+        <source>Print an image at the top of receipts.</source>
+        <translation type="unfinished">Tisknout obrázek navrchu lístečku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="144"/>
+        <source>Image at top</source>
+        <translation type="unfinished">Obrázek navrchu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="156"/>
+        <source>No image selected</source>
+        <translation type="unfinished">Není vybraný obrázek</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="163"/>
+        <source>Select image...</source>
+        <translation type="unfinished">Vyber obrázek</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="170"/>
+        <source>Clear</source>
+        <translation type="unfinished">Vymazat</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="179"/>
+        <source>Image height (max 60 mm)</source>
+        <translation type="unfinished">Výška obrázku (max 60 mm)</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="186"/>
+        <source>Maximum printed height of the receipt image.</source>
+        <translation type="unfinished">Maximální výška obrázku na lístečku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="189"/>
+        <source> mm</source>
+        <translation type="unfinished">mm</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="220"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="457"/>
+        <source>Test print</source>
+        <translation type="unfinished">Testovací tisk</translation>
+    </message>
+    <message>
+        <source>Receipt</source>
+        <translation type="vanished">Mezičas</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="90"/>
         <source>Printer</source>
         <translation>Tiskárna</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="19"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="333"/>
         <source>Receipts</source>
         <translation>Mezičasy</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="21"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="335"/>
         <source>Error info</source>
         <translation>Informaci o chybě</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="22"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="336"/>
         <source>Error info with picture</source>
         <translation>Informaci o chybě s obrázkem</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="23"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="337"/>
         <source>Receipt without name</source>
         <translation>Lísteček beze jména</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="412"/>
+        <source>Image payload is stored in the event configuration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="662"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="666"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="684"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="662"/>
+        <source>Receipt report type is not defined.
+Please choose a receipt template first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="666"/>
+        <source>Test print failed. Check the printer setup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="674"/>
+        <source>Select receipt image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="676"/>
+        <source>Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.svg);;All files (*)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

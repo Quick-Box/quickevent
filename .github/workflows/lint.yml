@@ -23,6 +23,7 @@ jobs:
         uses: ./.github/actions/run-linter
         with:
           lint_program_with_args: clang-tidy --quiet --warnings-as-errors=*
+          exclude_files_pattern: ^quickevent/app/quickevent/plugins/Receipts/src/thirdparty/qrcodegen\.cpp$
 
   clazy:
     name: clazy / Ubuntu 22.04

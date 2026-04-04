@@ -1151,54 +1151,53 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
 <context>
     <name>Classic</name>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="69"/>
         <source>E</source>
-        <translation>E</translation>
+        <translation type="vanished">E</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="243"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="253"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="243"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="253"/>
         <source>DISQ</source>
         <translation>DSQ</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="257"/>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="269"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="267"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="279"/>
         <source>-----</source>
         <translation>-----</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="325"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="335"/>
         <source>!!! RENTED CARD !!!</source>
         <oldsource>!!! CARD LENT !!!</oldsource>
         <translation>¡ CHIP ALQUILADO !</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="340"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="350"/>
         <source>extra: </source>
         <translation>extra: </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="352"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="362"/>
         <source>BAD CHECK !!!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="372"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="382"/>
         <source>current overall loss: +</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="387"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="397"/>
         <source>standings: </source>
         <translation>Clasificación: </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="413"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="423"/>
         <source>Siac battery: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2088,88 +2087,83 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
 <context>
     <name>Default</name>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="82"/>
-        <source>E</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="111"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="110"/>
         <source>NO_REG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="158"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="160"/>
         <source>Relay:</source>
         <translation>Relevo:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="173"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="175"/>
         <source>Leg:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="189"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="191"/>
         <source>Check:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="208"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="210"/>
         <source>SI:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="223"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="225"/>
         <source>Start:</source>
         <translation>Salida:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="241"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="243"/>
         <source>Finish:</source>
         <translation>Meta:</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="323"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="325"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="323"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="325"/>
         <source>DISQ</source>
         <translation>DSQ</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="343"/>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="407"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="345"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="409"/>
         <source>-----</source>
         <translation>-----</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="494"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="496"/>
         <source>!!! RENTED CARD !!!</source>
         <translation>!!! Chip alquilado !!!</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="510"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="512"/>
         <source>current placement = </source>
         <translation>Posición actual = </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="518"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="520"/>
         <source>loss to leading runner = </source>
         <translation>Tiempo detrás del líder = </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="531"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="533"/>
         <source>loss to best splits =  </source>
         <translation>Tiempo perdido respecto del mejor parcial=  </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="539"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="541"/>
         <source>average pace = </source>
         <translation>Ritmo promedio = </translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="555"/>
+        <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="557"/>
         <source>extra punches = </source>
         <translation>Picadas adicionales = </translation>
     </message>
@@ -2718,43 +2712,124 @@ Utilice: Archivo --&gt; Importar --&gt; Evento (*.qbe) para convertir el evento 
 <context>
     <name>Event::services::OFeedClient</name>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="90"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="156"/>
         <source>results upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="102"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="168"/>
         <source>start list upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="664"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="473"/>
+        <source>Missing OFeed event credentials.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="480"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="635"/>
+        <source>Invalid OFeed URL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="503"/>
+        <source>No event image is available in OFeed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="505"/>
+        <source>Event image download failed: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="510"/>
+        <source>No event image payload received from OFeed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="520"/>
+        <source>Event image cached as SVG.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="539"/>
+        <source>Unsupported image format received from OFeed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="551"/>
+        <source>Cannot encode cached event image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="557"/>
+        <source>Cached image encoding produced empty payload.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="562"/>
+        <source>Event image cached (%1x%2).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="629"/>
+        <source>Please fill URL, event id, and password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="677"/>
+        <source>Unexpected HTTP response</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="686"/>
+        <source>Invalid JSON response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="694"/>
+        <source>GraphQL error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="708"/>
+        <source>Missing event data in response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="715"/>
+        <source>Missing event name in response.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1089"/>
         <source>Exception occurred while getting changes by origin: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="735"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="760"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="785"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1160"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1185"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1210"/>
         <source>Database query failed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="740"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="765"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="790"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1165"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1190"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1215"/>
         <source>Exception occurred while executing query: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="744"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="769"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="794"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1169"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1194"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1219"/>
         <source>Unknown exception occurred while executing query.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="861"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1286"/>
         <source>No data received or an error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2794,7 +2869,8 @@ Utilice: Archivo --&gt; Importar --&gt; Evento (*.qbe) para convertir el evento 
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="88"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="91"/>
-        <source>https://api.orienteerfeed.com</source>
+        <source>https://orienteerfeed.com</source>
+        <oldsource>https://api.orienteerfeed.com</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2803,110 +2879,248 @@ Utilice: Archivo --&gt; Importar --&gt; Evento (*.qbe) para convertir el evento 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="105"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="107"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Event id provided in the Settings section on the web site. Can be copied from OFeed url as well.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="108"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="128"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="110"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="150"/>
         <source>From OFeed settings page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="115"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="120"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="422"/>
+        <source>Fill Url and Event id to open event page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="132"/>
         <source>Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="125"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="144"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Password that was generated in the Settings section.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="143"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="157"/>
+        <source>Show or hide password value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="169"/>
+        <source>Paste OFeed setup link from clipboard and fill Url, Event id and Password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="172"/>
+        <source>Paste setup link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="182"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="357"/>
+        <source>Test connection</source>
+        <translation type="unfinished">Comprobar conexión</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="207"/>
         <source>Upload data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="150"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start lists and results are automatically exported at specified intervals, with changes such as edited competitor data or new competitors being synced in real time. Both results and start lists can also be exported manually using the buttons below. Additionally, when the service is active, individual competitor data is sent after readout and upon saving the competitor dialog. Refer to the &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;p&gt;If you encounter any unexpected errors, please &lt;a href=&quot;mailto:support@orienteerfeed.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;contact us&lt;/span&gt;&lt;/a&gt; or create an issue on our GitHub &lt;a href=&quot;https://github.com/orienteerfeed/ofeed/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;page&lt;/span&gt;&lt;/a&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="214"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start lists and results are automatically exported at specified intervals, with changes such as edited competitor data or new competitors being synced in real time. Both results and start lists can also be exported manually using the buttons below. Additionally, when the service is active, individual competitor data is sent after readout and upon saving the competitor dialog. Refer to the &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;p&gt;If you encounter any unexpected errors, check &lt;a href=&quot;https://docs.orienteerfeed.com/support&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;support&lt;/span&gt;&lt;/a&gt; page in the documentation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="178"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="340"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Changes from the origin specified (permanent value at this moment) are processed automatically and visualized in &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; modul.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="388"/>
+        <source>Print the OFeed event image on receipts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="397"/>
+        <source>Receipt image height (max 60 mm)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="404"/>
+        <source>Maximum printed height of the OFeed event image on receipts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="407"/>
+        <source> mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="425"/>
+        <source>Download event image from OFeed and update local cache</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="428"/>
+        <source>Refresh event image cache</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="435"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="173"/>
+        <source>No cached image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="445"/>
+        <source>Print QR code with event link on receipts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="454"/>
+        <source>Receipt event link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="461"/>
+        <source>Link encoded into the printed QR code on receipts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="464"/>
+        <source>https://orienteerfeed.com/events/&lt;eventId&gt;?tab=results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="475"/>
+        <source>Receipt QR caption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="482"/>
+        <source>Caption printed under the receipt QR code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="485"/>
+        <source>Live Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="242"/>
         <source>Export start list</source>
         <translation type="unfinished">Exportar horas de salida</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="185"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="249"/>
         <source>Export results</source>
         <translation type="unfinished">Exportar resultados</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="200"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="264"/>
         <source>Process changes setup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="224"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="288"/>
         <source>Turn on/off changes processing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="233"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="297"/>
         <source>ON / OFF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="243"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="50"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="128"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="307"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="191"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="311"/>
         <source>Processing changes is deactivated</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="254"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="318"/>
         <source>Origin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="261"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="267"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="325"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="331"/>
         <source>START</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="276"/>
-        <source>Changes from the origin specified (permanent value at this moment) are processed automatically and visualized in &lt;b&gt;qxchange&lt;/b&gt; modul.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="292"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="356"/>
         <source>Additional settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="308"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="372"/>
         <source>Run IOF XML validation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="33"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="126"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="173"/>
+        <source>Cached image is available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="174"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="309"/>
         <source>ON</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="33"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="126"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="174"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="309"/>
         <source>OFF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="50"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="128"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="191"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="311"/>
         <source>Changes are automatically processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="209"/>
+        <source>Hide password value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="209"/>
+        <source>Show password value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="330"/>
+        <source>Setup link parsed. Credentials were filled in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="342"/>
+        <source>Testing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="344"/>
+        <source>Testing connection...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="373"/>
+        <source>Refreshing image cache...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="422"/>
+        <source>Open event page in browser</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3965,8 +4179,8 @@ source - ORIS-&gt;Event-&gt;Information-&gt;Event key</source>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="128"/>
-        <source>Card returned</source>
-        <translation>Chip devuelta</translation>
+        <source>CRET</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="129"/>
@@ -4252,37 +4466,90 @@ source - ORIS-&gt;Event-&gt;Information-&gt;Event key</source>
     </message>
 </context>
 <context>
+    <name>QObject</name>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="108"/>
+        <source>Clipboard does not contain OFeed setup link.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="134"/>
+        <source>Unsupported auth type &apos;%1&apos; in setup link.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="139"/>
+        <source>Setup link must contain id and pwd (or password) query parameters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="31"/>
+        <source>Stored image (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="267"/>
+        <source>Test Runner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="273"/>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="287"/>
+        <source>Cannot open image file &apos;%1&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="293"/>
+        <source>Selected image file is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="311"/>
+        <source>Selected file is not a supported image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="318"/>
+        <source>Cannot prepare selected image for printing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Receipts::ReceiptsPlugin</name>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="54"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="314"/>
         <source>Receipts</source>
         <translation>Tickets</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="427"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="706"/>
         <source>Card</source>
         <translation>Chip</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="458"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="754"/>
         <source>Error</source>
         <translation type="unfinished">Error</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="492"/>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="516"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="788"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="812"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="492"/>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="516"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="788"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="812"/>
         <source>Receipt report type is not defined.
 Please go to Settings-&gt;Receipts and set receipt type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="496"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="792"/>
         <source>Receipt</source>
         <translation>Ticket</translation>
     </message>
@@ -4305,49 +4572,177 @@ Please go to Settings-&gt;Receipts and set receipt type.</source>
         <translation>Imprimir automaticamente</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="43"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="30"/>
         <source>Print receipts only for reader used by this application.</source>
         <translation>Imprimir solamente tickets para el lector usado por este ejecución del programa.</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="46"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="33"/>
         <source>This reader only</source>
         <translation>Esta estación de lectura únicamente</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="53"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="45"/>
+        <source>Receipt setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="55"/>
         <source>When runner is not found</source>
         <translation>Cuando un corredor no es encontrado</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="63"/>
-        <source>Receipt</source>
-        <translation>Ticket</translation>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="65"/>
+        <source>Template</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="73"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="80"/>
+        <source>Printer setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="104"/>
+        <source>Print a QR code with a link at the bottom of receipts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="107"/>
+        <source>QR code with a link at the bottom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="114"/>
+        <source>Base URL encoded into the printed QR code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="117"/>
+        <source>https://example.com/events/&lt;eventId&gt;?tab=results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="124"/>
+        <source>QR code caption</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="131"/>
+        <source>Caption printed under the QR code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="134"/>
+        <source>Live Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="141"/>
+        <source>Print an image at the top of receipts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="144"/>
+        <source>Image at top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="156"/>
+        <source>No image selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="163"/>
+        <source>Select image...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="170"/>
+        <source>Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="179"/>
+        <source>Image height (max 60 mm)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="186"/>
+        <source>Maximum printed height of the receipt image.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="189"/>
+        <source> mm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="220"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="457"/>
+        <source>Test print</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receipt</source>
+        <translation type="vanished">Ticket</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="90"/>
         <source>Printer</source>
         <translation>Impresora</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="19"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="333"/>
         <source>Receipts</source>
         <translation>Tickets</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="21"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="335"/>
         <source>Error info</source>
         <translation>Información del error</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="22"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="336"/>
         <source>Error info with picture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="23"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="337"/>
         <source>Receipt without name</source>
         <translation>Ticket sin nombre</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="412"/>
+        <source>Image payload is stored in the event configuration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="662"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="666"/>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="684"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="662"/>
+        <source>Receipt report type is not defined.
+Please choose a receipt template first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="666"/>
+        <source>Test print failed. Check the printer setup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="674"/>
+        <source>Select receipt image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="676"/>
+        <source>Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.svg);;All files (*)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4793,37 +5188,80 @@ Please go to Settings-&gt;Receipts and set receipt type.</source>
         <translation>&amp;Después de n relevistas</translation>
     </message>
     <message>
-        <location filename="plugins/Relays/src/relayswidget.cpp" line="174"/>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="184"/>
         <source>&amp;Overall</source>
         <oldsource>&amp;Overal</oldsource>
         <translation>&amp;Globales</translation>
     </message>
     <message>
-        <location filename="plugins/Relays/src/relayswidget.cpp" line="179"/>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="189"/>
         <source>Overall condensed</source>
         <translation>Globales (sin relevistas)</translation>
     </message>
     <message>
-        <location filename="plugins/Relays/src/relayswidget.cpp" line="185"/>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="195"/>
         <source>E&amp;xport</source>
         <translation>E&amp;xportar</translation>
     </message>
     <message>
-        <location filename="plugins/Relays/src/relayswidget.cpp" line="188"/>
-        <location filename="plugins/Relays/src/relayswidget.cpp" line="194"/>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="198"/>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="204"/>
         <source>IOF-XML 3.0</source>
         <translation>IOF XML 3.0</translation>
     </message>
     <message>
-        <location filename="plugins/Relays/src/relayswidget.cpp" line="213"/>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="736"/>
+        <source>vac</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="738"/>
+        <source>Enter number of new vacants</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="738"/>
+        <source>Vacants count for class %1 :</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="763"/>
         <source>--- all ---</source>
         <translation>--- todos ---</translation>
     </message>
     <message>
-        <location filename="plugins/Relays/src/relayswidget.cpp" line="242"/>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="265"/>
         <source>Edit Relay</source>
         <oldsource>Edit  Relay</oldsource>
         <translation>Editar equipo</translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="90"/>
+        <source>Id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="96"/>
+        <source>Is Running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="97"/>
+        <source>Legs</source>
+        <translation type="unfinished">Relevistas</translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="97"/>
+        <source>Color indication :
+ * red - relay has no leg
+ * magenta - one or more legs are missing
+ * yellow - too many legs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Relays/src/relayswidget.cpp" line="161"/>
+        <source>Add new &amp;vacants</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="268"/>
@@ -5918,7 +6356,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="81"/>
         <source>Random number</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Número aleatorio</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="82"/>
@@ -6413,7 +6851,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
         <location filename="plugins/Oris/src/txtimporter.cpp" line="431"/>
         <location filename="plugins/Oris/src/txtimporter.cpp" line="545"/>
         <source>Fields separation error, invalid CSV format, Error reading CSV line: [%1]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Error en la separación de los campos, formato CSV invalido. Error leyendo la línea: [%1]</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/txtimporter.cpp" line="155"/>

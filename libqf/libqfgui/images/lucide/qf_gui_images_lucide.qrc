@@ -27,6 +27,9 @@
 		<file alias="up.svg">arrow-big-up.svg</file>
 		<file alias="down.svg">arrow-big-down.svg</file>
 		<file alias="menu.svg">menu.svg</file>
+		<file>eye.svg</file>
+		<file>eye-off.svg</file>
+		<file>globe.svg</file>
 
 		<file alias="zoom_in.svg">zoom-in.svg</file>
 		<file alias="zoom_out.svg">zoom-out.svg</file>

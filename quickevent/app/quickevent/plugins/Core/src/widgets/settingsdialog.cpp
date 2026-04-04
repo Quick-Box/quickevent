@@ -41,6 +41,14 @@ SettingsDialog::~SettingsDialog()
 	delete ui;
 }
 
+void SettingsDialog::showEvent(QShowEvent *event)
+{
+	QDialog::showEvent(event);
+	if(int page_index = m_buttonGroup->checkedId(); page_index >= 0) {
+		page(page_index)->load();
+	}
+}
+
 void SettingsDialog::onButtonBoxRejected()
 {
 	if(int page_index = m_buttonGroup->checkedId(); page_index >= 0) {
