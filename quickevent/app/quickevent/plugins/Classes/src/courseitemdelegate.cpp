@@ -66,7 +66,7 @@ void CourseItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
 QString CourseItemDelegate::displayText(const QVariant &value, const QLocale &locale) const
 {
 	Q_UNUSED(locale)
-	return m_idToCourseName.value(value.toInt(), "???");
+	return m_idToCourseName.value(value.toInt(), textImplicit());
 }
 
 void CourseItemDelegate::setCourses(const QMap<int, QString> &courses)
