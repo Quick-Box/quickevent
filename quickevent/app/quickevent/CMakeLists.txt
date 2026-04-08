@@ -114,9 +114,10 @@ add_executable(quickevent
 	plugins/Receipts/src/receiptssettings.cpp
 	plugins/Receipts/src/receiptssettingspage.cpp
 	plugins/Receipts/src/receiptssettingspage.ui
-	plugins/Receipts/src/thirdparty/qrcodegen.cpp
 	plugins/Receipts/src/receiptswidget.cpp
 	plugins/Receipts/src/receiptswidget.ui
+
+	plugins/Receipts/src/thirdparty/qrcodegen.cpp
 
 	plugins/Relays/src/addlegdialogwidget.cpp
 	plugins/Relays/src/addlegdialogwidget.ui
