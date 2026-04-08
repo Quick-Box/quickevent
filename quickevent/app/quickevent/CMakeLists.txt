@@ -282,10 +282,6 @@ if (QF_WITH_LIBSHV)
 	target_compile_definitions(quickevent PRIVATE QF_WITH_LIBSHV)
 endif()
 
-foreach(plugin IN ITEMS Classes Runs Relays Receipts shared)
-	install(DIRECTORY plugins/${plugin}/qml/reports DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/${plugin}/qml)
-endforeach()
-
 # Extract version from appversion.h
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/appversion.h" APP_VERSION_H)
 string(REGEX MATCH "#define APP_VERSION \"([0-9.]+)\"" _ ${APP_VERSION_H})

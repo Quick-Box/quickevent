@@ -13,7 +13,6 @@
 #include <plugins/CardReader/src/cardreaderplugin.h>
 #include <plugins/Receipts/src/receiptsplugin.h>
 #include <plugins/Event/src/eventplugin.h>
-#include <plugins/Receipts/src/receiptsplugin.h>
 
 #include <quickevent/core/si/siid.h>
 #include <quickevent/core/og/timems.h>
