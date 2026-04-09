@@ -5,7 +5,7 @@
 #include <QMetaMethod>
 #include <QString>
 
-using namespace qf::gui::framework;
+namespace qf::gui::framework {
 
 IPersistentSettings::IPersistentSettings(QObject *controlled_object) :
 	m_controlledObject(controlled_object)
@@ -39,7 +39,8 @@ QString IPersistentSettings::persistentSettingsPath()
 	return m_persistentSettingsPath;
 }
 
-static void callMethodRecursively(QObject *obj, const char *method_name)
+namespace {
+void callMethodRecursively(QObject *obj, const char *method_name)
 {
 	if(!obj)
 		return;
@@ -56,6 +57,7 @@ static void callMethodRecursively(QObject *obj, const char *method_name)
 		callMethodRecursively(o, method_name);
 		//level--;
 	}
+}
 }
 
 void IPersistentSettings::loadPersistentSettingsRecursively()
@@ -123,3 +125,4 @@ QString IPersistentSettings::rawPersistentSettingsPath()
 	return raw_path.join('/');
 }
 
+}
