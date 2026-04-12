@@ -234,38 +234,7 @@
     </widget>
    </item>
    <item row="11" column="1">
-    <widget class="QComboBox" name="cbxDisciplineId">
-     <item>
-      <property name="text">
-       <string>Long distance</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Middle distance</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Sprint</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Ultralong distance</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Relay</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Teams</string>
-      </property>
-     </item>
-    </widget>
+    <widget class="QComboBox" name="cbxDisciplineId"/>
    </item>
    <item row="12" column="0">
     <widget class="QLabel" name="label_14">
