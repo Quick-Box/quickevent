@@ -1,6 +1,8 @@
 #include "eventdialogwidget.h"
 #include "ui_eventdialogwidget.h"
 
+#include "eventconfig.h"
+
 #include <qf/core/collator.h>
 
 EventDialogWidget::EventDialogWidget(QWidget *parent) :
@@ -9,6 +11,14 @@ EventDialogWidget::EventDialogWidget(QWidget *parent) :
 {
 	setPersistentSettingsId("EventDialogWidget");
 	ui->setupUi(this);
+
+	ui->cbxDisciplineId->addItem(tr("Classic"), static_cast<int>(Event::EventConfig::Discipline::Classic));
+	ui->cbxDisciplineId->addItem(tr("Short Race"), static_cast<int>(Event::EventConfig::Discipline::ShortRace));
+	ui->cbxDisciplineId->addItem(tr("Sprint"), static_cast<int>(Event::EventConfig::Discipline::Sprint));
+	ui->cbxDisciplineId->addItem(tr("Relays"), static_cast<int>(Event::EventConfig::Discipline::Relays));
+	ui->cbxDisciplineId->addItem(tr("Teams"), static_cast<int>(Event::EventConfig::Discipline::Teams));
+	ui->cbxDisciplineId->addItem(tr("NightRace"), static_cast<int>(Event::EventConfig::Discipline::NightRace));
+	ui->cbxDisciplineId->addItem(tr("Sprint Relays"), static_cast<int>(Event::EventConfig::Discipline::SprintRelays));
 
 	ui->ed_oneTenthSecResults->setDisabled(true);
 
@@ -58,11 +68,14 @@ void EventDialogWidget::loadParams(const QVariantMap &params)
 	ui->ed_director->setText(params.value("director").toString());
 	ui->ed_handicapLength->setValue(params.value("handicapLength").toInt());
 	ui->cbxSportId->setCurrentIndex(params.value("sportId").toInt() - 1);
-	if(ui->cbxSportId->currentIndex() < 0)
+	if(ui->cbxSportId->currentIndex() < 0) {
 		ui->cbxSportId->setCurrentIndex(0);
-	ui->cbxDisciplineId->setCurrentIndex(params.value("disciplineId").toInt() - 1);
-	if(ui->cbxDisciplineId->currentIndex() < 0)
+	}
+	if (auto ix = ui->cbxDisciplineId->findData(params.value("disciplineId").toInt()); ix < 0) {
 		ui->cbxDisciplineId->setCurrentIndex(0);
+	} else {
+		ui->cbxDisciplineId->setCurrentIndex(ix);
+	}
 	ui->ed_orisImportId->setText(params.value("importId").toString());
 	ui->ed_orisRace->setChecked(!ui->ed_orisImportId->text().isEmpty());
 	ui->ed_orisEventKey->setText(params.value("orisEventKey").toString());
@@ -86,7 +99,7 @@ QVariantMap EventDialogWidget::saveParams()
 	ret["director"] = ui->ed_director->text();
 	ret["handicapLength"] = ui->ed_handicapLength->value();
 	ret["sportId"] = (ui->cbxSportId->currentIndex() <= 0) ? 1 : ui->cbxSportId->currentIndex() + 1;
-	ret["disciplineId"] = (ui->cbxDisciplineId->currentIndex() <= 0) ? 1 : ui->cbxDisciplineId->currentIndex() + 1;
+	ret["disciplineId"] = (ui->cbxDisciplineId->currentIndex() <= 0) ? static_cast<int>(Event::EventConfig::Discipline::Classic) : ui->cbxDisciplineId->currentData();
 	ret["importId"] = ui->ed_orisImportId->text().toInt();
 	ret["orisEventKey"] = ui->ed_orisEventKey->text();
 	ret["cardChechCheckTimeSec"] = ui->ed_cardChecCheckTimeSec->value();

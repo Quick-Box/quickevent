@@ -19,7 +19,6 @@
 namespace {
 NecroLog::MessageHandler old_message_handler;
 bool send_log_entry_recursion_lock = false;
-}
 
 void send_log_entry_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {
@@ -39,6 +38,7 @@ void send_log_entry_handler(NecroLog::Level level, const NecroLog::LogContext &c
 		send_log_entry_recursion_lock = false;
 	}
 	old_message_handler(level, context, msg);
+}
 }
 
 int main(int argc, char *argv[])
@@ -67,11 +67,6 @@ int main(int argc, char *argv[])
 	// Use Fusion style on macOS for consistent cross-platform appearance
 	QApplication::setStyle("Fusion");
 #endif
-
-	//qfError() << "QFLog(ERROR) test OK.";// << QVariant::typeToName(QVariant::Int) << QVariant::typeToName(QVariant::String);
-	//qfWarning() << "QFLog(WARNING) test OK.";
-	//qfInfo() << "QFLog(INFO) test OK.";
-	//qfDebug() << "QFLog(DEBUG) test OK.";
 
 	qfInfo() << "========================================================";
 	qfInfo() << QDateTime::currentDateTime().toString(Qt::ISODate) << "starting" << QCoreApplication::applicationName() << "ver:" << QCoreApplication::applicationVersion();
@@ -103,13 +98,12 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	qfInfo() << "Abort on exception:" << qf::core::Exception::isAbortOnException();
 	Application app(argc, argv, &cli_opts);
+
+	qfInfo() << "Abort on exception:" << qf::core::Exception::isAbortOnException();
 	qfInfo() << "Application file:" << QCoreApplication::applicationFilePath();
 	qfInfo() << "Application dir:" << QCoreApplication::applicationDirPath();
 	qfInfo() << "========================================================";
-
-	old_message_handler = NecroLog::setMessageHandler(send_log_entry_handler);
 
 	QString lc_name;
 	{
@@ -154,6 +148,10 @@ int main(int argc, char *argv[])
 	}
 
 	MainWindow main_window;
+
+	// does nothing before MainWindow is created
+	old_message_handler = NecroLog::setMessageHandler(send_log_entry_handler);
+
 	main_window.setUiLanguageName(lc_name);
 	main_window.loadPlugins();
 	main_window.show();

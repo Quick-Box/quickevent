@@ -1,11 +1,6 @@
 #include "mainwindow.h"
 #include "loggerwidget.h"
 
-#include <qf/gui/framework/stackedcentralwidget.h>
-#include <qf/gui/framework/partswitch.h>
-#include <qf/gui/framework/dockwidget.h>
-#include <qf/gui/menubar.h>
-#include <qf/gui/action.h>
 #include <plugins/Core/src/coreplugin.h>
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Classes/src/classesplugin.h>
@@ -15,6 +10,13 @@
 #include <plugins/Receipts/src/receiptsplugin.h>
 #include <plugins/Relays/src/relaysplugin.h>
 #include <plugins/Speaker/src/speakerplugin.h>
+
+#include <qf/gui/framework/stackedcentralwidget.h>
+#include <qf/gui/framework/partswitch.h>
+#include <qf/gui/framework/dockwidget.h>
+#include <qf/gui/menubar.h>
+#include <qf/gui/action.h>
+#include <qf/core/log.h>
 
 #include <QCoreApplication>
 
