@@ -10,7 +10,7 @@ namespace Ui {
 class QxLateRegistrationsWidget;
 }
 
-class QxClientService;
+class QxEventService;
 
 class QxLateRegistrationsWidget : public QWidget
 {
@@ -23,7 +23,7 @@ public:
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &payload);
 	void onVisibleChanged(bool is_visible);
 private:
-	QxClientService* service();
+	QxEventService* service();
 	void reload();
 	void addQxChangeRow(int sql_id);
 
