@@ -926,6 +926,9 @@ QString RelaysPlugin::startListIofXml30()
 			);
 
 			qf::core::utils::TreeTable tt_legs = tt_teams_row.table();
+			int leg1_start_time_ms = tt_legs.rowCount() > 0
+				? tt_legs.row(0).value(QStringLiteral("runs.startTimeMs")).toInt()
+				: 0;
 			for (int k = 0; k < tt_legs.rowCount(); ++k) {
 				int leg = k + 1;
 				QF_TIME_SCOPE("exporting leg: " + QString::number(leg));
@@ -950,7 +953,7 @@ QString RelaysPlugin::startListIofXml30()
 				QVariantList start{"Start"};
 				append_list(start, QVariantList{"Leg", k+1 } );
 				append_list(start, QVariantList{"BibNumber", QString::number(relay_number) + '.' + QString::number(k+1)});
-				append_list(start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(tt_leg_row.value(QStringLiteral("runs.startTimeMs")).toInt()))});
+				append_list(start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(leg1_start_time_ms))});
 				int course_id = getPlugin<RunsPlugin>()->courseForRelay(relay_number, leg);
 				{
 					QF_TIME_SCOPE("exporting course: " + QString::number(course_id));
