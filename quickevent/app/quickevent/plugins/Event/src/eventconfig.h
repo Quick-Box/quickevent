@@ -21,13 +21,20 @@ class EventConfig : public QObject
 	//Q_PROPERTY(QString eventName READ eventName)
 public:
 	enum class Sport {OB = 1, LOB, MTBO, TRAIL};
-	enum class Discipline {Classic = 1,
-						   ShortRace,
-						   Sprint,
+	enum class Discipline {LongDistance = 1,
+						   ShortDistance = 2,
+						   Sprint = 3,
+						   UltralongDistance = 4,
 						   Relays = 5,
 						   Teams = 6,
+						   FreeOrder = 7,
 						   NightRace = 9,
+						   TempO = 11,
+						   MultiStages = 13,
+						   MassStart = 14,
 						   SprintRelays = 15,
+						   KnocOutSprint = 16,
+						   Indoor = 19,
 						  };
 	static std::optional<Discipline> disciplineFromInt(int i);
 public:

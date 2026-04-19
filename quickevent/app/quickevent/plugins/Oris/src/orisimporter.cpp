@@ -399,7 +399,7 @@ void OrisImporter::importEvent(int event_id, std::function<void ()> success_call
 			if (!discipline_id_opt.has_value()) {
 				qfError() << "OrisImporter: Unknown discipline ID:" << di;
 			}
-			auto discipline = discipline_id_opt.value_or(Event::EventConfig::Discipline::Classic);
+			auto discipline = discipline_id_opt.value_or(Event::EventConfig::Discipline::LongDistance);
 			qfInfo() << "pocet etap:" << stage_count << "sport id:" << sport_id << "discipline id:" << di;
 			QVariantMap ecfg;
 			ecfg["stageCount"] = stage_count;

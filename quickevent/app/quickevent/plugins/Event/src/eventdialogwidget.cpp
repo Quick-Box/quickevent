@@ -1,6 +1,8 @@
 #include "eventdialogwidget.h"
 #include "ui_eventdialogwidget.h"
 
+#include "eventconfig.h"
+
 #include <qf/core/collator.h>
 
 EventDialogWidget::EventDialogWidget(QWidget *parent) :
@@ -15,6 +17,22 @@ EventDialogWidget::EventDialogWidget(QWidget *parent) :
 
 	connect(ui->ed_orisRace, &QAbstractButton::toggled, ui->frameOrisRace, &QWidget::setVisible);
 	ui->frameOrisRace->hide();
+
+	ui->cbxDisciplineId->addItem(tr("Long distance"), static_cast<int>(Event::EventConfig::Discipline::LongDistance));
+	ui->cbxDisciplineId->addItem(tr("Middle distance"), static_cast<int>(Event::EventConfig::Discipline::ShortDistance));
+	ui->cbxDisciplineId->addItem(tr("Ultralong distance"), static_cast<int>(Event::EventConfig::Discipline::UltralongDistance));
+	ui->cbxDisciplineId->addItem(tr("Sprint"), static_cast<int>(Event::EventConfig::Discipline::Sprint));
+	ui->cbxDisciplineId->addItem(tr("Relays"), static_cast<int>(Event::EventConfig::Discipline::Relays));
+	ui->cbxDisciplineId->addItem(tr("Teams"), static_cast<int>(Event::EventConfig::Discipline::Teams));
+	ui->cbxDisciplineId->addItem(tr("Free order"), static_cast<int>(Event::EventConfig::Discipline::FreeOrder));
+	ui->cbxDisciplineId->addItem(tr("Night"), static_cast<int>(Event::EventConfig::Discipline::NightRace));
+	ui->cbxDisciplineId->addItem(tr("Sprint relays"), static_cast<int>(Event::EventConfig::Discipline::SprintRelays));
+	ui->cbxDisciplineId->addItem(tr("Knock-out sprint"), static_cast<int>(Event::EventConfig::Discipline::KnocOutSprint));
+	ui->cbxDisciplineId->addItem(tr("TempO"), static_cast<int>(Event::EventConfig::Discipline::TempO));
+	ui->cbxDisciplineId->addItem(tr("Multi stages"), static_cast<int>(Event::EventConfig::Discipline::MultiStages));
+	ui->cbxDisciplineId->addItem(tr("Indoor"), static_cast<int>(Event::EventConfig::Discipline::Indoor));
+	ui->cbxDisciplineId->addItem(tr("Mass start"), static_cast<int>(Event::EventConfig::Discipline::MassStart));
+
 
 	ui->ed_oneTenthSecResults->setDisabled(true);
 
@@ -64,11 +82,14 @@ void EventDialogWidget::loadParams(const QVariantMap &params)
 	ui->ed_director->setText(params.value("director").toString());
 	ui->ed_handicapLength->setValue(params.value("handicapLength").toInt());
 	ui->cbxSportId->setCurrentIndex(params.value("sportId").toInt() - 1);
-	if(ui->cbxSportId->currentIndex() < 0)
+	if(ui->cbxSportId->currentIndex() < 0) {
 		ui->cbxSportId->setCurrentIndex(0);
-	ui->cbxDisciplineId->setCurrentIndex(params.value("disciplineId").toInt() - 1);
-	if(ui->cbxDisciplineId->currentIndex() < 0)
+	}
+	if (auto ix = ui->cbxDisciplineId->findData(params.value("disciplineId").toInt()); ix < 0) {
 		ui->cbxDisciplineId->setCurrentIndex(0);
+	} else {
+		ui->cbxDisciplineId->setCurrentIndex(ix);
+	}
 	ui->ed_orisImportId->setText(params.value("importId").toString());
 	ui->ed_orisRace->setChecked(!ui->ed_orisImportId->text().isEmpty());
 	ui->ed_orisEventKey->setText(params.value("orisEventKey").toString());
@@ -92,7 +113,7 @@ QVariantMap EventDialogWidget::saveParams()
 	ret["director"] = ui->ed_director->text();
 	ret["handicapLength"] = ui->ed_handicapLength->value();
 	ret["sportId"] = (ui->cbxSportId->currentIndex() <= 0) ? 1 : ui->cbxSportId->currentIndex() + 1;
-	ret["disciplineId"] = (ui->cbxDisciplineId->currentIndex() <= 0) ? 1 : ui->cbxDisciplineId->currentIndex() + 1;
+	ret["disciplineId"] = (ui->cbxDisciplineId->currentIndex() <= 0) ? static_cast<int>(Event::EventConfig::Discipline::LongDistance) : ui->cbxDisciplineId->currentData();
 	ret["importId"] = ui->ed_orisImportId->text().toInt();
 	ret["orisEventKey"] = ui->ed_orisEventKey->text();
 	ret["cardChechCheckTimeSec"] = ui->ed_cardChecCheckTimeSec->value();

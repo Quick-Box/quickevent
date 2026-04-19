@@ -736,7 +736,7 @@ bool XmlImporter::importEvent(QXmlStreamReader &reader, const XmlCreators creato
 	QString race_name;
 	int event_id = -1;
 	QMap <QString, SRace> races;
-	auto discipline = Event::EventConfig::Discipline::Classic;
+	auto discipline = Event::EventConfig::Discipline::LongDistance;
 
 	while(reader.readNextStartElement()) {
 		if(reader.name().toString() == "Event") {

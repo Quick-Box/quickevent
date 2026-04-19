@@ -22,13 +22,20 @@ const auto EVENT_NAME = QStringLiteral("event.name");
 std::optional<EventConfig::Discipline> EventConfig::disciplineFromInt(int i)
 {
 	switch (static_cast<Discipline>(i)) {
-	case Discipline::Classic: return Discipline::Classic;
-	case Discipline::ShortRace: return Discipline::ShortRace;
+	case Discipline::LongDistance: return Discipline::LongDistance;
+	case Discipline::ShortDistance: return Discipline::ShortDistance;
 	case Discipline::Sprint: return Discipline::Sprint;
 	case Discipline::Relays: return Discipline::Relays;
 	case Discipline::Teams: return Discipline::Teams;
 	case Discipline::NightRace: return Discipline::NightRace;
 	case Discipline::SprintRelays: return Discipline::SprintRelays;
+	case Discipline::UltralongDistance: return Discipline::UltralongDistance;
+	case Discipline::FreeOrder: return Discipline::FreeOrder;
+	case Discipline::KnocOutSprint: return Discipline::KnocOutSprint;
+	case Discipline::TempO: return Discipline::TempO;
+	case Discipline::MultiStages: return Discipline::MultiStages;
+	case Discipline::MassStart: return Discipline::MassStart;
+	case Discipline::Indoor: return Discipline::Indoor;
 	}
 	return {};
 }
@@ -199,7 +206,7 @@ int EventConfig::sportId() const
 EventConfig::Discipline EventConfig::discipline() const
 {
 	auto di = value(QStringLiteral("event.disciplineId")).toInt();
-	return disciplineFromInt(di).value_or(Discipline::Classic);
+	return disciplineFromInt(di).value_or(Discipline::LongDistance);
 }
 
 int EventConfig::importId() const
