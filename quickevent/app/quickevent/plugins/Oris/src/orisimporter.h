@@ -7,8 +7,7 @@
 
 class QUrl;
 class QJsonDocument;
-
-namespace qf { namespace core { namespace network { class NetworkAccessManager; }}}
+class QNetworkAccessManager;
 
 class OrisImporter : public QObject
 {
@@ -35,9 +34,9 @@ protected:
 	void getAndImportClub(const QString &club, const QString &key);
 
 private:
-	qf::core::network::NetworkAccessManager *networkAccessManager();
+	QNetworkAccessManager *networkAccessManager();
 private:
-	qf::core::network::NetworkAccessManager *m_networkAccessManager = nullptr;
+	QNetworkAccessManager *m_networkAccessManager = nullptr;
 };
 
 #endif // ORISIMPORTER_H

@@ -5,8 +5,7 @@ add_library(libqfcore SHARED
     src/core/stacktrace.cpp
     src/core/string.cpp
     src/core/utils.cpp
-    src/network/networkaccessmanager.cpp
-    src/network/networkreply.cpp
+
     src/sql/catalog.cpp
     src/sql/connection.cpp
     src/sql/dbenum.cpp
@@ -14,6 +13,7 @@ add_library(libqfcore SHARED
     src/sql/query.cpp
     src/sql/querybuilder.cpp
     src/sql/transaction.cpp
+
     src/utils/clioptions.cpp
     src/utils/crypt.cpp
     src/utils/csvreader.cpp

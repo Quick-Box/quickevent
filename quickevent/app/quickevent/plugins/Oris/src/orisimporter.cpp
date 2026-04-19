@@ -14,8 +14,6 @@
 #include <qf/gui/dialogbuttonbox.h>
 #include <qf/gui/htmlviewwidget.h>
 
-#include <qf/core/network/networkaccessmanager.h>
-#include <qf/core/network/networkreply.h>
 #include <qf/core/log.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/transaction.h>
@@ -33,6 +31,8 @@
 #include <QUrl>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QNetworkAccessManager>
+
 #include <set>
 
 #if QT_VERSION_MAJOR >= 6
@@ -108,10 +108,10 @@ QString OrisImporter::orisDomainName()
 	return s;
 }
 
-qf::core::network::NetworkAccessManager *OrisImporter::networkAccessManager()
+QNetworkAccessManager *OrisImporter::networkAccessManager()
 {
 	if(!m_networkAccessManager) {
-		m_networkAccessManager = new qf::core::network::NetworkAccessManager(this);
+		m_networkAccessManager = new QNetworkAccessManager(this);
 	}
 	return m_networkAccessManager;
 }
@@ -119,22 +119,24 @@ qf::core::network::NetworkAccessManager *OrisImporter::networkAccessManager()
 void OrisImporter::getJsonAndProcess(const QUrl &url, QObject *context, std::function<void (const QJsonDocument &)> process_call_back)
 {
 	auto *manager = networkAccessManager();
-	auto *reply = manager->get(url);
-	qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
-	connect(context, &QObject::destroyed, reply, &qf::core::network::NetworkReply::deleteLater); // NOLINT(readability-suspicious-call-argument)
-	connect(reply, &qf::core::network::NetworkReply::downloadProgress, fwk, &qf::gui::framework::MainWindow::showProgress);
-	connect(reply, &qf::core::network::NetworkReply::finished, context, [reply, process_call_back](bool get_ok) {
-		qfInfo() << "Get:" << reply->url().toString() << "OK:" << get_ok;
+	auto *reply = manager->get(QNetworkRequest(url));
+	connect(reply, &QNetworkReply::downloadProgress, reply, [reply](qint64 completed, qint64 total) {
 		qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
-		if(get_ok) {
+		fwk->showProgress(QString("%1/%2 %3").arg(completed).arg(total).arg(reply->url().toString()), completed, total);
+	});
+	connect(reply, &QNetworkReply::finished, context, [reply, process_call_back]() {
+		qfMessage() << "Get:" << reply->url().toString() << "OK:" << (reply->error() == QNetworkReply::NoError);
+		qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
+		if(reply->error() == QNetworkReply::NoError) {
 			QJsonParseError err;
-			QJsonDocument jsd = QJsonDocument::fromJson(reply->data(), &err);
+			auto data = reply->readAll();
+			QJsonDocument jsd = QJsonDocument::fromJson(data, &err);
 			if(err.error != QJsonParseError::NoError) {
-				qfError() << reply->data();
+				qfError() << data;
 				qf::gui::dialogs::MessageBox::showError(fwk, tr("JSON document parse error: %1 at: %2 near: %3")
 															   .arg(err.errorString())
 															   .arg(err.offset)
-															   .arg(reply->data().mid(err.offset, 50).constData()));
+															   .arg(data.mid(err.offset, 50).constData()));
 				return;
 			}
 			process_call_back(jsd);
@@ -149,15 +151,17 @@ void OrisImporter::getJsonAndProcess(const QUrl &url, QObject *context, std::fun
 void OrisImporter::getTextAndProcess(const QUrl &url, QObject *context, std::function<void (const QByteArray &)> process_call_back)
 {
 	auto *manager = networkAccessManager();
-	qf::core::network::NetworkReply *reply = manager->get(url);
-	qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
-	connect(context, &QObject::destroyed, reply, &qf::core::network::NetworkReply::deleteLater); // NOLINT(readability-suspicious-call-argument)
-	connect(reply, &qf::core::network::NetworkReply::downloadProgress, fwk, &qf::gui::framework::MainWindow::showProgress);
-	connect(reply, &qf::core::network::NetworkReply::finished, context, [reply, process_call_back](bool get_ok) {
-		qfInfo() << "Get:" << reply->url().toString() << "OK:" << get_ok;
+	auto *reply = manager->get(QNetworkRequest(url));
+	// connect(context, &QObject::destroyed, reply, &qf::core::network::NetworkReply::deleteLater); // NOLINT(readability-suspicious-call-argument)
+	connect(reply, &QNetworkReply::downloadProgress, reply, [reply](qint64 completed, qint64 total) {
 		qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
-		if(get_ok) {
-			process_call_back(reply->data());
+		fwk->showProgress(QString("%1/%2 %3").arg(completed).arg(total).arg(reply->url().toString()), completed, total);
+	});
+	connect(reply, &QNetworkReply::finished, context, [reply, process_call_back]() {
+		qfInfo() << "Get:" << reply->url().toString() << "OK:" << (reply->error() == QNetworkReply::NoError);
+		qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
+		if(reply->error() == QNetworkReply::NoError) {
+			process_call_back(reply->readAll());
 		}
 		else {
 			qf::gui::dialogs::MessageBox::showError(fwk, "http get error on: " + reply->url().toString() + ", " + reply->errorString());
@@ -999,7 +1003,7 @@ void OrisImporter::importMissingOneTimeClubs()
 		fwk->showProgress(tr("Importing one-time clubs"), 0, items_count);
 		qfLogScope("importClubs");
 		for (auto &abbr : missing_clubs) {
-			getAndImportClub(abbr,event_key);
+			getAndImportClub(abbr, event_key);
 			items_processed++;
 		}
 
