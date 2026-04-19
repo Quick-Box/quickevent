@@ -35,40 +35,6 @@
 #include <QMessageBox>
 #include <set>
 
-#if QT_VERSION_MAJOR >= 6
-// workaround to decode cp-1250 on linux, needed for relays import from Oris
-#include <iconv.h>
-
-namespace {
-QByteArray convertCp1250ToUtf8(const QByteArray &input) {
-	iconv_t cd = iconv_open("UTF-8", "CP1250");
-	if (cd == reinterpret_cast<iconv_t>(-1)) {
-		qfWarning() << "iconv_open failed";
-		return input;
-	}
-
-	size_t inBytesLeft = input.size();
-	size_t outBytesLeft = input.size() * 2; // allocate more for UTF-8
-	QByteArray output;
-	output.resize(outBytesLeft);
-
-	char *inBuf = const_cast<char *>(input.data()); // NOLINT(cppcoreguidelines-pro-type-const-cast)
-	char *outBuf = output.data();
-
-	size_t result = iconv(cd, &inBuf, &inBytesLeft, &outBuf, &outBytesLeft);
-	if (result == (size_t)-1) {
-		qWarning() << "iconv conversion failed";
-		iconv_close(cd);
-		return input;
-	}
-
-	iconv_close(cd);
-	output.resize(output.size() - outBytesLeft);
-	return output;
-}
-}
-#endif
-
 using qf::gui::framework::getPlugin;
 using Event::EventPlugin;
 
@@ -180,103 +146,88 @@ void OrisImporter::syncCurrentEventEntries(std::function<void ()> success_callba
 
 void OrisImporter::syncRelaysEntries(int event_id, std::function<void ()> success_callback)
 {
-	/*
-	qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
-	if(!getPlugin<EventPlugin>()->eventConfig()->isRelays()) {
-		qf::gui::dialogs::MessageBox::showError(fwk, tr("Not relays event."));
-		return;
-	}
-	int oris_id = getPlugin<EventPlugin>()->eventConfig()->importId();
-	if(oris_id == 0) {
-		qf::gui::dialogs::MessageBox::showError(fwk, tr("Cannot find Oris import ID."));
-		return;
-	}
-	*/
-	QUrl url(QString("https://" + OrisImporter::orisDomainName() + "/ExportPrihlasek?id=%1").arg(event_id));
-	getTextAndProcess(url, this, [=](const QByteArray &data) {
+	// import relays entries from ORIS API
+
+	QUrl url(QString("https://" + OrisImporter::orisDomainName() + "/API/?format=json&method=getEventEntries&eventid=%1").arg(event_id));
+	getJsonAndProcess(url, this, [=](const QJsonDocument &jsd) {
+		static const QString json_fn = "EventRelaysEntries";
+		saveJsonBackup(json_fn, jsd);
 		qf::gui::framework::MainWindow *fwk = qf::gui::framework::MainWindow::frameWork();
 		try {
 			qfLogScope("syncRelaysEntries");
 			qf::core::sql::Transaction transaction;
 			qf::core::sql::Query q;
 
+			QSet<int> classes_set; // classes.Id
+			q.execThrow("SELECT id FROM classes ORDER BY id");
+			while(q.next()) {
+				classes_set.insert(q.value(0).toInt());
+			}
+
+			// prepare lists of old imported data for entries sync
 			q.execThrow("UPDATE competitors SET importId=1 WHERE importId IS NOT NULL");
 			q.execThrow("UPDATE runs SET importId=1 WHERE importId IS NOT NULL");
-			q.execThrow("UPDATE relays SET importId=1 WHERE importId IS NOT NULL");
 
-			QMap<QString, int> class_ids;
-			q.execThrow("SELECT id, name FROM classes");
-			while(q.next())
-				class_ids[q.value(1).toString()] = q.value(0).toInt();
+			QMap<int, int> imported_relays; // importId->id
+			q.execThrow("SELECT id, importId FROM relays WHERE importId IS NOT NULL ORDER BY importId");
+			while(q.next()) {
+				imported_relays[q.value(1).toInt()] = q.value(0).toInt();
+			}
 
-#if QT_VERSION_MAJOR >= 6
-			auto data_utf8 = convertCp1250ToUtf8(data);
-			QTextStream ts(data_utf8);
-			ts.setEncoding(QStringConverter::Utf8);
-#else
-			QTextStream ts(data);
-			ts.setCodec("cp1250");
-#endif
-			enum E1 {
-				Club = 4,
-				RelayPos = 3,
-				ClassName = 11,
-				Reg = 8,
-				Name = 28,
-				SI = 9,
-				//Competitor = Reg + Name + SI,
-			};
-			while(!ts.atEnd()) {
-				QString ln = ts.readLine();
-				QString line(ln);
-				int n = 0;
+			QJsonObject data = jsd.object().value(QStringLiteral("Data")).toObject();
+			int items_processed = 0;
+			int items_count = data.size();
 
-				QString relay_club = line.mid(n, Club).trimmed(); n += Club;
-				if(relay_club.isEmpty())
-					continue;
-				QString relay_name = line.mid(n, RelayPos).trimmed(); n += RelayPos;
-				QString class_name = line.mid(n, ClassName).trimmed(); n += ClassName;
-
-				int class_id = class_ids.value(class_name);
-				if(class_id == 0) {
-					qfError() << "Invalid class name" << class_name;
-					continue;
+			for (const auto& key : data.keys()) {
+				auto relay_o = data.value(key);
+				auto class_id = relay_o["ClassID"].toString().toInt();
+				if(!classes_set.contains(class_id)) {
+					qfWarning() << "class id:" << class_id << "not found in the class definitions";
+					class_id = 0;
 				}
+				auto name = relay_o["Name"].toString();
+				fwk->showProgress("Importing: " + name, items_processed, items_count);
+				// now unused, prepare for future - to replace club_abbr with club_id
+				// auto club_import_id = relay_o["ClubID"].toString().toInt();
+				auto relay_name = name.mid(3).trimmed();
+				auto club_abbr = name.first(3).trimmed();
 
-				qfInfo() << relay_club << relay_name << class_name << class_id;
-
-				q.execThrow("SELECT id FROM relays WHERE"
-							" name='" + relay_name + "'"
-							" AND club='" + relay_club + "'"
-							" AND classId=" + QString::number(class_id));
-				int relay_id;
-				if(q.next()) {
-					relay_id = q.value(0).toInt();
-					q.execThrow("UPDATE relays SET importId=2 WHERE id=" + QString::number(relay_id));
+				auto import_id = relay_o["ID"].toString().toInt();
+				auto relay_id = imported_relays.value(import_id);
+				if(relay_id > 0) {
+					// update relay
+					q.execThrow("UPDATE relays SET club='" + club_abbr + "', "
+								+ "name='" + relay_name + "' "
+								+ "WHERE id=" + QString::number(relay_id));
+					imported_relays.remove(import_id);
 				}
 				else {
+					// insert new relay
 					q.execThrow("INSERT INTO relays (classId, club, name, importId) VALUES ("
 								+ QString::number(class_id) + ", "
-								+ "'" + relay_club + "', "
+								+ "'" + club_abbr + "', "
 								+ "'" + relay_name + "', "
-								+ "2"
+								+ QString::number(import_id)
 								+ ")");
 					relay_id = q.lastInsertId().toInt();
 				}
 
-				int leg = 0;
-				while(n < line.size()) {
-					leg++;
-					QString reg = line.mid(n, Reg).trimmed(); n += Reg;
-					QString name = line.mid(n, Name).trimmed(); n += Name;
+				// legs
+				auto legs = relay_o["Legs"].toObject();
+				for (const auto& leg : legs.keys()) {
+					auto leg_o = legs.value(leg);
+					auto leg_number = leg_o["Number"].toString().toInt();
+
+					QString reg = leg_o["RegNo"].toString();
+					QString name = leg_o["Name"].toString();
 					QString last_name = name.section(' ', 0, 0);
 					QString first_name = name.section(' ', 1);
-					int si = line.mid(n, SI).trimmed().toInt(); n += SI;
+					int si = leg_o["SI"].toString().toInt();
 
 					if(reg.isEmpty() && name.isEmpty())
 						continue;
 
-					qfInfo() << '\t' << leg << last_name << first_name << reg << si;
+					qfInfo() << '\t' << leg_number << last_name << first_name << reg << si;
 
 					int competitor_id = 0;
 					{
@@ -288,21 +239,11 @@ void OrisImporter::syncRelaysEntries(int event_id, std::function<void ()> succes
 							competitor_id = q.value(0).toInt();
 						}
 						if(competitor_id == 0 && !reg.isEmpty()) {
-								q.execThrow("SELECT id FROM competitors WHERE"
-											" registration='" + reg + "'");
-								if(q.next())
-									competitor_id = q.value(0).toInt();
-						}
-						/*
-						if(competitor_id == 0) {
 							q.execThrow("SELECT id FROM competitors WHERE"
-										" firstName='" + first_name + "'"
-										" AND lastName='" + last_name + "'"
-										" AND registration IS NULL" );
+										" registration='" + reg + "'");
 							if(q.next())
 								competitor_id = q.value(0).toInt();
 						}
-						*/
 						if(competitor_id == 0) {
 							q.execThrow("INSERT INTO competitors (registration) VALUES ('" + reg + "')");
 							competitor_id = q.lastInsertId().toInt();
@@ -317,11 +258,11 @@ void OrisImporter::syncRelaysEntries(int event_id, std::function<void ()> succes
 									" WHERE id=" + QString::number(competitor_id)
 									);
 					}
-					int run_id;
+					int run_id = 0;
 					{
 						q.execThrow("SELECT id FROM runs WHERE"
 									" relayId=" + QString::number(relay_id) + ""
-									" AND leg=" + QString::number(leg));
+									" AND leg=" + QString::number(leg_number));
 						if(q.next()) {
 							run_id = q.value(0).toInt();
 						}
@@ -333,17 +274,25 @@ void OrisImporter::syncRelaysEntries(int event_id, std::function<void ()> succes
 									" competitorId=" + QString::number(competitor_id) + ","
 									" stageId=1,"
 									" relayId=" + QString::number(relay_id) + ","
-									" leg=" + QString::number(leg) + ","
+									" leg=" + QString::number(leg_number) + ","
 									" siid=" + QString::number(si) + ","
 									" importId=2"
 									" WHERE id=" + QString::number(run_id)
 									);
 					}
 				}
+				items_processed++;
+			}
+
+
+			// cleanup, remove unused old data
+			for(const auto &[import_id, id] : imported_relays.asKeyValueRange()) {
+				q.execThrow(QString("DELETE FROM relays WHERE id=%1").arg(id));
 			}
 			q.execThrow("DELETE FROM runs WHERE importId=1");
 			q.execThrow("DELETE FROM competitors WHERE importId=1");
-			q.execThrow("DELETE FROM relays WHERE importId=1");
+
+
 			transaction.commit();
 			qf::gui::dialogs::MessageBox::showInfo(fwk, tr("Import finished successfully."));
 			if(success_callback)
@@ -422,11 +371,9 @@ void OrisImporter::importEvent(int event_id, std::function<void ()> success_call
 			qf::core::sql::Transaction transaction;
 
 			int items_processed = 0;
-			int items_count = 0;
 			QJsonObject classes_o = data.value(QStringLiteral("Classes")).toObject();
-			for(auto it = classes_o.constBegin(); it != classes_o.constEnd(); ++it) {
-				items_count++;
-			}
+			int items_count = classes_o.size();
+
 			Classes::ClassDocument doc;
 			for(auto it = classes_o.constBegin(); it != classes_o.constEnd(); ++it) {
 				QJsonObject class_o = it.value().toObject();
@@ -501,7 +448,7 @@ public:
 					" ORDER BY stageId");
 		while (q.next()) {
 			Run run;
-			for(const QString &fldname : fields)
+			for(const auto &fldname : fields)
 				run[fldname] = q.value(fldname);
 			ret << run;
 		}
@@ -543,10 +490,8 @@ void OrisImporter::syncEventEntries(int event_id, std::function<void ()> success
 				jsd2 = jsd;
 			QJsonObject data = jsd2.object().value(QStringLiteral("Data")).toObject();
 			int items_processed = 0;
-			int items_count = 0;
-			for(auto it = data.constBegin(); it != data.constEnd(); ++it) {
-				items_count++;
-			}
+			int items_count = data.size();
+
 			QList<Competitors::CompetitorDocument*> doc_lst;
 			doc_lst.reserve(items_count);
 			//QSet<int> used_idsi;
@@ -685,7 +630,7 @@ void OrisImporter::syncEventEntries(int event_id, std::function<void ()> success
 					s = variant_to_string(doc->origValue(fldn));// + ":" + doc->origValue(fldn).typeName() + ":" + (doc->origValue(fldn).isNull()? "null": "");
 				return s;
 			};
-			for(Competitors::CompetitorDocument *doc : doc_lst) {
+			for(auto &doc : doc_lst) {
 				QVariantList tr = QVariantList() << QStringLiteral("tr");
 				if(doc->mode() == Competitors::CompetitorDocument::ModeInsert) {
 					doc->setProperty(KEY_IS_DATA_DIRTY, true);
@@ -725,7 +670,7 @@ void OrisImporter::syncEventEntries(int event_id, std::function<void ()> success
 						edited_entries_rows.insert(edited_entries_rows.length(), tr);
 				}
 				else if(doc->mode() == Competitors::CompetitorDocument::ModeDelete) {
-					for(const QString &fldn : fields) {
+					for(const auto &fldn : fields) {
 						auto td = QVariantList() << QStringLiteral("td") << field_string(doc, fldn);
 						tr.insert(tr.length(), td);
 					}
@@ -778,7 +723,7 @@ void OrisImporter::syncEventEntries(int event_id, std::function<void ()> success
 			if(dlg.exec()) {
 				qfLogScope("importEventEntries");
 				qf::core::sql::Transaction transaction;
-				for(Competitors::CompetitorDocument *doc : doc_lst) {
+				for(auto &doc : doc_lst) {
 					doc->setEmitDbEventsOnSave(false);
 					if(doc->mode() == Competitors::CompetitorDocument::ModeInsert || doc->mode() == Competitors::CompetitorDocument::ModeEdit) {
 						if(doc->property(KEY_IS_DATA_DIRTY).toBool()) {
