@@ -18,6 +18,8 @@ class EventConfig : public QObject
 	Q_PROPERTY(bool isRelays READ isRelays)
 	Q_PROPERTY(bool isIofRace READ isIofRace)
 	Q_PROPERTY(bool iofXmlRaceNumber READ iofXmlRaceNumber)
+	Q_PROPERTY(QString director READ director)
+	Q_PROPERTY(QString mainReferee READ mainReferee)
 	//Q_PROPERTY(QString eventName READ eventName)
 public:
 	enum class Sport {OB = 1, LOB, MTBO, TRAIL};

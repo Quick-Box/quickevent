@@ -76,7 +76,6 @@ public:
 	bool isDesignMode() const {return m_designMode;}
 	void setDesignMode(bool b) {m_designMode = b;}
 public:
-	void setPaintDevice(QPaintDevice *pd) {m_paintDevice = pd;}
 	QPaintDevice* paintDevice() {
 		QF_ASSERT_EX(m_paintDevice, "paintDevice cannot be null");
 		return m_paintDevice;
@@ -119,7 +118,7 @@ public:
 	static QStringList qmlEngineImportPaths();
 protected:
 	QQmlEngine* qmlEngine(bool throw_exc = true);
-private:	
+private:
 	ImageMap m_imageMap;
 
 	QQmlEngine *m_qmlEngine = nullptr;
