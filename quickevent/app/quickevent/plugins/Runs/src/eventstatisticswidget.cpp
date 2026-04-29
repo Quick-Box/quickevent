@@ -92,7 +92,7 @@ EventStatisticsModel::EventStatisticsModel(QObject *parent)
 		qf::core::sql::QueryBuilder qb_runners_finished;
 		qb_runners_finished.select("COUNT(runs.id)")
 				.from("runs").joinRestricted("runs.competitorId", "competitors.id", competiting_cond, qf::core::sql::QueryBuilder::INNER_JOIN)
-				.where("runs.finishTimeMs > 0 OR runs.disqualified");
+				.where("runs.finishTimeMs > 0 OR (runs.disqualified AND NOT runs.notCompeting)");
 		qf::core::sql::QueryBuilder qb_runners_start_first;
 		qb_runners_start_first.select("MIN(runs.startTimeMs)")
 				.from("runs").joinRestricted("runs.competitorId", "competitors.id", competiting_cond, qf::core::sql::QueryBuilder::INNER_JOIN)
