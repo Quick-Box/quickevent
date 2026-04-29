@@ -213,10 +213,10 @@ void ReportItemImage::updateResolvedDataSource()
 	//--childrenSyncedFlag = true;
 }
 
-ReportItem::PrintResult ReportItemImage::printMetaPaint(ReportItemMetaPaint* out, const ReportItem::Rect& bounding_rect)
+ReportItem::PrintResult ReportItemImage::printMetaPaint(QPrinter *printer, ReportItemMetaPaint* out, const ReportItem::Rect& bounding_rect)
 {
 	updateResolvedDataSource();
-	ReportItem::PrintResult ret = Super::printMetaPaint(out, bounding_rect);
+	ReportItem::PrintResult ret = Super::printMetaPaint(printer, out, bounding_rect);
 	/*--
 	ReportItemMetaPaint *mpi = out->lastChild();
 	if(mpi) {
@@ -236,7 +236,7 @@ ReportItem::PrintResult ReportItemImage::printMetaPaint(ReportItemMetaPaint* out
 	return ret;
 }
 
-ReportItemImage::PrintResult ReportItemImage::printMetaPaintChildren(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItemImage::PrintResult ReportItemImage::printMetaPaintChildren(QPrinter *printer, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	//qfDebug().color(QFLog::Magenta) << QF_FUNC_NAME << element.tagName() << "id:" << element.attribute("id");
 	//qfDebug() << "\tbounding_rect:" << bounding_rect.toString();

@@ -1104,7 +1104,7 @@ QList<int> TableView::selectedRowsIndexes() const
 			set << ix.row();
 	}
 	QList<int> ret = set.values();
-	std::sort(ret.begin(), ret.end());
+	std::ranges::sort(ret);
 	return ret;
 }
 
@@ -1117,7 +1117,7 @@ QList<int> TableView::selectedColumnsIndexes() const
 			set << ix.column();
 	}
 	QList<int> ret = set.values();
-	std::sort(ret.begin(), ret.end());
+	std::ranges::sort(ret);
 	return ret;
 }
 

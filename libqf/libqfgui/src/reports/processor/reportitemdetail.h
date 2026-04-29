@@ -19,10 +19,10 @@ public:
 	QF_PROPERTY_IMPL2(int, c, C, urrentIndex, -1)
 public:
 	ReportItemDetail(ReportItem *parent = nullptr);
-	~ReportItemDetail() Q_DECL_OVERRIDE;
+	~ReportItemDetail() override;
 public:
-	PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
-	PrintResult printHtml(HTMLElement &out) Q_DECL_OVERRIDE;
+	PrintResult printMetaPaint(QPrinter *printer, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
+	PrintResult printHtml(HTMLElement &out) override;
 
 	void resetCurrentIndex();
 	int rowCount();

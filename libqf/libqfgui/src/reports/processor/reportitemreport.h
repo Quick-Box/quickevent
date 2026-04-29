@@ -26,17 +26,17 @@ private:
 	typedef ReportItemFrame Super;
 public:
 	ReportItemReport(ReportItem *parent = nullptr);
-	~ReportItemReport() Q_DECL_OVERRIDE;
+	~ReportItemReport() override;
 public:
 	QF_PROPERTY_OBJECT_IMPL(style::Sheet*, s, S, tyleSheet)
 	QF_PROPERTY_IMPL2(int, d, D, ebugLevel, 0)
 	QF_PROPERTY_BOOL_IMPL(c, C, reated)
 public:
-	void resetIndexToPrintRecursively(bool including_para_texts) Q_DECL_OVERRIDE
+	void resetIndexToPrintRecursively(bool including_para_texts) override
 	{
 		Super::resetIndexToPrintRecursively(including_para_texts);
 	}
-	PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
+	PrintResult printMetaPaint(QPrinter *printer, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
 
 	ReportProcessor* reportProcessor() {return m_reportProcessor;}
 	void setReportProcessor(ReportProcessor *p) {m_reportProcessor = p;}

@@ -28,6 +28,7 @@
 
 class QDomElement;
 class QDomText;
+class QPrinter;
 
 namespace qf {
 namespace gui {
@@ -54,7 +55,7 @@ private:
 	typedef QObject Super;
 public:
 	ReportItem(ReportItem *parent = nullptr);
-	~ReportItem() Q_DECL_OVERRIDE;
+	~ReportItem() override;
 
 	QF_PROPERTY_BOOL_IMPL2(k, K, eepAll, false)
 	QF_PROPERTY_BOOL_IMPL2(k, K, eepWithPrev, false)
@@ -342,7 +343,7 @@ public:
 		return static_cast<ReportItem*>(this->Super::parent());
 	}
 	//! Print item in form, that understandable by ReportPainter.
-	virtual PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) {Q_UNUSED(out); Q_UNUSED(bounding_rect); return PrintResult::createPrintFinished();}
+	virtual PrintResult printMetaPaint(QPrinter *printer, ReportItemMetaPaint *out, const Rect &bounding_rect);
 	//! Print item in HTML element form.
 	virtual PrintResult printHtml(HTMLElement &out);
 	/// vrati definovanou velikost pro item a layout
@@ -369,8 +370,8 @@ protected:
 
 	void createHtmlExportAttributes(HTMLElement &out) const;
 
-	void classBegin() Q_DECL_OVERRIDE;
-	void componentComplete() Q_DECL_OVERRIDE;
+	void classBegin() override;
+	void componentComplete() override;
 public:
 	Rect designedRect;
 protected:

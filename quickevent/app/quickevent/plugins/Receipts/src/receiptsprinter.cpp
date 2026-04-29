@@ -49,7 +49,6 @@ bool ReceiptsPrinter::printReceipt(const QString &report_file_name, const QVaria
 	QF_TIME_SCOPE("ReceiptsPrinter::printReceipt()");
 	ReceiptsSettings settings;
 	QPrinter *printer = nullptr;
-	QPaintDevice *paint_device = nullptr;
 	if(settings.printerTypeEnum() == ReceiptsSettings::PrinterType::GraphicPrinter) {
 		QF_TIME_SCOPE("init graphics printer");
 		QPrinterInfo pi = QPrinterInfo::printerInfo(settings.graphicsPrinterName());
@@ -65,17 +64,15 @@ bool ReceiptsPrinter::printReceipt(const QString &report_file_name, const QVaria
 		}
 		qfInfo() << "printing on:" << pi.printerName();
 		printer = new QPrinter(pi);
-		paint_device = printer;
 	}
 	else {
 		qfInfo() << "printing on:" << settings.characterPrinterModel() << "at:"
 				 << ((settings.characterPrinterTypeEnum() == ReceiptsSettings::CharacterPrinteType::Directory)?
 						 settings.characterPrinterDirectory() :
 						 settings.characterPrinterDevice());
-		qff::MainWindow *fwk = qff::MainWindow::frameWork();
-		paint_device = fwk;
+		// qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	}
-	qf::gui::reports::ReportProcessor rp(paint_device);
+	qf::gui::reports::ReportProcessor rp;
 	{
 		QF_TIME_SCOPE("setting report and data");
 		auto *plugin = qf::gui::framework::getPlugin<Receipts::ReceiptsPlugin>();
@@ -86,10 +83,11 @@ bool ReceiptsPrinter::printReceipt(const QString &report_file_name, const QVaria
 		}
 	}
 	if(settings.printerTypeEnum() == ReceiptsSettings::PrinterType::GraphicPrinter) {
+		Q_ASSERT(printer);
 		QF_TIME_SCOPE("process graphics");
 		{
 			QF_TIME_SCOPE("process report");
-			rp.process();
+			rp.process(printer);
 		}
 		qf::gui::reports::ReportItemMetaPaintReport *doc;
 		{
@@ -99,13 +97,13 @@ bool ReceiptsPrinter::printReceipt(const QString &report_file_name, const QVaria
 		qf::gui::reports::ReportItemMetaPaint *it = doc->child(0);
 		if(it) {
 			QF_TIME_SCOPE("draw meta-paint");
-			qf::gui::reports::ReportPainter painter(paint_device);
+			qf::gui::reports::ReportPainter painter(printer);
 			painter.drawMetaPaint(it);
 		}
 		QF_SAFE_DELETE(printer);
 		return true;
 	}
-	if(settings.printerTypeEnum() == ReceiptsSettings::PrinterType::CharacterPrinter) {
+	else {
 		QDomDocument doc;
 		doc.setContent(QLatin1String("<?xml version=\"1.0\"?><report><body/></report>"));
 		QDomElement el_body = doc.documentElement().firstChildElement("body");

@@ -33,7 +33,7 @@ private:
 	typedef ReportItemFrame Super;
 public:
 	ReportItemBand(ReportItem *parent = nullptr);
-	~ReportItemBand() Q_DECL_OVERRIDE;
+	~ReportItemBand() override;
 public:
 	QF_PROPERTY_BOOL_IMPL(h, H, eaderOnBreak)
 	QF_PROPERTY_BOOL_IMPL(c, C, reateFromData)
@@ -51,11 +51,11 @@ public:
 
 	Q_INVOKABLE QVariant data(const QString &field_name, int role = Qt::DisplayRole);
 public:
-	PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
-	PrintResult printHtml(HTMLElement &out) Q_DECL_OVERRIDE;
+	PrintResult printMetaPaint(QPrinter *printer, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
+	PrintResult printHtml(HTMLElement &out) override;
 
-	void resetIndexToPrintRecursively(bool including_para_texts) Q_DECL_OVERRIDE;
-	bool canBreak() Q_DECL_OVERRIDE;
+	void resetIndexToPrintRecursively(bool including_para_texts) override;
+	bool canBreak() override;
 
 protected:
 	ReportItemDetail* detail();
@@ -112,7 +112,7 @@ private:
 	typedef ReportItemFrame Super;
 public:
 	ReportItemBand(ReportItem *parent = nullptr);
-	~ReportItemBand() Q_DECL_OVERRIDE;
+	~ReportItemBand() override;
 public:
 	QF_PROPERTY_IMPL(QString, d, D, ataSource)
 	QF_PROPERTY_IMPL(qf::core::utils::TreeTable, d, D, ata)

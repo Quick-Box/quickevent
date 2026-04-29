@@ -20,6 +20,7 @@
 class QLineEdit;
 class QSpinBox;
 class QPrinter;
+class QPrintPreviewWidget;
 
 namespace qf {
 namespace gui {
@@ -43,7 +44,7 @@ private:
 	typedef qf::gui::framework::DialogWidget Super;
 public:
 	ReportViewWidget(QWidget *parent = nullptr);
-	~ReportViewWidget() Q_DECL_OVERRIDE;
+	~ReportViewWidget() override;
 
 	/**
 	 * @brief showReport
@@ -69,6 +70,8 @@ public:
 			, const QVariantMap &report_init_properties = QVariantMap());
 
 protected:
+	QPrintPreviewWidget *m_printPreviewWidget = nullptr;
+protected:
 	class ScrollArea;
 	class PainterWidget;
 
@@ -85,12 +88,14 @@ protected:
 	ReportItemMetaPaint *m_selectedItem;
 	QTransform m_painterInverseMatrix;
 
-	ReportProcessor *m_reportProcessor;
+	ReportProcessor *m_reportProcessor = nullptr;
 
 	static const int PageBorder = 5;
 
 	qf::gui::StatusBar *m_statusBar;
 private:
+	void onPrintPreviewPaintRequested(QPrinter *printer);
+
 	void selectItem(const QPointF &p);
 	ReportItemMetaPaint* selectItem_helper(ReportItemMetaPaint *it, const QPointF &p);
 protected:
@@ -141,12 +146,7 @@ public slots:
 	void view_zoomToFitHeight();
 	void zoomOnWheel(int delta, const QPoint &pos);
 public:
-	virtual ReportProcessor* reportProcessor();
-	//! does not take ownership of \a proc
-	//! connect necessarry signals and slots
-	void setReportProcessor(ReportProcessor *proc);
-
-	void setVisible(bool visible) Q_DECL_OVERRIDE;
+	void setVisible(bool visible) override;
 
 	ReportItemMetaPaintReport* document(bool throw_exc = true);
 	void setTableData(const QString &key, const qf::core::utils::TreeTable &table_data);
@@ -169,13 +169,15 @@ public:
 	qreal scale() const {return m_scale;}
 	void setScale(qreal _scale);
 
-	void settleDownInDialog(qf::gui::dialogs::Dialog *dlg) Q_DECL_OVERRIDE;
-	ActionMap createActions() Q_DECL_OVERRIDE;
+	void settleDownInDialog(qf::gui::dialogs::Dialog *dlg) override;
+	ActionMap createActions() override;
 
 	ReportItemMetaPaint* selectedItem() const {return m_selectedItem;}
 	virtual void prePrint() {}
 	void print(QPrinter &printer, const QVariantMap &options = QVariantMap());
 	Q_SIGNAL void reportPrinted(int printer_output_format);
+private:
+	ReportProcessor* reportProcessor();
 private:
 	QLineEdit *m_edCurrentPage = nullptr;
 };
@@ -184,9 +186,9 @@ class ReportViewWidget::PainterWidget : public QWidget
 {
 	Q_OBJECT
 protected:
-	void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+	void mousePressEvent(QMouseEvent *e) override;
 	//virtual void wheelEvent(QWheelEvent *event);
-	void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
+	void paintEvent(QPaintEvent *event) override;
 	ReportViewWidget* reportViewWidget();
 	/// screen dots per mm
 signals:
@@ -203,12 +205,12 @@ protected:
 	QPoint f_dragMouseStartPos;
 	QPoint f_dragViewportStartPos;
 protected:
-	void keyPressEvent(QKeyEvent *ev) Q_DECL_OVERRIDE;
-	void keyReleaseEvent(QKeyEvent *ev) Q_DECL_OVERRIDE;
-	void wheelEvent(QWheelEvent *e) Q_DECL_OVERRIDE;
-	void mousePressEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
-	void mouseReleaseEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
-	void mouseMoveEvent(QMouseEvent *ev) Q_DECL_OVERRIDE;
+	void keyPressEvent(QKeyEvent *ev) override;
+	void keyReleaseEvent(QKeyEvent *ev) override;
+	void wheelEvent(QWheelEvent *e) override;
+	void mousePressEvent(QMouseEvent *ev) override;
+	void mouseReleaseEvent(QMouseEvent *ev) override;
+	void mouseMoveEvent(QMouseEvent *ev) override;
 	//virtual void dragMoveEvent(QDragMoveEvent *ev);
 signals:
 	void showNextPage();

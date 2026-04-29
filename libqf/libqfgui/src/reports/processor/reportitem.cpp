@@ -81,6 +81,14 @@ ReportProcessor *ReportItem::processor(bool throw_exc)
 	return ret;
 }
 
+ReportItem::PrintResult ReportItem::printMetaPaint(QPrinter *printer, ReportItemMetaPaint *out, const Rect &bounding_rect)
+{
+	Q_UNUSED(printer);
+	Q_UNUSED(out);
+	Q_UNUSED(bounding_rect);
+	return PrintResult::createPrintFinished();
+}
+
 ReportItem::PrintResult ReportItem::printHtml(ReportItem::HTMLElement &out)
 {
 	if(out.isNull())

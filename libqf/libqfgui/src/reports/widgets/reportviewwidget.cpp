@@ -31,6 +31,7 @@
 #include <QBitmap>
 #include <QTimer>
 #include <QPrintDialog>
+#include <QPrintPreviewWidget>
 #include <QPrintPreviewDialog>
 #include <QDesktopServices>
 #include <QProcess>
@@ -44,7 +45,7 @@
 using namespace qf::gui::reports;
 
 //====================================================
-//         ReportViewWidget::ScrollArea
+// ReportViewWidget::ScrollArea
 //====================================================
 ReportViewWidget::ScrollArea::ScrollArea(QWidget * parent)
 : QScrollArea(parent)
@@ -92,6 +93,37 @@ bool ReportViewWidget::showReport2(QWidget *parent
 	});
 	dlg.exec();
 	return *report_printed;
+}
+
+void ReportViewWidget::onPrintPreviewPaintRequested(QPrinter *printer)
+{
+	qfInfo() << __PRETTY_FUNCTION__ << printer;
+	QPageLayout plg(QPageSize::A4, QPageLayout::Portrait, {}, QPageLayout::Millimeter);
+	printer->setPageLayout(plg);
+	if(!reportProcessor()->processorOutput()) {
+		reportProcessor()->process(printer, ReportProcessor::FirstPage);
+	}
+	ReportPainter painter(printer);
+	// painter.setMarkEditableSqlText(true);
+
+	painter.fillRect(QRect(0, 0, 210, 297), QBrush(Qt::red));
+return;
+	/// nakresli ramecek a stranku
+	//painter.setBrush(Qt::yellow);
+	QRect r1 = rect();
+	painter.fillRect(r1, QBrush(QColor(0xCCFF99)));
+
+	// setupPainter(&painter);
+	ReportItemMetaPaintFrame *frm = currentPage();
+	if(!frm) return;
+	graphics::Rect r = graphics::mm2device(frm->renderedRect, painter.device());
+	painter.fillRect(r, QColor("white"));
+	painter.setPen(QColor("teal"));
+	painter.setBrush(QBrush());
+	painter.drawRect(r);
+
+	painter.drawMetaPaint(currentPage());
+
 }
 
 void ReportViewWidget::ScrollArea::wheelEvent(QWheelEvent * ev)
@@ -231,7 +263,7 @@ void ReportViewWidget::ScrollArea::verticalScrollBarValueChanged(int value)
 }
 
 //====================================================
-//        ReportViewWidget::PainterWidget
+// ReportViewWidget::PainterWidget
 //====================================================
 ReportViewWidget::PainterWidget::PainterWidget(QWidget *parent)
 	: QWidget(parent)
@@ -337,7 +369,7 @@ void ReportViewWidget::PainterWidget::mousePressEvent(QMouseEvent *e)
 }
 
 //====================================================
-//                                 ReportViewWidget
+// ReportViewWidget
 //====================================================
 ReportViewWidget::ReportViewWidget(QWidget *parent)
 	: Super(parent), m_scrollArea(nullptr), edCurrentPage(nullptr), m_statusBar(nullptr)
@@ -368,29 +400,30 @@ ReportViewWidget::ReportViewWidget(QWidget *parent)
 	ly->setSpacing(0);
 	ly->setContentsMargins(0, 0, 0, 0);
 	ly->addWidget(m_scrollArea);
+
+	m_printPreviewWidget = new QPrintPreviewWidget();
+	connect(m_printPreviewWidget, &QPrintPreviewWidget::paintRequested, this, &ReportViewWidget::onPrintPreviewPaintRequested);
+	ly->addWidget(m_printPreviewWidget);
+
 	ly->addWidget(statusBar());
 
 	connect(m_scrollArea, &ScrollArea::showNextPage, this, &ReportViewWidget::scrollToNextPage);
 	connect(m_scrollArea, &ScrollArea::showPreviousPage, this, &ReportViewWidget::scrollToPrevPage);
+
+	m_reportProcessor = new ReportProcessor();
+	connect(m_reportProcessor, &ReportProcessor::pageProcessed, this, &ReportViewWidget::onPageProcessed);
 }
 
 ReportViewWidget::~ReportViewWidget()
 {
 	qfLogFuncFrame() << this;
+	delete m_reportProcessor;
 }
 
 ReportProcessor * ReportViewWidget::reportProcessor()
 {
-	if(m_reportProcessor == nullptr) {
-		setReportProcessor(new ReportProcessor(m_painterWidget, this));
-	}
+	Q_ASSERT(m_reportProcessor);
 	return m_reportProcessor;
-}
-
-void ReportViewWidget::setReportProcessor(ReportProcessor * proc)
-{
-	m_reportProcessor = proc;
-	connect(m_reportProcessor, &ReportProcessor::pageProcessed, this, &ReportViewWidget::onPageProcessed);
 }
 
 qf::gui::StatusBar *ReportViewWidget::statusBar()
@@ -699,7 +732,7 @@ void ReportViewWidget::onPageProcessed()
 	}
 	refreshWidget();
 	//setCurrentPageNo(0);
-	QTimer::singleShot(10, reportProcessor(), &ReportProcessor::processSinglePage); /// 10 je kompromis mezi rychlosti prekladu a sviznosti GUI
+	// QTimer::singleShot(10, reportProcessor(), &ReportProcessor::processSinglePage); /// 10 je kompromis mezi rychlosti prekladu a sviznosti GUI
 }
 
 ReportItemMetaPaintReport* ReportViewWidget::document(bool throw_exc)
@@ -874,7 +907,7 @@ void ReportViewWidget::processReport()
 {
 	qfLogFuncFrame();
 	if(!reportProcessor()->processorOutput()) {
-		reportProcessor()->process(ReportProcessor::FirstPage);
+		// reportProcessor()->process(, ReportProcessor::FirstPage);
 	}
 	setCurrentPageNo(0);
 	setScale(1);
@@ -1127,11 +1160,12 @@ void ReportViewWidget::file_export_html()
 		}
 		QTextStream out(&f);
 #if QT_VERSION_MAJOR >= 6
-		out.setEncoding(QStringConverter::encodingForName("UTF-8").value());
+		if (auto enc = QStringConverter::encodingForName("UTF-8"); enc.has_value()) {
+			out.setEncoding(enc.value());
+		}
 #else
 		out.setCodec("UTF-8");
 #endif
-
 		out << s;
 	}
 }

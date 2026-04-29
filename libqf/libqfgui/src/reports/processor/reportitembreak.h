@@ -29,11 +29,11 @@ public:
 	void setSkipFirst(bool is_set);
 
 
-	virtual ChildSize childSize(Layout parent_layout) {
+	ChildSize childSize(Layout parent_layout) override {
 		Q_UNUSED(parent_layout);
 		return ChildSize(0, Rect::UnitInvalid);
 	}
-	virtual PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect);
+	PrintResult printMetaPaint(QPrinter *printer, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
 private:
 	bool m_breaking = false;
 	bool m_skipFirst = false; // skip first page break

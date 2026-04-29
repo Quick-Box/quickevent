@@ -201,8 +201,8 @@ class QFGUI_DECL_EXPORT ReportItemMetaPaintCheck : public ReportItemMetaPaintTex
 private:
 	typedef ReportItemMetaPaintText Super;
 public:
-	virtual void paint(ReportPainter *painter, unsigned mode = PaintAll);
-	virtual bool isExpandable() const {return false;}
+	void paint(ReportPainter *painter, unsigned mode = PaintAll) override;
+	bool isExpandable() const override {return false;}
 public:
 	ReportItemMetaPaintCheck(ReportItemMetaPaint *parent, ReportItem *report_item)
 	: ReportItemMetaPaintText(parent, report_item) {}
@@ -218,10 +218,10 @@ public:
 	Qt::AspectRatioMode aspectRatioMode;
 	//bool resize;
 public:
-	virtual void paint(ReportPainter *painter, unsigned mode = PaintAll);
-	virtual bool isPointInside(const QPointF &p) {Q_UNUSED(p); return false;}
+	void paint(ReportPainter *painter, unsigned mode = PaintAll) override;
+	bool isPointInside(const QPointF &p) override {Q_UNUSED(p); return false;}
 
-	virtual QString dump(int indent = 0);
+	QString dump(int indent = 0) override;
 public:
 	ReportItemMetaPaintImage(ReportItemMetaPaint *parent, ReportItem *report_item)
 	: ReportItemMetaPaint(parent, report_item), aspectRatioMode(Qt::IgnoreAspectRatio)/*, resize(true)*/ {}
