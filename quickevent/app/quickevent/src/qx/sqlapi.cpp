@@ -14,6 +14,7 @@
 #include <QSqlError>
 #include <QSqlField>
 #include <QVariant>
+#include <algorithm>
 
 using namespace shv::chainpack;
 
@@ -305,7 +306,7 @@ std::string to_lower(const std::string &s)
 	std::string result;
 	result.reserve(s.size());
 
-	std::transform(s.begin(), s.end(), std::back_inserter(result),
+	std::ranges::transform(s, std::back_inserter(result),
 				   [](unsigned char c) { return std::tolower(c); });
 
 	return result;

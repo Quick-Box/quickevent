@@ -1362,8 +1362,8 @@ void EventPlugin::deleteEvent(const QString &event_name)
 			                           .arg(event_name, q.lastErrorText()));
 	}
 }
-
-static void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
+namespace {
+void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
 {
 	dst.setHostName(src.hostName());
 	dst.setPort(src.port());
@@ -1371,7 +1371,7 @@ static void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
 	dst.setPassword(src.password());
 	dst.setDatabaseName(src.databaseName());
 }
-
+}
 bool EventPlugin::importEventFromFile(const QString &src_file, const QString &dest_event_name)
 {
 	qfLogFuncFrame();
