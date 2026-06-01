@@ -27,13 +27,13 @@ using namespace qf::gui::reports;
 QString ReportProcessor::HTML_ATTRIBUTE_ITEM = QStringLiteral("__qf_qml_report_item");
 QString ReportProcessor::HTML_ATTRIBUTE_LAYOUT = QStringLiteral("__qf_qml_report_layout");
 
-ReportProcessor::ReportProcessor(QPaintDevice *paint_device, QObject *parent)
+ReportProcessor::ReportProcessor(QObject *parent)
 	: QObject(parent)
 {
 	qfLogFuncFrame();
+
 	m_qmlEngine = nullptr;
 	//--f_searchDirs = search_dirs;
-	m_paintDevice = paint_device;
 	m_designMode = false;
 	setProcessedPageNo(0);
 }
@@ -144,7 +144,7 @@ ReportItemReport* ReportProcessor::documentInstanceRoot()
 	return m_documentInstanceRoot;
 }
 
-void ReportProcessor::process(ReportProcessor::ProcessorMode mode)
+void ReportProcessor::process(QPaintDevice *paint_device, ReportProcessor::ProcessorMode mode)
 {
 	qfLogFuncFrame() << "mode:" << mode;
 	QF_TIME_SCOPE("ReportProcessor::process");
@@ -161,7 +161,7 @@ void ReportProcessor::process(ReportProcessor::ProcessorMode mode)
 	while(m_singlePageProcessResult.isPrintAgain()) {
 		{
 			QF_TIME_SCOPE("processing page");
-			m_singlePageProcessResult = processPage(&mpit);
+			m_singlePageProcessResult = processPage(paint_device, &mpit);
 			qfDebug() << "singlePageProcessResult:" << m_singlePageProcessResult.toString();
 		}
 		//qfDebug().color(QFLog::Yellow) << context().styleCache().toString();
@@ -190,22 +190,17 @@ void ReportProcessor::process(ReportProcessor::ProcessorMode mode)
 	}
 }
 
-ReportItem::PrintResult ReportProcessor::processPage(ReportItemMetaPaint *out)
+ReportItem::PrintResult ReportProcessor::processPage(QPaintDevice *paint_device, ReportItemMetaPaint *out)
 {
 	qfLogFuncFrame();
 	QF_TIME_SCOPE("ReportProcessor::processPage()");
 	ReportItem::PrintResult res;
 	if(documentInstanceRoot()) {
 		QF_TIME_SCOPE("ReportProcessor::processPage - documentInstanceRoot()->printMetaPaint()");
-		res = documentInstanceRoot()->printMetaPaint(out, ReportItem::Rect());
+		res = documentInstanceRoot()->printMetaPaint(paint_device, out, ReportItem::Rect());
 		qfDebug() << "\tres:" << res.toString();
 	}
 	return res;
-}
-
-QFontMetricsF ReportProcessor::fontMetrics(const QFont &font)
-{
-	return QFontMetricsF(font, paintDevice());
 }
 
 void ReportProcessor::processHtml(QDomElement & el_body, const HtmlExportOptions &opts)
@@ -349,7 +344,7 @@ QStringList ReportProcessor::qmlEngineImportPaths()
 
 QQmlEngine *ReportProcessor::qmlEngine(bool throw_exc)
 {
-#if defined USE_APP_ENGINE
+#ifdef USE_APP_ENGINE
 	QQmlEngine *ret = nullptr;
 	qf::gui::framework::Application *app = qobject_cast<qf::gui::framework::Application*>(QCoreApplication::instance());
 	if(throw_exc)

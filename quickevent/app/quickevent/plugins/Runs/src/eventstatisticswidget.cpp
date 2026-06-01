@@ -92,7 +92,7 @@ EventStatisticsModel::EventStatisticsModel(QObject *parent)
 		qf::core::sql::QueryBuilder qb_runners_finished;
 		qb_runners_finished.select("COUNT(runs.id)")
 				.from("runs").joinRestricted("runs.competitorId", "competitors.id", competiting_cond, qf::core::sql::QueryBuilder::INNER_JOIN)
-				.where("runs.finishTimeMs > 0 OR runs.disqualified");
+				.where("runs.finishTimeMs > 0 OR (runs.disqualified AND NOT runs.notCompeting)");
 		qf::core::sql::QueryBuilder qb_runners_start_first;
 		qb_runners_start_first.select("MIN(runs.startTimeMs)")
 				.from("runs").joinRestricted("runs.competitorId", "competitors.id", competiting_cond, qf::core::sql::QueryBuilder::INNER_JOIN)
@@ -394,11 +394,12 @@ EventStatisticsWidget::EventStatisticsWidget(QWidget *parent)
 {
 	ui->setupUi(this);
 
+	ui->tblStatsTB->setTableView(ui->tableView);
+
 	ui->btClearNewInSelectedRows->setIcon(qf::gui::Style::icon("clear"));
 	ui->btPrintResultsSelected->setIcon(qf::gui::Style::icon("print-selected"));
 	ui->btPrintResultsNew->setIcon(qf::gui::Style::icon("print"));
 	ui->btOptions->setIcon(qf::gui::Style::icon("settings"));
-	ui->btReload->setIcon(qf::gui::Style::icon("reload"));
 
 	ui->tableView->setPersistentSettingsId("tblEventStatistics");
 	ui->tableView->setReadOnly(true);
@@ -410,7 +411,6 @@ EventStatisticsWidget::EventStatisticsWidget(QWidget *parent)
 	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &EventStatisticsWidget::onDbEventNotify, Qt::QueuedConnection);
 	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::currentStageIdChanged, this, &EventStatisticsWidget::reloadDeferred);
 
-	connect(ui->btReload, &QPushButton::clicked, this, &EventStatisticsWidget::onReloadClicked);
 	connect(ui->btOptions, &QPushButton::clicked, this, &EventStatisticsWidget::onOptionsClicked);
 	connect(ui->btPrintResultsSelected, &QPushButton::clicked, this, &EventStatisticsWidget::onPrintResultsSelectedClicked);
 	connect(ui->btPrintResultsNew, &QPushButton::clicked, this, &EventStatisticsWidget::onPrintResultsNewClicked);
@@ -524,12 +524,6 @@ void EventStatisticsWidget::initAutoRefreshTimer()
 	else {
 		QF_SAFE_DELETE(m_autoRefreshTimer);
 	}
-}
-
-void EventStatisticsWidget::onReloadClicked()
-{
-	qfLogFuncFrame();
-	reload();
 }
 
 void EventStatisticsWidget::onPrintResultsSelectedClicked()

@@ -183,7 +183,7 @@ void OFeedClient::init()
 
 void OFeedClient::onExportTimerTimeOut()
 {
-	// exportStartListIofXml3();
+	exportStartListIofXml3();
 	if(runChangesProcessing()){
 		getChangesByOrigin();
 	}
@@ -207,7 +207,7 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 	{
 		auto checked_card = quickevent::core::si::CheckedCard(data.toMap());
 		int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(checked_card.runId());
-		qfInfo() << serviceName().toStdString() + "DB event competitor READ-OUT, competitor id: " << competitor_id << ", runs.id: " << checked_card.runId();
+		qfInfo() << serviceName().toStdString() + " DB event competitor READ-OUT, competitor id: " << competitor_id << ", runs.id: " << checked_card.runId();
 		onCompetitorReadOut(competitor_id);
 	}
 
@@ -215,7 +215,7 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_COMPETITOR_EDITED))
 	{
 		int competitor_id = data.toInt();
-		qfInfo() << serviceName().toStdString() + "DB event competitor EDITED, competitor id: " << competitor_id;
+		qfInfo() << serviceName().toStdString() + " DB event competitor EDITED, competitor id: " << competitor_id;
 		onCompetitorEdited(competitor_id);
 	}
 
@@ -240,8 +240,39 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_COMPETITOR_DELETED))
 	{
 		int run_id = data.toInt();
-		qfInfo() << serviceName().toStdString() + "DB event competitor DELETED, run id: " << run_id;
+		qfInfo() << serviceName().toStdString() + " DB event competitor DELETED, run id: " << run_id;
 		sendCompetitorDeleted(run_id);
+	}
+
+	// Handle direct run table edits (Runs UI, RunFlagsDialog, start time assignment, etc.)
+	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_RUN_CHANGED))
+	{
+		auto lst = data.toList();
+		int run_id = lst.value(0).toInt();
+		auto dirty_vals = lst.value(1).toMap();
+		qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED received, run_id: " << run_id << ", dirty keys: " << dirty_vals.keys().join(", ");
+		if (!dirty_vals.isEmpty()) {
+			static const QSet<QString> relevant_fields = {
+				QStringLiteral("starttimems"), QStringLiteral("finishtimems"), QStringLiteral("timems"),
+				QStringLiteral("siid"), QStringLiteral("disqualified"), QStringLiteral("disqualifiedbyorganizer"),
+				QStringLiteral("mispunch"), QStringLiteral("badcheck"),
+				QStringLiteral("notstart"), QStringLiteral("notfinish"), QStringLiteral("notcompeting"),
+			};
+			bool has_relevant = false;
+			for (const auto &key : dirty_vals.keys()) {
+				if (relevant_fields.contains(key.section('.', -1))) {
+					has_relevant = true;
+					break;
+				}
+			}
+			if (has_relevant) {
+				int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(run_id);
+				if (competitor_id > 0) {
+					qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED, run id: " << run_id << ", competitor id: " << competitor_id;
+					onCompetitorEdited(competitor_id);
+				}
+			}
+		}
 	}
 }
 
@@ -459,6 +490,8 @@ void OFeedClient::ensureEventImageCachedAtStartup()
 	if(m_eventImageStartupAttempted)
 		return;
 	if(!printEventImageOnReceipt())
+		return;
+	if(hasCachedEventImage())
 		return;
 	m_eventImageStartupAttempted = true;
 	refreshEventImageCache();
@@ -1111,6 +1144,8 @@ void OFeedClient::processCompetitorsChanges(QJsonArray data_array)
 		QString type = change["type"].toString();
 		QString previous_value = change["previousValue"].toString();
 		QString new_value = change["newValue"].toString();
+		QString origin = change["origin"].toString();
+		QDateTime created_at = QDateTime::fromString(change["createdAt"].toString(), Qt::ISODate);
 
 		// Retrieve competitor and details
 		auto competitor = change.value("competitor").toObject();
@@ -1118,6 +1153,9 @@ void OFeedClient::processCompetitorsChanges(QJsonArray data_array)
 		QString external_id_str = competitor["externalId"].toString();
 		int runs_id = external_id_str.toInt();
 		qfInfo() << "Processing change for competitorId (OFeed externalId):" << runs_id << ", type:" << type << ", " << previous_value << " -> " << new_value;
+
+		if (origin == QLatin1String("START") && created_at.isValid())
+			processCorridorTimeUpdate(runs_id, created_at);
 
 		// Handle each type of change
 		if (type == "si_card_change")
@@ -1209,6 +1247,31 @@ void OFeedClient::processNoteChange(int runs_id, const QString &new_value)
 		{
 			qfError() << tr("Database query failed: ") << q.lastError().text();
 		}
+	}
+	catch (const std::exception &e)
+	{
+		qCritical() << tr("Exception occurred while executing query: ") << e.what();
+	}
+	catch (...)
+	{
+		qCritical() << tr("Unknown exception occurred while executing query.");
+	}
+}
+
+void OFeedClient::processCorridorTimeUpdate(int runs_id, const QDateTime &created_at)
+{
+	qf::core::sql::Query q;
+	try
+	{
+		q.prepare("UPDATE runs SET corridorTime = :createdAt "
+				  "WHERE id = :runsId "
+				  "AND (corridorTime IS NULL OR corridorTime > :createdAt2)",
+				  qf::core::Exception::Throw);
+		q.bindValue(":runsId", runs_id);
+		q.bindValue(":createdAt", created_at);
+		q.bindValue(":createdAt2", created_at);
+		if (!q.exec(qf::core::Exception::Throw))
+			qfError() << tr("Database query failed: ") << q.lastError().text();
 	}
 	catch (const std::exception &e)
 	{
@@ -1350,11 +1413,6 @@ QString getIofResultStatus(
 	bool is_did_not_finish,
 	bool is_not_competing)
 {
-	// Handle time initial value
-	if (time == -1)
-	{
-		return "Inactive";
-	}
 	// IOF xml 3.0 statuses:
 	// OK (finished and validated)
 	// Finished (finished but not yet validated.)
@@ -1367,19 +1425,20 @@ QString getIofResultStatus(
 	// SportingWithdrawal
 	// NotCompeting
 	// DidNotStart
+	// Status flags take priority over time checks
 	if (is_not_competing)
 		return "NotCompeting";
+	if (is_did_not_start)
+		return "DidNotStart";
 	if (is_miss_punch)
 		return "MissingPunch";
 	if (is_did_not_finish)
 		return "DidNotFinish";
-	if (is_did_not_start)
-		return "DidNotStart";
 	if (is_bad_check || is_disq_by_organizer || is_disq)
 		return "Disqualified";
-	if (time)
-		return "OK";   // OK
-	return "Inactive"; // Inactive as default status
+	if (time > 0)
+		return "OK";
+	return "Inactive";
 }
 
 QString datetime_to_string(const QDateTime &dt)

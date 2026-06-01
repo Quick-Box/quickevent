@@ -3,11 +3,13 @@
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
 #include <qf/core/utils/fileutils.h>
+#include <qf/core/sql/qxsql.h>
 
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QFile>
 #include <QJsonParseError>
+#include <QUuid>
 
 namespace qfu = qf::core::utils;
 using namespace qf::gui::framework;
@@ -17,19 +19,85 @@ Application::Application(int &argc, char **argv) :
 {
 }
 
+qint64 Application::createDbRecord(const QString &table, const QVariantMap &record, QObject *source)
+{
+	using namespace qf::core::sql;
+	QxSql sql;
+	connect(&sql, &QxSql::dbRecChng, this, [this, source](const qf::core::sql::QxRecChng &recchng) { emit qxRecChng(recchng, source); });
+	return sql.createRecord(table, record, uuidString());
+}
+
+std::optional<QVariantMap> Application::readDbRecord(const QString &table, qint64 id, const std::optional<QStringList> &fields) const
+{
+	using namespace qf::core::sql;
+	QxSql sql;
+	return sql.readRecord(table, id, fields);
+}
+
+bool Application::updateDbRecord(const QString &table, qint64 id, const QVariantMap &record, QObject *source)
+{
+	using namespace qf::core::sql;
+	QxSql sql;
+	connect(&sql, &QxSql::dbRecChng, this, [this, source](const qf::core::sql::QxRecChng &recchng) { emit qxRecChng(recchng, source); });
+	return sql.updateRecord(table, id, record, uuidString());
+}
+
+bool Application::deleteDbRecord(const QString &table, qint64 id, QObject *source)
+{
+	using namespace qf::core::sql;
+	QxSql sql;
+	connect(&sql, &QxSql::dbRecChng, this, [this, source](const qf::core::sql::QxRecChng &recchng) { emit qxRecChng(recchng, source); });
+	return sql.deleteRecord(table, id, uuidString());
+}
+
 QString Application::versionString() const
 {
 	return QCoreApplication::applicationVersion();
 }
 
-Application::~Application()
-= default;
+void Application::emitDbRecInserted(const QString &table, qint64 id, const QVariantMap &record, QObject *source)
+{
+	emit qxRecChng(qf::core::sql::QxRecChng{
+		.table = table,
+		.id = id,
+		.record = record,
+		.op = qf::core::sql::RecOp::Insert,
+		.issuer = uuidString()
+	}, source);
+}
+
+void Application::emitDbRecUpdated(const QString &table, qint64 id, const QVariantMap &record, QObject *source)
+{
+	emit qxRecChng(qf::core::sql::QxRecChng{
+		.table = table,
+		.id = id,
+		.record = record,
+		.op = qf::core::sql::RecOp::Update,
+		.issuer = uuidString()
+	}, source);
+}
+
+void Application::emitDbRecDeleted(const QString &table, qint64 id, QObject *source)
+{
+	emit qxRecChng(qf::core::sql::QxRecChng{
+		.table = table,
+		.id = id,
+		.record = {},
+		.op = qf::core::sql::RecOp::Delete,
+		.issuer = uuidString()
+	}, source);
+}
+
+void Application::emitQxRecChng(const core::sql::QxRecChng &recchng, QObject *source)
+{
+	emit qxRecChng(recchng, source);
+}
 
 Application *Application::instance(bool must_exist)
 {
 	auto *ret = qobject_cast<Application*>(Super::instance());
 	if(!ret && must_exist) {
-		qfFatal("qf::gui::framework::Application instance MUST exist.");
+		throw std::runtime_error("qf::gui::framework::Application instance MUST exist.");
 	}
 	return ret;
 }
@@ -55,59 +123,18 @@ QStringList Application::arguments()
 	return QCoreApplication::arguments();
 }
 
-QJsonDocument Application::profile()
+QUuid Application::uuid()
 {
-	if(!m_profileLoaded) {
-		m_profileLoaded = true;
-		const QStringList args = arguments();
-		for(int i=0; i<args.count(); i++) {
-			QString arg = args[i];
-			if(arg == QLatin1String("--profile")) {
-				QString profile_path = args.value(++i);
-				if(!profile_path.isEmpty()) {
-					if(!profile_path.contains('.'))
-						profile_path += ".profile";
-#ifdef Q_OS_UNIX
-					if(!profile_path.contains('/'))
-						profile_path = QCoreApplication::applicationDirPath() + '/' + profile_path;
-#endif
-#ifdef Q_OS_WIN
-					if(!profile_path.contains('\\'))
-						profile_path = QCoreApplication::applicationDirPath() + '/' + profile_path;
-#endif
-					QFile f(profile_path);
-					if(!f.open(QIODevice::ReadOnly)) {
-						qfError() << "Cannot open profile file" << f.fileName() << "for reading.";
-					}
-					else {
-						QByteArray ba = f.readAll();
-						QJsonParseError err;
-						m_profile = QJsonDocument::fromJson(ba, &err);
-						if(err.error != QJsonParseError::NoError) {
-							qfError() << "Error loading profile file" << f.fileName() << err.errorString();
-						}
-					}
-				}
-			}
-		}
-	}
-	return m_profile;
+	static auto uuid = QUuid::createUuid();
+	return uuid;
 }
-/*
-bool Application::loadStyleSheet(const QUrl &url)
+
+QString Application::uuidString()
 {
-	QString css_file_name = url.toLocalFile();
-	QFile f(css_file_name);
-	if(f.open(QFile::ReadOnly)) {
-		QByteArray ba = f.readAll();
-		QString ss = QString::fromUtf8(ba);
-		setStyleSheet(ss);
-		return true;
-	}
-	//qfWarning() << "Cannot open style sheet:" << css_file_name;
-	return false;
+	static auto s = uuid().toString(QUuid::WithoutBraces);
+	return s;
 }
-*/
+
 void Application::loadStyleSheet(const QString &file)
 {
 	QString css_file_name = file;
@@ -128,4 +155,3 @@ void Application::loadStyleSheet(const QString &file)
 		qfWarning() << "Cannot open style sheet:" << css_file_name;
 	}
 }
-

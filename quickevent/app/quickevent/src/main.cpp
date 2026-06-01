@@ -4,6 +4,8 @@
 #include "appclioptions.h"
 
 #include <plugins/Core/src/coreplugin.h>
+#include <plugins/Event/src/eventplugin.h>
+#include <plugins/Event/src/dbschema.h>
 
 #include <quickevent/core/si/siid.h>
 #include <quickevent/core/og/timems.h>
@@ -19,7 +21,6 @@
 namespace {
 NecroLog::MessageHandler old_message_handler;
 bool send_log_entry_recursion_lock = false;
-}
 
 void send_log_entry_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {
@@ -39,6 +40,7 @@ void send_log_entry_handler(NecroLog::Level level, const NecroLog::LogContext &c
 		send_log_entry_recursion_lock = false;
 	}
 	old_message_handler(level, context, msg);
+}
 }
 
 int main(int argc, char *argv[])
@@ -68,11 +70,6 @@ int main(int argc, char *argv[])
 	QApplication::setStyle("Fusion");
 #endif
 
-	//qfError() << "QFLog(ERROR) test OK.";// << QVariant::typeToName(QVariant::Int) << QVariant::typeToName(QVariant::String);
-	//qfWarning() << "QFLog(WARNING) test OK.";
-	//qfInfo() << "QFLog(INFO) test OK.";
-	//qfDebug() << "QFLog(DEBUG) test OK.";
-
 	qfInfo() << "========================================================";
 	qfInfo() << QDateTime::currentDateTime().toString(Qt::ISODate) << "starting" << QCoreApplication::applicationName() << "ver:" << QCoreApplication::applicationVersion();
 	qfInfo() << "Log tresholds:" << NecroLog::thresholdsLogInfo();
@@ -94,8 +91,13 @@ int main(int argc, char *argv[])
 			cli_opts.printHelp();
 		return EXIT_SUCCESS;
 	}
+	bool create_db_sql_script = false;
 	foreach(QString s, cli_opts.unusedArguments()) {
-		qDebug() << "Undefined argument:" << s;
+		if (s == "--create-db-sql-script") {
+			create_db_sql_script = true;
+		} else {
+			qfWarning() << "Undefined argument:" << s;
+		}
 	}
 
 	// Uncaught exception is intentional here
@@ -103,13 +105,12 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	qfInfo() << "Abort on exception:" << qf::core::Exception::isAbortOnException();
 	Application app(argc, argv, &cli_opts);
+
+	qfInfo() << "Abort on exception:" << qf::core::Exception::isAbortOnException();
 	qfInfo() << "Application file:" << QCoreApplication::applicationFilePath();
 	qfInfo() << "Application dir:" << QCoreApplication::applicationDirPath();
 	qfInfo() << "========================================================";
-
-	old_message_handler = NecroLog::setMessageHandler(send_log_entry_handler);
 
 	QString lc_name;
 	{
@@ -154,10 +155,53 @@ int main(int argc, char *argv[])
 	}
 
 	MainWindow main_window;
+
+	// does nothing before MainWindow is created
+	old_message_handler = NecroLog::setMessageHandler(send_log_entry_handler);
+
 	main_window.setUiLanguageName(lc_name);
 	main_window.loadPlugins();
+	if (create_db_sql_script) {
+		auto *event_plugin = qobject_cast<Event::EventPlugin*>(main_window.plugin("Event", qf::core::Exception::Throw));
+		for (const auto &driver_name : {"SQLITE", "PSQL"}) {
+			QString file_name = QStringLiteral("create_db_%1.sql").arg(QString(driver_name).toLower());
+			QFile f(file_name);
+			if (!f.open(QFile::WriteOnly)) {
+				qfError() << "Cannot open file:" << f.fileName() << "for writing";
+			} else {
+				QFileInfo fi(f);
+				qfInfo() << "Writing file:" << fi.canonicalFilePath();
+				QVariantMap create_options;
+				create_options["schemaName"] = "{{eventId}}";
+				create_options["driverName"] = driver_name;
+				auto lines = event_plugin->dbSchema()->createDbSqlScriptQml(create_options);
+				QVariantMap replacements;
+				replacements["minDbVersion"] = Event::EventPlugin::dbVersion();
+				for (auto line : lines) {
+					line = qf::core::Utils::replaceCaptions(line, replacements);
+					f.write(line.toUtf8());
+					f.write(";\n");
+				}
+			}
+		}
+		return EXIT_SUCCESS;
+	}
 	main_window.show();
 	emit main_window.applicationLaunched();
+
+	QObject::connect(&app, &Application::qxRecChng, &app, [](const qf::core::sql::QxRecChng &recchng) {
+		auto dump_map = [](const QVariantMap &m) {
+			QStringList rows;
+			for (const auto &[k, v] : m.asKeyValueRange()) {
+				rows << QStringLiteral("%1 -> %2").arg(k).arg(v.toString());
+			}
+			return rows.join('\n');
+		};
+		qfInfo() << "REC-CHNG table:" << recchng.table
+				 << "op:" << qf::core::sql::QxRecChng::recopToString(recchng.op)
+				 << "id:" << recchng.id
+				 << "record:" << dump_map(recchng.record);
+	});
 
 	int ret = Application::exec();
 

@@ -135,12 +135,13 @@ void DeviceDriver::processData(const QByteArray &data)
 		len += 3 + 3;
 		if(f_rxData.size() < len)
 			return;
-		auto etx = (uint8_t)f_rxData[len-1];
+		QByteArray data = f_rxData.mid(0, len);
+		f_rxData = f_rxData.mid(len);
+		auto etx = (uint8_t)data[data.size() - 1];
 		if(etx == NAK) {
 			emitDriverInfo(NecroLog::Level::Error, tr("NAK received"));
 		}
 		else if(etx == ETX) {
-			QByteArray data = f_rxData.mid(0, len);
 			auto cmd = (uint8_t)data[1];
 			if(cmd < 0x80) {
 				emitDriverInfo(NecroLog::Level::Error, tr("Legacy protocol is not supported, switch station to extended one."));
@@ -152,7 +153,6 @@ void DeviceDriver::processData(const QByteArray &data)
 		else {
 			qfWarning() << tr("Valid message shall end with ETX or NAK, throwing data away");
 		}
-		f_rxData = f_rxData.mid(len);
 	}
 }
 

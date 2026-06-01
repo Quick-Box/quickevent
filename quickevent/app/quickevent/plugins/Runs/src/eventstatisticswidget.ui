@@ -54,72 +54,123 @@
        <number>1</number>
       </property>
       <item>
-       <widget class="QToolButton" name="btPrintResultsNew">
-        <property name="toolTip">
-         <string>Print results for classes with new runners</string>
+       <widget class="QFrame" name="frmToolbar">
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <property name="icon">
-         <iconset resource="../Runs.qrc">
-          <normaloff>:/quickevent/Runs/images/print-new.svg</normaloff>:/quickevent/Runs/images/print-new.svg</iconset>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QToolButton" name="btPrintResultsNew">
+           <property name="toolTip">
+            <string>Print results for classes with new runners</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../Runs.qrc">
+             <normaloff>:/quickevent/Runs/images/print-new.svg</normaloff>:/quickevent/Runs/images/print-new.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btPrintResultsSelected">
+           <property name="toolTip">
+            <string>Print results in selected rows</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
+             <normaloff>:/qf/gui/images/flat/printer.svg</normaloff>:/qf/gui/images/flat/printer.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btClearNewInSelectedRows">
+           <property name="toolTip">
+            <string>Clear new results in selected rows</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
+             <normaloff>:/qf/gui/images/flat/delete.svg</normaloff>:/qf/gui/images/flat/delete.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btOptions">
+           <property name="toolTip">
+            <string>Options</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
+             <normaloff>:/qf/gui/images/flat/settings.svg</normaloff>:/qf/gui/images/flat/settings.svg</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="btPrintResultsSelected">
-        <property name="toolTip">
-         <string>Print results in selected rows</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
-          <normaloff>:/qf/gui/images/flat/printer.svg</normaloff>:/qf/gui/images/flat/printer.svg</iconset>
-        </property>
-        <property name="autoRaise">
+       <widget class="qf::gui::TableViewToolBar" name="tblStatsTB" native="true">
+        <property name="enabled">
          <bool>true</bool>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="btClearNewInSelectedRows">
-        <property name="toolTip">
-         <string>Clear new results in selected rows</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
-          <normaloff>:/qf/gui/images/flat/delete.svg</normaloff>:/qf/gui/images/flat/delete.svg</iconset>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="btReload">
-        <property name="toolTip">
-         <string>Reload table</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
-          <normaloff>:/qf/gui/images/flat/reload.svg</normaloff>:/qf/gui/images/flat/reload.svg</iconset>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="btOptions">
-        <property name="toolTip">
-         <string>Options</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
-          <normaloff>:/qf/gui/images/flat/settings.svg</normaloff>:/qf/gui/images/flat/settings.svg</iconset>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
+        <property name="minimumSize">
+         <size>
+          <width>10</width>
+          <height>0</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -156,6 +207,12 @@
    <class>qf::gui::TableView</class>
    <extends>QTableView</extends>
    <header location="global">qf/gui/tableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>qf::gui::TableViewToolBar</class>
+   <extends>QWidget</extends>
+   <header location="global">qf/gui/tableviewtoolbar.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

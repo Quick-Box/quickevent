@@ -874,42 +874,42 @@
 <context>
     <name>qf::gui::model::LogTableModel</name>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="49"/>
+        <location filename="src/model/logtablemodel.cpp" line="50"/>
         <source>Category</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="51"/>
+        <location filename="src/model/logtablemodel.cpp" line="52"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="53"/>
+        <location filename="src/model/logtablemodel.cpp" line="54"/>
         <source>Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="55"/>
+        <location filename="src/model/logtablemodel.cpp" line="56"/>
         <source>Severity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="57"/>
+        <location filename="src/model/logtablemodel.cpp" line="58"/>
         <source>Time stamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="59"/>
+        <location filename="src/model/logtablemodel.cpp" line="60"/>
         <source>Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="61"/>
+        <location filename="src/model/logtablemodel.cpp" line="62"/>
         <source>Function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="63"/>
+        <location filename="src/model/logtablemodel.cpp" line="64"/>
         <source>Data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1172,22 +1172,22 @@
         <translation type="unfinished">Exportovat data v HTML</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1043"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1045"/>
         <source>empty file name</source>
         <translation type="unfinished">prázdný název souboru</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1105"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1107"/>
         <source>Save as PDF</source>
         <translation type="unfinished">Uložit jako PDF</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1120"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1122"/>
         <source>Save as HTML</source>
         <translation type="unfinished">Uložit jako HTML</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1125"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1127"/>
         <source>Cannot open &apos;%1&apos; for write.</source>
         <translation type="unfinished">Nelze otevřít &apos;%1&apos; pro zápis.</translation>
     </message>

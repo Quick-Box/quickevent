@@ -68,7 +68,7 @@ public:
 	Q_PROPERTY(qf::gui::reports::style::Text* textStyle READ textStyle WRITE setTextStyle NOTIFY textStyleChanged)
 public:
 	ReportItemFrame(ReportItem *parent = nullptr);
-	~ReportItemFrame() Q_DECL_OVERRIDE;
+	~ReportItemFrame() override;
 public:
 	enum HAlignment { AlignLeft = Qt::AlignLeft,
 					  AlignRight = Qt::AlignRight,
@@ -160,10 +160,10 @@ public:
 	}
 	Layout orthogonalLayout() const {return orthogonalLayout(layout());}
 protected:
-	ChildSize childSize(Layout parent_layout) Q_DECL_OVERRIDE;
-	ReportItemFrame* toFrame() Q_DECL_OVERRIDE {return this;}
+	ChildSize childSize(Layout parent_layout) override;
+	ReportItemFrame* toFrame() override {return this;}
 
-	virtual PrintResult printMetaPaintChildren(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect);
+	virtual PrintResult printMetaPaintChildren(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect);
 	Layout parentLayout() const
 	{
 		ReportItemFrame *frm = parentFrame();
@@ -174,18 +174,18 @@ protected:
 
 	void initDesignedRect();
 
-	void componentComplete() Q_DECL_OVERRIDE;
+	void componentComplete() override;
 public:
-	PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
-	PrintResult printHtml(HTMLElement &out) Q_DECL_OVERRIDE;
+	PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
+	PrintResult printHtml(HTMLElement &out) override;
 
 	//! Nastavi u sebe a u deti indexToPrint na nulu, aby se vytiskly na dalsi strance znovu.
-	void resetIndexToPrintRecursively(bool including_para_texts) Q_DECL_OVERRIDE;
+	void resetIndexToPrintRecursively(bool including_para_texts) override;
 
 	Q_INVOKABLE void insertItem(int ix, QObject *item_object);
 	Q_INVOKABLE void addItem(QObject *item_object);
 
-	QString toString(int indent = 2, int indent_offset = 0) Q_DECL_OVERRIDE;
+	QString toString(int indent = 2, int indent_offset = 0) override;
 private:
 #if QT_VERSION_MAJOR < 6
 	using WidgetIndexType = int;

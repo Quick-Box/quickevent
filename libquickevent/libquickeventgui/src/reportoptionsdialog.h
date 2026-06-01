@@ -107,6 +107,7 @@ public:
 	Q_SLOT void savePersistentSettings();
 	Q_SLOT void resetPersistentSettings();
 
+	void setCurrentStageId(int stageId);
 	void setClassNamesFilter(const QStringList &class_names);
 
 	int stagesCount() const;

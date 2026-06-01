@@ -1289,7 +1289,13 @@ void TableView::loadPersistentSettings()
 		header_state = QByteArray::fromBase64(header_state);
 		//qfInfo() << path << "Restoring horizontal header state. State is empty:" << header_state.isEmpty();
 		if(!header_state.isEmpty()) {
-			horiz_header->restoreState(header_state);
+			int saved_count = settings.value("horizontalheadercount", -1).toInt();
+			if(saved_count != -1 && saved_count != horiz_header->count()) {
+				qfInfo() << path << "Skipping horizontal header state restore: saved column count" << saved_count
+						 << "does not match current count" << horiz_header->count();
+			} else {
+				horiz_header->restoreState(header_state);
+			}
 		}
 	}
 }
@@ -1306,6 +1312,7 @@ void TableView::savePersistentSettings()
 
 		QByteArray header_state = horiz_header->saveState();
 		settings.setValue("horizontalheader", QString::fromLatin1(header_state.toBase64()));
+		settings.setValue("horizontalheadercount", horiz_header->count());
 	}
 }
 

@@ -97,7 +97,7 @@ QVariant ReportItemBand::data(const QString &field_name, int role)
 	return ret;
 }
 
-ReportItem::PrintResult ReportItemBand::printMetaPaint(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItem::PrintResult ReportItemBand::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	qfLogFuncFrame() << this;
 	if(isCreateFromData() && !detail()) {
@@ -114,7 +114,7 @@ ReportItem::PrintResult ReportItemBand::printMetaPaint(ReportItemMetaPaint *out,
 	PrintResult res = PrintResult::createPrintFinished();
 	qfDebug() << "model:" << m << "row count:" << m->rowCount();
 	if(m->rowCount() > 0) {
-		res = Super::printMetaPaint(out, bounding_rect);
+		res = Super::printMetaPaint(paint_device, out, bounding_rect);
 	}
 	qfDebug() << "\tRETURN:" << res.toString();
 	return res;

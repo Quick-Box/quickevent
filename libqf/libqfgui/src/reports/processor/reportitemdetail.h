@@ -21,7 +21,7 @@ public:
 	ReportItemDetail(ReportItem *parent = nullptr);
 	~ReportItemDetail() Q_DECL_OVERRIDE;
 public:
-	PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
+	PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
 	PrintResult printHtml(HTMLElement &out) Q_DECL_OVERRIDE;
 
 	void resetCurrentIndex();

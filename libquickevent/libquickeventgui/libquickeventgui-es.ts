@@ -77,7 +77,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="407"/>
         <source>Start list is sorted first by</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Listado de salida está ordenado primero por</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="413"/>
@@ -92,7 +92,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="426"/>
         <source>Start times</source>
-        <translation type="unfinished"></translation>
+        <translation>Horas de salida</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="433"/>
@@ -122,7 +122,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="539"/>
         <source>Relay options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opciones de relevos</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="545"/>
@@ -182,7 +182,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="41"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Resetear</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="97"/>

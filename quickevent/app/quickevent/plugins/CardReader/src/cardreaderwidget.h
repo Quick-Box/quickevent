@@ -17,13 +17,13 @@ namespace Ui {
 }
 
 namespace quickevent::gui::og { class SqlTableModel; }
+namespace qf::core::sql { struct QxRecChng; }
 
-namespace qf {
-namespace gui {
+namespace qf::gui {
 class Action;
 namespace framework { class PartWidget; class Plugin; }
 }
-}
+
 
 namespace siut { class DeviceDriver; class CommPort; class SICard; class SIPunch; }
 
@@ -67,8 +67,9 @@ public:
 	Q_SLOT void reset();
 	Q_SLOT void reload();
 
+private:
+        void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
-private slots:
 	void appendLog(NecroLog::Level level, const QString &msg);
 	void processDriverInfo(NecroLog::Level level, const QString &msg);
 	void logDriverRawData(const QByteArray &data);
@@ -106,6 +107,7 @@ private:
 	CardReaderSettings::ReaderMode currentReaderMode() const;
 
 	void onTestButtonClicked();
+	void onTestButtonClicked2();
 private:
 	Ui::CardReaderWidget *ui;
 	qf::gui::Action *m_actAssignCard = nullptr;

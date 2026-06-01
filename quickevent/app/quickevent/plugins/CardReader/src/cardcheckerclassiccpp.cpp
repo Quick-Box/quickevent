@@ -101,22 +101,24 @@ quickevent::core::si::CheckedCard CardCheckerClassicCpp::checkCard(const quickev
 		}
 	}
 
+	QVariantList missing_codes;
 	int read_punch_check_ix = 0;
 	for(int j=0; j<course_codes.length(); j++) {
 		quickevent::core::CodeDef course_code(course_codes[j].toMap());
 		quickevent::core::si::CheckedPunch checked_punch = quickevent::core::si::CheckedPunch::fromCodeDef(course_code);
 		//checked_punch.setCode(course_code.value(QStringLiteral("code")).toInt());
+		int code = course_code.value(QStringLiteral("code")).toInt();
+		int alt_code = course_code.value(QStringLiteral("altcode")).toInt();
 		int k;
 		for(k=read_punch_check_ix; k<read_punches.length(); k++) { //scan card
 			const quickevent::core::si::ReadPunch &read_punch = read_punches[k];
-			int code = course_code.value(QStringLiteral("code")).toInt();
-			int alt_code = course_code.value(QStringLiteral("altcode")).toInt();
 			qfDebug() << j << k << "looking for:" << checked_punch.code() << "on card:" << read_punch.code() << "vs. code:" << code << "alt:" << alt_code;
 			//console.info("code:", JSON.stringify(course_code, null, 2));
 			if(read_punch.code() == code || read_punch.code() == alt_code) {
 				int read_punch_time_ms = read_punch.time() * 1000;
-				if(read_punch.msec())
+				if(read_punch.msec()) {
 					read_punch_time_ms += read_punch.msec();
+				}
 				checked_punch.setStpTimeMs(msecIntervalAM(checked_card.stageStartTimeMs() + checked_card.startTimeMs(), read_punch_time_ms));
 				qfDebug() << j << "OK";
 				break;
@@ -126,8 +128,10 @@ quickevent::core::si::CheckedCard CardCheckerClassicCpp::checkCard(const quickev
 			// code not found
 			qfDebug() << j << "NOT FOUND";
 			bool code_ooo = course_code.value(QStringLiteral("outoforder")).toBool();
-			if(!code_ooo) // for postgres, Query.values() should return lower case keys
+			if(!code_ooo) {// for postgres, Query.values() should return lower case keys
 				error_mis_punch = true;
+				missing_codes.insert(missing_codes.size(), QVariantList{ j+1, code });
+			}
 		}
 		else {
 			read_punch_check_ix = k + 1;
@@ -135,6 +139,7 @@ quickevent::core::si::CheckedCard CardCheckerClassicCpp::checkCard(const quickev
 		checked_punches << checked_punch;
 	}
 	checked_card.setMisPunch(error_mis_punch);
+	checked_card.setMissingCodes(missing_codes);
 
 	quickevent::core::si::CheckedPunch finish_punch;
 	if(!finish_code.isEmpty())
@@ -156,8 +161,9 @@ quickevent::core::si::CheckedCard CardCheckerClassicCpp::checkCard(const quickev
 	}
 	{
 		QVariantList lst;
-		for(const quickevent::core::si::CheckedPunch &p : checked_punches)
+		for(const quickevent::core::si::CheckedPunch &p : checked_punches) {
 			lst << p;
+		}
 		checked_card.setPunches(lst);
 	}
 	qfDebug() << "check result:" << checked_card.toString();

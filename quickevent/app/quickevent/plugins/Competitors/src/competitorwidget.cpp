@@ -446,20 +446,20 @@ QList<int> CompetitorWidget::possibleStartTimesMs(int run_id)
 		if (lo == up || stime == start_time) {
 			// stime does not exist or it is my current start_time, should be inserted before up
 			// check next club
-			qfInfo() << "free stime:" << quickevent::core::og::TimeMs(stime).toString();
+			// qfInfo() << "free stime:" << quickevent::core::og::TimeMs(stime).toString();
 			if (up != runs.end()) {
 				qfInfo() << "next club:" << up->club;
 				if (up->club == club_abbr && (up->start_time - stime) <= start_interval_ms) {
-					qfInfo() << "same next club:" << club_abbr;
+					// qfInfo() << "same next club:" << club_abbr;
 					continue;
 				}
 			}
 			// check prev club
 			if (up != runs.begin()) {
 				up--;
-				qfInfo() << "prev club:" << up->club;
+				// qfInfo() << "prev club:" << up->club;
 				if (up->club == club_abbr && (stime - up->start_time) <= start_interval_ms) {
-					qfInfo() << "same prev club:" << club_abbr;
+					// qfInfo() << "same prev club:" << club_abbr;
 					continue;
 				}
 			}
@@ -468,19 +468,6 @@ QList<int> CompetitorWidget::possibleStartTimesMs(int run_id)
 	}
 	return ret;
 }
-
-// void CompetitorWidget::showRunsTable(int stage_id)
-// {
-// 	if(!saveData())
-// 		return;
-
-// 	qf::gui::model::DataDocument*doc = dataController()->document();
-// 	int competitor_id = doc->value("competitors.id").toInt();
-// 	int class_id = ui->cbxClass->currentData().toInt();
-// 	QString sort_col = QStringLiteral("runs.startTimeMs");
-// 	getPlugin<RunsPlugin>()->showRunsTable(stage_id, class_id, false, sort_col, competitor_id);
-// 	loadRunsTable();
-// }
 
 void CompetitorWidget::onRegistrationSelected(const QVariantMap &values)
 {

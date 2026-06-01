@@ -62,10 +62,11 @@ jobs:
           -qmldir='${{ github.workspace }}/quickevent/app/quickevent/plugins' \
           -always-overwrite
 
-      - name: Fix qsqlmon Qt framework paths
+      - name: Fix bundle linking
         run: |
-          chmod +x '${{ github.workspace }}/tools/macos-fix-qsqlmon.sh'
-          '${{ github.workspace }}/tools/macos-fix-qsqlmon.sh' '${{ github.workspace }}/install/quickevent.app'
+          chmod +x '${{ github.workspace }}/tools/macos-bundle-fix.sh'
+          '${{ github.workspace }}/tools/macos-bundle-fix.sh' \
+            '${{ github.workspace }}/install/quickevent.app'
 
       - name: Code sign the app
         run: |

@@ -649,7 +649,7 @@ void SiTaskReadCard8::onSiMessageReceived(const SIMessageData &msg)
 			int station_number = (int)SIPunch::getUnsigned(data, base - 3);
 			int card_number = (int)SIPunch::getUnsigned(data, base + 0x19, 3);
 			m_cardSerie = static_cast<CardSerie>(((uint8_t)data[base + 0x18]) & 15);
-			qfInfo() << "CS:" << m_cardSerie;
+			// qfInfo() << "CS:" << m_cardSerie;
 			logCardRead() << "CS:" << m_cardSerie << cardSerieToString(m_cardSerie) << "SI:" << card_number;
 			m_card.setStationNumber(station_number);
 			m_card.setCardNumber(card_number);

@@ -54,7 +54,7 @@ private:
 
 	void updateCardToRunAssignmentInPunches(int stage_id, int card_id, int run_id);
 	bool saveCardAssignedRunnerIdSql(int card_id, int run_id);
-	void updateCheckedCardValuesSql(const quickevent::core::si::CheckedCard &checked_card) noexcept(false);
+        void updateCheckedCardValuesSql(int card_id, const quickevent::core::si::CheckedCard &checked_card) ;
 	void setStartTime(int relay_id, int leg, int start_time);
 private:
 	QList<CardChecker*> m_cardCheckers;

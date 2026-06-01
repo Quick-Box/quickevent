@@ -382,7 +382,7 @@ ReportViewWidget::~ReportViewWidget()
 ReportProcessor * ReportViewWidget::reportProcessor()
 {
 	if(m_reportProcessor == nullptr) {
-		setReportProcessor(new ReportProcessor(m_painterWidget, this));
+		setReportProcessor(new ReportProcessor(this));
 	}
 	return m_reportProcessor;
 }
@@ -699,7 +699,9 @@ void ReportViewWidget::onPageProcessed()
 	}
 	refreshWidget();
 	//setCurrentPageNo(0);
-	QTimer::singleShot(10, reportProcessor(), &ReportProcessor::processSinglePage); /// 10 je kompromis mezi rychlosti prekladu a sviznosti GUI
+	QTimer::singleShot(10, this, [this]() {
+		reportProcessor()->process(m_painterWidget, ReportProcessor::SinglePage);
+	}); /// 10 je kompromis mezi rychlosti prekladu a sviznosti GUI
 }
 
 ReportItemMetaPaintReport* ReportViewWidget::document(bool throw_exc)
@@ -874,7 +876,7 @@ void ReportViewWidget::processReport()
 {
 	qfLogFuncFrame();
 	if(!reportProcessor()->processorOutput()) {
-		reportProcessor()->process(ReportProcessor::FirstPage);
+		reportProcessor()->process(m_painterWidget, ReportProcessor::FirstPage);
 	}
 	setCurrentPageNo(0);
 	setScale(1);
@@ -1127,7 +1129,9 @@ void ReportViewWidget::file_export_html()
 		}
 		QTextStream out(&f);
 #if QT_VERSION_MAJOR >= 6
-		out.setEncoding(QStringConverter::encodingForName("UTF-8").value());
+		if (auto enc = QStringConverter::encodingForName("UTF-8"); enc.has_value()) {
+			out.setEncoding(enc.value());
+		}
 #else
 		out.setCodec("UTF-8");
 #endif

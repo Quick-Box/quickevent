@@ -222,7 +222,7 @@ ReportItem::ChildSize ReportItemFrame::childSize(Layout parent_layout)
 	return ChildSize(designedRect.height(), designedRect.verticalUnit);
 }
 
-ReportItem::PrintResult ReportItemFrame::printMetaPaintChildren(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItem::PrintResult ReportItemFrame::printMetaPaintChildren(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	qfLogFuncFrame();// << element.tagName() << "id:" << element.attribute("id") << "itemCount:" << itemsToPrintCount() << "indexToPrint:" << indexToPrint;
 	qfDebug() << "\tbounding_rect:" << bounding_rect.toString();
@@ -239,7 +239,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaintChildren(ReportItemMetaPa
 			Rect children_paint_area_rect = paint_area_rect;
 			ChildSize sz = it->childSize(LayoutVertical);
 			children_paint_area_rect.setHeight(sz.fromParentSize(paint_area_rect.height()));
-			PrintResult ch_res = it->printMetaPaint(out, children_paint_area_rect);
+			PrintResult ch_res = it->printMetaPaint(paint_device, out, children_paint_area_rect);
 			if(!ch_res.isPrintFinished()) {
 				if(res.isPrintFinished()) {
 					/// only one child can be printed again
@@ -304,7 +304,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaintChildren(ReportItemMetaPa
 				}
 				//qfInfo() << "\t tisknu fixed:" << it->designedRect.toString();
 				int prev_children_cnt = out->childrenCount();
-				PrintResult ch_res = it->printMetaPaint(out, ch_bbr);
+				PrintResult ch_res = it->printMetaPaint(paint_device, out, ch_bbr);
 				if(out->children().count() > prev_children_cnt) {
 					//qfInfo() << "rubber fixed:" << i << "->" << prev_children_cnt;
 					layout_ix_to_print_ix[i] = prev_children_cnt;
@@ -380,7 +380,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaintChildren(ReportItemMetaPa
 							//qfInfo() << it << "tisknu percent" << it->designedRect.toString();
 							//qfInfo() << "chbr" << ch_bbr.toString();
 							int prev_children_cnt = out->childrenCount();
-							PrintResult ch_res = it->printMetaPaint(out, ch_bbr);
+							PrintResult ch_res = it->printMetaPaint(paint_device, out, ch_bbr);
 							if(out->children().count() > prev_children_cnt) {
 								//qfInfo() << "percent:" << i << "->" << prev_children_cnt;
 								layout_ix_to_print_ix[i] = prev_children_cnt;
@@ -511,7 +511,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaintChildren(ReportItemMetaPa
 			}
 			qfDebug() << "\tch_bbr v2:" << children_paint_area_rect.toString();
 			int prev_children_cnt = out->childrenCount();
-			PrintResult ch_res = child_item_to_print->printMetaPaint(out, children_paint_area_rect);
+			PrintResult ch_res = child_item_to_print->printMetaPaint(paint_device, out, children_paint_area_rect);
 			if(ch_res.isPrintFinished()) {
 				/// muze se stat, ze se dite nevytiskne, napriklad band nema zadna data
 				if(out->children().count() > prev_children_cnt) {
@@ -540,7 +540,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaintChildren(ReportItemMetaPa
 	return res;
 }
 
-ReportItem::PrintResult ReportItemFrame::printMetaPaint(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItem::PrintResult ReportItemFrame::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	qfLogFuncFrame() << this;
 	qfDebug() << "\tbounding_rect:" << bounding_rect.toString();
@@ -584,7 +584,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaint(ReportItemMetaPaint *out
 		//	qfInfo() << current_column_index << "column bounding rect:" << column_br.toString();
 		//}
 
-		res = printMetaPaintChildren(metapaint_frame, column_br);
+		res = printMetaPaintChildren(paint_device, metapaint_frame, column_br);
 
 		if(res.isPrintAgain()) {
 			if(res.isPageBreak()) {
@@ -614,7 +614,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaint(ReportItemMetaPaint *out
 								continue;
 							}
 															qfWarning() << "Index to print == 0: Internal error!";
-						
+
 						}
 						break;
 					}

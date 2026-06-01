@@ -33,7 +33,7 @@ public:
 		Q_UNUSED(parent_layout);
 		return ChildSize(0, Rect::UnitInvalid);
 	}
-	virtual PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect);
+	virtual PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect);
 private:
 	bool m_breaking = false;
 	bool m_skipFirst = false; // skip first page break

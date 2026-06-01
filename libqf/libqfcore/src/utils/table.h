@@ -7,7 +7,7 @@
 
 #include <QString>
 #include <QVariantMap>
-#include <QVector>
+#include <QList>
 #include <QBitArray>
 
 class QDomElement;
@@ -107,7 +107,7 @@ public:
 		qf::core::Collator sortCollator;
 	};
 protected:
-	typedef QVector<int> RowIndexList;
+	typedef QList<int> RowIndexList;
 public:
 	class QFCORE_DECL_EXPORT Field
 	{
@@ -333,8 +333,8 @@ private:
 	{
 		friend class TableRow;
 	public:
-		QVector<QVariant> values;
-		QVector<QVariant> origValues;
+		QList<QVariant> values;
+		QList<QVariant> origValues;
 		QBitArray dirtyFlags; ///< jsou situace, kdy je treba oznacit field jako dirty a pritom origValue a value jsou stejne
 		Table::TableProperties tableProperties;
 		struct Flags {
@@ -365,8 +365,8 @@ public:
 	QVariant value(int col) const;
 	QVariant value(const QString &field_name) const;
 
-	//QVector<QVariant>& valuesRef() {return d->values;}
-	const QVector<QVariant>& values() const {return d->values;}
+	//QList<QVariant>& valuesRef() {return d->values;}
+	const QList<QVariant>& values() const {return d->values;}
 	QVariantMap valuesMap(bool full_names = false) const;
 	QVariantMap dirtyValuesMap() const;
 

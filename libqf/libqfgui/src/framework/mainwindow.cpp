@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "application.h"
-#include "dockwidget.h"
 #include "partwidget.h"
 #include "stackedcentralwidget.h"
 #include "plugin.h"
@@ -23,6 +22,7 @@
 #include <QNetworkReply>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDockWidget>
 
 using namespace qf::gui::framework;
 

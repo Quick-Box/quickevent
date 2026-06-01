@@ -36,7 +36,7 @@ public:
 	{
 		Super::resetIndexToPrintRecursively(including_para_texts);
 	}
-	PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
+	PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
 
 	ReportProcessor* reportProcessor() {return m_reportProcessor;}
 	void setReportProcessor(ReportProcessor *p) {m_reportProcessor = p;}
@@ -58,7 +58,7 @@ public:
 		: Super(parent) {}
 	virtual ~ReportItemBody() {}
 
-	//virtual PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect);
+	//virtual PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect);
 };
 #endif
 }}}

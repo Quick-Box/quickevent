@@ -5,6 +5,7 @@
 #include <qf/core/assert.h>
 #include <qf/core/utils.h>
 #include <qf/core/utils/treetable.h>
+#include <qf/core/sql/qxrecchng.h>
 
 #include <QTime>
 #include <QTimeZone>
@@ -450,7 +451,7 @@ bool TableModel::setValue(int row, int column, const QVariant &val)
 	//QVariant v = val;
 	//if(isNullReportedAsString() && v.toString() == qfc::Utils::nullValueString())
 	//	v = QVariant();
-	qfu::TableRow &r = m_table.rowRef(row);
+	auto &r = m_table.rowRef(row);
 	r.setValue(table_field_index, val);
 	ret = true;
 
@@ -481,7 +482,7 @@ void TableModel::restoreOrigValue(int row, int column)
 	//QVariant v = val;
 	//if(isNullReportedAsString() && v.toString() == qfc::Utils::nullValueString())
 	//	v = QVariant();
-	qfu::TableRow &r = m_table.rowRef(row);
+	auto &r = m_table.rowRef(row);
 	r.restoreOrigValue(table_field_index);
 }
 
@@ -653,9 +654,65 @@ int TableModel::columnType(int column_index) const
 	return ret;
 }
 
+std::optional<int> TableModel::columnIndexOfTableField(const QString &field_name) const
+{
+	if (auto fld_ix = m_table.fields().fieldIndex(field_name); fld_ix >= 0) {
+		for (int i = 0; i < m_columns.size(); ++i) {
+			const auto &cd = m_columns[i];
+			if (cd.fieldIndex() == fld_ix) {
+				return i;
+			}
+		}
+	}
+	return {};
+}
+
 QColor TableModel::contrastTextColor(const QColor &background_color)
 {
 	return (qGray(background_color.rgb()) < 128)? QColor(Qt::white) : QColor(Qt::black);
+}
+
+void TableModel::handleQxRecChng(const core::sql::QxRecChng &recchng, QObject *source)
+{
+	// qfInfo() << __FUNCTION__ << source;
+	if (source == this) {
+		return;
+	}
+	auto find_row_by_id = [this](const QString &table_name, int id) {
+		if (auto fld_ix = table().fields().fieldIndex(table_name + ".id"); fld_ix >= 0) {
+			for (int i = 0; i < rowCount(); ++i) {
+				if (table().row(i).value(fld_ix).toInt() == id) {
+					return i;
+				}
+			}
+		} else {
+			qfWarning() << "cannot find table column:" << (table_name + ".id");
+		}
+		return -1;
+	};
+	if (recchng.op == qf::core::sql::RecOp::Update) {
+		if (int row = find_row_by_id(recchng.table, recchng.id); row >= 0) {
+			for (const auto &[k, v] : recchng.record.asKeyValueRange()) {
+				if (auto col_ix = columnIndexOfTableField(recchng.table + '.' + k); col_ix.has_value()) {
+					// Q_ASSERT(0 <= row && row < m_table.rowCount());
+					const auto &cd = columnDefinition(col_ix.value());
+					Q_ASSERT(cd.fieldIndex() >= 0);
+					auto &r = m_table.rowRef(row);
+					if (!r.isDirty(cd.fieldIndex())) {
+						// do not update current edits
+						qfMessage() << "updating orig value, row:" << row << (recchng.table + '.' + k) << "-->" << v;
+						r.setBareBoneValue(cd.fieldIndex(), v);
+						auto ix = index(row, col_ix.value());
+						emit dataChanged(ix, ix);
+					}
+				} else {
+					// calculated column
+					qfInfo() << "reloading calculated field, row:" << row << (recchng.table + '.' + k) << "-->" << v;
+					reloadRow(row);
+				}
+			}
+		}
+	}
 }
 
 QVariant TableModel::rawValueToEdit(int column_index, const QVariant &val) const
@@ -673,7 +730,7 @@ QVariant TableModel::editValueToRaw(int column_index, const QVariant &val) const
 int TableModel::columnIndex(const QString &column_name) const
 {
 	int ret = -1, i = 0;
-	Q_FOREACH(auto cd, m_columns) {
+	for (const auto &cd : m_columns) {
 		//qfInfo() << cd.fieldName() << "vs." << column_name;
 		if(qfc::Utils::fieldNameEndsWith(cd.fieldName(), column_name)) {
 			ret = i;
@@ -683,8 +740,9 @@ int TableModel::columnIndex(const QString &column_name) const
 	}
 	if(ret < 0) {
 		QStringList sl;
-		Q_FOREACH(const ColumnDefinition &cd, m_columns)
+		for (const auto &cd : m_columns) {
 			sl << cd.fieldName();
+		}
 		QString s = sl.join(", ");
 		QString msg = tr("Column named '%1' not found in column list. Existing columns: [%2]").arg(column_name).arg(s);
 		qfError() << msg;
@@ -694,13 +752,12 @@ int TableModel::columnIndex(const QString &column_name) const
 
 int TableModel::tableFieldIndex(int column_index) const
 {
-	int ret = -1;
 	ColumnDefinition cd = m_columns.value(column_index);
-	QF_ASSERT(!cd.isNull(),
-			  tr("Invalid column index: %1").arg(column_index),
-			  return ret);
-	ret = cd.fieldIndex();
-	return ret;
+	if (cd.isNull()) {
+			  qfWarning() << "Invalid column index:" << column_index;
+			  return -1;
+	}
+	return cd.fieldIndex();
 }
 
 qf::core::utils::Table::Field TableModel::tableField(int column_index) const

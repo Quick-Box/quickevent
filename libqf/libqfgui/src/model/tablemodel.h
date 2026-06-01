@@ -7,6 +7,8 @@
 
 #include <QAbstractTableModel>
 
+namespace qf::core::sql { struct QxRecChng; }
+
 namespace qf {
 namespace gui {
 
@@ -113,7 +115,7 @@ public:
 
 		bool matchesSqlId(const QString column_name) const;
 	};
-	typedef QVector<ColumnDefinition> ColumnList;
+	typedef QList<ColumnDefinition> ColumnList;
 
 public:
 	void clearRows();
@@ -200,11 +202,14 @@ public:
 	ColumnDefinition columnDefinition(int ix) const;
 	int columnIndex(const QString &column_name) const;
 	int columnType(int column_index) const;
+	std::optional<int> columnIndexOfTableField(const QString &field_name) const;
 
 	int tableFieldIndex(int column_index) const;
 	qf::core::utils::Table::Field tableField(int column_index) const;
 
 	static QColor contrastTextColor(const QColor &background_color);
+
+	void handleQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 protected:
 	virtual void checkColumns();
 	void createColumnsFromTableFields();

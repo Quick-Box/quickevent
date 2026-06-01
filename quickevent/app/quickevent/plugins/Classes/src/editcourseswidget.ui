@@ -58,6 +58,13 @@
         <widget class="qf::gui::TableViewToolBar" name="tblCoursesTB" native="true"/>
        </item>
        <item>
+        <widget class="QCheckBox" name="cbRunnersCount">
+         <property name="text">
+          <string>Show runners count</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="qf::gui::TableView" name="tblCourses"/>
        </item>
       </layout>

@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/quickevent/Event">
-    	<file>qml/DbSchema.qml</file>
+        <file>sql/create_db_sqlite.sql</file>
+        <file>sql/create_db_psql.sql</file>
+
+        <file>qml/DbSchema.qml</file>
         <file>qml/sql/def/private/FieldType.qml</file>
         <file>qml/sql/def/private/libsqldef.js</file>
         <file>qml/sql/def/Boolean.qml</file>

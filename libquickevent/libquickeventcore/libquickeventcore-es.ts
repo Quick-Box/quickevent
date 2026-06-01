@@ -31,7 +31,7 @@
         <location filename="src/runstatus.cpp" line="129"/>
         <source>OVRT</source>
         <comment>Over Time</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">FT</translation>
     </message>
     <message>
         <location filename="src/runstatus.cpp" line="119"/>
@@ -111,7 +111,7 @@
     <message>
         <location filename="src/exporters/stageresultshtmlexporter.cpp" line="66"/>
         <source>Registration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Registro</translation>
     </message>
     <message>
         <location filename="src/exporters/stageresultshtmlexporter.cpp" line="67"/>
@@ -164,7 +164,7 @@
     <message>
         <location filename="src/exporters/stagestartlisthtmlexporter.cpp" line="65"/>
         <source>Registration</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Registro</translation>
     </message>
     <message>
         <location filename="src/exporters/stagestartlisthtmlexporter.cpp" line="66"/>

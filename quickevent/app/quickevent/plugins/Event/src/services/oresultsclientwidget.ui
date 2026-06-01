@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>337</width>
+    <width>480</width>
     <height>350</height>
    </rect>
   </property>
@@ -53,7 +53,32 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="edApiKey"/>
+      <layout class="QHBoxLayout">
+       <item>
+        <widget class="QLineEdit" name="edApiKey"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btTestApiKey">
+         <property name="text">
+          <string>Test connection</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_event">
+       <property name="text">
+        <string>Event</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="lblApiKeyStatus">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -114,6 +139,7 @@ In case of unexpected errors, contact support@oresults.eu</string>
  <tabstops>
   <tabstop>edExportInterval</tabstop>
   <tabstop>edApiKey</tabstop>
+  <tabstop>btTestApiKey</tabstop>
   <tabstop>btExportStartListXml30</tabstop>
   <tabstop>btExportResultsXml30</tabstop>
  </tabstops>

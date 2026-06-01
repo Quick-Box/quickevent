@@ -42,20 +42,7 @@ ReportOptionsDialog::ReportOptionsDialog(QWidget *parent)
 	ui->grpRelayOptions->setVisible(false);
 	ui->btRegExp->setEnabled(QSqlDatabase::database().driverName().endsWith(QLatin1String("PSQL"), Qt::CaseInsensitive));
 
-	{
-		// fill start numbers from courses
-		// TODO: will work for single stage events only
-		ui->cbxStartNumber->addItem(QString("All"), 0);
-		QString query_str = "SELECT code FROM codes ORDER BY id";
-		qf::core::sql::Query q;
-		q.exec(query_str, qf::core::Exception::Throw);
-		while (q.next()) {
-			auto code = q.value(0).toInt();
-			if(auto n = core::CodeDef::codeToStartNumber(code); n.has_value()) {
-				ui->cbxStartNumber->addItem(QString("Start %1").arg(n.value()), n.value());
-			}
-		}
-	}
+	setCurrentStageId(0);
 	connect(ui->btSaveAsDefault, &QPushButton::clicked, this, [this]() {
 		savePersistentSettings();
 	});
@@ -387,6 +374,29 @@ void ReportOptionsDialog::setStartListForRelays()
 	ui->chkStartOpts_PrintStartNumbers->setVisible(false);
 	ui->lblStartNumber->setVisible(false);
 	ui->cbxStartNumber->setVisible(false);
+}
+
+void ReportOptionsDialog::setCurrentStageId(int stageId)
+{
+	ui->cbxStartNumber->clear();
+	ui->cbxStartNumber->addItem(QString("All"), 0);
+	QString query_str;
+	if (stageId > 0) {
+		query_str = QString("SELECT DISTINCT codes.code FROM codes, coursecodes, classdefs"
+							" WHERE coursecodes.codeId = codes.id AND classdefs.courseId = coursecodes.courseId"
+							" AND classdefs.stageId = %1"
+							" ORDER BY codes.code").arg(stageId);
+	} else {
+		query_str = QStringLiteral("SELECT code FROM codes ORDER BY id");
+	}
+	qf::core::sql::Query q;
+	q.exec(query_str, qf::core::Exception::Throw);
+	while (q.next()) {
+		auto code = q.value(0).toInt();
+		if(auto n = core::CodeDef::codeToStartNumber(code); n.has_value()) {
+			ui->cbxStartNumber->addItem(QString("Start %1").arg(n.value()), n.value());
+		}
+	}
 }
 
 

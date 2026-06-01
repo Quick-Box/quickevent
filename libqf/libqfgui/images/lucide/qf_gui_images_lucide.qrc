@@ -12,9 +12,9 @@
 		<file alias="find.svg">search.svg</file>
 		<file alias="sort-asc.svg">arrow-down-a-z.svg</file>
 		<file alias="sort-desc.svg">arrow-down-z-a.svg</file>
-		<file alias="insert-row.svg">copy.svg</file>
+		<file alias="insert-row.svg">square-plus.svg</file>
 		<file alias="clone-row.svg">copy-plus.svg</file>
-		<file alias="delete-row.svg">copy-minus.svg</file>
+		<file alias="delete-row.svg">square-minus.svg</file>
 		<file>copy.svg</file>
 		<file alias="cut.svg">scissors.svg</file>
 		<file alias="paste.svg">clipboard-paste.svg</file>

@@ -8,7 +8,9 @@
 
 #include <qf/gui/log.h>
 #include <qf/gui/framework/mainwindow.h>
+#include <qf/gui/framework/application.h>
 
+#include <qf/core/sql/qxrecchng.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/transaction.h>
@@ -50,6 +52,7 @@ RunsTableModel::RunsTableModel(QObject *parent)
 	setColumn(col_competitors_note, ColumnDefinition("competitors.note", tr("Note")));
 
 	connect(this, &RunsTableModel::dataChanged, this, &RunsTableModel::onDataChanged, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
 }
 
 Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const
@@ -339,6 +342,11 @@ void RunsTableModel::onDataChanged(const QModelIndex &top_left, const QModelInde
 	Q_UNUSED(roles)
 	if(top_left.column() <= RunsTableModel::col_runs_siId && bottom_right.column() >= RunsTableModel::col_runs_siId)
 		emit runnerSiIdEdited();
+}
+
+void RunsTableModel::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
+{
+	handleQxRecChng(recchng, source);
 }
 
 bool RunsTableModel::postRow(int row_no, bool throw_exc)

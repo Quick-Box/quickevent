@@ -28,13 +28,13 @@ void ReportItemPara::resetIndexToPrintRecursively(bool including_para_texts)
 		m_indexToPrint = 0;
 }
 
-ReportItem::PrintResult ReportItemPara::printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect)
+ReportItem::PrintResult ReportItemPara::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect)
 {
 	qfLogFuncFrame();
-	return Super::printMetaPaint(out, bounding_rect);
+	return Super::printMetaPaint(paint_device, out, bounding_rect);
 }
 
-ReportItem::PrintResult ReportItemPara::printMetaPaintChildren(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItem::PrintResult ReportItemPara::printMetaPaintChildren(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	qfLogFuncFrame() << this << bounding_rect.toString() << paraText();;
 	PrintResult res = PrintResult::createPrintFinished();
@@ -59,7 +59,7 @@ ReportItem::PrintResult ReportItemPara::printMetaPaintChildren(ReportItemMetaPai
 		if(p_text_style) {
 			style = p_text_style->textStyle();
 		}
-		QFontMetricsF font_metrics = processor()->fontMetrics(style.font());
+		auto font_metrics = QFontMetricsF(style.font(), paint_device);
 		QTextOption text_option;
 		{
 			if(isTextWrap())
@@ -71,7 +71,7 @@ ReportItem::PrintResult ReportItemPara::printMetaPaintChildren(ReportItemMetaPai
 		}
 		Rect device_bounding_rect;
 		/// velikost boundingRect je v mm, tak to prepocitej na body vystupniho zarizeni
-		device_bounding_rect = gui::graphics::mm2device(bounding_rect, processor()->paintDevice());
+		device_bounding_rect = gui::graphics::mm2device(bounding_rect, paint_device);
 
 		bool render_check_mark = false;
 		auto rx = ReportItemMetaPaint::checkReportSubstitutionRegExp;
@@ -119,7 +119,7 @@ ReportItem::PrintResult ReportItemPara::printMetaPaintChildren(ReportItemMetaPai
 									int pos = line.textStart();
 									m_indexToPrint += pos;
 									break;
-							
+
 							}
 							height += interline_space;
 							line.setPosition(QPointF(0., height));
@@ -137,7 +137,7 @@ ReportItem::PrintResult ReportItemPara::printMetaPaintChildren(ReportItemMetaPai
 			}
 		}
 		/// velikost boundingRect je v bodech vystupniho zarizeni, tak to prepocitej na mm
-		device_bounding_rect = gui::graphics::device2mm(device_bounding_rect, processor()->paintDevice());
+		device_bounding_rect = gui::graphics::device2mm(device_bounding_rect, paint_device);
 		/// rendered rect is left aligned, if text is reight aligned or centered, the ReportItemMetaPaintText::paint() does it
 		if(text_item_should_be_created ) {
 			ReportItemMetaPaintText *mt;

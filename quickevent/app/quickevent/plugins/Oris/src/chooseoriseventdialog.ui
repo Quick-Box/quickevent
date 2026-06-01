@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>447</width>
-    <height>282</height>
+    <height>139</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,13 +27,12 @@
       <widget class="QComboBox" name="cbxOrisEvent">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="editable">
-        <bool>true</bool>
-       </property>
        <property name="insertPolicy">
-        <enum>QComboBox::NoInsert</enum>
+        <enum>QComboBox::InsertPolicy::NoInsert</enum>
        </property>
       </widget>
      </item>
@@ -48,13 +47,15 @@
       <widget class="QSpinBox" name="edEventId">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
        <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
+        <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
        </property>
        <property name="maximum">
         <number>999999999</number>
@@ -66,10 +67,10 @@
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

@@ -20,8 +20,10 @@ public:
 
 	void editCourseCodes(const QModelIndex &ix);
 private:
+	void updateQuery();
 	Ui::EditCoursesWidget *ui;
 	qf::gui::model::SqlTableModel *m_coursesModel;
+	int m_stageId;
 };
 
 #endif // EDITCOURSESWIDGET_H

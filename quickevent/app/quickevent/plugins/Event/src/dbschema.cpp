@@ -14,6 +14,7 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QQmlComponent>
+#include <QFile>
 
 DbSchema::DbSchema(Event::EventPlugin *event_plugin)
 	: QObject(event_plugin)
@@ -51,7 +52,7 @@ QObject *DbSchema::dbSchemaRoot()
 	return m_dbSchemaRoot;
 }
 
-QStringList DbSchema::createDbSqlScript(const DbSchema::CreateDbSqlScriptOptions &create_options)
+QStringList DbSchema::createDbSqlScriptQml(const DbSchema::CreateDbSqlScriptOptions &create_options)
 {
 	QObject *db_schema = dbSchemaRoot();
 	if(!db_schema) {
@@ -65,6 +66,24 @@ QStringList DbSchema::createDbSqlScript(const DbSchema::CreateDbSqlScriptOptions
 	QStringList ret = ret_val.toStringList();
 	QF_CHECK(!ret.isEmpty(), "createDbSqlScript ERROR!");
 	return ret;
+}
+
+QStringList DbSchema::loadCreateDbSqlScript(const CreateDbSqlScriptOptions &create_options)
+{
+	auto dbtype = create_options.driverName().endsWith("PSQL", Qt::CaseInsensitive)? "psql": "sqlite";
+	auto file_name = QStringLiteral(":/quickevent/Event/sql/create_db_%1.sql").arg(dbtype);
+	QFile f(file_name);
+	if (!f.open(QFile::ReadOnly | QIODevice::Text)) {
+		qfError() << "Cannot open file:" << f.fileName() << "for reading";
+		return {};
+	}
+	auto sql = QString::fromUtf8(f.readAll());
+	QVariantMap replacements;
+	replacements["eventId"] = create_options.schemaName();
+	replacements["minDbVersion"] = Event::EventPlugin::dbVersion();
+	sql = qf::core::Utils::replaceCaptions(sql, replacements);
+	auto lines = sql.split(";\n");
+	return lines;
 }
 
 QList<QObject *> DbSchema::tables()

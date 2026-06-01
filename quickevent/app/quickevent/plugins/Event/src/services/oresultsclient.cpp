@@ -104,6 +104,13 @@ void OResultsClient::loadSettings()
 	init();
 }
 
+QNetworkReply *OResultsClient::getEventInfo(const QString &apiKey)
+{
+	QUrl url(API_URL + "/events/" + apiKey);
+	QNetworkRequest request(url);
+	return m_networkManager->get(request);
+}
+
 void OResultsClient::sendFile(QString name, QString request_path, QString file, std::function<void()> on_success) {
 
 	auto *multi_part = new QHttpMultiPart(QHttpMultiPart::FormDataType);
@@ -169,6 +176,19 @@ void OResultsClient::setApiKey(QString apiKey)
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	getPlugin<EventPlugin>()->eventConfig()->setValue("oresults.apiKey.E" + QString::number(current_stage), apiKey);
+	getPlugin<EventPlugin>()->eventConfig()->save("oresults");
+}
+
+QString OResultsClient::eventName() const
+{
+	int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	return getPlugin<EventPlugin>()->eventConfig()->value("oresults.eventName.E" + QString::number(current_stage)).toString();
+}
+
+void OResultsClient::setEventName(const QString &name)
+{
+	int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	getPlugin<EventPlugin>()->eventConfig()->setValue("oresults.eventName.E" + QString::number(current_stage), name);
 	getPlugin<EventPlugin>()->eventConfig()->save("oresults");
 }
 

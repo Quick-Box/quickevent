@@ -56,4 +56,10 @@ runs:
         fi
         echo "Changed files:"
         printf '%s\n' "${CHANGED_FILES[@]}"
+        # Filter out any empty strings that may have been added to the array
+        readarray -t CHANGED_FILES < <(printf '%s\n' "${CHANGED_FILES[@]}" | grep -v '^$')
+        if [[ "${#CHANGED_FILES[@]}" -eq 0 ]]; then
+          echo "No changed cpp files after filtering."
+          exit 0
+        fi
         printf '%s\n' "${CHANGED_FILES[@]}" | parallel --verbose --jobs "$(nproc)" --plus _=[{#}/{##}] ${{ inputs.lint_program_with_args }} {}

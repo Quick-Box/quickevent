@@ -10,7 +10,7 @@ QtObject {
 
 	function createSqlScript(options)
 	{
-		console.debug("createSqlScript options:", JSON.stringify(options, null, 2));
+		// console.debug("createSqlScript options:", JSON.stringify(options, null, 2));
 		//if(options.schemaName)
 		//	name = options.schemaName;
 		var driver_name = options.driverName;

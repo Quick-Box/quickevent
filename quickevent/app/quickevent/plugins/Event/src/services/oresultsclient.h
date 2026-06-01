@@ -4,6 +4,7 @@
 
 class QTimer;
 class QNetworkAccessManager;
+class QNetworkReply;
 
 namespace Event {
 namespace services {
@@ -36,6 +37,9 @@ public:
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 	QString apiKey() const;
 	void setApiKey(QString apiKey);
+	QString eventName() const;
+	void setEventName(const QString &name);
+	QNetworkReply *getEventInfo(const QString &apiKey);
 private:
 	QTimer *m_exportTimer = nullptr;
 	QNetworkAccessManager *m_networkManager = nullptr;

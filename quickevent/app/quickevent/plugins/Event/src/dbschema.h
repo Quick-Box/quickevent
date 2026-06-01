@@ -28,7 +28,8 @@ public:
 public:
 	DbSchema(Event::EventPlugin *event_plugin);
 
-	QStringList createDbSqlScript(const CreateDbSqlScriptOptions &create_options);
+	QStringList createDbSqlScriptQml(const CreateDbSqlScriptOptions &create_options);
+	QStringList loadCreateDbSqlScript(const CreateDbSqlScriptOptions &create_options);
 	QList<QObject*> tables();
 	QObject* table(const QString &table_name);
 	QSqlRecord sqlRecord(QObject *table, bool lowercase_field_names = false);

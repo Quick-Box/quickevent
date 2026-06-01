@@ -53,11 +53,11 @@ protected:
 	QString printedText;
 	QTextLayout textLayout;
 protected:
-	virtual PrintResult printMetaPaintChildren(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect);
+	virtual PrintResult printMetaPaintChildren(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect);
 	virtual QString paraText();
 public:
 	virtual void resetIndexToPrintRecursively(bool including_para_texts);
-	virtual PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect);
+	virtual PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect);
 	virtual PrintResult printHtml(HTMLElement &out);
 private:
 	GetTextFunction m_getTextCppFn = nullptr;

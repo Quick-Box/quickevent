@@ -114,8 +114,8 @@ void CodeClassResultsWidget::onPunchReceived(const quickevent::core::si::PunchRe
 void CodeClassResultsWidget::reset(int class_id, int code, int pin_to_code)
 {
 	m_pinnedToCode = pin_to_code;
-	ui->lstClass->disconnect();
-	ui->lstCode->disconnect();
+	disconnect(ui->lstClass, QOverload<int>::of(&QComboBox::currentIndexChanged), nullptr, nullptr);
+	disconnect(ui->lstCode, QOverload<int>::of(&QComboBox::currentIndexChanged), nullptr, nullptr);
 	ui->lstClass->clear();
 	{
 		qf::core::sql::Query q;

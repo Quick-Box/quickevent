@@ -51,7 +51,7 @@ public:
 
 	Q_INVOKABLE QVariant data(const QString &field_name, int role = Qt::DisplayRole);
 public:
-	PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
+	PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect) Q_DECL_OVERRIDE;
 	PrintResult printHtml(HTMLElement &out) Q_DECL_OVERRIDE;
 
 	void resetIndexToPrintRecursively(bool including_para_texts) Q_DECL_OVERRIDE;
@@ -81,7 +81,7 @@ protected:
 	virtual ReportItemDetail* toDetail() {return this;}
 public:
 	virtual void resetIndexToPrintRecursively(bool including_para_texts);
-	virtual PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect);
+	virtual PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect);
 	virtual PrintResult printHtml(HTMLElement &out);
 
 	qf::core::utils::TreeTable dataTable();
@@ -123,7 +123,7 @@ public:
 	QF_PROPERTY_OBJECT_IMPL(ReportItemFrame*, f, F, ooter)
 	*/
 public:
-	virtual PrintResult printMetaPaint(ReportItemMetaPaint *out, const Rect &bounding_rect);
+	virtual PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect);
 
 	virtual  ReportItemBand* toBand()  {return this;}
 	ReportItemDetail* detail();

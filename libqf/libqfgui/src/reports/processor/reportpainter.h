@@ -35,7 +35,7 @@ public:
 	ReportItemMetaPaint();
 	//! parametr \a processor v konstruktoru slouzi jenom kvuli scriptovanym atributum elementu, pouzije se jen v konstruktoru, ukazatel na nej se nikde neuklada.
 	ReportItemMetaPaint(ReportItemMetaPaint *parent, ReportItem *report_item);
-	~ReportItemMetaPaint() Q_DECL_OVERRIDE;
+	~ReportItemMetaPaint() override;
 public:
 	enum PaintMode {PaintBorder=1, PaintFill=2, PaintAll=3};
 	//! string v reportu, ktery se vymeni za celkovy pocet stranek v reportu.
@@ -85,8 +85,8 @@ public:
 public:
 	void setRenderedRectRect(const QRectF &new_size) {renderedRect = new_size;}
 
-	ReportItemMetaPaint* parent() const Q_DECL_OVERRIDE {return dynamic_cast<ReportItemMetaPaint*>(qf::core::utils::TreeItemBase::parent());}
-	ReportItemMetaPaint* child(int ix) const Q_DECL_OVERRIDE;
+	ReportItemMetaPaint* parent() const override {return dynamic_cast<ReportItemMetaPaint*>(qf::core::utils::TreeItemBase::parent());}
+	ReportItemMetaPaint* child(int ix) const override;
 	virtual ReportItemMetaPaint* firstChild() const
 	{
 		if(childrenCount())
@@ -155,7 +155,7 @@ private:
 	typedef ReportItemMetaPaint Super;
 public:
 	ReportItemMetaPaintFrame(ReportItemMetaPaint *parent, ReportItem *report_item);
-	~ReportItemMetaPaintFrame() Q_DECL_OVERRIDE {}
+	~ReportItemMetaPaintFrame() override {}
 public:
 	enum LinePos {LBrd = 1, RBrd, TBrd, BBrd};
 public:
@@ -166,7 +166,7 @@ protected:
 	virtual void frameItem(QPainter *painter, bool selected = false);
 	void drawLine(QPainter *painter, LinePos where, const QPen &pen);
 public:
-	void paint(ReportPainter *painter, unsigned mode = PaintAll) Q_DECL_OVERRIDE;
+	void paint(ReportPainter *painter, unsigned mode = PaintAll) override;
 };
 
 class QFGUI_DECL_EXPORT ReportItemMetaPaintText : public ReportItemMetaPaint
@@ -183,16 +183,16 @@ public:
 	QTextOption textOption;
 	QString editGrants;
 public:
-	void paint(ReportPainter *painter, unsigned mode = PaintAll) Q_DECL_OVERRIDE;
-	bool isPointInside(const QPointF &p) Q_DECL_OVERRIDE {Q_UNUSED(p); return false;}
+	void paint(ReportPainter *painter, unsigned mode = PaintAll) override;
+	bool isPointInside(const QPointF &p) override {Q_UNUSED(p); return false;}
 
 	//void setAlignment(const Qt::Alignment &al) { alignmentFlags = al;}
 
-	QString dump(int indent = 0) Q_DECL_OVERRIDE;
+	QString dump(int indent = 0) override;
 public:
 	ReportItemMetaPaintText(ReportItemMetaPaint *parent, ReportItem *report_item)
 	: ReportItemMetaPaint(parent, report_item) {}
-	~ReportItemMetaPaintText() Q_DECL_OVERRIDE {}
+	~ReportItemMetaPaintText() override {}
 };
 
 

@@ -1,5 +1,6 @@
 #include "logtablemodel.h"
 
+#include <qf/gui/style.h>
 #include <qf/core/logentrymap.h>
 #include <qf/core/log.h>
 
@@ -98,23 +99,32 @@ QVariant LogTableModel::data(const QModelIndex &index, int role) const
 	case Qt::ToolTipRole:
 		return data(index, Qt::DisplayRole);
 	case Qt::ForegroundRole: {
+		static const auto contrast_color = isDarkTheme()? QColor(Qt::lightGray): QColor(Qt::black);
+		static const auto blue_color = isDarkTheme()? QColor(0x99ccff): QColor(Qt::blue);
+
 		auto severity = m_rows[index.row()].value(Cols::Severity).value<NecroLog::Level>();
 		switch (severity) {
+		case NecroLog::Level::Error:
+		case NecroLog::Level::Warning:
+		case NecroLog::Level::Message:
+			return contrast_color;
 		case NecroLog::Level::Info:
-			return QColor(Qt::blue);
+			return blue_color;
 		default:
 			return QVariant();
 		}
 	}
 	case Qt::BackgroundRole: {
+		static const auto error_color = isDarkTheme()? QColor(Qt::red).darker(170): QColor(Qt::red).lighter(170);
+		static const auto warning_color = isDarkTheme()? QColor("orange").darker(170):  QColor("orange").lighter(170);
 		auto severity = m_rows[index.row()].value(Cols::Severity).value<NecroLog::Level>();
 		switch (severity) {
 		case NecroLog::Level::Invalid:
 		case NecroLog::Level::Fatal:
 		case NecroLog::Level::Error:
-			return QColor(Qt::red).lighter(170);
+			return error_color;
 		case NecroLog::Level::Warning:
-			return QColor(Qt::cyan).lighter(170);
+			return warning_color;
 		default:
 			return QVariant();
 		}

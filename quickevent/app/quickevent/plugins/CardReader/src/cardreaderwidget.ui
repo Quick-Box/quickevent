@@ -28,10 +28,10 @@
         </sizepolicy>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
+        <enum>QFrame::Shadow::Raised</enum>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <property name="leftMargin">
@@ -73,7 +73,7 @@
         <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -93,7 +93,7 @@
         <item>
          <widget class="QPushButton" name="btTest">
           <property name="text">
-           <string>Test punch</string>
+           <string>Test</string>
           </property>
          </widget>
         </item>

@@ -3,6 +3,7 @@
 #include "receiptsplugin.h"
 #include "receiptssettings.h"
 #include "receiptsprinteroptionsdialog.h"
+
 #include <plugins/Event/src/eventplugin.h>
 
 #include <qf/core/sql/query.h>
@@ -10,6 +11,7 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/core/utils/treetable.h>
 #include <qf/core/log.h>
+#include <qf/gui/style.h>
 
 #include <QBuffer>
 #include <QCoreApplication>
@@ -622,10 +624,7 @@ void ReceiptsSettingsPage::updateReceiptsPrinterLabel()
 {
 	ReceiptsSettings settings;
 	ui->btPrinterOptions->setText(settings.printerCaption());
-	if(settings.printerTypeEnum() == ReceiptsSettings::PrinterType::GraphicPrinter)
-		ui->btPrinterOptions->setIcon(QIcon(":/quickevent/Receipts/images/graphic-printer.svg"));
-	else
-		ui->btPrinterOptions->setIcon(QIcon(":/quickevent/Receipts/images/character-printer.svg"));
+	ui->btPrinterOptions->setIcon(qf::gui::Style::icon("printer"));
 }
 
 void ReceiptsSettingsPage::updateReceiptMediaControls()

@@ -222,8 +222,9 @@ void TxtImporter::importParsedCsv(const QList<QVariantList> &csv)
 		QString reg = row.value(ColRegistration).toString();
 		QString class_name = row.value(ColClassName).toString();
 		int class_id = classes_map.value(class_name);
-		if(class_id == 0)
+		if(class_id == 0) {
 			QF_EXCEPTION(tr("Undefined class name: '%1'").arg(class_name));
+		}
 		//fwk->showProgress("Importing: " + reg_no + ' ' + last_name + ' ' + first_name, items_processed, items_count);
 		//	qfWarning() << tr("%1 %2 %3 SI: %4 is duplicit!").arg(reg_no).arg(last_name).arg(first_name).arg(siid);
 		doc.setValue("classId", class_id);

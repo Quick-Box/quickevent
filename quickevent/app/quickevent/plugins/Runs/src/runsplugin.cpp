@@ -959,7 +959,6 @@ QVariantMap RunsPlugin::printAwardsOptionsWithDialog(const QVariantMap &opts)
 QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 {
 	QDateTime stage_start_date_time = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);//.toTimeSpec(Qt::OffsetFromUTC);
-	//qfInfo() << stage_start_date_time << datetime_to_string(stage_start_date_time);
 	qf::core::utils::TreeTable tt1 = stageResultsTable(stage_id, QString(), 0, false, true);
 	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
 	bool is_iof_race = event_config->isIofRace();
@@ -981,8 +980,8 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 		event_lst.insert(event_lst.count(), QVariantList{"Id", QVariantMap{{"type", "ORIS"}}, event.value("importId")});
 		event_lst.insert(event_lst.count(), QVariantList{"Name", event.value("name")});
 		event_lst.insert(event_lst.count(), QVariantList{"StartTime",
-				   QVariantList{"Date", event.value("date")},
-				   QVariantList{"Time", event.value("time")}
+				   QVariantList{"Date", stage_start_date_time.date().toString(Qt::ISODate)},
+				   QVariantList{"Time", stage_start_date_time.time().toString(Qt::ISODate)}
 		});
 		event_lst.insert(event_lst.count(),
 			QVariantList{"Official",
@@ -1767,6 +1766,7 @@ void RunsPlugin::report_startListClasses()
 	quickevent::gui::ReportOptionsDialog dlg(fwk);
 	dlg.setPersistentSettingsId("startListClassesReportOptions");
 	dlg.loadPersistentSettings();
+	dlg.setCurrentStageId(getPlugin<EventPlugin>()->currentStageId());
 	dlg.setStartListOptionsVisible(true);
 	dlg.setPageLayoutVisible(true);
 	dlg.setStartTimeFormatVisible(true);
@@ -1792,6 +1792,7 @@ void RunsPlugin::report_startListClubs()
 	quickevent::gui::ReportOptionsDialog dlg(fwk);
 	dlg.setPersistentSettingsId("startListClubsReportOptions");
 	dlg.loadPersistentSettings();
+	dlg.setCurrentStageId(getPlugin<EventPlugin>()->currentStageId());
 	dlg.setClassFilterVisible(false);
 	dlg.setStartListOptionsVisible(true);
 	dlg.setStartListPrintVacantsVisible(false);
@@ -1819,6 +1820,7 @@ void RunsPlugin::report_startListStarters()
 	quickevent::gui::ReportOptionsDialog dlg(fwk);
 	dlg.setPersistentSettingsId("startListStartersReportOptions");
 	dlg.loadPersistentSettings();
+	dlg.setCurrentStageId(getPlugin<EventPlugin>()->currentStageId());
 	dlg.setClassFilterVisible(true);
 	dlg.setStartListOptionsVisible(true);
 	dlg.setStartListPrintVacantsVisible(false);
@@ -2729,6 +2731,8 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, bool with_vacants)
 		qf::core::utils::TreeTable tt2 = tt1_row.table();
 		if (tt2.rowCount() == 0 && is_iof_race)
 			continue; // not save empty class
+		bool has_fixed_start_time = tt1_row.value(QStringLiteral("classdefs.startIntervalMin")).toInt() > 0
+				|| event_config->discipline() == Event::EventConfig::Discipline::MassStart;
 		for(int j=0; j<tt2.rowCount(); j++) {
 			auto tt2_row = tt2.row(j);
 			QVariantList xml_person{"PersonStart"};
@@ -2752,8 +2756,10 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, bool with_vacants)
 			auto bib_number = tt2_row.value(QStringLiteral("competitors.startNumber"));
 			if(!bib_number.isNull())
 				append_list(xml_start, QVariantList{"BibNumber", bib_number});
-			int stime_msec = tt2_row.value("startTimeMs").toInt();
-			append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
+			if (has_fixed_start_time) {
+				int stime_msec = tt2_row.value("startTimeMs").toInt();
+				append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
+			}
 			QVariant siId = tt2_row.value(QStringLiteral("runs.siId"));
 			if (siId.toBool()) {
 				append_list(xml_start, QVariantList{"ControlCard", siId.toInt()});

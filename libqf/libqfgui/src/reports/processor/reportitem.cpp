@@ -81,10 +81,19 @@ ReportProcessor *ReportItem::processor(bool throw_exc)
 	return ret;
 }
 
+ReportItem::PrintResult ReportItem::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect)
+{
+	Q_UNUSED(paint_device);
+	Q_UNUSED(out);
+	Q_UNUSED(bounding_rect);
+	return PrintResult::createPrintFinished();
+}
+
 ReportItem::PrintResult ReportItem::printHtml(ReportItem::HTMLElement &out)
 {
-	if(out.isNull())
+	if(out.isNull()) {
 		return PrintResult::createPrintError();
+	}
 	return PrintResult::createPrintFinished();
 }
 
@@ -338,10 +347,10 @@ void ReportItemTable::createFakeBand()
 	//qfInfo() << fakeBand.toString();
 }
 
-ReportItem::PrintResult ReportItemTable::printMetaPaint(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItem::PrintResult ReportItemTable::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	createFakeBand();
-	return ReportItemBand::printMetaPaint(out, bounding_rect);
+	return ReportItemBand::printMetaPaint(paint_device, out, bounding_rect);
 }
 #endif
 
@@ -361,7 +370,7 @@ void ReportItemGraph::syncChildren()
 #endif
 
 #ifdef REPORT_ITEM_GRAPH
-ReportItemImage::PrintResult ReportItemGraph::printMetaPaintChildren(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItemImage::PrintResult ReportItemGraph::printMetaPaintChildren(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	qfLogFuncFrame() << this;
 	PrintResult res = PrintOk;

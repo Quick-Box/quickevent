@@ -2,6 +2,7 @@
 #include "connectdbdialogwidget.h"
 #include "connectionsettings.h"
 #include "eventdialogwidget.h"
+#include "openeventdialog.h"
 #include "dbschema.h"
 #include "registrationswidget.h"
 #include "lentcardssettingspage.h"
@@ -41,7 +42,9 @@
 #include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
 #include <QInputDialog>
+#include <QDate>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlField>
 #include <QSqlError>
@@ -130,6 +133,56 @@ QString fileNameToEventName(const QString &file_name)
 		event_name = event_name.mid(0, event_name.length() - QBE_EXT.length());
 	return event_name;
 }
+
+QList<OpenEventDialog::EventInfo> loadEventInfoList(EventPlugin::ConnectionType type, const QStringList &event_names)
+{
+	static const QLatin1String SQL_KEYS =
+		QLatin1String("'event.name','event.date','event.sportId','event.disciplineId','db.version'");
+
+	auto parseRow = [](OpenEventDialog::EventInfo &info, const QString &key, const QString &val) {
+		if      (key == QLatin1String("event.name"))         info.name         = val;
+		else if (key == QLatin1String("event.date"))         info.date         = QDate::fromString(val, Qt::ISODate);
+		else if (key == QLatin1String("event.sportId"))      info.sportId      = val.toInt();
+		else if (key == QLatin1String("event.disciplineId")) info.disciplineId = val.toInt();
+		else if (key == QLatin1String("db.version"))         info.dbVersion    = val.toInt();
+	};
+
+	QList<OpenEventDialog::EventInfo> result;
+	if (type == EventPlugin::ConnectionType::SingleFile) {
+		const QString temp_conn_name = QStringLiteral("qe_eventinfo_conn");
+		for (const QString &name : event_names) {
+			OpenEventDialog::EventInfo info;
+			info.id = name;
+			{
+				QSqlDatabase db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), temp_conn_name);
+				db.setDatabaseName(eventNameToFileName(name));
+				if (db.open()) {
+					QSqlQuery q(db);
+					q.exec(QStringLiteral("SELECT ckey, cvalue FROM config WHERE ckey IN (%1)").arg(SQL_KEYS));
+					while (q.next())
+						parseRow(info, q.value(0).toString(), q.value(1).toString());
+					db.close();
+				}
+			}
+			QSqlDatabase::removeDatabase(temp_conn_name);
+			result << info;
+		}
+	}
+	else {
+		// PostgreSQL: use schema-qualified table name to avoid switching search_path
+		qfs::Connection conn(QSqlDatabase::database());
+		for (const QString &name : event_names) {
+			OpenEventDialog::EventInfo info;
+			info.id = name;
+			qfs::Query q(conn);
+			if (q.exec(QStringLiteral("SELECT ckey, cvalue FROM %1.config WHERE ckey IN (%2)").arg(name, SQL_KEYS)))
+				while (q.next())
+					parseRow(info, q.value(0).toString(), q.value(1).toString());
+			result << info;
+		}
+	}
+	return result;
+}
 }
 
 EventPlugin::EventPlugin(QObject *parent)
@@ -141,6 +194,7 @@ EventPlugin::EventPlugin(QObject *parent)
 		setEventOpen(!event_name.isEmpty());
 	});
 	connect(this, &Event::EventPlugin::dbEventNotify, this, &Event::EventPlugin::onDbEventNotify, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &EventPlugin::onRecChng);
 }
 
 void EventPlugin::initEventConfig()
@@ -480,11 +534,11 @@ void EventPlugin::emitDbEvent(const QString &domain, const QVariant &data, bool 
 	if(payload_str.length() > 4000) {
 		int len = payload_str.toUtf8().length();
 		if(len > 8000) {
-			qfInfo() << payload_str;
 			qfError() << "Payload of size" << len << "is too long. Max Postgres payload length is 8000 bytes.";
 			return;
 		}
 	}
+	qfMessage() << "to postgres:" << payload_str;
 	payload_str = qf::core::sql::Connection::escapeJsonForSql(payload_str);
 	qf::core::sql::Connection conn = qf::core::sql::Connection::forName();
 	QString qs = QString("NOTIFY ") + DBEVENT_NOTIFY_NAME + ", '" + payload_str + "'";
@@ -566,7 +620,10 @@ QString EventPlugin::resultsIofXml3FileName(std::optional<int> stage_id)
 
 DbSchema *EventPlugin::dbSchema()
 {
-	return new DbSchema(this);
+	if (!m_dbSchema) {
+		m_dbSchema = new DbSchema(this);
+	}
+	return m_dbSchema;
 }
 
 int EventPlugin::dbVersion()
@@ -580,12 +637,11 @@ int EventPlugin::dbVersion()
 QString EventPlugin::dbVersionString()
 {
 	int dbv = dbVersion();
-	int rev = dbv % 100;
 	dbv /= 100;
 	int min = dbv % 100;
 	int maj = dbv / 100;
 
-	return QString("%1.%2.%3").arg(maj).arg(min).arg(rev);
+	return QString("%1.%2.0").arg(maj).arg(min);
 }
 
 void EventPlugin::onDbEvent(const QString &name, QSqlDriver::NotificationSource source, const QVariant &payload)
@@ -606,7 +662,17 @@ void EventPlugin::onDbEvent(const QString &name, QSqlDriver::NotificationSource 
 			}
 			if(event_name == eventName()) {
 				QVariant data = dbpl.data();
-				qfDebug() << "emitting domain:" << domain << "data:" << data;
+				if (dbpl.domain() == DBEVENT_QX_RECCHNG) {
+					qfMessage() << "from postgres:" << data;
+					auto recchng = qf::core::sql::QxRecChng::fromVariantMap(data.toMap());
+					if (recchng.issuer == qf::gui::framework::Application::uuidString()) {
+						qfWarning() << "RecChng loopback detected, issuer:" << recchng.issuer;
+						return;
+					}
+					qf::gui::framework::Application::instance()->emitQxRecChng(recchng, this);
+					return;
+				}
+				qfMessage() << "emitting domain:" << domain << "data:" << data;
 				emit dbEventNotify(domain, dbpl.connectionId(), data);
 			}
 		}
@@ -811,15 +877,12 @@ namespace {
 bool run_sql_script(qf::core::sql::Query &q, const QStringList &sql_lines)
 {
 	qfLogFuncFrame();
-	QVariantMap replacements;
-	replacements["minDbVersion"] = EventPlugin::dbVersion();
-	for(auto cmd : sql_lines) {
+	for(const auto &cmd : sql_lines) {
 		if(cmd.isEmpty())
 			continue;
 		if(cmd.startsWith(QLatin1String("--")))
 			continue;
 		qfDebug() << cmd << ';';
-		cmd = qf::core::Utils::replaceCaptions(cmd, replacements);
 		bool ok = q.exec(cmd);
 		if(!ok) {
 			qfInfo() << cmd;
@@ -897,7 +960,7 @@ bool EventPlugin::createEvent(const QString &event_name, const QVariantMap &even
 		create_options["schemaName"] = event_id;
 		create_options["driverName"] = conn.driverName();
 
-		QStringList create_script = dbSchema()->createDbSqlScript(create_options);
+		QStringList create_script = dbSchema()->loadCreateDbSqlScript(create_options);
 
 		qfInfo().nospace() << create_script.join(";\n") << ';';
 		qfs::Query q(conn);
@@ -909,8 +972,9 @@ bool EventPlugin::createEvent(const QString &event_name, const QVariantMap &even
 				break;
 			qfDebug() << "creating stages:" << stage_count;
 			QString stage_table_name = "stages";
-			if(connection_type == ConnectionType::SqlServer)
+			if(connection_type == ConnectionType::SqlServer) {
 				stage_table_name = event_id + '.' + stage_table_name;
+			}
 			QDateTime start_dt = event_config.eventDateTime();
 			// FIXME: handle SQL errors here and below in q.exec()
 			q.prepare("INSERT INTO " + stage_table_name + " (id, startDateTime) VALUES (:id, :startDateTime)");
@@ -998,13 +1062,39 @@ bool EventPlugin::openEvent(const QString &_event_name)
 		ok = false;
 	}
 	else if (!db_event_names.contains(event_name)) {
-		// database does not contain given event_name => ask which event to open
-		event_name = QInputDialog::getItem(fwk, tr("Open event"), tr("select event to open:"), db_event_names, 0, false, &ok);
+		// Loop so that deleting an event re-shows the dialog with a refreshed list
+		while(true) {
+			auto event_infos = loadEventInfoList(connection_type, db_event_names);
+			OpenEventDialog dlg(event_infos, dbVersion(), db_event_names, fwk);
+			if(dlg.exec() != QDialog::Accepted) {
+				ok = false;
+				break;
+			}
+			if(dlg.selectedAction() == OpenEventDialog::RowAction::Delete) {
+				deleteEvent(dlg.selectedEventId());
+				db_event_names = (connection_type == ConnectionType::SingleFile)
+					? existingFileEventNames(connection_settings.singleWorkingDir())
+					: existingSqlEventNames();
+				if(db_event_names.isEmpty()) { ok = false; break; }
+				continue;
+			}
+			if(dlg.selectedAction() == OpenEventDialog::RowAction::Convert) {
+				const QString from_event = dlg.selectedEventId();
+				const QString to_event   = dlg.convertedEventId();
+				const bool converted = (connection_type == ConnectionType::SingleFile)
+					? importEventFromFile(eventNameToFileName(from_event), to_event)
+					: convertSqlEvent(from_event, to_event);
+				if(converted)
+					return openEvent(to_event);
+				m_actOpenEvent->setEnabled(!db_event_names.isEmpty());
+				return false;
+			}
+			// RowAction::Open
+			event_name = dlg.selectedEventId();
+			break;
+		}
 	}
-	// if given event_name is in the db, preceeding conditions were skipped => ok => open event_name
-	// if dialog was succesfull => ok => open event_name
-	// if dialog was canceled => !ok => close event and disable menu options
-	if(!eventName().isEmpty() && db_event_names.contains(eventName()) && !ok) // open event dialog was canceled and event is already opened => no change, return
+	if(!eventName().isEmpty() && db_event_names.contains(eventName()) && !ok) // dialog canceled and event is already open => no change
 		return true;
 
 	closeEvent();
@@ -1221,7 +1311,7 @@ void EventPlugin::exportEvent_qbe()
 		{
 			DbSchema::CreateDbSqlScriptOptions create_options;
 			create_options.setDriverName(ex_conn.driverName());
-			QStringList create_script = db_schema->createDbSqlScript(create_options);
+			QStringList create_script = db_schema->loadCreateDbSqlScript(create_options);
 			qfs::Query ex_q(ex_conn);
 			if(!run_sql_script(ex_q, create_script)) {
 				err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
@@ -1254,12 +1344,161 @@ void EventPlugin::exportEvent_qbe()
 	}
 }
 
+void EventPlugin::deleteEvent(const QString &event_name)
+{
+	qff::MainWindow *fwk = qff::MainWindow::frameWork();
+	if(event_name == eventName())
+		closeEvent();
+	if(connectionType() == ConnectionType::SingleFile) {
+		const QString fn = eventNameToFileName(event_name);
+		if(!QFile::remove(fn))
+			qfd::MessageBox::showError(fwk, tr("Cannot delete event file: %1").arg(fn));
+	}
+	else {
+		qfs::Connection conn(QSqlDatabase::database());
+		qfs::Query q(conn);
+		if(!q.exec(QStringLiteral("DROP SCHEMA \"%1\" CASCADE").arg(event_name)))
+			qfd::MessageBox::showError(fwk, tr("Cannot delete event schema '%1': %2")
+			                           .arg(event_name, q.lastErrorText()));
+	}
+}
+
+static void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
+{
+	dst.setHostName(src.hostName());
+	dst.setPort(src.port());
+	dst.setUserName(src.userName());
+	dst.setPassword(src.password());
+	dst.setDatabaseName(src.databaseName());
+}
+
+bool EventPlugin::importEventFromFile(const QString &src_file, const QString &dest_event_name)
+{
+	qfLogFuncFrame();
+	qff::MainWindow *fwk = qff::MainWindow::frameWork();
+	QString err_str;
+	const QString import_connection_name = QStringLiteral("qe_import_connection");
+	const QString export_connection_name = QStringLiteral("qe_export_connection");
+	do {
+		qfs::Connection current_conn = qfs::Connection::forName();
+
+		qfs::Connection imp_conn(QSqlDatabase::addDatabase("QSQLITE", import_connection_name));
+		imp_conn.setDatabaseName(src_file);
+		qfInfo() << "Opening import database file" << src_file;
+		if(!imp_conn.open()) {
+			err_str = tr("Open Database Error: %1").arg(imp_conn.errorString());
+			break;
+		}
+
+		qfs::Connection exp_conn(QSqlDatabase::addDatabase(current_conn.driverName(), export_connection_name));
+		if(connectionType() == ConnectionType::SingleFile)
+			exp_conn.setDatabaseName(eventNameToFileName(dest_event_name));
+		else
+			cloneDbConnection(exp_conn, current_conn);
+		qfInfo() << "Opening export database:" << exp_conn.databaseName();
+		if(!exp_conn.open()) {
+			err_str = tr("Open Database Error: %1").arg(exp_conn.errorString());
+			break;
+		}
+
+		err_str = copyEventSchema(imp_conn, exp_conn, dest_event_name);
+	} while(false);
+	QSqlDatabase::removeDatabase(import_connection_name);
+	QSqlDatabase::removeDatabase(export_connection_name);
+	fwk->hideProgress();
+	if(!err_str.isEmpty()) {
+		qfd::MessageBox::showError(fwk, err_str);
+		return false;
+	}
+	return true;
+}
+
+bool EventPlugin::convertSqlEvent(const QString &from_event, const QString &to_event)
+{
+	qfLogFuncFrame();
+	qff::MainWindow *fwk = qff::MainWindow::frameWork();
+	QString err_str;
+	const QString import_connection_name = QStringLiteral("qe_import_connection");
+	const QString export_connection_name = QStringLiteral("qe_export_connection");
+	do {
+		qfs::Connection current_conn = qfs::Connection::forName();
+
+		qfs::Connection imp_conn(QSqlDatabase::addDatabase(current_conn.driverName(), import_connection_name));
+		cloneDbConnection(imp_conn, current_conn);
+		qfInfo() << "Opening import schema" << from_event;
+		if(!imp_conn.open()) {
+			err_str = tr("Open Database Error: %1").arg(imp_conn.errorString());
+			break;
+		}
+		imp_conn.setCurrentSchema(from_event);
+
+		qfs::Connection exp_conn(QSqlDatabase::addDatabase(current_conn.driverName(), export_connection_name));
+		cloneDbConnection(exp_conn, current_conn);
+		qfInfo() << "Opening export schema" << to_event;
+		if(!exp_conn.open()) {
+			err_str = tr("Open Database Error: %1").arg(exp_conn.errorString());
+			break;
+		}
+
+		err_str = copyEventSchema(imp_conn, exp_conn, to_event);
+	} while(false);
+	QSqlDatabase::removeDatabase(import_connection_name);
+	QSqlDatabase::removeDatabase(export_connection_name);
+	fwk->hideProgress();
+	if(!err_str.isEmpty()) {
+		qfd::MessageBox::showError(fwk, err_str);
+		return false;
+	}
+	return true;
+}
+
+QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection &exp_conn,
+                                     const QString &dest_schema_name)
+{
+	qff::MainWindow *fwk = qff::MainWindow::frameWork();
+	QString err_str;
+	qfs::Transaction transaction(exp_conn);
+	DbSchema *db_schema = dbSchema();
+	auto tables = db_schema->tables();
+	int step_cnt = tables.count() + 1;
+	int step_no = 0;
+	fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
+	do {
+		DbSchema::CreateDbSqlScriptOptions create_options;
+		create_options.setDriverName(exp_conn.driverName());
+		create_options.setSchemaName(dest_schema_name);
+		QStringList create_script = db_schema->loadCreateDbSqlScript(create_options);
+		qfs::Query ex_q(exp_conn);
+		if(!run_sql_script(ex_q, create_script)) {
+			err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
+			break;
+		}
+		exp_conn.setCurrentSchema(dest_schema_name);
+		for(QObject *table : tables) {
+			const QString table_name = table->property("name").toString();
+			qfDebug() << "Copying table" << table_name;
+			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
+			QSqlRecord rec = db_schema->sqlRecord(table, true);
+			err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
+			if(!err_str.isEmpty())
+				break;
+			if(table_name == QLatin1String("stages")) {
+				repairStageStarts(imp_conn, exp_conn);
+			}
+		}
+		if(!err_str.isEmpty())
+			break;
+		transaction.commit();
+	} while(false);
+	return err_str;
+}
+
 void EventPlugin::importEvent_qbe()
 {
 	qfLogFuncFrame();
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	QString ext = ".qbe";
-	QString fn = qf::gui::dialogs::FileDialog::getOpenFileName (fwk, tr("Import as Quick Event"), QString(), tr("Quick Event files *%1 (*%1)").arg(ext));
+	QString fn = qf::gui::dialogs::FileDialog::getOpenFileName(fwk, tr("Import as Quick Event"), QString(), tr("Quick Event files *%1 (*%1)").arg(ext));
 	if(fn.isEmpty())
 		return;
 	QString event_name = qf::core::utils::FileUtils::baseName(fn) + "_2";
@@ -1276,82 +1515,10 @@ void EventPlugin::importEvent_qbe()
 		qfd::MessageBox::showError(fwk, tr("Event ID '%1' exists already!").arg(event_name));
 		return;
 	}
-
-	QString err_str;
-	QString import_connection_name = QStringLiteral("qe_import_connection");
-	QString export_connection_name = QStringLiteral("qe_export_connection");
-	do {
-		qfs::Connection current_conn = qfs::Connection::forName();
-
-		qfs::Connection imp_conn(QSqlDatabase::addDatabase("QSQLITE", import_connection_name));
-		imp_conn.setDatabaseName(fn);
-		qfInfo() << "Opening import database file" << fn;
-		if(!imp_conn.open()) {
-			qfd::MessageBox::showError(fwk, tr("Open Database Error: %1").arg(imp_conn.errorString()));
-			return;
+	if(importEventFromFile(fn, event_name)) {
+		if(qfd::MessageBox::askYesNo(fwk, tr("Open imported event '%1'?").arg(event_name), false)) {
+			openEvent(event_name);
 		}
-
-		qfs::Connection exp_conn(QSqlDatabase::addDatabase(current_conn.driverName(), export_connection_name));
-		if(connectionType() == ConnectionType::SingleFile) {
-			exp_conn.setDatabaseName(eventNameToFileName(event_name));
-		}
-		else {
-			exp_conn.setHostName(current_conn.hostName());
-			exp_conn.setPort(current_conn.port());
-			exp_conn.setUserName(current_conn.userName());
-			exp_conn.setPassword(current_conn.password());
-			exp_conn.setDatabaseName(current_conn.databaseName());
-		}
-		qfInfo() << "Opening export database:" << exp_conn.databaseName();
-		if(!exp_conn.open()) {
-			qfd::MessageBox::showError(fwk, tr("Open Database Error: %1").arg(exp_conn.errorString()));
-			return;
-		}
-
-		qfs::Transaction transaction(exp_conn);
-
-		DbSchema *db_schema = dbSchema();
-		auto tables = db_schema->tables();
-		int step_cnt = tables.count() + 1;
-		int step_no = 0;
-		fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
-		{
-			DbSchema::CreateDbSqlScriptOptions create_options;
-			create_options.setDriverName(exp_conn.driverName());
-			create_options.setSchemaName(event_name);
-			QStringList create_script = db_schema->createDbSqlScript(create_options);
-			qfs::Query ex_q(exp_conn);
-			if(!run_sql_script(ex_q, create_script)) {
-				err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
-				break;
-			}
-		}
-		exp_conn.setCurrentSchema(event_name);
-		for(QObject *table : tables) {
-			QString table_name = table->property("name").toString();
-			qfDebug() << "Copying table" << table_name;
-			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
-			QSqlRecord rec = db_schema->sqlRecord(table, true);
-			err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
-			if(!err_str.isEmpty())
-				break;
-			if(table_name == QLatin1String("stages")) {
-				repairStageStarts(imp_conn, exp_conn);
-			}
-		}
-		if(!err_str.isEmpty())
-			break;
-		transaction.commit();
-	} while(false);
-	QSqlDatabase::removeDatabase(import_connection_name);
-	QSqlDatabase::removeDatabase(export_connection_name);
-	fwk->hideProgress();
-	if(!err_str.isEmpty()) {
-		qfd::MessageBox::showError(fwk, err_str);
-		return;
-	}
-	if(qfd::MessageBox::askYesNo(fwk, tr("Open imported event '%1'?").arg(event_name), false)) {
-		openEvent(event_name);
 	}
 }
 
@@ -1379,6 +1546,14 @@ void EventPlugin::onDbEventNotify(const QString &domain, int connection_id, cons
 	else if(domain == QLatin1String(Event::EventPlugin::DBEVENT_REGISTRATIONS_IMPORTED)) {
 		reloadRegistrationsModel();
 	}
+}
+
+void EventPlugin::onRecChng(const qf::core::sql::QxRecChng &recchng)
+{
+	if (recchng.issuer != qf::gui::framework::Application::uuidString()) {
+		return;
+	}
+	emitDbEvent(DBEVENT_QX_RECCHNG, recchng.toVariantMap(), false);
 }
 
 void EventPlugin::reloadRegistrationsModel()

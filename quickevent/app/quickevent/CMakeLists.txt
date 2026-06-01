@@ -17,6 +17,7 @@ add_executable(quickevent
 	plugins/CardReader/src/services/qropunch.cpp
 	plugins/CardReader/src/services/qropunchwidget.cpp
 	plugins/CardReader/src/services/qropunchwidget.ui
+	plugins/CardReader/src/testcardreader.h plugins/CardReader/src/testcardreader.cpp
 
 	plugins/Classes/src/classdefdocument.cpp
 	plugins/Classes/src/classdefwidget.cpp
@@ -67,6 +68,8 @@ add_executable(quickevent
 	plugins/Event/src/eventdialogwidget.cpp
 	plugins/Event/src/eventdialogwidget.ui
 	plugins/Event/src/eventplugin.cpp
+	plugins/Event/src/openeventdialog.cpp
+	plugins/Event/src/openeventdialog.ui
 	plugins/Event/src/stage.cpp
 	plugins/Event/src/stagedocument.cpp
 	plugins/Event/src/stagewidget.cpp

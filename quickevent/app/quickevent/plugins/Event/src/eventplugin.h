@@ -12,7 +12,7 @@
 #include <QVariantMap>
 #include <QSqlDriver>
 
-namespace qf::core::sql { class Query; class Connection; }
+namespace qf::core::sql { class Query; class Connection; struct QxRecChng; }
 namespace qf::gui { class Action; }
 namespace qf::gui::framework { class DockWidget; }
 namespace qf::gui::model { class SqlTableModel; }
@@ -61,6 +61,7 @@ public:
 	static constexpr auto DBEVENT_REGISTRATIONS_IMPORTED = "registrationsImported";
 	static constexpr auto DBEVENT_STAGE_START_CHANGED = "stageStartChanged";
 	static constexpr auto DBEVENT_QX_CHANGE_RECEIVED = "qxChangeReceived";
+	static constexpr auto DBEVENT_QX_RECCHNG = "qxRecChng";
 
 	Q_INVOKABLE void initEventConfig();
 	Event::EventConfig* eventConfig(bool reload = false);
@@ -129,14 +130,16 @@ private:
 	QStringList existingSqlEventNames() const;
 	QStringList existingFileEventNames(const QString &dir = QString()) const;
 
-	Q_SLOT void onEventOpened();
-	Q_SLOT void connectToSqlServer();
-	Q_SLOT void loadCurrentStageId();
-	Q_SLOT void saveCurrentStageId(int current_stage);
-	Q_SLOT void editStage();
-	Q_SLOT void onDbEvent(const QString & name, QSqlDriver::NotificationSource source, const QVariant & payload);
+	void onEventOpened();
+	void connectToSqlServer();
+	void loadCurrentStageId();
+	void saveCurrentStageId(int current_stage);
+	void editStage();
+	void onDbEvent(const QString & name, QSqlDriver::NotificationSource source, const QVariant & payload);
 
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
+
+	void onRecChng(const qf::core::sql::QxRecChng &recchng);
 
 	void onRegistrationsDockVisibleChanged(bool on = true);
 
@@ -145,6 +148,11 @@ private:
 
 	//bool runSqlScript(qf::core::sql::Query &q, const QStringList &sql_lines);
 	void repairStageStarts(const qf::core::sql::Connection &from_conn, const qf::core::sql::Connection &to_conn);
+	bool importEventFromFile(const QString &src_file, const QString &dest_event_name);
+	bool convertSqlEvent(const QString &from_event, const QString &to_event);
+	void deleteEvent(const QString &event_name);
+	QString copyEventSchema(qf::core::sql::Connection &imp_conn, qf::core::sql::Connection &exp_conn,
+	                        const QString &dest_schema_name);
 
 	void onServiceDockVisibleChanged(bool on = true);
 private:
@@ -170,6 +178,8 @@ private:
 
 	qf::gui::model::SqlTableModel *m_registrationsModel = nullptr;
 	qf::core::utils::Table m_registrationsTable;
+
+	DbSchema *m_dbSchema = nullptr;
 };
 
 }

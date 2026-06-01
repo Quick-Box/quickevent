@@ -22,6 +22,9 @@ public:
 
 	void loadParams(const QVariantMap &params);
 	QVariantMap saveParams();
+
+	static QString disciplineName(int disc_id);
+	static QString sportName(int sport_id);
 private:
 	Ui::EventDialogWidget *ui;
 };

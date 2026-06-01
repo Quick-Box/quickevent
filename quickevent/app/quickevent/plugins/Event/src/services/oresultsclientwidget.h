@@ -2,6 +2,8 @@
 
 #include <qf/gui/framework/dialogwidget.h>
 
+#include <functional>
+
 namespace Event {
 namespace services {
 
@@ -22,10 +24,16 @@ public:
 private:
 	void onBtExportResultsXml30Clicked();
 	void onBtExportStartListXml30Clicked();
+	void onBtTestApiKeyClicked();
+	void runTest(const QString &key, std::function<void(bool)> onDone);
+	void updateTestStatus(const QString &name);
 	OResultsClient* service();
 	bool saveSettings();
 private:
 	Ui::OResultsClientWidget *ui;
+	QString m_loadedApiKey;
+	bool m_testPassed = false;
+	bool m_testRunning = false;
 	bool acceptDialogDone(int result);
 };
 

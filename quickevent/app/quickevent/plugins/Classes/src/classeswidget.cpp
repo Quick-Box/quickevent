@@ -115,7 +115,7 @@ ClassesWidget::ClassesWidget(QWidget *parent) :
 		ui->tblClassesTB->setTableView(ui->tblClasses);
 		auto *m = new qfm::SqlTableModel(this);
 		m->setIdColumnName("classes.id");
-		m->addColumn("classes.id").setReadOnly(true);
+		m->addColumn("classes.id", tr("Id")).setReadOnly(true);
 		m->addColumn("classes.name", tr("Class"));
 		m->addColumn("classdefs.drawLock", tr("DL")).setToolTip(tr("Locked for drawing"));
 		m->addColumn("classdefs.startTimeMin", tr("Start"));
@@ -237,6 +237,7 @@ void ClassesWidget::edit_courses()
 	qf::gui::dialogs::Dialog dlg(QDialogButtonBox::Close, this);
 	int stage_id = selectedStageId();
 	auto *w = new EditCoursesWidget(stage_id);
+	w->setWindowTitle(tr("Edit Courses"));
 	dlg.setCentralWidget(w);
 	dlg.exec();
 	reload();
@@ -246,6 +247,7 @@ void ClassesWidget::edit_codes()
 {
 	qf::gui::dialogs::Dialog dlg(QDialogButtonBox::Close, this);
 	auto *w = new EditCodesWidget();
+	w->setWindowTitle(tr("Edit Codes"));
 	dlg.setCentralWidget(w);
 	//auto *bt_apply = dlg.buttonBox()->button(QDialogButtonBox::Apply);
 	//connect(bt_apply, &QPushButton::clicked, this, &MainWindow::askUserToRestartAppServer);

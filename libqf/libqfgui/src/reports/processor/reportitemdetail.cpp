@@ -77,7 +77,7 @@ QVariant ReportItemDetail::rowData(const QString &field_name, int role)
 	return data(currentIndex(), field_name, role);
 }
 
-ReportItem::PrintResult ReportItemDetail::printMetaPaint(ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
+ReportItem::PrintResult ReportItemDetail::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const ReportItem::Rect &bounding_rect)
 {
 	qfLogFuncFrame();
 	QF_TIME_SCOPE("ReportItemDetail::printMetaPaint");
@@ -103,7 +103,7 @@ ReportItem::PrintResult ReportItemDetail::printMetaPaint(ReportItemMetaPaint *ou
 		return res;
 	}
 	--*/
-	PrintResult res = Super::printMetaPaint(out, bounding_rect);
+	PrintResult res = Super::printMetaPaint(paint_device, out, bounding_rect);
 	if(res.isPrintFinished()) {
 		if(model) {
 			/// take next data row

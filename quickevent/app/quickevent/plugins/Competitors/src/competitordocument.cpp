@@ -5,6 +5,7 @@
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
+#include <qf/gui/framework/application.h>
 
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/query.h>
@@ -81,13 +82,17 @@ bool CompetitorDocument::saveData()
 				if(siid_dirty)
 					q.bindValue(":siId", siid());
 				q.exec(qf::core::Exception::Throw);
-				m_runsIds << q.lastInsertId().toInt();
+				auto run_id = q.lastInsertId().toInt();
+				m_runsIds << run_id;
 			}
 			if(m_isEmitDbEventsOnSave) {
 				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_COUNTS_CHANGED);
 				for (auto run_id : m_runsIds) {
 					auto rec = runs_plugin->runsRecord(run_id);
 					getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, rec});
+					// new update API
+					auto *app = qf::gui::framework::Application::instance();
+					app->emitDbRecInserted( "runs", run_id, rec, this);
 				}
 			}
 		}
@@ -95,12 +100,17 @@ bool CompetitorDocument::saveData()
 			competitor_id = dataId().toInt();
 			if(siid_dirty) {
 				qfDebug() << "updating SIID in run tables";
-				int competitor_id = dataId().toInt();
-				qf::core::sql::Query q(sqlModel()->connectionName());
-				q.prepare("UPDATE runs SET siId=:siId WHERE competitorId=:competitorId", qf::core::Exception::Throw);
-				q.bindValue(":competitorId", competitor_id);
-				q.bindValue(":siId", siid());
-				q.exec(qf::core::Exception::Throw);
+				auto *app = qf::gui::framework::Application::instance();
+				QVariantMap rec { {"siId", siid()}, };
+				for (const auto &[run_id, _] : old_records.asKeyValueRange()) {
+					app->updateDbRecord("runs", run_id, rec, this);
+				}
+				// int competitor_id = dataId().toInt();
+				// qf::core::sql::Query q(sqlModel()->connectionName());
+				// q.prepare("UPDATE runs SET siId=:siId WHERE competitorId=:competitorId", qf::core::Exception::Throw);
+				// q.bindValue(":competitorId", competitor_id);
+				// q.bindValue(":siId", siid());
+				// q.exec(qf::core::Exception::Throw);
 			}
 			if(m_isEmitDbEventsOnSave) {
 				if(class_dirty) {
@@ -123,11 +133,11 @@ bool CompetitorDocument::saveData()
 		if (m_isEmitDbEventsOnSave)
 		{
 			if (old_mode == DataDocument::ModeInsert)
-			{				
+			{
 				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_ADDED, competitor_id);
 			}
 			else if (old_mode == DataDocument::ModeEdit)
-			{				
+			{
 				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_EDITED, competitor_id);
 			}
 		}
@@ -159,6 +169,9 @@ bool CompetitorDocument::dropData()
 			getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_COUNTS_CHANGED);
 			for (auto run_id : run_ids) {
 				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, {}});
+				// new update API
+				auto *app = qf::gui::framework::Application::instance();
+				app->emitDbRecDeleted("runs", run_id, this);
 			}
 		}
 	}

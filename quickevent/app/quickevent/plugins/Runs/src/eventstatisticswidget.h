@@ -28,7 +28,6 @@ public:
 	void loadPersistentSettings();
 	void savePersistentSettings();
 private:
-	void onReloadClicked();
 	void onOptionsClicked();
 	void onPrintResultsSelectedClicked();
 	void onPrintResultsNewClicked();

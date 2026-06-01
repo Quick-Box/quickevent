@@ -3,6 +3,8 @@
 
 #include "src/qx/sqltablemodel.h"
 
+namespace qf::core::sql { struct QxRecChng; }
+
 class RunsTableModel : public ::qx::SqlTableModel
 {
 	Q_OBJECT
@@ -62,6 +64,7 @@ public:
 	Q_SIGNAL void badDataInput(const QString &message);
 private:
 	void onDataChanged(const QModelIndex &top_left, const QModelIndex &bottom_right, const QVector<int> &roles);
+	void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 };
 
 #endif // RUNSTABLEMODEL_H

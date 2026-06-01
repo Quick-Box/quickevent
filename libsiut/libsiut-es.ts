@@ -31,7 +31,7 @@
     <message>
         <location filename="src/sicard.cpp" line="46"/>
         <source>batteryStatus: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>estadoBatería: %1</translation>
     </message>
 </context>
 <context>

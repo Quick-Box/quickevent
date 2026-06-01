@@ -41,7 +41,7 @@ public:
 	CoursesTableModel(QObject *parent) : Super(parent)
 	{
 		clearColumns(Col_COUNT);
-		setColumn(Col_id, qf::gui::model::TableModel::ColumnDefinition("id", tr("Id")).setReadOnly(true));
+		setColumn(Col_id, qf::gui::model::TableModel::ColumnDefinition("courses.id", tr("Id")).setReadOnly(true));
 		setColumn(Col_name, qf::gui::model::TableModel::ColumnDefinition("courses.name", tr("Name")));
 		setColumn(Col_length, qf::gui::model::TableModel::ColumnDefinition("courses.length", tr("Length")));
 		setColumn(Col_climb, qf::gui::model::TableModel::ColumnDefinition("courses.climb", tr("Climb")));
@@ -70,6 +70,7 @@ public:
 EditCoursesWidget::EditCoursesWidget(int stage_id, QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::EditCoursesWidget)
+	, m_stageId(stage_id)
 {
 	setPersistentSettingsId("EditCoursesWidget");
 	ui->setupUi(this);
@@ -87,62 +88,92 @@ EditCoursesWidget::EditCoursesWidget(int stage_id, QWidget *parent)
 		ui->tblCourses->setTableModel(m);
 		m_coursesModel = m;
 	}
-	{
-		qf::core::sql::Connection conn = m_coursesModel->sqlConnection();
-		qfs::QueryBuilder qb_code_count;
-		qb_code_count.select("COUNT(*)").from("coursecodes")
-				.join("coursecodes.codeId", "codes.id")
-				.where("coursecodes.courseId=courses.id AND "
-					"codes.code >= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MIN) " AND "
-					"codes.code <= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MAX))
-				.as("code_count");
 
-		QString control_code_query = "SELECT CAST(code AS TEXT) AS code, position"
-						" FROM coursecodes INNER JOIN codes ON codes.id = coursecodes.codeId WHERE (coursecodes.courseId = courses.id)"
-						" AND code >= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MIN)
-						" AND code <= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MAX);
-		QString start_code_query = "SELECT 'S' || (code - " QF_IARG(quickevent::core::CodeDef::START_PUNCH_CODE) ") AS code, position"
-						" FROM coursecodes INNER JOIN codes ON codes.id = coursecodes.codeId WHERE (coursecodes.courseId = courses.id)"
-						" AND code >= " QF_IARG(quickevent::core::CodeDef::START_PUNCH_CODE)
-						" AND code < " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MIN);
-		QString finnish_code_query = "SELECT 'F' || (code - " QF_IARG(quickevent::core::CodeDef::FINISH_PUNCH_CODE) ") AS code, position "
-						" FROM coursecodes INNER JOIN codes ON codes.id = coursecodes.codeId WHERE (coursecodes.courseId = courses.id)"
-						" AND code >= " QF_IARG(quickevent::core::CodeDef::FINISH_PUNCH_CODE);
+	updateQuery();
 
-		QString code_list_query = start_code_query + " UNION " + control_code_query + " UNION " + finnish_code_query + " ORDER BY position";
-		if(conn.driverName().endsWith(QLatin1String("PSQL"), Qt::CaseInsensitive)) {
-			code_list_query = "(SELECT string_agg(code, ',') FROM (" + code_list_query + ") AS code_list_query )";
-		}
-		else {
-			code_list_query = "(SELECT GROUP_CONCAT(code) FROM (" + code_list_query + ") )";
-		}
+	QHeaderView *hh = ui->tblCourses->horizontalHeader();
+	hh->setSectionHidden(CoursesTableModel::Col_runCount, true);
 
-		qfs::QueryBuilder qb;
-		if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
-			qb.select2("courses", "*")
-					.select("0 AS run_count")
-					.select(code_list_query + "AS code_list")
-					.select(qb_code_count.toString())
-					.from("courses")
-					.orderBy("courses.name");
-		} else {
-			qb.select2("courses", "*")
-					.select("COUNT(runs.id) AS run_count")
-					.select(code_list_query + "AS code_list")
-					.select(qb_code_count.toString())
-					.from("courses")
-					.join("courses.id", "classdefs.courseId", qf::core::sql::QueryBuilder::INNER_JOIN)
-					.join("classdefs.classId", "classes.id")
-					.join("classes.id", "competitors.classId")
-					.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning")
-					.where("classdefs.stageId=" QF_IARG(stage_id))
-					.groupBy("courses.id")
-					.orderBy("courses.name");
-		}
-
-		m_coursesModel->setQueryBuilder(qb, false);
-		m_coursesModel->reload();
+	if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+		ui->cbRunnersCount->setVisible(false);
+	} else {
+		connect (ui->cbRunnersCount,&QCheckBox::clicked,this,&EditCoursesWidget::updateQuery);
 	}
+}
+
+void EditCoursesWidget::updateQuery()
+{
+	qf::core::sql::Connection conn = m_coursesModel->sqlConnection();
+	qfs::QueryBuilder qb_code_count;
+	qb_code_count.select("COUNT(*)").from("coursecodes")
+			.join("coursecodes.codeId", "codes.id")
+			.where("coursecodes.courseId=courses.id AND "
+				"codes.code >= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MIN) " AND "
+				"codes.code <= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MAX))
+			.as("code_count");
+
+	QString control_code_query = "SELECT CAST(code AS TEXT) AS code, position"
+					" FROM coursecodes INNER JOIN codes ON codes.id = coursecodes.codeId WHERE (coursecodes.courseId = courses.id)"
+					" AND code >= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MIN)
+					" AND code <= " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MAX);
+	QString start_code_query = "SELECT 'S' || (code - " QF_IARG(quickevent::core::CodeDef::START_PUNCH_CODE) ") AS code, position"
+					" FROM coursecodes INNER JOIN codes ON codes.id = coursecodes.codeId WHERE (coursecodes.courseId = courses.id)"
+					" AND code >= " QF_IARG(quickevent::core::CodeDef::START_PUNCH_CODE)
+					" AND code < " QF_IARG(quickevent::core::CodeDef::PUNCH_CODE_MIN);
+	QString finnish_code_query = "SELECT 'F' || (code - " QF_IARG(quickevent::core::CodeDef::FINISH_PUNCH_CODE) ") AS code, position "
+					" FROM coursecodes INNER JOIN codes ON codes.id = coursecodes.codeId WHERE (coursecodes.courseId = courses.id)"
+					" AND code >= " QF_IARG(quickevent::core::CodeDef::FINISH_PUNCH_CODE);
+
+	QString code_list_query = start_code_query + " UNION " + control_code_query + " UNION " + finnish_code_query + " ORDER BY position";
+	if(conn.driverName().endsWith(QLatin1String("PSQL"), Qt::CaseInsensitive)) {
+		code_list_query = "(SELECT string_agg(code, ',') FROM (" + code_list_query + ") AS code_list_query )";
+	}
+	else {
+		code_list_query = "(SELECT GROUP_CONCAT(code) FROM (" + code_list_query + ") )";
+	}
+
+
+
+	qfs::QueryBuilder qb;
+	if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+		qb.select2("courses", "*")
+				.select("0 AS run_count")
+				.select(code_list_query + "AS code_list")
+				.select(qb_code_count.toString())
+				.from("courses")
+				.orderBy("courses.name");
+	} else if (ui->cbRunnersCount->isChecked()) {
+		qb.select2("courses", "*")
+		.select("COUNT(runs.id) AS run_count")
+			.select(code_list_query + "AS code_list")
+			.select(qb_code_count.toString())
+			.from("courses")
+			.join("courses.id", "classdefs.courseId", qf::core::sql::QueryBuilder::INNER_JOIN)
+			.join("classdefs.classId", "classes.id")
+			.join("classes.id", "competitors.classId")
+			.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning")
+			.where("classdefs.stageId=" QF_IARG(m_stageId))
+			.groupBy("courses.id")
+			.orderBy("courses.name");
+
+		QHeaderView *hh = ui->tblCourses->horizontalHeader();
+//		hh->setSectionHidden(CoursesTableModel::Col_mapCount, false);
+		hh->setSectionHidden(CoursesTableModel::Col_runCount, false);
+	} else {
+		qb.select2("courses", "*")
+		.select("0 AS run_count")
+			.select(code_list_query + "AS code_list")
+			.select(qb_code_count.toString())
+			.from("courses")
+			.orderBy("courses.name");
+
+		QHeaderView *hh = ui->tblCourses->horizontalHeader();
+//		hh->setSectionHidden(CoursesTableModel::Col_mapCount, true);
+		hh->setSectionHidden(CoursesTableModel::Col_runCount, true);
+	}
+
+	m_coursesModel->setQueryBuilder(qb, false);
+	m_coursesModel->reload();
 }
 
 EditCoursesWidget::~EditCoursesWidget()

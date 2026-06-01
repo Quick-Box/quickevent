@@ -247,12 +247,11 @@ Table::Field::Field(const QString & _name, const QString & _def)
 //=========================================
 int Table::FieldList::fieldIndex(const QString &field_name) const
 {
-	int col = -1, i = 0;
+	int i = 0;
 	QString s = field_name;
 	foreach(Field fld, *this) {
 		if(Utils::fieldNameEndsWith(fld.name(), s)) {
-			col = i;
-			break;
+			return i;
 		}
 		i++;
 	}
@@ -269,7 +268,7 @@ int Table::FieldList::fieldIndex(const QString &field_name) const
 		return -1;
 	}
 	*/
-	return col;
+	return -1;
 }
 
 bool Table::FieldList::isValidFieldIndex(int fld_ix) const
@@ -477,8 +476,9 @@ void TableRow::setValue(int col, const QVariant &v)
 		return);
 
 	QVariant new_val;
-	if(v.isValid())
+	if(v.isValid()) {
 		new_val = Utils::retypeVariant(v, fields()[col].type().id());
+	}
 	QVariant orig_val = origValue(col);
 	//qfInfo() << new_val << "is null:" << new_val.isNull() << "==" << orig_val << "is null:" << orig_val.isNull() << "->" << (new_val == orig_val);
 	bool same_nullity = (new_val.isNull() && orig_val.isNull()) || (!new_val.isNull() && !orig_val.isNull());
@@ -504,11 +504,13 @@ void TableRow::setValue(const QString &field_name, const QVariant &v)
 void TableRow::restoreOrigValue(int col)
 {
 	qfLogFuncFrame() << "col:" << col;
-	QVariant orig_val = d->origValues.value(col);
-	/// pokud hodnota byla nastavena (napr. po opakovanem prenastaveni) nakonec na originalni, neni nutne ji ukladat
-	d->values[col] = orig_val;
-	if(col < d->dirtyFlags.count()) {
-		d->dirtyFlags[col] = false;
+	auto v = origValue(col);
+	if (col >= 0 && col < d->origValues.size() && col < d->values.size()) {
+		d->origValues[col] = v;
+		/// pokud hodnota byla nastavena (napr. po opakovanem prenastaveni) nakonec na originalni, neni nutne ji ukladat
+		if (d->values[col] == v && col < d->dirtyFlags.count()) {
+			d->dirtyFlags[col] = false;
+		}
 	}
 }
 

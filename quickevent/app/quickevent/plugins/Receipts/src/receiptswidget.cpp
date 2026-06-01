@@ -261,8 +261,9 @@ bool ReceiptsWidget::printReceipt(int card_id)
 			}
 		}
 	}
-	if(ok)
+	if(ok) {
 		markAsPrinted(connection_id, card_id);
+	}
 	return ok;
 }
 

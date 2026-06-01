@@ -31,6 +31,7 @@ private:
 	QF_VARIANTMAP_FIELD(bool, is, set, BadCheck)
 	QF_VARIANTMAP_FIELD(bool, is, set, MisPunch)
 	QF_VARIANTMAP_FIELD(QVariantMap, d, setD, ata)
+	QF_VARIANTMAP_FIELD(QVariantList, m, setM, issingCodes)
 public:
 	CheckedCard(const QVariantMap &data = QVariantMap());
 

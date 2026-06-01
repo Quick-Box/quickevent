@@ -993,6 +993,7 @@ void RunsWidget::export_startList_stage_csv_sime()
 	quickevent::gui::ReportOptionsDialog dlg(fwk);
 	dlg.setPersistentSettingsId("startListCsvSimeReportOptions");
 	dlg.loadPersistentSettings();
+	dlg.setCurrentStageId(selectedStageId());
 	dlg.setStartListOptionsVisible(true);
 	dlg.setVacantsVisible(false);
 	dlg.setPageLayoutVisible(false);

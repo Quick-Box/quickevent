@@ -41,7 +41,9 @@ int ChooseOrisEventDialog::eventId()
 
 void ChooseOrisEventDialog::load()
 {
-	ui->cbxOrisEvent->lineEdit()->setPlaceholderText(tr("Loading event list from Oris ..."));
+	ui->cbxOrisEvent->setPlaceholderText(tr("Loading event list from Oris ..."));
+	ui->cbxOrisEvent->setEnabled(false);
+	ui->cbxOrisEvent->setEditable(false);
 	ui->cbxOrisEvent->clear();
 	//QCoreApplication::processEvents();
 	QDate d = QDate::currentDate();
@@ -71,6 +73,12 @@ void ChooseOrisEventDialog::load()
 			//qfInfo() << event_description;
 			events_by_descr[event_description] = event_id;
 		}
+
+		ui->cbxOrisEvent->setEnabled(true);
+		ui->cbxOrisEvent->setEditable(true);
+		ui->cbxOrisEvent->setPlaceholderText(tr("Search in events ..."));
+		ui->cbxOrisEvent->lineEdit()->clear();
+
 		QMapIterator<QString, int> it(events_by_descr);
 		while(it.hasNext()) {
 			it.next();
@@ -81,11 +89,6 @@ void ChooseOrisEventDialog::load()
 		m_completer->setFilterMode(Qt::MatchContains);
 		m_completer->setCaseSensitivity(Qt::CaseInsensitive);
 		ui->cbxOrisEvent->setCompleter(m_completer);
-
-		ui->cbxOrisEvent->lineEdit()->setPlaceholderText(tr("Search in events ..."));
-		//ui->cbxOrisEvent->lineEdit()->selectAll();
-		ui->cbxOrisEvent->lineEdit()->clear();
-		//ui->edEventId->setValue(0);
 	});
 }
 
