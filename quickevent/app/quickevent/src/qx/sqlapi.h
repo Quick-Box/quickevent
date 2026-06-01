@@ -11,45 +11,49 @@ namespace qf::core::sql { struct QxRecChng; }
 
 namespace qx {
 
-struct RpcSqlField
+struct DbField
 {
-	std::string name;
+	QString name;
 
-	//explicit RpcSqlField(const QJsonObject &jo = QJsonObject()) : Super(jo) {}
+	//explicit DbField(const QJsonObject &jo = QJsonObject()) : Super(jo) {}
 	shv::chainpack::RpcValue toRpcValue() const;
 	// QVariant toVariant() const;
-	static RpcSqlField fromRpcValue(const shv::chainpack::RpcValue &rv);
-	// static RpcSqlField fromVariant(const QVariant &v);
+	static DbField fromRpcValue(const shv::chainpack::RpcValue &rv);
+	// static DbField fromVariant(const QVariant &v);
 };
 
-struct RpcSqlResult
+struct ExecResult
 {
 	int numRowsAffected = 0;
 	std::optional<int> lastInsertId = 0;
-	std::vector<RpcSqlField> fields;
-	using Row = shv::chainpack::RpcValue::List;
-	std::vector<Row> rows;
 
-	RpcSqlResult() = default;
-
-	std::optional<size_t> columnIndex(const std::string &name) const;
-	const shv::chainpack::RpcValue& value(size_t row, size_t col) const;
-	const shv::chainpack::RpcValue& value(size_t row, const std::string &name) const;
-	void setValue(size_t row, size_t col, const shv::chainpack::RpcValue &val);
-	void setValue(size_t row, const std::string &name, const shv::chainpack::RpcValue &val);
-
-	bool isSelect() const {return !fields.empty();}
 	shv::chainpack::RpcValue toRpcValue() const;
-	shv::chainpack::RpcValue::List toRecordList() const;
-	static RpcSqlResult fromRpcValue(const shv::chainpack::RpcValue &rv);
+	static ExecResult fromRpcValue(const shv::chainpack::RpcValue &rv);
 };
 
-using SqlRecord = shv::chainpack::RpcValue::Map;
+struct QueryResult
+{
+	std::vector<DbField> fields;
+	using Row = QVariantList;
+	QList<Row> rows;
+
+	std::optional<qsizetype> columnIndex(const std::string &name) const;
+	QVariant value(qsizetype row, qsizetype col) const;
+	QVariant value(qsizetype row, const std::string &name) const;
+	void setValue(qsizetype row, qsizetype col, const QVariant &val);
+	void setValue(qsizetype row, const std::string &name, const QVariant &val);
+
+	shv::chainpack::RpcValue toRpcValue() const;
+	static QueryResult fromRpcValue(const shv::chainpack::RpcValue &rv);
+	shv::chainpack::RpcValue::List toRecordList() const;
+};
+
+using Record = QVariantMap;
 
 struct SqlQueryAndParams
 {
-	std::string query;
-	SqlRecord params;
+	QString query;
+	Record params;
 
 	static SqlQueryAndParams fromRpcValue(const shv::chainpack::RpcValue &rv);
 };
@@ -66,13 +70,13 @@ public:
 	// Q_SIGNAL void recchng(const qf::core::sql::QxRecChng &chng);
 	// void emitRecChng(const qf::core::sql::QxRecChng &chng);
 
-	static RpcSqlResult exec(const SqlQueryAndParams &params);
-	static RpcSqlResult query(const SqlQueryAndParams &params);
+	static ExecResult exec(const SqlQueryAndParams &params);
+	static QueryResult query(const SqlQueryAndParams &params);
 	static void transaction(const std::string &query, const shv::chainpack::RpcValue::List &params);
-	static RpcSqlResult list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit);
-	static int64_t create(const std::string &table, const SqlRecord &record);
-	static std::optional<SqlRecord> read(const std::string &table, int64_t id, const std::vector<std::string> &fields);
-	static bool update(const std::string &table, int64_t id, const SqlRecord &record);
+	static QueryResult list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit);
+	static int64_t create(const std::string &table, const shv::chainpack::RpcValue::Map &record);
+	static std::optional<Record> read(const std::string &table, int64_t id, const std::vector<std::string> &fields);
+	static bool update(const std::string &table, int64_t id, const shv::chainpack::RpcValue::Map &record);
 	static bool drop(const std::string &table, int64_t id);
 private:
 	explicit SqlApi(QObject *parent = nullptr);

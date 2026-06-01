@@ -24,25 +24,45 @@ namespace qx {
 //==============================================
 // RpcSqlField
 //==============================================
-RpcValue RpcSqlField::toRpcValue() const
+RpcValue DbField::toRpcValue() const
 {
 	RpcValue::Map ret;
-	ret["name"] = name;
+	ret["name"] = name.toStdString();
 	return RpcValue(std::move(ret));
 }
 
-RpcSqlField RpcSqlField::fromRpcValue(const shv::chainpack::RpcValue &rv)
+DbField DbField::fromRpcValue(const shv::chainpack::RpcValue &rv)
 {
-	RpcSqlField ret;
+	DbField ret;
 	const RpcValue::Map &map = rv.asMap();
-	ret.name = map.value("name").asString();
+	ret.name = QString::fromStdString(map.value("name").asString());
 	return ret;
 }
 
 //==============================================
-// RpcSqlResult
+// ExecResult
 //==============================================
-const RpcValue &RpcSqlResult::value(size_t row, size_t col) const
+RpcValue ExecResult::toRpcValue() const
+{
+	RpcValue::Map ret;
+	ret["numRowsAffected"] = numRowsAffected;
+	ret["lastInsertId"] = lastInsertId.has_value()? RpcValue(lastInsertId.value()): RpcValue(nullptr);
+	return ret;
+}
+
+ExecResult ExecResult::fromRpcValue(const shv::chainpack::RpcValue &rv)
+{
+	ExecResult ret;
+	const auto &map = rv.asMap();
+	ret.numRowsAffected = map.value("numRowsAffected").toInt();
+	ret.lastInsertId = map.value("lastInsertId").toInt();
+	return ret;
+}
+
+//==============================================
+// QueryResult
+//==============================================
+QVariant QueryResult::value(qsizetype row, qsizetype col) const
 {
 	if (row < rows.size()) {
 		const auto &cells = rows[row];
@@ -50,20 +70,18 @@ const RpcValue &RpcSqlResult::value(size_t row, size_t col) const
 			return cells[col];
 		}
 	}
-	static RpcValue s;
-	return s;
+	return {};
 }
 
-const RpcValue& RpcSqlResult::value(size_t row, const std::string &name) const
+QVariant QueryResult::value(qsizetype row, const std::string &name) const
 {
 	if (auto ix = columnIndex(name); ix.has_value()) {
 		return value(row, ix.value());
 	}
-	static RpcValue s;
-	return s;
+	return {};
 }
 
-void RpcSqlResult::setValue(size_t row, size_t col, const RpcValue &val)
+void QueryResult::setValue(qsizetype row, qsizetype col, const QVariant &val)
 {
 	if (row < rows.size()) {
 		auto &r = rows[row];
@@ -73,80 +91,81 @@ void RpcSqlResult::setValue(size_t row, size_t col, const RpcValue &val)
 	}
 }
 
-void RpcSqlResult::setValue(size_t row, const std::string &name, const RpcValue &val)
+void QueryResult::setValue(qsizetype row, const std::string &name, const QVariant &val)
 {
 	if (auto ix = columnIndex(name); ix.has_value()) {
 		setValue(row, ix.value(), val);
 	}
 }
 
-RpcValue::List RpcSqlResult::toRecordList() const
+RpcValue::List QueryResult::toRecordList() const
 {
 	RpcValue::List ret;
 	for (const auto &row : rows) {
-		SqlRecord rec;
+		RpcValue::Map rec;
 		int n = 0;
 		for (const auto &field : fields) {
-			rec[field.name] = row[n++];
+			rec[field.name.toStdString()] = shv::coreqt::rpc::qVariantToRpcValue(row.value(n++));
 		}
 		ret.push_back(rec);
 	}
 	return ret;
 }
 
-std::optional<size_t> RpcSqlResult::columnIndex(const std::string &name) const
+std::optional<qsizetype> QueryResult::columnIndex(const std::string &name) const
 {
 	for (size_t col = 0; col < fields.size(); ++col) {
 		const auto &fld = fields[col];
-		if (fld.name == name) {
+		if (fld.name.toStdString() == name) {
 			return col;
 		}
 	}
 	return {};
 }
 
-RpcValue RpcSqlResult::toRpcValue() const
+RpcValue QueryResult::toRpcValue() const
 {
 	RpcValue::Map ret;
-	if(isSelect()) {
-		RpcValue::List flds;
-		for(const auto &fld : this->fields)
-			flds.push_back(fld.toRpcValue());
-		ret["fields"] = flds;
-		ret["rows"] = rows;
+	RpcValue::List flds;
+	for(const auto &fld : this->fields)
+		flds.push_back(fld.toRpcValue());
+	RpcValue::List rpc_rows;
+	for (const auto &row : rows) {
+		RpcValue::List rpc_row;
+		for (const auto &cell : row) {
+			rpc_row.push_back(shv::coreqt::rpc::qVariantToRpcValue(cell));
+		}
+		rpc_rows.push_back(std::move(rpc_row));
 	}
-	else {
-		ret["numRowsAffected"] = numRowsAffected;
-		ret["lastInsertId"] = lastInsertId.has_value()? RpcValue(lastInsertId.value()): RpcValue(nullptr);
-	}
+	ret["fields"] = flds;
+	ret["rows"] = std::move(rpc_rows);
 	return ret;
 }
 
-RpcSqlResult RpcSqlResult::fromRpcValue(const RpcValue &rv)
+QueryResult QueryResult::fromRpcValue(const RpcValue &rv)
 {
-	RpcSqlResult ret;
+	QueryResult ret;
 	const auto &map = rv.asMap();
 	const auto &flds = map.valref("fields").asList();
-	if(flds.empty()) {
-		ret.numRowsAffected = map.value("numRowsAffected").toInt();
-		ret.lastInsertId = map.value("lastInsertId").toInt();
+	for(const auto &fv : flds) {
+		ret.fields.push_back(DbField::fromRpcValue(fv));
 	}
-	else {
-		for(const auto &fv : flds) {
-			ret.fields.push_back(RpcSqlField::fromRpcValue(fv));
+	for (const auto &rpc_row : map.value("rows").asList()) {
+		QueryResult::Row row;
+		for (const auto &cell : rpc_row.asList()) {
+			row.push_back(shv::coreqt::rpc::rpcValueToQVariant(cell));
 		}
-		for (const auto &row : map.value("rows").asList()) {
-			ret.rows.push_back(row.asList());
-		}
+		ret.rows.push_back(row);
 	}
 	return ret;
 }
 
 SqlQueryAndParams SqlQueryAndParams::fromRpcValue(const shv::chainpack::RpcValue &rv)
 {
-	auto sql_query = rv.asList().valref(0).asString();
-	const auto &sql_params = rv.asList().valref(0);
-	return SqlQueryAndParams { .query = sql_query, .params = sql_params.asMap() };
+	const auto &lst = rv.asList();
+	auto sql_query = QString::fromStdString(lst.valref(0).asString());
+	const auto &sql_params = lst.valref(1);
+	return SqlQueryAndParams { .query = sql_query, .params = shv::coreqt::rpc::rpcValueToQVariant(sql_params).toMap() };
 }
 
 
@@ -205,61 +224,63 @@ private:
 	bool m_inTransaction = true;
 };
 
-RpcSqlResult rpcSqlQuery(const SqlQueryAndParams &params)
+void bindParams(qf::core::sql::Query &q, const Record &params)
+{
+	for (const auto &[k, v] : params.asKeyValueRange()) {
+		q.bindValue(':' + k, v);
+	}
+}
+
+QueryResult sqlQuery(const SqlQueryAndParams &params)
 {
 	qf::core::sql::Query q;
-	q.prepare(QString::fromUtf8(params.query), qf::core::Exception::Throw);
-	for (const auto &[k, v] : params.params) {
-		bool ok;
-		QVariant val = shv::coreqt::rpc::rpcValueToQVariant(v, &ok);
-		if (!ok) {
-			QF_EXCEPTION(QStringLiteral("Cannot convert SHV type: %1 to QVariant").arg(v.typeName()));
-		}
-		q.bindValue(':' + QString::fromStdString(k), val);
-	}
+	q.prepare(params.query, qf::core::Exception::Throw);
+	bindParams(q, params.params);
 	q.exec(qf::core::Exception::Throw);
-	RpcSqlResult ret;
-	if(q.isSelect()) {
-		QSqlRecord rec = q.record();
+
+	QueryResult ret;
+	QSqlRecord rec = q.record();
+	for (int i = 0; i < rec.count(); ++i) {
+		QSqlField fld = rec.field(i);
+		DbField rfld;
+		rfld.name = fld.name();
+		// rfld.name.replace("__", ".");
+		ret.fields.push_back(rfld);
+	}
+	while(q.next()) {
+		QueryResult::Row row;
 		for (int i = 0; i < rec.count(); ++i) {
-			QSqlField fld = rec.field(i);
-			RpcSqlField rfld;
-			rfld.name = fld.name().toStdString();
-			// rfld.name.replace("__", ".");
-			ret.fields.push_back(rfld);
+			row.push_back(q.value(i));
+			//shvError() << v << v.isNull() << jsv.toVariant() << jsv.toVariant().isNull();
 		}
-		while(q.next()) {
-			RpcSqlResult::Row row;
-			for (int i = 0; i < rec.count(); ++i) {
-				const QVariant v = q.value(i);
-				if (v.isNull()) {
-					row.push_back(RpcValue(nullptr));
-				}
-				else {
-					row.push_back(shv::coreqt::rpc::qVariantToRpcValue(v));
-				}
-				//shvError() << v << v.isNull() << jsv.toVariant() << jsv.toVariant().isNull();
-			}
-			ret.rows.push_back(row);
-		}
+		ret.rows.insert(ret.rows.size(), row);
 	}
-	else {
-		ret.numRowsAffected = q.numRowsAffected();
-		ret.lastInsertId = q.lastInsertId().toInt();
-	}
+	return ret;
+}
+
+ExecResult sqlExec(const SqlQueryAndParams &params)
+{
+	qf::core::sql::Query q;
+	q.prepare(params.query, qf::core::Exception::Throw);
+	bindParams(q, params.params);
+	q.exec(qf::core::Exception::Throw);
+
+	ExecResult ret;
+	ret.numRowsAffected = q.numRowsAffected();
+	ret.lastInsertId = q.lastInsertId().toInt();
 	return ret;
 }
 
 }
 
-RpcSqlResult SqlApi::exec(const SqlQueryAndParams &params)
+ExecResult SqlApi::exec(const SqlQueryAndParams &params)
 {
-	return rpcSqlQuery(params);
+	return sqlExec(params);
 }
 
-RpcSqlResult SqlApi::query(const SqlQueryAndParams &params)
+QueryResult SqlApi::query(const SqlQueryAndParams &params)
 {
-	return rpcSqlQuery(params);
+	return sqlQuery(params);
 }
 
 void SqlApi::transaction(const std::string &query, const shv::chainpack::RpcValue::List &params)
@@ -282,7 +303,7 @@ void SqlApi::transaction(const std::string &query, const shv::chainpack::RpcValu
 	tranaction.commit();
 }
 
-RpcSqlResult SqlApi::list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit)
+QueryResult SqlApi::list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit)
 {
 	QStringList qfields;
 	for (const auto &fn : fields) {
@@ -298,7 +319,7 @@ RpcSqlResult SqlApi::list(const std::string &table, const std::vector<std::strin
 	if (limit.has_value()) {
 		sql_query += " LIMIT " + QString::number(limit.value());
 	}
-	auto res = rpcSqlQuery(SqlQueryAndParams { .query = sql_query.toStdString(), .params = {}});
+	auto res = sqlQuery(SqlQueryAndParams { .query = sql_query, .params = {}});
 	return res;
 }
 namespace {
@@ -308,31 +329,32 @@ std::string to_lower(const std::string &s)
 	result.reserve(s.size());
 
 	std::ranges::transform(s, std::back_inserter(result),
-				   [](unsigned char c) { return std::tolower(c); });
+			[](unsigned char c) { return std::tolower(c); });
 
 	return result;
 }
 
-SqlRecord normalizeFieldNames(const SqlRecord &rec)
+[[maybe_unused]] Record normalizeFieldNames(const Record &rec)
 {
-	SqlRecord ret;
-	for (const auto &[k, v] : rec) {
-		ret[to_lower(k)] = v;
+	Record ret;
+	for (const auto &[k, v] : rec.asKeyValueRange()) {
+		ret[QString::fromStdString(to_lower(k.toStdString()))] = v;
 	}
 	return ret;
 }
 }
-int64_t SqlApi::create(const std::string &table, const SqlRecord &record)
+int64_t SqlApi::create(const std::string &table, const RpcValue::Map &record)
 {
 	QStringList fields;
 	QStringList placeholders;
 	for (const auto &[k, v] : record) {
-		auto name = QString::fromStdString(k);
-		fields << name;
-		placeholders << ':' + name;
+		Q_UNUSED(v)
+		auto qk = QString::fromStdString(k);
+		fields << qk;
+		placeholders << ':' + qk;
 	}
 	QString sql_query = QStringLiteral("INSERT INTO %1 (%2) VALUES (%3)")
-			.arg(table)
+			.arg(QString::fromStdString(table))
 			.arg(fields.join(','))
 			.arg(placeholders.join(','));
 	qf::core::sql::Query q;
@@ -352,7 +374,7 @@ int64_t SqlApi::create(const std::string &table, const SqlRecord &record)
 	return id;
 }
 
-std::optional<SqlRecord> SqlApi::read(const std::string &table, int64_t id, const std::vector<std::string> &fields)
+std::optional<Record> SqlApi::read(const std::string &table, int64_t id, const std::vector<std::string> &fields)
 {
 	QStringList qfields;
 	for (const auto &fn : fields) {
@@ -365,30 +387,34 @@ std::optional<SqlRecord> SqlApi::read(const std::string &table, int64_t id, cons
 			.arg(qfields.join(','))
 			.arg(QString::fromStdString(table))
 			.arg(id) ;
-	auto res = rpcSqlQuery(SqlQueryAndParams { .query = sql_query.toStdString(), .params = {}});
-	auto lst = res.toRecordList();
-	if (lst.empty()) {
+	auto res = sqlQuery(SqlQueryAndParams { .query = sql_query, .params = {}});
+	if (res.rows.empty()) {
 		return {};
 	}
-	return lst[0].asMap();
+	Record ret;
+	const auto &row = res.rows.first();
+	for (qsizetype i = 0; i < std::ssize(res.fields); ++i) {
+		ret[res.fields[i].name] = row.value(i);
+	}
+	return ret;
 }
 
-bool SqlApi::update(const std::string &table, int64_t id, const SqlRecord &record)
+bool SqlApi::update(const std::string &table, int64_t id, const RpcValue::Map &record)
 {
 	QStringList fields;
 	for (const auto &[k, v] : record) {
-		auto name = QString::fromStdString(k);
-		fields << name + " = :" + name;
+		Q_UNUSED(v)
+		auto qk = QString::fromStdString(k);
+		fields << qk + " = :" + qk;
 	}
 	QString sql_query = QStringLiteral("UPDATE %1 SET %2 WHERE id = %3")
-			.arg(table)
+			.arg(QString::fromStdString(table))
 			.arg(fields.join(','))
 			.arg(id);
 	qf::core::sql::Query q;
 	q.prepare(sql_query, qf::core::Exception::Throw);
 	for (const auto &[k, v] : record) {
-		auto qv = shv::coreqt::rpc::rpcValueToQVariant(v);
-		q.bindValue(':' + QString::fromStdString(k), qv);
+		q.bindValue(':' + QString::fromStdString(k), shv::coreqt::rpc::rpcValueToQVariant(v));
 	}
 	q.exec(qf::core::Exception::Throw);
 	bool updated = q.numRowsAffected() == 1;
@@ -407,7 +433,7 @@ bool SqlApi::update(const std::string &table, int64_t id, const SqlRecord &recor
 bool SqlApi::drop(const std::string &table, int64_t id)
 {
 	QString sql_query = QStringLiteral("DELETE FROM %1 WHERE id = %2")
-			.arg(table)
+			.arg(QString::fromStdString(table))
 			.arg(id);
 	qf::core::sql::Query q;
 	q.exec(sql_query, qf::core::Exception::Throw);

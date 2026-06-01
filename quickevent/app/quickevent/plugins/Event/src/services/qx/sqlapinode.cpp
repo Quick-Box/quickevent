@@ -100,7 +100,7 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			}
 			auto res = ::qx::SqlApi::read(table, id, fields);
 			if (res.has_value()) {
-				return res.value();
+				return shv::coreqt::rpc::qVariantToRpcValue(res.value());
 			}
 			return RpcValue(nullptr);
 		}
