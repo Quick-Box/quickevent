@@ -1,15 +1,14 @@
-#ifndef RUNSTABLEMODEL_H
-#define RUNSTABLEMODEL_H
+#pragma once
 
-#include "src/qx/sqltablemodel.h"
+#include <quickevent/gui/og/sqltablemodel.h>
 
 namespace qf::core::sql { struct QxRecChng; }
 
-class RunsTableModel : public ::qx::SqlTableModel
+class RunsTableModel : public quickevent::gui::og::SqlTableModel
 {
 	Q_OBJECT
 private:
-	using Super = ::qx::SqlTableModel;
+	using Super = quickevent::gui::og::SqlTableModel;
 public:
 	enum Columns {
 		col_runs_isRunning = 0,
@@ -67,4 +66,3 @@ private:
 	void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 };
 
-#endif // RUNSTABLEMODEL_H

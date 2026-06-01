@@ -150,20 +150,8 @@ SqlQueryAndParams SqlQueryAndParams::fromRpcValue(const shv::chainpack::RpcValue
 
 RpcValue qxRecChngToRpcValue(const qf::core::sql::QxRecChng &chng)
 {
-	RpcValue::Map ret;
-	ret["table"] = chng.table.toStdString();
-	ret["id"] = chng.id;
-	ret["record"] = shv::coreqt::rpc::qVariantToRpcValue(chng.record);
-	auto rec_op_string = [](qf::core::sql::QxRecOp op) {
-		switch (op) {
-		case qf::core::sql::QxRecOp::Insert: return "Insert";
-		case qf::core::sql::QxRecOp::Update: return "Update";
-		case qf::core::sql::QxRecOp::Delete: return "Delete";
-		}
-		return "";
-	};
-	ret["op"] = rec_op_string(chng.op);
-	return ret;
+	auto m = chng.toVariantMap();
+	return shv::coreqt::rpc::qVariantToRpcValue(m);
 }
 
 //==============================================
@@ -355,8 +343,9 @@ int64_t SqlApi::create(const std::string &table, const SqlRecord &record)
 	SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
 		.table = QString::fromStdString(table),
 		.id = id,
-		.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)),
-		.op = qf::core::sql::QxRecOp::Insert
+		.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)).toMap(),
+		.op = qf::core::sql::RecOp::Insert,
+		.issuer = {}
 	});
 	return id;
 }
@@ -405,8 +394,9 @@ bool SqlApi::update(const std::string &table, int64_t id, const SqlRecord &recor
 		SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
 			.table = QString::fromStdString(table),
 			.id = id,
-			.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)),
-			.op = qf::core::sql::QxRecOp::Update
+			.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)).toMap(),
+			.op = qf::core::sql::RecOp::Update,
+			.issuer = {}
 		});
 	}
 	return updated;
@@ -425,7 +415,8 @@ bool SqlApi::drop(const std::string &table, int64_t id)
 			.table = QString::fromStdString(table),
 			.id = id,
 			.record = {},
-			.op = qf::core::sql::QxRecOp::Delete
+			.op = qf::core::sql::RecOp::Delete,
+			.issuer = {}
 		});
 	}
 	return is_drop;

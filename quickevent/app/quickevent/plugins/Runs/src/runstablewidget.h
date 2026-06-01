@@ -37,8 +37,6 @@ private:
 	void onCustomContextMenuRequest(const QPoint &pos);
 	void onTableViewSqlException(const QString &what, const QString &where, const QString &stack_trace);
 	void onBadTableDataInput(const QString &message);
-
-	void onQxRecChng(const qf::core::sql::QxRecChng &chng);
 private:
 	Ui::RunsTableWidget *ui;
 	RunsTableModel *m_runsModel;

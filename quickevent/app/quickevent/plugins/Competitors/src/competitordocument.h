@@ -1,17 +1,16 @@
-#ifndef COMPETITORS_COMPETITORDOCUMENT_H
-#define COMPETITORS_COMPETITORDOCUMENT_H
+#pragma once
 
-#include "src/qx/sqldatadocument.h"
+#include <qf/gui/model/sqldatadocument.h>
 
 #include <QVector>
 
 namespace Competitors {
 
-class CompetitorDocument : public qx::SqlDataDocument
+class CompetitorDocument : public qf::gui::model::SqlDataDocument
 {
 	Q_OBJECT
 private:
-	typedef qx::SqlDataDocument Super;
+	typedef qf::gui::model::SqlDataDocument Super;
 public:
 	CompetitorDocument(QObject *parent = nullptr);
 
@@ -31,4 +30,3 @@ private:
 
 }
 
-#endif // COMPETITORS_COMPETITORDOCUMENT_H

@@ -228,9 +228,10 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 						  return false);
 				auto insert_id = q.lastInsertId();
 				if(serial_ix >= 0 && !serial_ix_explicitly_set) {
-					qfDebug() << "\tsetting serial index:" << serial_ix << "to generated value:" << insert_id;
-					if(insert_id.isValid()) {
-						row_ref.setValue(serial_ix, insert_id);
+					QVariant v = q.lastInsertId();
+					qfDebug() << "\tsetting serial index:" << serial_ix << "to generated value:" << v;
+					if(v.isValid()) {
+						row_ref.setValue(serial_ix, v);
 						row_ref.setDirty(serial_ix, false);
 						if (auto *app = qobject_cast<qf::gui::framework::Application*>(QApplication::instance()); app) {
 							app->emitDbRecInserted(table_id, v.value<qint64>(), record_to_map(rec), this);
@@ -249,15 +250,6 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					if(!slave_key.isEmpty()) {
 						qfDebug() << "\tsetting value of foreign key" << slave_key << "to value of master key:" << row_ref.value(master_key).toString();
 						row_ref.setValue(slave_key, row_ref.value(master_key));
-					}
-					if (!qx_record.isEmpty() && master_key == "id") {
-						qf::core::sql::QxRecChng chng {
-							.table = table_id,
-							.id = insert_id.toInt(),
-							.record = qx_record,
-							.op = qf::core::sql::QxRecOp::Insert,
-						};
-						emit qxRecChng(chng);
 					}
 				}
 			}
@@ -354,15 +346,6 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					qfError() << QString("numRowsAffected() = %1, sholuld be 1 or 0\n%2").arg(num_rows_affected).arg(query_str);
 					ret = false;
 					break;
-				}
-				if (!qx_record.isEmpty() && pri_keys.size() == 1 && pri_keys[0] == "id" && id_pri_key_value.has_value()) {
-					qf::core::sql::QxRecChng chng {
-						.table = table_id,
-						.id = id_pri_key_value.value(),
-						.record = qx_record,
-						.op = qf::core::sql::QxRecOp::Update,
-					};
-					emit qxRecChng(chng);
 				}
 			}
 		}
@@ -471,17 +454,6 @@ bool SqlTableModel::removeTableRow(int row_no, bool throw_exc)
 				qfError() << QString("numRowsAffected() = %1, sholuld be 1\n%2").arg(num_rows_affected).arg(query_str);
 				ret = false;
 				break;
-			}
-			if (where_rec.count() == 1 && where_rec.field(0).name() == "id") {
-				if (auto id = where_rec.field(0).value().toInt(); id < 0) {
-					qf::core::sql::QxRecChng chng {
-						.table = table_id,
-						.id = id,
-						.record = {},
-						.op = qf::core::sql::QxRecOp::Delete,
-					};
-					emit qxRecChng(chng);
-				}
 			}
 		}
 	}

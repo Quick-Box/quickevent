@@ -49,8 +49,6 @@ public:
 	int reloadRow(int row_no) override;
 	int reloadInserts(const QString &id_column_name) override;
 	QString reloadRowQuery(const QVariant &record_id);
-
-	Q_SIGNAL void qxRecChng(const qf::core::sql::QxRecChng &recchng);
 public:
 	void setQueryBuilder(const qf::core::sql::QueryBuilder &qb, bool clear_columns = false);
 	const qf::core::sql::QueryBuilder& queryBuilder() const;

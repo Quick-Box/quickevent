@@ -178,8 +178,6 @@ add_executable(quickevent
 	plugins/CardReader/CardReader.qrc
 
 	src/qx/sqlapi.cpp src/qx/sqlapi.h
-	src/qx/sqltablemodel.h src/qx/sqltablemodel.cpp
-	src/qx/sqldatadocument.h src/qx/sqldatadocument.cpp
 
 	src/appclioptions.cpp
 	src/application.cpp
