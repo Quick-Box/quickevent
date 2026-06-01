@@ -44,6 +44,8 @@
 #include <QSqlField>
 
 #include <numbers>
+#include <algorithm>
+#include <vector>
 
 namespace qff = qf::gui::framework;
 namespace qfu = qf::core::utils;
@@ -1627,81 +1629,106 @@ qf::core::utils::TreeTable RunsPlugin::startListClubsTable(const quickevent::gui
 qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &where_expr, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option)
 {
 	int stage_id = selectedStageId();
-	auto tt_classes = startListClassesTable(where_expr, vacants_option, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+	auto start00_epoch_sec = getPlugin<EventPlugin>()->stageStartDateTime(stage_id).toSecsSinceEpoch();
 
-	qf::core::utils::TreeTable tt;
+	// 1. Fetch real runners natively (zero mapping boilerplate)
+	qfs::QueryBuilder qb;
+	qb.select2("competitors", "registration, id, startNumber, country")
+			.select("COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName")
+			.select("COALESCE(runs.startTimeMs / 1000 / 60, 0) AS startTimeMin")
+			.select2("runs", "siId, startTimeMs")
+			.select2("classes", "name")
+			.from("competitors")
+			.joinRestricted("competitors.id", "runs.competitorId", "runs.stageId={{stage_id}} AND runs.isRunning", "INNER JOIN")
+			.join("competitors.classId", "classes.id");
+
+	if(!where_expr.isEmpty()) {
+		qb.where(where_expr);
+	}
+
+	QVariantMap qpm;
+	qpm["stage_id"] = stage_id;
+	qf::gui::model::SqlTableModel m;
+	m.setQueryBuilder(qb);
+	m.setQueryParameters(qpm);
+	m.reload();
+	auto tt = m.toTreeTable();
+
+	// 2. Extract and append vacants
+	if (vacants_option != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners) {
+		auto tt_classes = startListClassesTable(where_expr, vacants_option, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+
+		for(int i=0; i<tt_classes.rowCount(); i++) {
+			auto tt_class_row = tt_classes.row(i);
+			auto tt2 = tt_class_row.table();
+			QString class_name = tt_class_row.value("classes.name").toString();
+
+			for(int j=0; j<tt2.rowCount(); j++) {
+				auto tt2_row = tt2.row(j);
+				if (tt2_row.value("competitorName").toString() == vacant_name_sentinel) {
+					int ix = tt.appendRow();
+					auto run_record = tt.row(ix);
+					run_record.setValue("classes.name", class_name);
+					run_record.setValue("competitorName", vacant_name_sentinel);
+					run_record.setValue("startTimeMs", tt2_row.value("startTimeMs"));
+					tt.setRow(ix, run_record);
+				}
+			}
+		}
+	}
+
+	// 3. Chronological sort (interleave vacants and push 0-times to the end)
+	std::vector<qf::core::utils::TreeTableRow> start_list;
+	start_list.reserve(tt.rowCount());
+	for(int i=0; i<tt.rowCount(); i++) {
+		start_list.push_back(tt.row(i));
+	}
+
+	std::ranges::sort(start_list, [](const qf::core::utils::TreeTableRow &a, const qf::core::utils::TreeTableRow &b) {
+		int tA = a.value("startTimeMs").toInt();
+		int tB = b.value("startTimeMs").toInt();
+
+		if (tA == 0) {
+			tA = std::numeric_limits<int>::max();
+		}
+		if (tB == 0) {
+			tB = std::numeric_limits<int>::max();
+		}
+
+		if (tA != tB) {
+			return tA < tB;
+		}
+
+		bool a_is_vacant = a.value("competitorName").toString() == vacant_name_sentinel;
+		bool b_is_vacant = b.value("competitorName").toString() == vacant_name_sentinel;
+		if (a_is_vacant != b_is_vacant) {
+			return !a_is_vacant; // Real runners before vacants
+		}
+
+		QString cA = a.value("classes.name").toString();
+		QString cB = b.value("classes.name").toString();
+		if (cA != cB) {
+			return cA < cB;
+		}
+
+		return a.value("competitorName").toString() < b.value("competitorName").toString();
+	});
+
+	QVariantMap map = tt.toVariant().toMap();
+	QVariantList sorted_rows;
+	sorted_rows.reserve(start_list.size());
+	for(const auto &r : start_list) {
+		sorted_rows.append(r.row());
+	}
+	map[qf::core::utils::TreeTable::KEY_ROWS] = sorted_rows;
+	tt = qf::core::utils::TreeTable(map);
+
+	// 4. Format time text globally
+	addStartTimeTextToClass(tt, start00_epoch_sec, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+
 	tt.setValue("stageId", stage_id);
 	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stage_id));
-
-	tt.appendColumn("competitors.registration", QMetaType(QMetaType::QString));
-	tt.appendColumn("competitors.id", QMetaType(QMetaType::Int));
-	tt.appendColumn("competitors.startNumber", QMetaType(QMetaType::Int));
-	tt.appendColumn("competitors.country", QMetaType(QMetaType::QString));
-	tt.appendColumn("competitorName", QMetaType(QMetaType::QString));
-	tt.appendColumn("startTimeMin", QMetaType(QMetaType::Int));
-	tt.appendColumn("runs.siId", QMetaType(QMetaType::Int));
-	tt.appendColumn("startTimeMs", QMetaType(QMetaType::Int));
-	tt.appendColumn("classes.name", QMetaType(QMetaType::QString));
-	tt.appendColumn("startTimeText", QMetaType(QMetaType::QString));
-	tt.appendColumn("startTimeMsText", QMetaType(QMetaType::QString));
-
-	QList<QVariantMap> rowsData;
-
-	for(int i=0; i<tt_classes.rowCount(); i++) {
-		qf::core::utils::TreeTableRow tt_class_row = tt_classes.row(i);
-		qf::core::utils::TreeTable tt2 = tt_class_row.table();
-		QString class_name = tt_class_row.value("classes.name").toString();
-
-		for(int j=0; j<tt2.rowCount(); j++) {
-			qf::core::utils::TreeTableRow tt2_row = tt2.row(j);
-			QVariantMap rowMap;
-			
-			auto val = [tt2_row](const char* key1, const char* key2) {
-				QVariant v = tt2_row.value(key1);
-				if (v.isValid()) return v;
-				return tt2_row.value(key2);
-			};
-
-			rowMap["competitors.registration"] = val("competitors.registration", "registration");
-			rowMap["competitors.id"] = val("competitors.id", "id");
-			rowMap["competitors.startNumber"] = val("competitors.startNumber", "startNumber");
-			rowMap["competitors.country"] = val("competitors.country", "country");
-			rowMap["competitorName"] = tt2_row.value("competitorName");
-
-			QVariant startTimeMsVar = val("runs.startTimeMs", "startTimeMs");
-			rowMap["startTimeMin"] = startTimeMsVar.toInt() / 1000 / 60;
-			rowMap["runs.siId"] = val("runs.siId", "siId");
-			rowMap["startTimeMs"] = startTimeMsVar;
-			rowMap["classes.name"] = class_name;
-			rowMap["startTimeText"] = tt2_row.value("startTimeText");
-			rowMap["startTimeMsText"] = tt2_row.value("startTimeMsText");
-
-			rowsData.append(rowMap);
-		}
-	}
-	
-	std::sort(rowsData.begin(), rowsData.end(), [](const QVariantMap &a, const QVariantMap &b) {
-		// // TODO: improve it
-		int tA = a["startTimeMs"].toInt();
-		int tB = b["startTimeMs"].toInt();
-		if (tA == 0) tA = std::numeric_limits<int>::max();
-		if (tB == 0) tB = std::numeric_limits<int>::max();
-		if (tA != tB) return tA < tB;
-		QString cA = a["classes.name"].toString();
-		QString cB = b["classes.name"].toString();
-		if (cA != cB) return cA < cB;
-		return a["competitorName"].toString() < b["competitorName"].toString();
-	});
-
-	for(const QVariantMap &rowMap : std::as_const(rowsData)) {
-		int ix = tt.appendRow();
-		qf::core::utils::TreeTableRow tt_row = tt.row(ix);
-		for(auto it = rowMap.constBegin(); it != rowMap.constEnd(); ++it) {
-			tt_row.setValue(it.key(), it.value());
-		}
-		tt.setRow(ix, tt_row);
-	}
 
 	return tt;
 }
