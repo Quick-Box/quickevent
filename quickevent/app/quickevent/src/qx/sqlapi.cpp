@@ -5,6 +5,7 @@
 #include <qf/core/sql/query.h>
 #include <qf/core/exception.h>
 #include <qf/core/sql/qxrecchng.h>
+#include <qf/gui/framework/application.h>
 
 #include <shv/chainpack/rpcvalue.h>
 #include <shv/coreqt/rpc.h>
@@ -161,7 +162,7 @@ RpcValue qxRecChngToRpcValue(const qf::core::sql::QxRecChng &chng)
 SqlApi::SqlApi(QObject *parent)
 	: QObject{parent}
 {
-
+	// connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, )
 }
 
 SqlApi *SqlApi::instance()
@@ -170,11 +171,11 @@ SqlApi *SqlApi::instance()
 	return api;
 }
 
-void SqlApi::emitRecChng(const qf::core::sql::QxRecChng &chng)
-{
-	qfInfo() << "REC_CHNG:" << qxRecChngToRpcValue(chng).toCpon();
-	emit recchng(chng);
-}
+// void SqlApi::emitRecChng(const qf::core::sql::QxRecChng &chng)
+// {
+// 	qfInfo() << "REC_CHNG:" << qxRecChngToRpcValue(chng).toCpon();
+// 	emit recchng(chng);
+// }
 
 namespace {
 
@@ -341,13 +342,13 @@ int64_t SqlApi::create(const std::string &table, const SqlRecord &record)
 	}
 	q.exec(qf::core::Exception::Throw);
 	auto id = q.lastInsertId().toInt();
-	SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
-		.table = QString::fromStdString(table),
-		.id = id,
-		.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)).toMap(),
-		.op = qf::core::sql::RecOp::Insert,
-		.issuer = {}
-	});
+	// SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
+	// 	.table = QString::fromStdString(table),
+	// 	.id = id,
+	// 	.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)).toMap(),
+	// 	.op = qf::core::sql::RecOp::Insert,
+	// 	.issuer = {}
+	// });
 	return id;
 }
 
@@ -392,13 +393,13 @@ bool SqlApi::update(const std::string &table, int64_t id, const SqlRecord &recor
 	q.exec(qf::core::Exception::Throw);
 	bool updated = q.numRowsAffected() == 1;
 	if (updated) {
-		SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
-			.table = QString::fromStdString(table),
-			.id = id,
-			.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)).toMap(),
-			.op = qf::core::sql::RecOp::Update,
-			.issuer = {}
-		});
+		// SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
+		// 	.table = QString::fromStdString(table),
+		// 	.id = id,
+		// 	.record = shv::coreqt::rpc::rpcValueToQVariant(normalizeFieldNames(record)).toMap(),
+		// 	.op = qf::core::sql::RecOp::Update,
+		// 	.issuer = {}
+		// });
 	}
 	return updated;
 }
@@ -412,13 +413,13 @@ bool SqlApi::drop(const std::string &table, int64_t id)
 	q.exec(sql_query, qf::core::Exception::Throw);
 	bool is_drop = q.numRowsAffected() == 1;
 	if (is_drop) {
-		SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
-			.table = QString::fromStdString(table),
-			.id = id,
-			.record = {},
-			.op = qf::core::sql::RecOp::Delete,
-			.issuer = {}
-		});
+		// SqlApi::instance()->emitRecChng(qf::core::sql::QxRecChng {
+		// 	.table = QString::fromStdString(table),
+		// 	.id = id,
+		// 	.record = {},
+		// 	.op = qf::core::sql::RecOp::Delete,
+		// 	.issuer = {}
+		// });
 	}
 	return is_drop;
 }

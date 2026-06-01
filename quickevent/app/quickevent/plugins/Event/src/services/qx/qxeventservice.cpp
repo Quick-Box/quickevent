@@ -95,7 +95,7 @@ void QxEventService::run() {
 	connect(m_rpcConnection, &ClientConnection::brokerLoginError, this, &QxEventService::onBrokerLoginError);
 	connect(m_rpcConnection, &ClientConnection::rpcMessageReceived, this, &QxEventService::onRpcMessageReceived);
 
-	connect(::qx::SqlApi::instance(), &::qx::SqlApi::recchng, this, &QxEventService::sendRecchgShvSignal);
+	// connect(::qx::SqlApi::instance(), &::qx::SqlApi::recchng, this, &QxEventService::sendRecchgShvSignal);
 
 	m_rpcConnection->open();
 }

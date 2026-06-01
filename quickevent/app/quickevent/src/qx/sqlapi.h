@@ -63,8 +63,8 @@ class SqlApi : public QObject
 public:
 	static SqlApi* instance();
 
-	Q_SIGNAL void recchng(const qf::core::sql::QxRecChng &chng);
-	void emitRecChng(const qf::core::sql::QxRecChng &chng);
+	// Q_SIGNAL void recchng(const qf::core::sql::QxRecChng &chng);
+	// void emitRecChng(const qf::core::sql::QxRecChng &chng);
 
 	static RpcSqlResult exec(const SqlQueryAndParams &params);
 	static RpcSqlResult query(const SqlQueryAndParams &params);
