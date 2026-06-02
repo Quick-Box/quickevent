@@ -1667,11 +1667,11 @@ qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &whe
 				auto tt2_row = tt2.row(j);
 				if (tt2_row.value("competitorName").toString() == vacant_name_sentinel) {
 					int ix = tt.appendRow();
-					auto run_record = tt.row(ix);
-					run_record.setValue("classes.name", class_name);
-					run_record.setValue("competitorName", vacant_name_sentinel);
-					run_record.setValue("startTimeMs", tt2_row.value("startTimeMs"));
-					tt.setRow(ix, run_record);
+					auto vacant_record = tt.row(ix);
+					vacant_record.setValue("classes.name", class_name);
+					vacant_record.setValue("competitorName", vacant_name_sentinel);
+					vacant_record.setValue("startTimeMs", tt2_row.value("startTimeMs"));
+					tt.setRow(ix, vacant_record);
 				}
 			}
 		}
