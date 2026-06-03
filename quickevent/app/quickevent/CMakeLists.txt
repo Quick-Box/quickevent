@@ -95,6 +95,7 @@ add_executable(quickevent
 
 	plugins/Event/src/services/qx/qxnode.cpp
 	plugins/Event/src/services/qx/sqlapinode.cpp
+	plugins/Event/src/services/qx/sqlapi.cpp plugins/Event/src/services/qx/sqlapi.h
 	plugins/Event/src/services/qx/nodes.cpp
 	plugins/Event/src/services/qx/qxeventservice.cpp plugins/Event/src/services/qx/qxeventservice.h
 	plugins/Event/src/services/qx/qxeventservicewidget.cpp plugins/Event/src/services/qx/qxeventservicewidget.h plugins/Event/src/services/qx/qxeventservicewidget.ui
@@ -176,8 +177,6 @@ add_executable(quickevent
 	plugins/Relays/Relays.qrc
 	plugins/Runs/Runs.qrc
 	plugins/CardReader/CardReader.qrc
-
-	src/qx/sqlapi.cpp src/qx/sqlapi.h
 
 	src/appclioptions.cpp
 	src/application.cpp

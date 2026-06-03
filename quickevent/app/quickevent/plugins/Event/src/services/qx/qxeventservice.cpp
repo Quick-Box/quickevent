@@ -2,7 +2,7 @@
 #include "qxeventservicewidget.h"
 #include "nodes.h"
 #include "sqlapinode.h"
-#include "src/qx/sqlapi.h"
+#include "sqlapi.h"
 
 #include "../../eventplugin.h"
 #include "../../../../Runs/src/runsplugin.h"
@@ -662,11 +662,11 @@ void QxEventService::subscribeChanges()
 	rpc_call->start();
 }
 
-void QxEventService::sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng)
-{
-	if (isRunning()) {
-		m_rpcConnection->sendShvSignal("sql", "recchng", ::qx::qxRecChngToRpcValue(chng));
-	}
-}
+// void QxEventService::sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng)
+// {
+// 	if (isRunning()) {
+// 		m_rpcConnection->sendShvSignal("sql", "recchng", ::qx::qxRecChngToRpcValue(chng));
+// 	}
+// }
 
 } // namespace Event::services::qx

@@ -79,7 +79,7 @@ private: // shv
 	void sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg);
 	void onBrokerSocketError(const QString &err);
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
-	void sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng);
+	// void sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng);
 
 	void subscribeChanges();
 private:

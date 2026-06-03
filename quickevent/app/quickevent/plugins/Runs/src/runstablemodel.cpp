@@ -1,7 +1,6 @@
 #include "runstablemodel.h"
 
 #include "../../Event/src/eventplugin.h"
-#include "src/qx/sqlapi.h"
 
 #include <quickevent/core/og/timems.h>
 #include <quickevent/core/si/siid.h>

@@ -19,7 +19,7 @@
 
 using namespace shv::chainpack;
 
-namespace qx {
+namespace Event::services::qx {
 
 //==============================================
 // RpcSqlField
@@ -182,12 +182,6 @@ SqlApi::SqlApi(QObject *parent)
 	: QObject{parent}
 {
 	// connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, )
-}
-
-SqlApi *SqlApi::instance()
-{
-	static auto *api = new SqlApi(QCoreApplication::instance());
-	return api;
 }
 
 // void SqlApi::emitRecChng(const qf::core::sql::QxRecChng &chng)

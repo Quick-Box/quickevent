@@ -7,8 +7,6 @@
 #include "runflagsdialog.h"
 #include "cardflagsdialog.h"
 
-#include "src/qx/sqlapi.h"
-
 #include <plugins/Classes/src/courseitemdelegate.h>
 #include <plugins/CardReader/src/cardreaderplugin.h>
 #include <plugins/Receipts/src/receiptsplugin.h>

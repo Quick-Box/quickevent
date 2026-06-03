@@ -9,7 +9,7 @@
 
 namespace qf::core::sql { struct QxRecChng; }
 
-namespace qx {
+namespace Event::services::qx {
 
 struct DbField
 {
@@ -65,21 +65,20 @@ class SqlApi : public QObject
 {
 	Q_OBJECT
 public:
-	static SqlApi* instance();
+	explicit SqlApi(QObject *parent = nullptr);
 
 	// Q_SIGNAL void recchng(const qf::core::sql::QxRecChng &chng);
 	// void emitRecChng(const qf::core::sql::QxRecChng &chng);
 
-	static ExecResult exec(const SqlQueryAndParams &params);
-	static QueryResult query(const SqlQueryAndParams &params);
-	static void transaction(const std::string &query, const shv::chainpack::RpcValue::List &params);
-	static QueryResult list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit);
-	static int64_t create(const std::string &table, const shv::chainpack::RpcValue::Map &record);
-	static std::optional<Record> read(const std::string &table, int64_t id, const std::vector<std::string> &fields);
-	static bool update(const std::string &table, int64_t id, const shv::chainpack::RpcValue::Map &record);
-	static bool drop(const std::string &table, int64_t id);
+	ExecResult exec(const SqlQueryAndParams &params);
+	QueryResult query(const SqlQueryAndParams &params);
+	void transaction(const std::string &query, const shv::chainpack::RpcValue::List &params);
+	QueryResult list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit);
+	int64_t create(const std::string &table, const shv::chainpack::RpcValue::Map &record);
+	std::optional<Record> read(const std::string &table, int64_t id, const std::vector<std::string> &fields);
+	bool update(const std::string &table, int64_t id, const shv::chainpack::RpcValue::Map &record);
+	bool drop(const std::string &table, int64_t id);
 private:
-	explicit SqlApi(QObject *parent = nullptr);
 };
 
 }

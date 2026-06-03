@@ -9,6 +9,8 @@ namespace shv::coreqt::data { class RpcSqlResult; }
 
 namespace Event::services::qx {
 
+class SqlApi;
+
 class SqlApiNode : public QxNode
 {
 	Q_OBJECT
@@ -19,6 +21,8 @@ public:
 protected:
 	const std::vector<shv::chainpack::MetaMethod> &metaMethods() override;
 	shv::chainpack::RpcValue callMethod(const StringViewList &shv_path, const std::string &method, const shv::chainpack::RpcValue &params, const shv::chainpack::RpcValue &user_id) override;
+private:
+	SqlApi *m_sqlApi = nullptr;
 };
 
 }
