@@ -9,6 +9,7 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/application.h>
 
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/qxrecchng.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/connection.h>
@@ -51,7 +52,7 @@ RunsTableModel::RunsTableModel(QObject *parent)
 	setColumn(col_competitors_note, ColumnDefinition("competitors.note", tr("Note")));
 
 	connect(this, &RunsTableModel::dataChanged, this, &RunsTableModel::onDataChanged, Qt::QueuedConnection);
-	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
 }
 
 Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const

@@ -63,7 +63,7 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			return res.toRpcValue();
 		}
 		if(method == METH_QUERY) {
-			auto res = m_sqlApi->exec(SqlQueryAndParams::fromRpcValue(params));
+			auto res = m_sqlApi->query(SqlQueryAndParams::fromRpcValue(params));
 			return res.toRpcValue();
 		}
 		if(method == METH_TRANSACTION) {

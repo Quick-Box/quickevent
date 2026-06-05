@@ -67,23 +67,40 @@ protected:
 			const std::optional<qint64> &limit);
 };
 
-class QFCORE_DECL_EXPORT QxSql : public QObject, public QxSqlApi
+class QxSqlApiImpl : public QxSqlApi
 {
-	Q_OBJECT
 public:
-	QxSql(const QSqlDatabase &db = QSqlDatabase());
-	~QxSql() override = default;
-
-	Q_SIGNAL void dbRecChng(const qf::core::sql::QxRecChng &recchng);
+	QxSqlApiImpl(QSqlDatabase db) : m_db(db) {}
 
 	QueryResult query(const QString &query, const QVariantMap &params) override;
 	ExecResult exec(const QString &query, const QVariantMap &params) override;
-
-	qint64 createRecord(const QString &table, const Record &record, const QString &issuer) override;
-	bool updateRecord(const QString &table, qint64 id, const Record &record, const QString &issuer) override;
-	bool deleteRecord(const QString &table, qint64 id, const QString &issuer) override;
 private:
 	QSqlDatabase m_db;
+};
+
+class QFCORE_DECL_EXPORT QxSql : public QObject
+{
+	Q_OBJECT
+public:
+	QxSql(const QString &issuer, const QSqlDatabase &db = {}, QObject *parent = nullptr);
+	~QxSql() override = default;
+
+	Q_SIGNAL void recChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
+
+	QueryResult query(const QString &query, const QVariantMap &params);
+	ExecResult exec(const QString &query, const QVariantMap &params);
+
+	qint64 createRecord(const QString &table, const Record &record, QObject *source);
+	bool updateRecord(const QString &table, qint64 id, const Record &record, QObject *source);
+	bool deleteRecord(const QString &table, qint64 id, QObject *source);
+
+	void emitRecInserted(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
+	void emitRecUpdated(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
+	void emitRecDeleted(const QString &table, qint64 id, QObject *source);
+	void emitRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
+private:
+	QString m_issuer;
+	QxSqlApiImpl m_sqlApi;
 };
 
 } // namespace qf::core::sql

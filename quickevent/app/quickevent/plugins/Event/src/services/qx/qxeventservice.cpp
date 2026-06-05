@@ -580,18 +580,23 @@ int QxEventService::currentConnectionId()
 void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
+		auto *event_plugin = getPlugin<EventPlugin>();
+		auto current_stage = event_plugin->currentStageId();
+		auto stage_data = event_plugin->stageData(current_stage);
+		auto api_token = stage_data.qxApiToken().toStdString();
 		auto *rpc_call = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
-				->setShvPath(".broker/currentClient")
-				->setMethod("info");
+				->setShvPath("test/qx/qxeventd/eventctl")
+				->setMethod("openEventApiKey")
+				->setParams(RpcValue(api_token));
 		connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 			if (error.isValid()) {
 				setStatus(Status::Stopped);
 				setStatusMessage(tr("Client info discovery error: %1").arg(error.toString()));
 			}
 			else {
-				const auto &info = result.asMap();
-				m_eventMountPoint = info.value("mountPoint").to<QString>();
-				m_eventId = m_eventMountPoint.section('/', -1, -1).toInt();
+				const auto &info = result.asList();
+				m_eventId = info.value(0).toInt();
+				m_eventMountPoint = info.value(1).to<QString>();
 				setStatus(Status::Running);
 				setStatusMessage(tr("Event ID: %1").arg(m_eventId));
 				subscribeChanges();
@@ -647,19 +652,19 @@ void QxEventService::sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg)
 
 void QxEventService::subscribeChanges()
 {
-	Q_ASSERT(m_rpcConnection);
-	QString shv_path = "test";
-	QString signal_name = shv::chainpack::Rpc::SIG_VAL_CHANGED;
-	auto *rpc_call = RpcCall::createSubscriptionRequest(m_rpcConnection, shv_path, signal_name);
-	connect(rpc_call, &RpcCall::maybeResult, this, [shv_path, signal_name](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
-		if(error.isValid()) {
-			qfError() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribe error:" << error.toString();
-		}
-		else {
-			qfMessage() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribed successfully" << result.toCpon();
-		}
-	});
-	rpc_call->start();
+	// Q_ASSERT(m_rpcConnection);
+	// QString shv_path = "test";
+	// QString signal_name = shv::chainpack::Rpc::SIG_VAL_CHANGED;
+	// auto *rpc_call = RpcCall::createSubscriptionRequest(m_rpcConnection, shv_path, signal_name);
+	// connect(rpc_call, &RpcCall::maybeResult, this, [shv_path, signal_name](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+	// 	if(error.isValid()) {
+	// 		qfError() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribe error:" << error.toString();
+	// 	}
+	// 	else {
+	// 		qfMessage() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribed successfully" << result.toCpon();
+	// 	}
+	// });
+	// rpc_call->start();
 }
 
 // void QxEventService::sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng)

@@ -106,15 +106,9 @@ QList<Record> QxSqlApi::listOneOrMoreRecords(const QString &table, const std::op
 }
 
 //================================================================
-// QxSql
+// QxSqlApiImpl
 //================================================================
-QxSql::QxSql(const QSqlDatabase &db)
-	: m_db(db)
-{
-
-}
-
-QueryResult QxSql::query(const QString &query, const QVariantMap &params)
+QueryResult QxSqlApiImpl::query(const QString &query, const QVariantMap &params)
 {
 	QSqlQuery q(m_db);
 	q.prepare(query);
@@ -138,7 +132,7 @@ QueryResult QxSql::query(const QString &query, const QVariantMap &params)
 	return result;
 }
 
-ExecResult QxSql::exec(const QString &query, const QVariantMap &params)
+ExecResult QxSqlApiImpl::exec(const QString &query, const QVariantMap &params)
 {
 	QSqlQuery q(m_db);
 	q.prepare(query);
@@ -153,40 +147,102 @@ ExecResult QxSql::exec(const QString &query, const QVariantMap &params)
 	return result;
 }
 
-qint64 QxSql::createRecord(const QString &table, const Record &record, const QString &issuer)
+//================================================================
+// QxSql
+//================================================================
+QxSql::QxSql(const QString &issuer, const QSqlDatabase &db, QObject *parent)
+	: QObject(parent)
+	, m_issuer(issuer)
+	, m_sqlApi(db)
 {
-	auto id = QxSqlApi::createRecord(table, record, issuer);
-	emit dbRecChng(qf::core::sql::QxRecChng{.table = table,
+}
+
+QueryResult QxSql::query(const QString &query, const QVariantMap &params)
+{
+	return m_sqlApi.query(query, params);
+}
+
+ExecResult QxSql::exec(const QString &query, const QVariantMap &params)
+{
+	return m_sqlApi.exec(query, params);
+}
+
+qint64 QxSql::createRecord(const QString &table, const Record &record, QObject *source)
+{
+	auto id = m_sqlApi.createRecord(table, record, m_issuer);
+	emit recChng(qf::core::sql::QxRecChng{.table = table,
 										  .id = id,
 										  .record = record,
 										  .op = qf::core::sql::RecOp::Insert,
-										  .issuer = issuer});
+										  .issuer = m_issuer},
+				 source);
 	return id;
 }
 
-bool QxSql::updateRecord(const QString &table, qint64 id, const Record &record, const QString &issuer)
+bool QxSql::updateRecord(const QString &table, qint64 id, const Record &record, QObject *source)
 {
-	auto ok = QxSqlApi::updateRecord(table, id, record, issuer);
+	auto ok = m_sqlApi.updateRecord(table, id, record, m_issuer);
 	if (ok) {
-		emit dbRecChng(qf::core::sql::QxRecChng{.table = table,
+		emit recChng(qf::core::sql::QxRecChng{.table = table,
 											  .id = id,
 											  .record = record,
 											  .op = qf::core::sql::RecOp::Update,
-											  .issuer = issuer});
+											  .issuer = m_issuer},
+					 source);
 	}
 	return ok;
 }
 
-bool QxSql::deleteRecord(const QString &table, qint64 id, const QString &issuer)
+bool QxSql::deleteRecord(const QString &table, qint64 id, QObject *source)
 {
-	auto ok = QxSqlApi::deleteRecord(table, id, issuer);
+	auto ok = m_sqlApi.deleteRecord(table, id, m_issuer);
 	if (ok) {
-		emit dbRecChng(qf::core::sql::QxRecChng{.table = table,
+		emit recChng(qf::core::sql::QxRecChng{.table = table,
 											  .id = id,
 											  .record = {},
 											  .op = qf::core::sql::RecOp::Delete,
-											  .issuer = issuer});
+											  .issuer = m_issuer},
+					 source);
 	}
 	return ok;
 }
+
+void QxSql::emitRecInserted(const QString &table, qint64 id, const QVariantMap &record, QObject *source)
+{
+	emit recChng(qf::core::sql::QxRecChng{
+		.table = table,
+		.id = id,
+		.record = record,
+		.op = qf::core::sql::RecOp::Insert,
+		.issuer = m_issuer
+	}, source);
+}
+
+void QxSql::emitRecUpdated(const QString &table, qint64 id, const QVariantMap &record, QObject *source)
+{
+	emit recChng(qf::core::sql::QxRecChng{
+		.table = table,
+		.id = id,
+		.record = record,
+		.op = qf::core::sql::RecOp::Update,
+		.issuer = m_issuer
+	}, source);
+}
+
+void QxSql::emitRecDeleted(const QString &table, qint64 id, QObject *source)
+{
+	emit recChng(qf::core::sql::QxRecChng{
+		.table = table,
+		.id = id,
+		.record = {},
+		.op = qf::core::sql::RecOp::Delete,
+		.issuer = m_issuer
+	}, source);
+}
+
+void QxSql::emitRecChng(const core::sql::QxRecChng &recchng, QObject *source)
+{
+	emit recChng(recchng, source);
+}
+
 }

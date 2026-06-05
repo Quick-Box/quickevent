@@ -34,6 +34,7 @@
 
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/querybuilder.h>
 #include <qf/core/sql/connection.h>
@@ -194,7 +195,7 @@ EventPlugin::EventPlugin(QObject *parent)
 		setEventOpen(!event_name.isEmpty());
 	});
 	connect(this, &Event::EventPlugin::dbEventNotify, this, &Event::EventPlugin::onDbEventNotify, Qt::QueuedConnection);
-	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &EventPlugin::onRecChng);
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &EventPlugin::onRecChng);
 }
 
 void EventPlugin::initEventConfig()
@@ -669,7 +670,7 @@ void EventPlugin::onDbEvent(const QString &name, QSqlDriver::NotificationSource 
 						qfWarning() << "RecChng loopback detected, issuer:" << recchng.issuer;
 						return;
 					}
-					qf::gui::framework::Application::instance()->emitQxRecChng(recchng, this);
+					qf::gui::framework::Application::instance()->qxSql()->emitRecChng(recchng, this);
 					return;
 				}
 				qfMessage() << "emitting domain:" << domain << "data:" << data;
