@@ -1373,7 +1373,7 @@ void OFeedClient::markChangelogEntryAsProcessed(int protocolId)
 	variables["processedByType"] = QString("SYSTEM");
 	variables["processedBySource"] = QString("IT");
 
-	sendGraphQLRequest(mutation, variables, [this, protocolId](QJsonObject data) {
+	sendGraphQLRequest(mutation, variables, [protocolId](QJsonObject data) {
 		if (data.isEmpty()) {
 			qfWarning() << serviceName().toStdString() + " Failed to mark changelog entry " << protocolId << " as processed";
 		} else {

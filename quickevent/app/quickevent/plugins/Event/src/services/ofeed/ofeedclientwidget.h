@@ -40,9 +40,9 @@ private:
 	QString defaultReceiptEventLink() const;
 	OFeedClient* service();
 	bool saveSettings();
+	bool acceptDialogDone(int result) override;
 private:
 	Ui::OFeedClientWidget *ui;
-	bool acceptDialogDone(int result);
 	bool m_isTestConnectionRunning = false;
 	bool m_isImageRefreshRunning = false;
 	QString m_lastAutoReceiptEventLink;
