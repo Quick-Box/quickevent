@@ -21,6 +21,7 @@
 
 #include <QCoreApplication>
 #include <QBuffer>
+#include <QMessageBox>
 #include <QHttpPart>
 #include <QImageReader>
 #include <QNetworkAccessManager>
@@ -120,6 +121,8 @@ OFeedClient::OFeedClient(QObject *parent)
 	m_networkManager = new QNetworkAccessManager(this);
 	m_exportTimer = new QTimer(this);
 	connect(m_exportTimer, &QTimer::timeout, this, &OFeedClient::onExportTimerTimeOut);
+	m_credentialCheckTimer = new QTimer(this);
+	connect(m_credentialCheckTimer, &QTimer::timeout, this, &OFeedClient::checkCredentials);
 	connect(this, &OFeedClient::settingsChanged, this, &OFeedClient::init, Qt::QueuedConnection);
 	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &OFeedClient::onDbEventNotify, Qt::QueuedConnection);
 }
@@ -133,19 +136,33 @@ void OFeedClient::run()
 {
 	Super::run();
 	ensureEventImageCachedAtStartup();
-	exportStartListIofXml3([this]()
-						   { exportResultsIofXml3(); });
+	exportStartListIofXml3([this]() { exportResultsIofXml3(); });
 	m_exportTimer->start();
+	QTimer::singleShot(3000, this, &OFeedClient::checkCredentials);
+	m_credentialCheckTimer->start();
 }
 
 void OFeedClient::stop()
 {
 	Super::stop();
 	m_exportTimer->stop();
+	m_credentialCheckTimer->stop();
+	m_credentialsValid = -1;
+	m_credentialWarningShown = false;
+	m_resultsExportInProgress = false;
+	m_startListExportInProgress = false;
+	m_changesProcessingInProgress = false;
+	m_processingOFeedChanges = false;
 }
 
 void OFeedClient::exportResultsIofXml3()
 {
+	if (m_resultsExportInProgress) {
+		qfDebug() << serviceName() << "results upload already in progress, skipping";
+		return;
+	}
+	m_resultsExportInProgress = true;
+
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
 
@@ -153,11 +170,19 @@ void OFeedClient::exportResultsIofXml3()
 					  ? getPlugin<RelaysPlugin>()->resultsIofXml30()
 					  : getPlugin<RunsPlugin>()->resultsIofXml30Stage(current_stage);
 
-	sendFile(tr("results upload"), "/rest/v1/upload/iof", str);
+	sendFile(tr("results upload"), "/rest/v1/upload/iof", str, nullptr, [this]() {
+		m_resultsExportInProgress = false;
+	});
 }
 
 void OFeedClient::exportStartListIofXml3(std::function<void()> on_success)
 {
+	if (m_startListExportInProgress) {
+		qfDebug() << serviceName() << "start list upload already in progress, skipping";
+		return;
+	}
+	m_startListExportInProgress = true;
+
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
 
@@ -165,7 +190,34 @@ void OFeedClient::exportStartListIofXml3(std::function<void()> on_success)
 					  ? getPlugin<RelaysPlugin>()->startListIofXml30()
 					  : getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, false);
 
-	sendFile(tr("start list upload"), "/rest/v1/upload/iof", str, on_success);
+	sendFile(tr("start list upload"), "/rest/v1/upload/iof", str, on_success, [this]() {
+		m_startListExportInProgress = false;
+	});
+}
+
+void OFeedClient::triggerChangesProcessing()
+{
+	getChangesByOrigin();
+}
+
+int OFeedClient::credentialCheckRemainingMs() const
+{
+	return m_credentialCheckTimer->remainingTime();
+}
+
+int OFeedClient::credentialCheckIntervalMs() const
+{
+	return m_credentialCheckTimer->interval();
+}
+
+int OFeedClient::exportTimerRemainingMs() const
+{
+	return m_exportTimer->remainingTime();
+}
+
+int OFeedClient::exportTimerIntervalMs() const
+{
+	return m_exportTimer->interval();
 }
 
 qf::gui::framework::DialogWidget *OFeedClient::createDetailWidget()
@@ -178,16 +230,26 @@ void OFeedClient::init()
 {
 	OFeedClientSettings ss = settings();
 	m_exportTimer->setInterval(ss.exportIntervalSec() * 1000);
+	m_credentialCheckTimer->setInterval(ss.credentialCheckIntervalMin() * 60 * 1000);
 	ensureEventImageCachedAtStartup();
 }
 
 void OFeedClient::onExportTimerTimeOut()
 {
-	exportStartListIofXml3();
-	if(runChangesProcessing()){
-		getChangesByOrigin();
+	emit exportTimerFired();
+	if (runChangesProcessing() && m_changesProcessingInProgress) {
+		// Skip - ongoing cycle will export start list + results after processing completes.
+		// Exporting now would send stale data and overwrite OFeed changes.
+		return;
 	}
-	exportResultsIofXml3();
+	if (runChangesProcessing()) {
+		getChangesByOrigin([this]() {
+			exportStartListIofXml3([this]() { exportResultsIofXml3(); });
+		});
+	}
+	else {
+		exportStartListIofXml3([this]() { exportResultsIofXml3(); });
+	}
 }
 
 void OFeedClient::loadSettings()
@@ -209,14 +271,6 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 		int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(checked_card.runId());
 		qfInfo() << serviceName().toStdString() + " DB event competitor READ-OUT, competitor id: " << competitor_id << ", runs.id: " << checked_card.runId();
 		onCompetitorReadOut(competitor_id);
-	}
-
-	// Handle edit competitor
-	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_COMPETITOR_EDITED))
-	{
-		int competitor_id = data.toInt();
-		qfInfo() << serviceName().toStdString() + " DB event competitor EDITED, competitor id: " << competitor_id;
-		onCompetitorEdited(competitor_id);
 	}
 
 	// Handle add competitor
@@ -253,23 +307,30 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 		qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED received, run_id: " << run_id << ", dirty keys: " << dirty_vals.keys().join(", ");
 		if (!dirty_vals.isEmpty()) {
 			static const QSet<QString> relevant_fields = {
-				QStringLiteral("starttimems"), QStringLiteral("finishtimems"), QStringLiteral("timems"),
+				// Run fields (finishTimeMs and timeMs are covered by DBEVENT_CARD_PROCESSED_AND_ASSIGNED)
+				QStringLiteral("starttimems"),
 				QStringLiteral("siid"), QStringLiteral("disqualified"), QStringLiteral("disqualifiedbyorganizer"),
 				QStringLiteral("mispunch"), QStringLiteral("badcheck"),
 				QStringLiteral("notstart"), QStringLiteral("notfinish"), QStringLiteral("notcompeting"),
+				QStringLiteral("leg"), QStringLiteral("relayid"),
+				// Competitor fields visible in runsRecord JOIN
+				QStringLiteral("competitorname"), QStringLiteral("registration"), QStringLiteral("note"),
+				QStringLiteral("licence"), QStringLiteral("competitors__startnumber"),
+				QStringLiteral("classid"),
 			};
 			bool has_relevant = false;
 			for (const auto &key : dirty_vals.keys()) {
-				if (relevant_fields.contains(key.section('.', -1))) {
+				if (relevant_fields.contains(key.section('.', -1).toLower())) {
 					has_relevant = true;
 					break;
 				}
 			}
 			if (has_relevant) {
-				int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(run_id);
-				if (competitor_id > 0) {
-					qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED, run id: " << run_id << ", competitor id: " << competitor_id;
-					onCompetitorEdited(competitor_id);
+				if (m_processingOFeedChanges) {
+					qfDebug() << serviceName() << "skipping RUN_CHANGED back-send to OFeed (change originated from OFeed)";
+				} else {
+					qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED, run id: " << run_id;
+					onRunChanged(run_id, dirty_vals);
 				}
 			}
 		}
@@ -649,6 +710,19 @@ void OFeedClient::setRunChangesProcessing(bool runChangesProcessing)
 	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
 }
 
+bool OFeedClient::introTourShowed() const
+{
+	return getPlugin<EventPlugin>()->eventConfig()->value(
+		serviceName().toLower() + QStringLiteral(".introTourShowed"), false).toBool();
+}
+
+void OFeedClient::setIntroTourShowed(bool shown)
+{
+	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
+	event_config->setValue(serviceName().toLower() + QStringLiteral(".introTourShowed"), shown);
+	event_config->save(serviceName().toLower());
+}
+
 void OFeedClient::testConnection(const QString &host_url,
 								 const QString &event_id,
 								 const QString &event_password,
@@ -663,28 +737,20 @@ void OFeedClient::testConnection(const QString &host_url,
 		return;
 	}
 
-	QUrl base_url(normalized_base_host_url(trimmed_host_url));
-	if (!base_url.isValid() || base_url.scheme().isEmpty() || base_url.host().isEmpty()) {
+	QUrl url(normalized_base_host_url(trimmed_host_url));
+	if (!url.isValid() || url.scheme().isEmpty() || url.host().isEmpty()) {
 		callback(false, tr("Invalid OFeed URL."));
 		return;
 	}
 
-	base_url.setPath(QStringLiteral("/graphql"));
+	url.setPath(QStringLiteral("/rest/v1/events/%1/connection-check").arg(trimmed_event_id));
 
-	QNetworkRequest request(base_url);
+	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
 	const QString combined = trimmed_event_id + ":" + trimmed_event_password;
-	const QByteArray auth = "Basic " + combined.toUtf8().toBase64();
-	request.setRawHeader("Authorization", auth);
+	request.setRawHeader("Authorization", "Basic " + combined.toUtf8().toBase64());
 
-	QJsonObject payload;
-	payload["query"] = "query MyQuery($eventId: String!) { event(id: $eventId) { name organizer } }";
-	QJsonObject variables;
-	variables["eventId"] = trimmed_event_id;
-	payload["variables"] = variables;
-
-	QNetworkReply *reply = m_networkManager->post(request, QJsonDocument(payload).toJson(QJsonDocument::Compact));
+	QNetworkReply *reply = m_networkManager->post(request, QByteArray("{}"));
 
 	connect(reply, &QNetworkReply::finished, this, [reply, callback]() {
 		const int http_status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -707,8 +773,7 @@ void OFeedClient::testConnection(const QString &host_url,
 		}
 
 		if (http_status != 200) {
-			const QString reason = http_reason.isEmpty() ? tr("Unexpected HTTP response") : http_reason;
-			callback_error(reason);
+			callback_error(http_reason.isEmpty() ? tr("Unexpected HTTP response") : http_reason);
 			reply->deleteLater();
 			return;
 		}
@@ -721,46 +786,121 @@ void OFeedClient::testConnection(const QString &host_url,
 			return;
 		}
 
-		const QJsonObject response_obj = doc.object();
-		if (response_obj.contains("errors") && response_obj.value("errors").isArray()) {
-			const QJsonArray errors = response_obj.value("errors").toArray();
-			QString first_error = tr("GraphQL error");
-			if (!errors.isEmpty() && errors.first().isObject()) {
-				const QString message = errors.first().toObject().value("message").toString().trimmed();
-				if (!message.isEmpty())
-					first_error = message;
-			}
-			callback_error(first_error);
+		const QJsonObject data_obj = doc.object().value("results").toObject().value("data").toObject();
+
+		const QJsonObject credentials_obj = data_obj.value("credentials").toObject();
+		if (!credentials_obj.value("valid").toBool()) {
+			const QString reason = credentials_obj.value("reason").toString();
+			QString reason_msg;
+			if (reason == QLatin1String("basic_password_expired"))
+				reason_msg = tr("Password has expired.");
+			else if (reason == QLatin1String("basic_event_id_mismatch"))
+				reason_msg = tr("Event ID mismatch.");
+			else if (reason == QLatin1String("basic_auth_required") || reason == QLatin1String("missing_authorization_header"))
+				reason_msg = tr("Authentication required.");
+			else
+				reason_msg = tr("Invalid credentials.");
+			callback(false, reason_msg);
 			reply->deleteLater();
 			return;
 		}
 
-		const QJsonObject data_obj = response_obj.value("data").toObject();
 		const QJsonObject event_obj = data_obj.value("event").toObject();
 		if (event_obj.isEmpty()) {
-			callback_error(tr("Missing event data in response."));
+			callback_error(tr("Event not found."));
 			reply->deleteLater();
 			return;
 		}
 
 		const QString event_name = event_obj.value("name").toString().trimmed();
-		if (event_name.isEmpty()) {
-			callback_error(tr("Missing event name in response."));
-			reply->deleteLater();
-			return;
-		}
-
 		const QString organizer = event_obj.value("organizer").toString().trimmed();
-		QString success_message = event_name;
-		if (!organizer.isEmpty())
-			success_message = QStringLiteral("%1 (%2)").arg(event_name, organizer);
+		const QString date_str = event_obj.value("date").toString();
+		const QString timezone = event_obj.value("timezone").toString().trimmed();
 
-		callback(true, success_message);
+		const QDateTime event_date = QDateTime::fromString(date_str, Qt::ISODate);
+		const QTimeZone event_tz = timezone.isEmpty() ? QTimeZone::utc() : QTimeZone(timezone.toUtf8());
+		const QDateTime local_date = event_date.isValid() ? event_date.toTimeZone(event_tz) : QDateTime();
+
+		const QString formatted_date = local_date.isValid()
+			? QLocale().toString(local_date.date(), QLocale::ShortFormat)
+			: date_str;
+		const QString formatted_time = local_date.isValid()
+			? QLocale().toString(local_date.time(), QLocale::ShortFormat)
+			: QString();
+
+		QStringList parts;
+		if (!formatted_date.isEmpty())
+			parts << formatted_date;
+		if (!event_name.isEmpty())
+			parts << event_name;
+		if (!organizer.isEmpty())
+			parts << organizer;
+		if (!formatted_time.isEmpty())
+			parts << formatted_time;
+
+		callback(true, parts.join(QStringLiteral(", ")));
 		reply->deleteLater();
 	});
 }
 
-void OFeedClient::sendFile(QString name, QString request_path, QString file, std::function<void()> on_success)
+void OFeedClient::checkCredentials()
+{
+	if (status() != Status::Running)
+		return;
+	emit credentialCheckFired();
+
+	const QString host_url = hostUrl();
+	const QString event_id = eventId();
+	const QString event_password = eventPassword();
+
+	if (host_url.isEmpty() || event_id.isEmpty() || event_password.isEmpty())
+		return;
+
+	QUrl url(normalized_base_host_url(host_url));
+	url.setPath(QStringLiteral("/rest/v1/events/%1/connection-check").arg(event_id));
+
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+	const QString combined = event_id + ":" + event_password;
+	request.setRawHeader("Authorization", "Basic " + combined.toUtf8().toBase64());
+
+	QNetworkReply *reply = m_networkManager->post(request, QByteArray("{}"));
+
+	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+		reply->deleteLater();
+
+		const int http_status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+		if (reply->error() != QNetworkReply::NoError || http_status != 200)
+			return;
+
+		QJsonParseError parse_error;
+		const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll(), &parse_error);
+		if (parse_error.error != QJsonParseError::NoError || !doc.isObject())
+			return;
+
+		const QJsonObject credentials_obj = doc.object().value("results").toObject().value("data").toObject().value("credentials").toObject();
+		if (credentials_obj.isEmpty())
+			return;
+
+		const bool creds_valid = credentials_obj.value("valid").toBool();
+		const bool was_valid = m_credentialsValid != 0;
+		m_credentialsValid = creds_valid ? 1 : 0;
+		emit credentialsStatusChanged(creds_valid);
+
+		if (!creds_valid && was_valid && !m_credentialWarningShown) {
+			m_credentialWarningShown = true;
+			QMessageBox::warning(
+				nullptr,
+				tr("OFeed — Invalid Credentials"),
+				tr("OFeed password is invalid or has expired.\n\nPlease open OFeed service settings and update your credentials.")
+			);
+		}
+		if (creds_valid)
+			m_credentialWarningShown = false;
+	});
+}
+
+void OFeedClient::sendFile(QString name, QString request_path, QString file, std::function<void()> on_success, std::function<void()> on_done)
 {
 	// Create a multi-part request (like FormData in JS)
 	auto *multi_part = new QHttpMultiPart(QHttpMultiPart::FormDataType);
@@ -804,7 +944,7 @@ void OFeedClient::sendFile(QString name, QString request_path, QString file, std
 	multi_part->setParent(reply);
 
 	// Cleanup
-	connect(reply, &QNetworkReply::finished, this, [reply, name, request_url, on_success]() {
+	connect(reply, &QNetworkReply::finished, this, [reply, name, request_url, on_success, on_done]() {
 		if(reply->error()) {
 			auto err_msg = serviceName().toStdString() + " [" + name.toStdString() + "] " + request_url.toString().toStdString() + " : ";
 			auto response_body = reply->readAll();
@@ -818,6 +958,8 @@ void OFeedClient::sendFile(QString name, QString request_path, QString file, std
 				on_success();
 		}
 		reply->deleteLater();
+		if (on_done)
+			on_done();
 	});
 }
 
@@ -827,6 +969,10 @@ void OFeedClient::sendFile(QString name, QString request_path, QString file, std
 /// @param using_external_id indicator which id is used - competitor (internal OFeed) or external (QE id from runs table)
 void OFeedClient::sendCompetitorUpdate(QString json_body, int competitor_or_external_id, bool using_external_id = true)
 {
+	qfInfo() << serviceName().toStdString() + " [sendCompetitorUpdate] id:" << competitor_or_external_id
+			 << "useExternalId:" << using_external_id
+			 << "body:" << json_body;
+
 	// Prepare the Authorization header base64 username:password
 	QString combined = eventId() + ":" + eventPassword();
 	QByteArray base_64_auth = combined.toUtf8().toBase64();
@@ -1039,8 +1185,16 @@ void OFeedClient::sendGraphQLRequest(const QString &query,
 	});
 }
 
-void OFeedClient::getChangesByOrigin()
+void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 {
+	if (m_changesProcessingInProgress) {
+		qfDebug() << serviceName() << "changes processing already in progress, skipping";
+		if (on_done)
+			on_done();
+		return;
+	}
+	m_changesProcessingInProgress = true;
+
 	try
 	{
 		QDateTime last_changelog_call_value = lastChangelogCall();
@@ -1094,7 +1248,7 @@ void OFeedClient::getChangesByOrigin()
 			variables["since"] = last_changelog_call_value.toString(Qt::ISODate);
 		}
 
-		sendGraphQLRequest(graphQLquery, variables, [this](QJsonObject data)
+		sendGraphQLRequest(graphQLquery, variables, [this, on_done](QJsonObject data)
 						   {
 			if (!data.isEmpty())
 			{
@@ -1104,22 +1258,28 @@ void OFeedClient::getChangesByOrigin()
 
 					if (changelog_array.isEmpty()) {
 						qfInfo() << "No changes from origin: " << changelogOrigin();
-						return;
 					}
+					else {
+						// Process the data
+						processCompetitorsChanges(changelog_array);
 
-					// Process the data
-					processCompetitorsChanges(changelog_array);
-
-					// Update last changelog call with the adjusted execution time
-					QDateTime request_execution_time = QDateTime::currentDateTimeUtc();
-					setLastChangelogCall(request_execution_time);
+						// Update last changelog call with the adjusted execution time
+						QDateTime request_execution_time = QDateTime::currentDateTimeUtc();
+						setLastChangelogCall(request_execution_time);
+					}
 				}
-
-			} }, true);
+			}
+			m_changesProcessingInProgress = false;
+			if (on_done)
+				on_done();
+		}, true);
 	}
 	catch (const std::exception &e)
 	{
 		qCritical() << tr("Exception occurred while getting changes by origin: ") << e.what();
+		m_changesProcessingInProgress = false;
+		if (on_done)
+			on_done();
 	}
 }
 
@@ -1129,6 +1289,11 @@ void OFeedClient::processCompetitorsChanges(QJsonArray data_array)
 	{
 		return;
 	}
+
+	// Prevent back-sending of changes that originate from OFeed. The flag must
+	// stay true until all DB events queued by the SQL updates below are processed,
+	// so it is cleared via singleShot(0) which fires after those queued events.
+	m_processingOFeedChanges = true;
 
 	for (const QJsonValue &value : data_array)
 	{
@@ -1154,7 +1319,8 @@ void OFeedClient::processCompetitorsChanges(QJsonArray data_array)
 		int runs_id = external_id_str.toInt();
 		qfInfo() << "Processing change for competitorId (OFeed externalId):" << runs_id << ", type:" << type << ", " << previous_value << " -> " << new_value;
 
-		if (origin == QLatin1String("START") && created_at.isValid())
+		bool is_dns = type == QLatin1String("status_change") && new_value == QLatin1String("DidNotStart");
+		if (origin == QLatin1String("START") && created_at.isValid() && !is_dns)
 			processCorridorTimeUpdate(runs_id, created_at);
 
 		// Handle each type of change
@@ -1182,7 +1348,38 @@ void OFeedClient::processCompetitorsChanges(QJsonArray data_array)
 
 		// Store the processed change
 		storeChange(change);
+		markChangelogEntryAsProcessed(change["id"].toInt());
 	}
+
+	QTimer::singleShot(0, this, [this]() {
+		m_processingOFeedChanges = false;
+	});
+}
+
+void OFeedClient::markChangelogEntryAsProcessed(int protocolId)
+{
+	QString mutation = R"(
+	mutation MarkChangelogProcessed($eventId: String!, $protocolId: Int!, $processedByType: ProtocolProcessedByType, $processedBySource: String!) {
+		markChangelogProcessed(eventId: $eventId, protocolId: $protocolId, processedByType: $processedByType, processedBySource: $processedBySource) {
+			id
+			processed
+		}
+	}
+	)";
+
+	QJsonObject variables;
+	variables["eventId"] = eventId();
+	variables["protocolId"] = protocolId;
+	variables["processedByType"] = QString("SYSTEM");
+	variables["processedBySource"] = QString("IT");
+
+	sendGraphQLRequest(mutation, variables, [this, protocolId](QJsonObject data) {
+		if (data.isEmpty()) {
+			qfWarning() << serviceName().toStdString() + " Failed to mark changelog entry " << protocolId << " as processed";
+		} else {
+			qfDebug() << serviceName().toStdString() + " Changelog entry " << protocolId << " marked as processed";
+		}
+	}, true);
 }
 
 void OFeedClient::processCardChange(int runs_id, const QString &new_value)
@@ -1592,7 +1789,7 @@ void OFeedClient::onCompetitorAdded(int competitor_id)
 		//  Competitor's time
 		if (running_time != INT_INITIAL_VALUE)
 		{
-			json_payload << R"("time":)" << running_time << ",";
+			json_payload << R"("time":)" << running_time / 1000 << ",";
 		}
 
 		// Get the final JSON string
@@ -1606,184 +1803,197 @@ void OFeedClient::onCompetitorAdded(int competitor_id)
 
 		json_str += "}";
 
-		// Output the JSON for debugging
-		// qDebug() << serviceName().toStdString() + " - competitor added - json: " << json_str;
-
 		// Convert std::string to QString
 		QString json_qstr = QString::fromStdString(json_str);
 
-		// Send
+		qfInfo() << serviceName().toStdString() + " [onCompetitorAdded] sending body:" << json_qstr;
 		sendCompetitorAdded(json_qstr);
 	}
 }
 
-void OFeedClient::onCompetitorEdited(int competitor_id)
+void OFeedClient::onRunChanged(int run_id, const QVariantMap &dirty_vals)
 {
-	if (competitor_id == 0)
-	{
-		return;
-	}
-
-	int INT_INITIAL_VALUE = -1;
-
 	int stage_id = getPlugin<EventPlugin>()->currentStageId();
 	QDateTime stage_start_date_time = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
-	qf::core::sql::Query q;
-	q.exec("SELECT competitors.registration, "
-		   "competitors.startNumber, "
-		   "competitors.firstName, "
-		   "competitors.lastName, "
-		   "competitors.note, "
-		   "clubs.name AS organisationName, "
-		   "clubs.abbr AS organisationAbbr, "
-		   "classes.id AS classId, "
-		   "runs.id AS runId, "
-		   "runs.siId, "
-		   "runs.disqualified, "
-		   "runs.disqualifiedByOrganizer, "
-		   "runs.misPunch, "
-		   "runs.badCheck, "
-		   "runs.notStart, "
-		   "runs.notFinish, "
-		   "runs.notCompeting, "
-		   "runs.startTimeMs, "
-		   "runs.finishTimeMs, "
-		   "runs.timeMs "
-		   "FROM runs "
-		   "INNER JOIN competitors ON competitors.id = runs.competitorId "
-		   "LEFT JOIN relays ON relays.id = runs.relayId  "
-		   "LEFT JOIN clubs ON substr(competitors.registration, 1, 3) = clubs.abbr "
-		   "INNER JOIN classes ON classes.id = competitors.classId OR classes.id = relays.classId  "
-		   "WHERE competitors.id=" QF_IARG(competitor_id) " AND runs.stageId=" QF_IARG(stage_id),
-		   qf::core::Exception::Throw);
-	if (q.next())
-	{
-		int run_id = q.value("runId").toInt();
-		QString registration = q.value(QStringLiteral("registration")).toString();
-		QString first_name = q.value(QStringLiteral("firstName")).toString();
-		QString last_name = q.value(QStringLiteral("lastName")).toString();
-		int card_number = q.value(QStringLiteral("siId")).toInt();
-		QString organisation_name = q.value(QStringLiteral("organisationName")).toString();
-		QString organisation_abbr = q.value(QStringLiteral("organisationAbbr")).toString();
-		QString organisation = !organisation_abbr.isEmpty() ? organisation_name : registration.left(3);
-		int class_id = q.value(QStringLiteral("classId")).toInt();
-		QString nationality = "";
-		QString origin = "IT";
-		QString note = q.value(QStringLiteral("note")).toString();
 
-		// Start bib
-		int start_bib = INT_INITIAL_VALUE;
-		QVariant start_bib_variant = q.value(QStringLiteral("startNumber"));
-		if (!start_bib_variant.isNull())
-		{
-			start_bib = start_bib_variant.toInt();
+	// Strip optional "runs." table prefix and normalise to lowercase
+	auto field_value = [&](const QString &field_lower) -> QVariant {
+		for (auto it = dirty_vals.constBegin(); it != dirty_vals.constEnd(); ++it) {
+			if (it.key().section('.', -1).toLower() == field_lower)
+				return it.value();
 		}
+		return QVariant();
+	};
+	auto has_field = [&](const QString &field_lower) -> bool {
+		return field_value(field_lower).isValid();
+	};
 
-		// Start time
-		int start_time = INT_INITIAL_VALUE;
-		QVariant start_time_variant = q.value(QStringLiteral("startTimeMs"));
-		if (!start_time_variant.isNull())
-		{
-			start_time = start_time_variant.toInt();
+	std::stringstream json_payload;
+	json_payload << "{"
+				 << R"("origin":"IT",)"
+				 << R"("useExternalId":true,)";
+
+	bool has_fields = false;
+
+	// Card (siId)
+	if (has_field("siid")) {
+		int card = field_value("siid").toInt();
+		if (card != 0) {
+			json_payload << R"("card":)" << card << ",";
+			has_fields = true;
 		}
+	}
 
-		// Finish time
-		int finish_time = INT_INITIAL_VALUE;
-		QVariant finish_time_variant = q.value(QStringLiteral("finishTimeMs"));
-		if (!finish_time_variant.isNull())
-		{
-			finish_time = finish_time_variant.toInt();
+	// Start time
+	if (has_field("starttimems")) {
+		int ms = field_value("starttimems").toInt();
+		if (ms > 0) {
+			json_payload << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(ms)).toStdString() << R"(",)";
+			has_fields = true;
 		}
+	}
 
-		// Time
-		int running_time = INT_INITIAL_VALUE;
-		QVariant running_time_variant = q.value(QStringLiteral("timeMs"));
-		if (!running_time_variant.isNull())
-		{
-			running_time = running_time_variant.toInt();
+	// Leg (relay stage number)
+	if (has_field("leg")) {
+		QVariant v = field_value("leg");
+		if (!v.isNull()) {
+			json_payload << R"("leg":)" << v.toInt() << ",";
+			has_fields = true;
 		}
+	}
 
-		// Status
-		bool is_disq = q.value(QStringLiteral("disqualified")).toBool();
-		bool is_disq_by_organizer = q.value(QStringLiteral("disqualifiedByOrganizer")).toBool();
-		bool is_miss_punch = q.value(QStringLiteral("misPunch")).toBool();
-		bool is_bad_check = q.value(QStringLiteral("badCheck")).toBool();
-		bool is_did_not_start = q.value(QStringLiteral("notStart")).toBool();
-		bool is_did_not_finish = q.value(QStringLiteral("notFinish")).toBool();
-		bool is_not_competing = q.value(QStringLiteral("notCompeting")).toBool();
-		QString status = getIofResultStatus(running_time, is_disq, is_disq_by_organizer, is_miss_punch, is_bad_check, is_did_not_start, is_did_not_finish, is_not_competing);
-
-		// Use std::stringstream to build the JSON string
-		std::stringstream json_payload;
-
-		// Setup common values
-		json_payload << "{"
-					 << R"("origin":")" << origin.toStdString() << R"(",)"
-					 << R"("firstname":")" << first_name.toStdString() << R"(",)"
-					 << R"("lastname":")" << last_name.toStdString() << R"(",)"
-					 << R"("registration":")" << registration.toStdString() << R"(",)"
-					 << R"("organisation":")" << organisation.toStdString() << R"(",)"
-					 << R"("status":")" << status.toStdString() << R"(",)"
-					 << R"("note":")" << note.toStdString() << R"(",)";
-
-		if (nationality != "")
-		{
-			json_payload << R"("nationality":")" << nationality.toStdString() << R"(",)";
+	// Relay team
+	if (has_field("relayid")) {
+		QVariant v = field_value("relayid");
+		if (!v.isNull()) {
+			json_payload << R"("teamId":)" << v.toInt() << ",";
+			has_fields = true;
 		}
+	}
 
-		// External ids
-		json_payload << R"("useExternalId":true,)"
-						 << R"("classExternalId":")" << class_id << R"(",)";
-
-		// Card number - QE saves 0 for empty si card
-		if (card_number != 0)
-		{
-			json_payload << R"("card":)" << card_number << ",";
+	// Status — any flag change requires a DB read to compute the final value
+	static const QSet<QString> status_flag_fields = {
+		"disqualified", "disqualifiedbyorganizer", "mispunch", "badcheck",
+		"notstart", "notfinish", "notcompeting"
+	};
+	bool has_status_change = false;
+	for (auto it = dirty_vals.constBegin(); it != dirty_vals.constEnd(); ++it) {
+		if (status_flag_fields.contains(it.key().section('.', -1).toLower())) {
+			has_status_change = true;
+			break;
 		}
-
-		// Finish time
-		if (finish_time != INT_INITIAL_VALUE)
-		{
-			json_payload << R"("finishTime":")" << datetime_to_string(stage_start_date_time.addMSecs(finish_time)).toStdString() << R"(",)";
+	}
+	if (has_status_change) {
+		qf::core::sql::Query q;
+		q.exec("SELECT disqualified, disqualifiedByOrganizer, misPunch, badCheck, "
+			   "notStart, notFinish, notCompeting, timeMs "
+			   "FROM runs WHERE id=" QF_IARG(run_id), qf::core::Exception::Throw);
+		if (q.next()) {
+			QString status = getIofResultStatus(
+				q.value("timeMs").toInt(),
+				q.value("disqualified").toBool(),
+				q.value("disqualifiedByOrganizer").toBool(),
+				q.value("misPunch").toBool(),
+				q.value("badCheck").toBool(),
+				q.value("notStart").toBool(),
+				q.value("notFinish").toBool(),
+				q.value("notCompeting").toBool());
+			json_payload << R"("status":")" << status.toStdString() << R"(",)";
+			has_fields = true;
 		}
+	}
 
-		// Star time
-		if (start_time != INT_INITIAL_VALUE)
-		{
-			json_payload << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(start_time)).toStdString() << R"(",)";
-		}
-
-		// Start bib
-		if (start_bib != INT_INITIAL_VALUE)
-		{
-			json_payload << R"("bibNumber":)" << start_bib << ",";
-		}
-
-		//  Competitor's time
-		if (running_time != INT_INITIAL_VALUE)
-		{
-			json_payload << R"("time":)" << running_time << ",";
-		}
-
-		// Get the final JSON string
+	if (has_fields) {
 		std::string json_str = json_payload.str();
-
-		// Remove the trailing comma if necessary
 		if (json_str.back() == ',')
-		{
 			json_str.pop_back();
-		}
-
 		json_str += "}";
+		qfInfo() << serviceName().toStdString() + " [onRunChanged/run] run_id:" << run_id;
+		sendCompetitorUpdate(QString::fromStdString(json_str), run_id);
+	}
 
-		// Output the JSON for debugging
-		// qDebug() << serviceName().toStdString() + " - competitor edited - json: " << json_str;
+	// Competitor fields visible in runsRecord JOIN
+	static const QSet<QString> competitor_dirty_fields = {
+		"competitorname", "registration", "note", "licence", "competitors__startnumber", "classid"
+	};
+	bool has_competitor_change = false;
+	for (auto it = dirty_vals.constBegin(); it != dirty_vals.constEnd(); ++it) {
+		if (competitor_dirty_fields.contains(it.key().section('.', -1).toLower())) {
+			has_competitor_change = true;
+			break;
+		}
+	}
+	if (has_competitor_change) {
+		bool name_changed = has_field("competitorname");
+		bool registration_changed = has_field("registration");
+		bool note_changed = has_field("note");
+		bool licence_changed = has_field("licence");
+		bool bib_changed = has_field("competitors__startnumber");
 
-		// Convert std::string to QString
-		QString json_qstr = QString::fromStdString(json_str);
+		qf::core::sql::Query cq;
+		cq.exec("SELECT competitors.firstName, competitors.lastName, competitors.registration, competitors.note, "
+				"competitors.licence, competitors.startNumber, "
+				"classes.id AS classId, "
+				"clubs.name AS organisationName, clubs.abbr AS organisationAbbr "
+				"FROM runs "
+				"INNER JOIN competitors ON competitors.id = runs.competitorId "
+				"LEFT JOIN relays ON relays.id = runs.relayId "
+				"INNER JOIN classes ON classes.id = competitors.classId OR classes.id = relays.classId "
+				"LEFT JOIN clubs ON substr(competitors.registration, 1, 3) = clubs.abbr "
+				"WHERE runs.id=" QF_IARG(run_id), qf::core::Exception::Throw);
+		if (cq.next()) {
+			std::stringstream cpayload;
+			cpayload << R"({"origin":"IT","useExternalId":true,)";
+			bool has_cfields = false;
 
-		// Send
-		sendCompetitorUpdate(json_qstr, run_id);
+			if (name_changed) {
+				cpayload << R"("firstname":")" << cq.value("firstName").toString().toStdString() << R"(",)"
+						 << R"("lastname":")" << cq.value("lastName").toString().toStdString() << R"(",)";
+				has_cfields = true;
+			}
+			if (registration_changed) {
+				const QString reg = cq.value("registration").toString();
+				const QString org_abbr = cq.value("organisationAbbr").toString();
+				const QString org = !org_abbr.isEmpty() ? cq.value("organisationName").toString() : reg.left(3);
+				cpayload << R"("registration":")" << reg.toStdString() << R"(",)"
+						 << R"("organisation":")" << org.toStdString() << R"(",)";
+				has_cfields = true;
+			}
+			if (note_changed) {
+				cpayload << R"("note":")" << cq.value("note").toString().toStdString() << R"(",)";
+				has_cfields = true;
+			}
+			if (licence_changed) {
+				const QString lic = cq.value("licence").toString();
+				if (!lic.isEmpty()) {
+					cpayload << R"("license":")" << lic.toStdString() << R"(",)";
+					has_cfields = true;
+				}
+			}
+			if (bib_changed) {
+				const QVariant bib_v = cq.value("startNumber");
+				if (!bib_v.isNull()) {
+					cpayload << R"("bibNumber":)" << bib_v.toInt() << ",";
+					has_cfields = true;
+				}
+			}
+			// Always include classExternalId so a simultaneous class change is not lost
+			{
+				const int class_id = cq.value("classId").toInt();
+				if (class_id > 0) {
+					cpayload << R"("classExternalId":")" << class_id << R"(",)";
+					has_cfields = true;
+				}
+			}
+
+			if (has_cfields) {
+				std::string cs = cpayload.str();
+				if (cs.back() == ',') cs.pop_back();
+				cs += "}";
+				qfInfo() << serviceName().toStdString() + " [onRunChanged/competitor] run_id:" << run_id;
+				sendCompetitorUpdate(QString::fromStdString(cs), run_id);
+			}
+		}
 	}
 }
 
@@ -1848,6 +2058,7 @@ void OFeedClient::onCompetitorReadOut(int competitor_id)
 		// Convert std::string to QString
 		QString json_qstr = QString::fromStdString(json_str);
 
+		qfInfo() << serviceName().toStdString() + " [onCompetitorReadOut] run_id:" << run_id;
 		sendCompetitorUpdate(json_qstr, run_id);
 	}
 }

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Event::services::OFeedWelcomeDialog</class>
+ <widget class="QDialog" name="Event::services::OFeedWelcomeDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>330</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>OFeed – Getting started</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>20</number>
+   </property>
+   <property name="topMargin">
+    <number>20</number>
+   </property>
+   <property name="rightMargin">
+    <number>20</number>
+   </property>
+   <property name="bottomMargin">
+    <number>16</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="lbTitle">
+     <property name="font">
+      <font>
+       <pointsize>13</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>New to OFeed?</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lbDescription">
+     <property name="text">
+      <string>OFeed is an online platform for orienteering race data. Connect QuickEvent to enable handling start lists and results in real time.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="separatorFeatures">
+     <property name="frameShape">
+      <enum>QFrame::Shape::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Sunken</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lbFeatures">
+     <property name="text">
+      <string>&lt;html&gt;&lt;body&gt;&lt;ul style=&quot;margin:0; padding-left:20px;&quot;&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Smooth readout&lt;/b&gt; – no unknown cards that slow down read-out.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Actual card numbers&lt;/b&gt; – card numbers changed at the start are processed within a minute; radio controls work for all competitors.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Real-time data&lt;/b&gt; – O Checklist stays up-to-date even with late entries and other changes before the first corridor.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Instant DNS&lt;/b&gt; – competitors who didn&apos;t start can be processed quickly; DNS is reversed to Active if a late start occurs.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Central Data Hub&lt;/b&gt; – all orienteering data in one secure place, accessible to other integrated applications.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="bottomLayout">
+     <item>
+      <widget class="QLabel" name="lbLinks">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="bottomSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btGotIt">
+       <property name="text">
+        <string>Got it</string>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

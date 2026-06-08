@@ -7,6 +7,7 @@
 #include <qf/core/assert.h>
 
 #include <QComboBox>
+#include <QDateTimeEdit>
 
 using namespace qf::gui;
 
@@ -48,7 +49,10 @@ QWidget *SqlTableItemDelegate::createEditor(QWidget *parent, const QStyleOptionV
 		//connect(editor, SIGNAL(activated(int)), this, SLOT(commitAndCloseEditor()));
 		return editor;
 	}
-			return Super::createEditor(parent, option, index);
+		QWidget *editor = Super::createEditor(parent, option, index);
+	if(auto *dte = qobject_cast<QDateTimeEdit*>(editor); dte && !cd.format().isEmpty())
+		dte->setDisplayFormat(cd.format());
+	return editor;
 
 }
 

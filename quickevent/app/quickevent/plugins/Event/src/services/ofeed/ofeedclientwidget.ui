@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>445</width>
-    <height>543</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,39 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QVBoxLayout" name="ofeedVerticalLayout">
+     <item>
+      <widget class="QLabel" name="docsSupportTitle">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Documentation &amp; support</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbDocsLinks">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="separatorDocs">
+       <property name="frameShape">
+        <enum>QFrame::Shape::HLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QLabel" name="credentialsTitle">
        <property name="font">
@@ -26,6 +59,19 @@
        </property>
        <property name="text">
         <string>Credentials</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbCredentialWarning">
+       <property name="text">
+        <string>⚠ OFeed password is invalid or has expired. Please update your credentials.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="visible">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -51,26 +97,33 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QSpinBox" name="edExportInterval">
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+        <layout class="QHBoxLayout" name="exportIntervalLayout">
+         <property name="spacing">
+          <number>6</number>
          </property>
-         <property name="suffix">
-          <string> sec</string>
-         </property>
-         <property name="minimum">
-          <number>10</number>
-         </property>
-         <property name="maximum">
-          <number>600</number>
-         </property>
-         <property name="singleStep">
-          <number>10</number>
-         </property>
-         <property name="value">
-          <number>60</number>
-         </property>
-        </widget>
+         <item>
+          <widget class="QSpinBox" name="edExportInterval">
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+           </property>
+           <property name="suffix">
+            <string> sec</string>
+           </property>
+           <property name="minimum">
+            <number>10</number>
+           </property>
+           <property name="maximum">
+            <number>600</number>
+           </property>
+           <property name="singleStep">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>60</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="urlLabel">
@@ -163,31 +216,31 @@
          </item>
         </layout>
        </item>
-        <item row="4" column="1">
-         <widget class="QPushButton" name="btPasteSetupLink">
-          <property name="toolTip">
-           <string>Paste OFeed setup link from clipboard and fill Url, Event id and Password.</string>
-          </property>
-          <property name="text">
-           <string>Paste setup link</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QPushButton" name="btTestConnection">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
+       <item row="4" column="1">
+        <widget class="QPushButton" name="btPasteSetupLink">
+         <property name="toolTip">
+          <string>Paste OFeed setup link from clipboard and fill Url, Event id and Password.</string>
+         </property>
+         <property name="text">
+          <string>Paste setup link</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QPushButton" name="btTestConnection">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
           <string>Test connection</string>
          </property>
         </widget>
        </item>
-        <item row="6" column="1">
-         <widget class="QLabel" name="lbConnectionTestResult">
-          <property name="text">
-           <string/>
-          </property>
+       <item row="6" column="1">
+        <widget class="QLabel" name="lbConnectionTestResult">
+         <property name="text">
+          <string/>
+         </property>
          <property name="wordWrap">
           <bool>true</bool>
          </property>
@@ -196,33 +249,30 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="uploadDataTitle">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <bold>true</bold>
-        </font>
+      <widget class="QFrame" name="separatorCredentials">
+       <property name="frameShape">
+        <enum>QFrame::Shape::HLine</enum>
        </property>
-       <property name="text">
-        <string>Upload data</string>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="uploadDataDescription">
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start lists and results are automatically exported at specified intervals, with changes such as edited competitor data or new competitors being synced in real time. Both results and start lists can also be exported manually using the buttons below. Additionally, when the service is active, individual competitor data is sent after readout and upon saving the competitor dialog. Refer to the &lt;a href=&quot;https://docs.orienteerfeed.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;documentation&lt;/span&gt;&lt;/a&gt; for more details.&lt;/p&gt;&lt;p&gt;If you encounter any unexpected errors, check &lt;a href=&quot;https://docs.orienteerfeed.com/support&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#007af4;&quot;&gt;support&lt;/span&gt;&lt;/a&gt; page in the documentation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="exportHorizontalLayout">
+      <layout class="QHBoxLayout" name="manualUploadLayout">
+       <item>
+        <widget class="QLabel" name="uploadDataTitle">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Manual execution</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <spacer name="exportHorizontalSpacer">
          <property name="orientation">
@@ -250,7 +300,27 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="btProcessChanges">
+         <property name="toolTip">
+          <string>Fetch and process pending changes from OFeed</string>
+         </property>
+         <property name="text">
+          <string>Process changes</string>
+         </property>
+        </widget>
+       </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QFrame" name="separatorUploadData">
+       <property name="frameShape">
+        <enum>QFrame::Shape::HLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="processChangesTitle">
@@ -266,81 +336,239 @@
       </widget>
      </item>
      <item>
-      <layout class="QFormLayout" name="formLayout">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="processChangesOnOffButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>ArrowCursor</cursorShape>
-         </property>
+      <layout class="QHBoxLayout" name="processChangesLayout">
+       <item>
+        <widget class="ToggleSwitch" name="processChangesOnOffButton">
          <property name="toolTip">
-          <string>Turn on/off changes processing</string>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LayoutDirection::LeftToRight</enum>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>ON / OFF</string>
+          <string>Enable or disable automatic processing of changes from the start</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item>
         <widget class="QLabel" name="processChangesOnOffLabel">
          <property name="text">
-          <string>Processing changes is deactivated</string>
+          <string>Process changes from start (O Checklist)</string>
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QFormLayout" name="processChangesOriginForm">
-       <item row="0" column="0">
-        <widget class="QLabel" name="originLabel">
-         <property name="text">
-          <string>Origin</string>
+       <item>
+        <spacer name="processChangesHorizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="edChangelogOrigin">
-         <property name="text">
-          <string>START</string>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
          </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-         <property name="placeholderText">
-          <string>START</string>
-         </property>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </item>
      <item>
       <widget class="QLabel" name="processChangesDescription">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Changes from the origin specified (permanent value at this moment) are processed automatically and visualized in &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; modul.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, changes from the start are automatically processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="separatorProcessChanges">
+       <property name="frameShape">
+        <enum>QFrame::Shape::HLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="receiptSetupTitle">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Receipt setup</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="printEventImageLayout">
+       <item>
+        <widget class="ToggleSwitch" name="additionalSettingsPrintEventImageOnReceipt">
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lbPrintEventImage">
+         <property name="text">
+          <string>Print the OFeed event image on receipts</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="printEventImageSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="receiptImageHeightLayout">
+       <item>
+        <widget class="QLabel" name="lbReceiptImageHeight">
+         <property name="text">
+          <string>Receipt image height (max 60 mm)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="edReceiptImageHeight">
+         <property name="toolTip">
+          <string>Maximum printed height of the OFeed event image on receipts</string>
+         </property>
+         <property name="suffix">
+          <string> mm</string>
+         </property>
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>60</number>
+         </property>
+         <property name="value">
+          <number>18</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btRefreshEventImage">
+       <property name="toolTip">
+        <string>Download event image from OFeed and update local cache</string>
+       </property>
+       <property name="text">
+        <string>Refresh event image cache</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lbEventImageCacheStatus">
+       <property name="text">
+        <string>No cached image</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="printQrCodeLayout">
+       <item>
+        <widget class="ToggleSwitch" name="additionalSettingsPrintEventQrCodeOnReceipt">
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lbPrintQrCode">
+         <property name="text">
+          <string>Print QR code with event link on receipts</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="printQrCodeSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="receiptEventLinkLayout">
+       <item>
+        <widget class="QLabel" name="lbReceiptEventLink">
+         <property name="text">
+          <string>Receipt event link</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="edReceiptEventLink">
+         <property name="toolTip">
+          <string>Link encoded into the printed QR code on receipts</string>
+         </property>
+         <property name="placeholderText">
+          <string>https://orienteerfeed.com/events/&lt;eventId&gt;?tab=results</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="receiptEventQrCodeCaptionLayout">
+       <item>
+        <widget class="QLabel" name="lbReceiptEventQrCodeCaption">
+         <property name="text">
+          <string>Receipt QR caption</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="edReceiptEventQrCodeCaption">
+         <property name="toolTip">
+          <string>Caption printed under the receipt QR code</string>
+         </property>
+         <property name="placeholderText">
+          <string>Live Results</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QFrame" name="separatorReceiptSetup">
+       <property name="frameShape">
+        <enum>QFrame::Shape::HLine</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Sunken</enum>
        </property>
       </widget>
      </item>
@@ -363,139 +591,103 @@
        </property>
       </widget>
      </item>
-      <item>
-       <widget class="QCheckBox" name="additionalSettingsRunXmlValidation">
-       <property name="toolTip">
-        <string extracomment="Should OFeed perform iof xml validation?"/>
-       </property>
-       <property name="text">
-        <string>Run IOF XML validation</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-       <property name="tristate">
-        <bool>false</bool>
-       </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="additionalSettingsPrintEventImageOnReceipt">
+     <item>
+      <layout class="QFormLayout" name="additionalSettingsForm">
+       <item row="0" column="0">
+        <widget class="QLabel" name="credentialCheckIntervalLabel">
          <property name="text">
-          <string>Print the OFeed event image on receipts</string>
+          <string>Credential check interval</string>
          </property>
         </widget>
        </item>
-       <item>
-        <layout class="QHBoxLayout" name="receiptImageHeightLayout">
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="credentialCheckIntervalLayout">
+         <property name="spacing">
+          <number>6</number>
+         </property>
          <item>
-          <widget class="QLabel" name="lbReceiptImageHeight">
-           <property name="text">
-             <string>Receipt image height (max 60 mm)</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="edReceiptImageHeight">
+          <widget class="QSpinBox" name="edCredentialCheckInterval">
            <property name="toolTip">
-            <string>Maximum printed height of the OFeed event image on receipts</string>
+            <string>How often to verify OFeed credentials in the background</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
            <property name="suffix">
-            <string> mm</string>
+            <string> min</string>
            </property>
            <property name="minimum">
-            <number>10</number>
+            <number>5</number>
            </property>
            <property name="maximum">
-            <number>60</number>
+            <number>1440</number>
+           </property>
+           <property name="singleStep">
+            <number>5</number>
            </property>
            <property name="value">
-            <number>18</number>
+            <number>60</number>
            </property>
           </widget>
          </item>
         </layout>
        </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="xmlValidationLayout">
        <item>
-        <widget class="QPushButton" name="btRefreshEventImage">
+        <widget class="ToggleSwitch" name="additionalSettingsRunXmlValidation">
          <property name="toolTip">
-          <string>Download event image from OFeed and update local cache</string>
+          <string extracomment="Should OFeed perform iof xml validation?"/>
          </property>
-         <property name="text">
-          <string>Refresh event image cache</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lbEventImageCacheStatus">
-         <property name="text">
-          <string>No cached image</string>
-         </property>
-         <property name="wordWrap">
+         <property name="checkable">
           <bool>true</bool>
          </property>
         </widget>
        </item>
-        <item>
-         <widget class="QCheckBox" name="additionalSettingsPrintEventQrCodeOnReceipt">
-          <property name="text">
-           <string>Print QR code with event link on receipts</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="receiptEventLinkLayout">
-          <item>
-           <widget class="QLabel" name="lbReceiptEventLink">
-            <property name="text">
-             <string>Receipt event link</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="edReceiptEventLink">
-            <property name="toolTip">
-             <string>Link encoded into the printed QR code on receipts</string>
-            </property>
-            <property name="placeholderText">
-             <string>https://orienteerfeed.com/events/&lt;eventId&gt;?tab=results</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="receiptEventQrCodeCaptionLayout">
-          <item>
-           <widget class="QLabel" name="lbReceiptEventQrCodeCaption">
-            <property name="text">
-             <string>Receipt QR caption</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="edReceiptEventQrCodeCaption">
-            <property name="toolTip">
-             <string>Caption printed under the receipt QR code</string>
-            </property>
-            <property name="placeholderText">
-             <string>Live Results</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-     </layout>
+       <item>
+        <widget class="QLabel" name="lbRunXmlValidation">
+         <property name="text">
+          <string>Run IOF XML validation</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="xmlValidationSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <tabstops>
   <tabstop>btExportStartListXml30</tabstop>
   <tabstop>btExportResultsXml30</tabstop>
  </tabstops>
+ <customwidgets>
+  <customwidget>
+   <class>ToggleSwitch</class>
+   <extends>QAbstractButton</extends>
+   <header location="local">plugins/Event/src/services/ofeed/toggleswitch.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CircularTimerWidget</class>
+   <extends>QWidget</extends>
+   <header location="local">plugins/Event/src/services/ofeed/circulartimerwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

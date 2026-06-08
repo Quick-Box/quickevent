@@ -1,6 +1,9 @@
 #include "ofeedclientwidget.h"
 #include "ui_ofeedclientwidget.h"
 #include "ofeedclient.h"
+#include "ofeedwelcomedialog.h"
+#include "toggleswitch.h"
+#include "circulartimerwidget.h"
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/messagebox.h>
@@ -10,6 +13,9 @@
 #include <qf/core/log.h>
 
 #include <QClipboard>
+#include <QLocale>
+#include <QTimer>
+#include <QShowEvent>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGuiApplication>
@@ -24,6 +30,15 @@
 namespace Event::services {
 
 namespace {
+
+QString docsBaseUrl()
+{
+	const bool isCzech = QLocale().language() == QLocale::Czech;
+	return isCzech
+		? QStringLiteral("https://docs.orienteerfeed.com/cs")
+		: QStringLiteral("https://docs.orienteerfeed.com");
+}
+
 struct ParsedOFeedSetupLink {
 	QString host_url;
 	QString event_id;
@@ -149,14 +164,35 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	setPersistentSettingsId("OFeedClientWidget");
 	ui->setupUi(this);
 
+	const QString base = docsBaseUrl();
+	ui->lbDocsLinks->setText(
+		QStringLiteral("<a href=\"%1/\">%2</a>"
+					   "&nbsp;&nbsp;|&nbsp;&nbsp;"
+					   "<a href=\"%3/getting-started\">%4</a>"
+					   "&nbsp;&nbsp;|&nbsp;&nbsp;"
+					   "<a href=\"%5/best-practice\">%6</a>"
+					   "&nbsp;&nbsp;|&nbsp;&nbsp;"
+					   "<a href=\"%7/category/tutorials/\">%8</a>"
+					   "&nbsp;&nbsp;|&nbsp;&nbsp;"
+					   "<a href=\"%9/integrations/quickevent/#how-does-the-service-work\">%10</a>"
+					   "&nbsp;&nbsp;|&nbsp;&nbsp;"
+					   "<a href=\"%11/support\">%12</a>")
+			.arg(base, tr("About"))
+			.arg(base, tr("Getting started"))
+			.arg(base, tr("Best practices"))
+			.arg(base, tr("Tutorials"))
+			.arg(base, tr("How it works"))
+			.arg(base, tr("Support"))
+	);
+
 	OFeedClient *svc = service();
 	if(svc) {
 		OFeedClientSettings ss = svc->settings();
 		ui->edExportInterval->setValue(ss.exportIntervalSec());
+		ui->edCredentialCheckInterval->setValue(ss.credentialCheckIntervalMin());
 		ui->edHostUrl->setText(userFacingHostUrl(svc->hostUrl()));
 		ui->edEventId->setText(svc->eventId());
 		ui->edEventPassword->setText(svc->eventPassword());
-		ui->edChangelogOrigin->setText(svc->changelogOrigin());
 		ui->additionalSettingsRunXmlValidation->setChecked(svc->runXmlValidation());
 		ui->additionalSettingsPrintEventImageOnReceipt->setChecked(svc->printEventImageOnReceipt());
 		ui->edReceiptImageHeight->setValue(svc->receiptImageHeightMm());
@@ -171,30 +207,37 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		ui->lbReceiptEventQrCodeCaption->setEnabled(svc->printEventQrCodeOnReceipt());
 		ui->edReceiptEventQrCodeCaption->setEnabled(svc->printEventQrCodeOnReceipt());
 		ui->lbEventImageCacheStatus->setText(svc->hasCachedEventImage() ? tr("Cached image is available") : tr("No cached image"));
-		ui->processChangesOnOffButton->setText(svc->runChangesProcessing() ? tr("ON") : tr("OFF"));
 		ui->processChangesOnOffButton->setChecked(svc->runChangesProcessing());
-		ui->processChangesOnOffButton->setStyleSheet(
-		"QPushButton {"
-		"  padding: 5px;"
-		"  border-radius: 4px;"
-		"  border: 2px solid gray;"
-		"}"
-		"QPushButton:checked {"
-		"  border: 2px solid green;"
-		"  color: green;"
-		"}"
-		"QPushButton:!checked {"
-		"  border: 2px solid red;"
-		"  color: red;"
-		"}"
-		);
-		ui->processChangesOnOffLabel->setText(svc->runChangesProcessing() ? tr("Changes are automatically processed") : tr("Processing changes is deactivated"));
+		updateCredentialStatus(svc->credentialsValid() == 1);
+		connect(svc, &OFeedClient::credentialsStatusChanged, this, &OFeedClientWidget::updateCredentialStatus);
 	}
+	m_exportTimerIndicator = new CircularTimerWidget(this);
+	m_exportTimerIndicator->setToolTip(tr("Time until next automatic export"));
+	ui->exportIntervalLayout->addWidget(m_exportTimerIndicator);
+
+	m_credentialTimerIndicator = new CircularTimerWidget(this);
+	m_credentialTimerIndicator->setToolTip(tr("Time until next credential check"));
+	ui->credentialCheckIntervalLayout->addWidget(m_credentialTimerIndicator);
+
+	if(svc) {
+		connect(svc, &OFeedClient::exportTimerFired, m_exportTimerIndicator, &CircularTimerWidget::markJustFired);
+		connect(svc, &OFeedClient::credentialCheckFired, m_credentialTimerIndicator, &CircularTimerWidget::markJustFired);
+	}
+
+	m_uiTickTimer = new QTimer(this);
+	m_uiTickTimer->setInterval(1000);
+	connect(m_uiTickTimer, &QTimer::timeout, this, &OFeedClientWidget::updateTimerIndicators);
+
 	syncReceiptEventLinkWithDefaults();
 
 	connect(ui->btExportResultsXml30, &QPushButton::clicked, this, &OFeedClientWidget::onBtExportResultsXml30Clicked);
 	connect(ui->btExportStartListXml30, &QPushButton::clicked, this, &OFeedClientWidget::onBtExportStartListXml30Clicked);
-	connect(ui->processChangesOnOffButton, &QPushButton::clicked,this, &OFeedClientWidget::onProcessChangesOnOffButtonClicked);
+	connect(ui->btProcessChanges, &QPushButton::clicked, this, &OFeedClientWidget::onBtProcessChangesClicked);
+	connect(ui->processChangesOnOffButton, &QAbstractButton::toggled, this, [this](bool checked) {
+		OFeedClient *svc = service();
+		if(svc)
+			svc->setRunChangesProcessing(checked);
+	});
 	connect(ui->btPasteSetupLink, &QPushButton::clicked, this, &OFeedClientWidget::onBtPasteSetupLinkClicked);
 	connect(ui->btTestConnection, &QPushButton::clicked, this, &OFeedClientWidget::onBtTestConnectionClicked);
 	connect(ui->btRefreshEventImage, &QPushButton::clicked, this, &OFeedClientWidget::onBtRefreshEventImageClicked);
@@ -210,12 +253,12 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	};
 	connect(ui->btToggleEventPasswordVisibility, &QToolButton::toggled, this, update_password_visibility);
 	update_password_visibility(ui->btToggleEventPasswordVisibility->isChecked());
-	connect(ui->additionalSettingsPrintEventImageOnReceipt, &QCheckBox::toggled, this, [this](bool on) {
+	connect(ui->additionalSettingsPrintEventImageOnReceipt, &QAbstractButton::toggled, this, [this](bool on) {
 		ui->lbReceiptImageHeight->setEnabled(on);
 		ui->edReceiptImageHeight->setEnabled(on);
 		updateTestConnectionState();
 	});
-	connect(ui->additionalSettingsPrintEventQrCodeOnReceipt, &QCheckBox::toggled, this, [this](bool on) {
+	connect(ui->additionalSettingsPrintEventQrCodeOnReceipt, &QAbstractButton::toggled, this, [this](bool on) {
 		ui->lbReceiptEventLink->setEnabled(on);
 		ui->edReceiptEventLink->setEnabled(on);
 		ui->lbReceiptEventQrCodeCaption->setEnabled(on);
@@ -236,6 +279,26 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 OFeedClientWidget::~OFeedClientWidget()
 {
 	delete ui;
+}
+
+void OFeedClientWidget::showEvent(QShowEvent *event)
+{
+	Super::showEvent(event);
+	updateTimerIndicators();
+	m_uiTickTimer->start();
+	OFeedClient *svc = service();
+	if(svc && !svc->introTourShowed()) {
+		svc->setIntroTourShowed(true);
+		auto *dlg = new OFeedWelcomeDialog(this);
+		dlg->setAttribute(Qt::WA_DeleteOnClose);
+		dlg->show();
+	}
+}
+
+void OFeedClientWidget::hideEvent(QHideEvent *event)
+{
+	Super::hideEvent(event);
+	m_uiTickTimer->stop();
 }
 
 bool OFeedClientWidget::acceptDialogDone(int result)
@@ -261,10 +324,10 @@ bool OFeedClientWidget::saveSettings()
 	if(svc) {
 		OFeedClientSettings ss = svc->settings();
 		ss.setExportIntervalSec(ui->edExportInterval->value());
+		ss.setCredentialCheckIntervalMin(ui->edCredentialCheckInterval->value());
 		svc->setHostUrl(ui->edHostUrl->text().trimmed());
 		svc->setEventId(ui->edEventId->text().trimmed());
 		svc->setEventPassword(ui->edEventPassword->text().trimmed());
-		svc->setChangelogOrigin(ui->edChangelogOrigin->text().trimmed());
 		svc->setRunXmlValidation(ui->additionalSettingsRunXmlValidation->isChecked());
 		svc->setPrintEventImageOnReceipt(ui->additionalSettingsPrintEventImageOnReceipt->isChecked());
 		svc->setReceiptImageHeightMm(ui->edReceiptImageHeight->value());
@@ -296,19 +359,14 @@ void OFeedClientWidget::onBtExportStartListXml30Clicked()
 	}
 }
 
-void OFeedClientWidget::onProcessChangesOnOffButtonClicked()
+void OFeedClientWidget::onBtProcessChangesClicked()
 {
 	OFeedClient *svc = service();
-    if (!svc)
-        return;
-
-    bool newState = !svc->runChangesProcessing();
-    svc->setRunChangesProcessing(newState);
-
-    // Update button text or icon
-    ui->processChangesOnOffButton->setText(newState ? tr("ON") : tr("OFF"));
-	ui->processChangesOnOffButton->setChecked(svc->runChangesProcessing());
-	ui->processChangesOnOffLabel->setText(svc->runChangesProcessing() ? tr("Changes are automatically processed") : tr("Processing changes is deactivated"));
+	if(svc) {
+		saveSettings();
+		qfInfo() << OFeedClient::serviceName() + " [process changes - manual trigger]";
+		svc->triggerChangesProcessing();
+	}
 }
 
 void OFeedClientWidget::onBtPasteSetupLinkClicked()
@@ -422,5 +480,29 @@ void OFeedClientWidget::updateTestConnectionState()
 	ui->btOpenEventWebsite->setToolTip(has_event_website_url ? tr("Open event page in browser") : tr("Fill Url and Event id to open event page"));
 	ui->btTestConnection->setEnabled(has_required_credentials && !m_isTestConnectionRunning);
 	ui->btRefreshEventImage->setEnabled(can_refresh_event_image);
+}
+
+void OFeedClientWidget::updateTimerIndicators()
+{
+	OFeedClient *svc = service();
+	m_exportTimerIndicator->setProgress(
+		svc ? svc->exportTimerRemainingMs() : -1,
+		svc ? svc->exportTimerIntervalMs() : 0
+	);
+	m_credentialTimerIndicator->setProgress(
+		svc ? svc->credentialCheckRemainingMs() : -1,
+		svc ? svc->credentialCheckIntervalMs() : 0
+	);
+}
+
+void OFeedClientWidget::updateCredentialStatus(bool valid)
+{
+	OFeedClient *svc = service();
+	if(!svc)
+		return;
+	const bool known_invalid = !valid && svc->credentialsValid() == 0;
+	ui->lbCredentialWarning->setVisible(known_invalid);
+	if(known_invalid)
+		ui->lbCredentialWarning->setStyleSheet(QStringLiteral("color:#b00020; background:#fff3cd; padding:4px; border-radius:3px;"));
 }
 }

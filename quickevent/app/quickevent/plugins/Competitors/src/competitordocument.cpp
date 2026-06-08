@@ -120,6 +120,10 @@ bool CompetitorDocument::saveData()
 				for(const auto &[run_id, old_record] : old_records.asKeyValueRange()) {
 					auto record = runs_plugin->runsRecord(run_id);
 					auto diff = qf::core::sql::recordDiff(old_record, record);
+					if (class_dirty) {
+						// classId is not part of runsRecord so inject it manually
+						diff.insert(QStringLiteral("competitors.classId"), value(QStringLiteral("competitors.classId")));
+					}
 					if (!diff.isEmpty()) {
 						getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, diff});
 					}
