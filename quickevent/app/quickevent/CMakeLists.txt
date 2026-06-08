@@ -99,7 +99,7 @@ add_executable(quickevent
 	plugins/Event/src/services/qx/nodes.cpp
 	plugins/Event/src/services/qx/qxeventservice.cpp plugins/Event/src/services/qx/qxeventservice.h
 	plugins/Event/src/services/qx/qxeventservicewidget.cpp plugins/Event/src/services/qx/qxeventservicewidget.h plugins/Event/src/services/qx/qxeventservicewidget.ui
-	plugins/Event/src/services/qx/qxlateregistrationswidget.h plugins/Event/src/services/qx/qxlateregistrationswidget.cpp plugins/Event/src/services/qx/qxlateregistrationswidget.ui
+	plugins/Event/src/services/qx/qxlateentrieswidget.h plugins/Event/src/services/qx/qxlateentrieswidget.cpp plugins/Event/src/services/qx/qxlateentrieswidget.ui
 	plugins/Event/src/services/qx/runchangedialog.h plugins/Event/src/services/qx/runchangedialog.cpp plugins/Event/src/services/qx/runchangedialog.ui
 	plugins/Event/src/services/qx/runchange.h plugins/Event/src/services/qx/runchange.cpp
 

@@ -7,18 +7,18 @@ namespace qf::gui::model { class SqlTableModel; }
 namespace Event::services::qx {
 
 namespace Ui {
-class QxLateRegistrationsWidget;
+class QxLateEntriesWidget;
 }
 
 class QxEventService;
 
-class QxLateRegistrationsWidget : public QWidget
+class QxLateEntriesWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit QxLateRegistrationsWidget(QWidget *parent = nullptr);
-	~QxLateRegistrationsWidget() override;
+	explicit QxLateEntriesWidget(QWidget *parent = nullptr);
+	~QxLateEntriesWidget() override;
 
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &payload);
 	void onVisibleChanged(bool is_visible);
@@ -35,7 +35,7 @@ private:
 	void onTableDoubleClicked(const QModelIndex &ix);
 
 private:
-	Ui::QxLateRegistrationsWidget *ui;
+	Ui::QxLateEntriesWidget *ui;
 	qf::gui::model::SqlTableModel *m_model;
 };
 

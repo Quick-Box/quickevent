@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Event::services::qx::QxLateRegistrationsWidget</class>
- <widget class="QWidget" name="Event::services::qx::QxLateRegistrationsWidget">
+ <class>Event::services::qx::QxLateEntriesWidget</class>
+ <widget class="QWidget" name="Event::services::qx::QxLateEntriesWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

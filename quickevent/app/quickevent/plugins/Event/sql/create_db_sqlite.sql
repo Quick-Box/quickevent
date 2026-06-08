@@ -317,7 +317,6 @@ CREATE TABLE lentcards (
 CREATE TABLE qxchanges (
 	id integer PRIMARY KEY,
 	stage_id integer,
-	change_id integer,
 	data_id integer,
 	data_type character varying,
 	data character varying,
@@ -326,10 +325,11 @@ CREATE TABLE qxchanges (
 	user_id character varying,
 	status character varying,
 	status_message character varying,
-	created timestamp,
-	lock_number integer,
-	CONSTRAINT qxchanges_unique0 UNIQUE (stage_id, change_id)
+	created timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	lock_number integer
 );
+CREATE INDEX qxchanges_ix0 ON qxchanges (data_type, data_id);
+CREATE INDEX qxchanges_ix1 ON qxchanges (status);
 -- comments not suported for driver: SQLITE
 -- COMMENT ON COLUMN qxchanges.orig_data IS 'Store data overriden by change here to enable change rollback.';
 ;
@@ -339,4 +339,4 @@ CREATE TABLE qxchanges (
 ;
 -- insert into table: config;
 INSERT INTO config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30500', 'int');
+('db.version', 'Data version', '30600', 'int');

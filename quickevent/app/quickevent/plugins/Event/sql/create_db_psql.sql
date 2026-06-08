@@ -290,7 +290,6 @@ CREATE TABLE {{eventId}}.lentcards (
 CREATE TABLE {{eventId}}.qxchanges (
 	id serial PRIMARY KEY,
 	stage_id integer,
-	change_id integer,
 	data_id integer,
 	data_type character varying,
 	data character varying,
@@ -299,10 +298,11 @@ CREATE TABLE {{eventId}}.qxchanges (
 	user_id character varying,
 	status character varying,
 	status_message character varying,
-	created timestamp with time zone,
-	lock_number integer,
-	CONSTRAINT qxchanges_unique0 UNIQUE (stage_id, change_id)
+	created timestamp with time zone NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	lock_number integer
 );
+CREATE INDEX qxchanges_ix0 ON {{eventId}}.qxchanges (data_type, data_id);
+CREATE INDEX qxchanges_ix1 ON {{eventId}}.qxchanges (status);
 COMMENT ON COLUMN {{eventId}}.qxchanges.orig_data IS 'Store data overriden by change here to enable change rollback.';
 ;
 ------------------------------------;
@@ -311,4 +311,4 @@ COMMENT ON COLUMN {{eventId}}.qxchanges.orig_data IS 'Store data overriden by ch
 ;
 -- insert into table: {{eventId}}.config;
 INSERT INTO {{eventId}}.config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30500', 'int');
+('db.version', 'Data version', '30600', 'int');

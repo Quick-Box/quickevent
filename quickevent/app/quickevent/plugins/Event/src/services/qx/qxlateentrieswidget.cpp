@@ -1,5 +1,5 @@
-#include "qxlateregistrationswidget.h"
-#include "ui_qxlateregistrationswidget.h"
+#include "qxlateentrieswidget.h"
+#include "ui_qxlateentrieswidget.h"
 
 #include "qxeventservice.h"
 #include "runchangedialog.h"
@@ -42,18 +42,18 @@ constexpr auto DATA_TYPE_RUN_UPDATE_REQUEST = "RunUpdateRequest";
 
 constexpr auto SOURCE_WWW = "www";
 
-QxLateRegistrationsWidget::QxLateRegistrationsWidget(QWidget *parent) :
+QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::QxLateRegistrationsWidget)
+	ui(new Ui::QxLateEntriesWidget)
 {
 	ui->setupUi(this);
 
 	ui->tableView->setReadOnly(true);
 	ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(ui->tableView, &qfw::TableView::customContextMenuRequested, this, &QxLateRegistrationsWidget::onTableCustomContextMenuRequest);
-	connect(ui->tableView, &qfw::TableView::doubleClicked, this, &QxLateRegistrationsWidget::onTableDoubleClicked);
+	connect(ui->tableView, &qfw::TableView::customContextMenuRequested, this, &QxLateEntriesWidget::onTableCustomContextMenuRequest);
+	connect(ui->tableView, &qfw::TableView::doubleClicked, this, &QxLateEntriesWidget::onTableDoubleClicked);
 
-	ui->tableView->setPersistentSettingsId("tblQxLateRegistrations");
+	ui->tableView->setPersistentSettingsId("tblQxLateEntries");
 	ui->tableView->setInsertRowEnabled(false);
 	ui->tableView->setCloneRowEnabled(false);
 	ui->tableView->setRemoveRowEnabled(false);
@@ -93,7 +93,7 @@ QxLateRegistrationsWidget::QxLateRegistrationsWidget(QWidget *parent) :
 		}
 	});
 
-	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &QxLateRegistrationsWidget::onDbEventNotify, Qt::QueuedConnection);
+	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &QxLateEntriesWidget::onDbEventNotify, Qt::QueuedConnection);
 
 	{
 		auto *lst = ui->lstType;
@@ -104,13 +104,13 @@ QxLateRegistrationsWidget::QxLateRegistrationsWidget(QWidget *parent) :
 		lst->addItem("RadioPunch");
 		lst->addItem("CardReadout");
 		lst->setCurrentIndex(0);
-		connect(lst, &QComboBox::currentIndexChanged, this, &QxLateRegistrationsWidget::reload);
+		connect(lst, &QComboBox::currentIndexChanged, this, &QxLateEntriesWidget::reload);
 	}
-	connect(ui->chkNull, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
-	connect(ui->chkPending, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
-	connect(ui->chkLocked, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
-	connect(ui->chkAccepted, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
-	connect(ui->chkRejected, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
+	connect(ui->chkNull, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
+	connect(ui->chkPending, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
+	connect(ui->chkLocked, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
+	connect(ui->chkAccepted, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
+	connect(ui->chkRejected, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
 
 	connect(ui->btAll, &QPushButton::clicked, this, [this]() {
 		QSignalBlocker sb1(ui->lstType);
@@ -131,12 +131,12 @@ QxLateRegistrationsWidget::QxLateRegistrationsWidget(QWidget *parent) :
 	});
 }
 
-QxLateRegistrationsWidget::~QxLateRegistrationsWidget()
+QxLateEntriesWidget::~QxLateEntriesWidget()
 {
 	delete ui;
 }
 
-void QxLateRegistrationsWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &payload)
+void QxLateEntriesWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &payload)
 {
 	Q_UNUSED(connection_id)
 	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_QX_CHANGE_RECEIVED)) {
@@ -145,27 +145,27 @@ void QxLateRegistrationsWidget::onDbEventNotify(const QString &domain, int conne
 	}
 }
 
-void QxLateRegistrationsWidget::onVisibleChanged(bool is_visible)
+void QxLateEntriesWidget::onVisibleChanged(bool is_visible)
 {
 	if (is_visible && isEnabled()) {
 		reload();
 	}
 }
 
-QxEventService *QxLateRegistrationsWidget::service()
+QxEventService *QxLateEntriesWidget::service()
 {
 	auto *svc = qobject_cast<QxEventService*>(Event::services::Service::serviceByName(QxEventService::serviceId()));
 	Q_ASSERT(svc);
 	return svc;
 }
 
-void QxLateRegistrationsWidget::resizeColumns()
+void QxLateEntriesWidget::resizeColumns()
 {
 	auto *tv = ui->tableView;
 	tv->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
-void QxLateRegistrationsWidget::showMessage(const QString &msg, bool is_error)
+void QxLateEntriesWidget::showMessage(const QString &msg, bool is_error)
 {
 	if (msg.isEmpty()) {
 		ui->lblErrorMsg->hide();
@@ -182,7 +182,7 @@ void QxLateRegistrationsWidget::showMessage(const QString &msg, bool is_error)
 	ui->lblErrorMsg->setText(msg);
 }
 
-void QxLateRegistrationsWidget::reload()
+void QxLateEntriesWidget::reload()
 {
 	if(!isEnabled()) {
 		return;
@@ -225,7 +225,7 @@ void QxLateRegistrationsWidget::reload()
 	m_model->reload();
 }
 
-void QxLateRegistrationsWidget::addQxChangeRow(int sql_id)
+void QxLateEntriesWidget::addQxChangeRow(int sql_id)
 {
 	qfDebug() << "reloading qxchanges row id:" << sql_id << "col id:" << COL_ID;
 	if(sql_id <= 0) {
@@ -251,7 +251,7 @@ void QxLateRegistrationsWidget::addQxChangeRow(int sql_id)
 }
 
 
-void QxLateRegistrationsWidget::applyCurrentChange()
+void QxLateEntriesWidget::applyCurrentChange()
 {
 	auto row = ui->tableView->currentIndex().row();
 	if (row < 0) {
@@ -267,7 +267,7 @@ void QxLateRegistrationsWidget::applyCurrentChange()
 
 }
 
-void QxLateRegistrationsWidget::onTableCustomContextMenuRequest(const QPoint &pos)
+void QxLateEntriesWidget::onTableCustomContextMenuRequest(const QPoint &pos)
 {
 	QAction a_neco(tr("Neco"), nullptr);
 	QList<QAction*> lst;
@@ -278,7 +278,7 @@ void QxLateRegistrationsWidget::onTableCustomContextMenuRequest(const QPoint &po
 	}
 }
 
-void QxLateRegistrationsWidget::onTableDoubleClicked(const QModelIndex &ix)
+void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 {
 	auto row = ix.row();
 	auto data_type = m_model->value(row, COL_DATA_TYPE).toString();

@@ -11,7 +11,7 @@
 // #include "../../Competitors/src/competitorwidget.h"
 #include "../../CardReader/src/cardreaderplugin.h"
 #include "../../Event/src/eventplugin.h"
-#include "../../Event/src/services/qx/qxlateregistrationswidget.h"
+#include "../../Event/src/services/qx/qxlateentrieswidget.h"
 
 #include <quickevent/core/codedef.h>
 #include <quickevent/core/utils.h>
@@ -142,15 +142,15 @@ void RunsPlugin::onInstalled()
 	}
 	{
 		auto *dw = new qff::DockWidget(nullptr);
-		dw->setObjectName("qxLateRegistrationsDockWidget");
-		dw->setPersistentSettingsId("Runs/qxLateRegistrations");
-		dw->setWindowTitle(tr("Late registrations"));
-		auto *ew = new Event::services::qx::QxLateRegistrationsWidget();
+		dw->setObjectName("qxLateEntriesDockWidget");
+		dw->setPersistentSettingsId("Runs/qxLateEntries");
+		dw->setWindowTitle(tr("Late entries"));
+		auto *ew = new Event::services::qx::QxLateEntriesWidget();
 		dw->setWidget(ew);
 		fwk->addDockWidget(Qt::RightDockWidgetArea, dw);
 		dw->hide();
 
-		connect(dw, &qff::DockWidget::visibilityChanged, ew, &Event::services::qx::QxLateRegistrationsWidget::onVisibleChanged);
+		connect(dw, &qff::DockWidget::visibilityChanged, ew, &Event::services::qx::QxLateEntriesWidget::onVisibleChanged);
 
 		auto *a = dw->toggleViewAction();
 		// a->setShortcut(QKeySequence("ctrl+shift+E"));

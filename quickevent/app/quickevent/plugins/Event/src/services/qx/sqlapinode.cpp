@@ -60,11 +60,11 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 	if(shv_path.empty()) {
 		if(method == METH_EXEC) {
 			auto res = m_sqlApi->exec(SqlQueryAndParams::fromRpcValue(params));
-			return res.toRpcValue();
+			return execResultToRpcValue(res);
 		}
 		if(method == METH_QUERY) {
 			auto res = m_sqlApi->query(SqlQueryAndParams::fromRpcValue(params));
-			return res.toRpcValue();
+			return queryResultToRpcValue(res);
 		}
 		if(method == METH_TRANSACTION) {
 			auto sql_query = params.asList().valref(0).asString();
@@ -82,7 +82,7 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			auto ids_above = map.contains("ids_above")? std::optional<int64_t>(map.value("ids_above").toInt64()): std::optional<int64_t>();
 			auto limit = map.contains("limit")? std::optional<int64_t>(map.value("limit").toInt64()): std::optional<int64_t>();
 			auto res = m_sqlApi->list(table, fields, ids_above, limit);
-			return res.toRecordList();
+			return res;
 		}
 		if(method == METH_CREATE) {
 			const auto &map = params.asMap();
@@ -101,7 +101,7 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			}
 			auto res = m_sqlApi->read(table, id, fields);
 			if (res.has_value()) {
-				return shv::coreqt::rpc::qVariantToRpcValue(res.value());
+				return res.value();
 			}
 			return RpcValue(nullptr);
 		}

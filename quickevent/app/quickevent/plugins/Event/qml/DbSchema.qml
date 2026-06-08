@@ -494,22 +494,26 @@ Schema {
 			fields: [
 				Field { name: 'id'; type: Serial { primaryKey: true } },
 				Field { name: 'stage_id'; type: Int { } },
-				Field { name: 'change_id'; type: Int { } },
-				Field { name: 'data_id'; type: Int { } },
+				// Field { name: 'change_id'; type: Int { } }, // not used
+				Field { name: 'data_id'; type: Int { } }, // not used
 				Field { name: 'data_type'; type: String { } },
 				Field { name: 'data'; type: String { } },
 				Field { name: 'orig_data'; type: String { }
 					comment: 'Store data overriden by change here to enable change rollback.'
 				},
-				Field { name: 'source'; type: String { } },
+				Field { name: 'source'; type: String { } }, // issuer
 				Field { name: 'user_id'; type: String { } },
 				Field { name: 'status'; type: String { } },
 				Field { name: 'status_message'; type: String { } },
-				Field { name: 'created'; type: DateTime { } },
+				Field { name: 'created'; type: DateTime { }
+					notNull: true
+					defaultValue: 'CURRENT_TIMESTAMP'
+				},
 				Field { name: 'lock_number'; type: Int { } }
 			]
 			indexes: [
-				Index {fields: ['stage_id', 'change_id']; unique: true }
+				Index {fields: ['data_type', 'data_id']; unique: false },
+				Index {fields: ['status']; unique: false }
 			]
 		}
 	]
