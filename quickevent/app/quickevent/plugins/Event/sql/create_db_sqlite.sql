@@ -325,7 +325,7 @@ CREATE TABLE qxchanges (
 	user_id character varying,
 	status character varying,
 	status_message character varying,
-	created timestamp NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	lock_number integer
 );
 CREATE INDEX qxchanges_ix0 ON qxchanges (data_type, data_id);

@@ -76,17 +76,19 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	m_model->addColumn(COL_ORIG_DATA, tr("Orig data"));//.setToolTip(tr("Locked for drawing"));
 	ui->tableView->setTableModel(m_model);
 
-	showMessage({});
+	showMessage(tr("QxEvent service is disabled"), true);
 	setEnabled(false);
 
-	auto *svc = service();
+	auto *svc = qxEventService();
 	connect(svc, &Service::statusChanged, this, [this](Service::Status new_status){
 		switch (new_status) {
 		case Service::Status::Unknown:
 		case Service::Status::Stopped:
+			showMessage(tr("QxEvent service is disabled"), true);
 			setEnabled(false);
 			break;
 			case Service::Status::Running:
+			showMessage({});
 			setEnabled(true);
 			reload();
 			break;
@@ -152,7 +154,7 @@ void QxLateEntriesWidget::onVisibleChanged(bool is_visible)
 	}
 }
 
-QxEventService *QxLateEntriesWidget::service()
+QxEventService *QxLateEntriesWidget::qxEventService()
 {
 	auto *svc = qobject_cast<QxEventService*>(Event::services::Service::serviceByName(QxEventService::serviceId()));
 	Q_ASSERT(svc);

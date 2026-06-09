@@ -23,7 +23,7 @@ public:
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &payload);
 	void onVisibleChanged(bool is_visible);
 private:
-	QxEventService* service();
+	QxEventService* qxEventService();
 	void reload();
 	void addQxChangeRow(int sql_id);
 

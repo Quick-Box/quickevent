@@ -298,7 +298,7 @@ CREATE TABLE {{eventId}}.qxchanges (
 	user_id character varying,
 	status character varying,
 	status_message character varying,
-	created timestamp with time zone NOT NULL DEFAULT 'CURRENT_TIMESTAMP',
+	created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	lock_number integer
 );
 CREATE INDEX qxchanges_ix0 ON {{eventId}}.qxchanges (data_type, data_id);

@@ -512,8 +512,8 @@ Schema {
 				Field { name: 'lock_number'; type: Int { } }
 			]
 			indexes: [
-				Index {fields: ['data_type', 'data_id']; unique: false },
-				Index {fields: ['status']; unique: false }
+				Index {fields: ['stage_id', 'data_type', 'data_id']; unique: false },
+				Index {fields: ['stage_id', 'status']; unique: false }
 			]
 		}
 	]
