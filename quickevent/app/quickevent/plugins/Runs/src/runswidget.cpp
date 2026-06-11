@@ -283,13 +283,18 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	auto *m_export_stlist_xml = m_stlist->addMenuInto("xml", tr("&XML"));
 	{
 		{
-			auto *a = new qfw::Action(tr("&IOF-XML 3.0"));
-			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(false); });
+			auto *a = new qfw::Action(tr("&IOF-XML 3.0 only runners"));
+			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners); });
 			m_export_stlist_xml->addActionInto(a);
 		}
 		{
-			auto *a = new qfw::Action(tr("IOF-XML 3.0 with &vacants"));
-			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(true); });
+			auto *a = new qfw::Action(tr("IOF-XML 3.0 with &vacants with time"));
+			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(quickevent::gui::ReportOptionsDialog::VacantsOption::RegularVacants); });
+			m_export_stlist_xml->addActionInto(a);
+		}
+		{
+			auto *a = new qfw::Action(tr("IOF-XML 3.0 with &all vacants"));
+			connect(a, &qfw::Action::triggered, this, [this]() { export_startList_stage_iofxml30(quickevent::gui::ReportOptionsDialog::VacantsOption::AllVacants); });
 			m_export_stlist_xml->addActionInto(a);
 		}
 	}
@@ -977,13 +982,13 @@ int RunsWidget::selectedStageId()
 	return getPlugin<RunsPlugin>()->selectedStageId();
 }
 
-void RunsWidget::export_startList_stage_iofxml30(bool with_vacants)
+void RunsWidget::export_startList_stage_iofxml30(quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option)
 {
 	int stage_id = selectedStageId();
 	QString fn = getSaveFileName(Event::START_LIST_IOFXML3_FILE, stage_id);
 	if(fn.isEmpty())
 		return;
-	getPlugin<RunsPlugin>()->exportStartListStageIofXml30(stage_id, fn, with_vacants);
+	getPlugin<RunsPlugin>()->exportStartListStageIofXml30(stage_id, fn, vacants_option);
 }
 
 

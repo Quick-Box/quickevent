@@ -54,6 +54,7 @@ public:
 	enum class FilterType : int {WildCard = 0, RegExp, ClassName};
 	enum class StartTimeFormat : int {RelativeToClassStart = 0, DayTime};
 	enum class StartlistOrderFirstBy : int { ClassName = 0, StartTime, Names };
+	enum class VacantsOption : int { OnlyRunners = 0, RegularVacants = 1, AllVacants = 2 };
 
 	class Options : public QVariantMap
 	{
@@ -69,7 +70,7 @@ public:
 		QF_VARIANTMAP_FIELD2(int, c, setC, lassFilterType, 0)
 		QF_VARIANTMAP_FIELD(bool, is, set, UseClassFilter)
 		QF_VARIANTMAP_FIELD(bool, is, set, InvertClassFilter)
-		QF_VARIANTMAP_FIELD(bool, is, set, StartListPrintVacants)
+		QF_VARIANTMAP_FIELD2(int, s, setS, tartListPrintVacantsOption, 0)
 		QF_VARIANTMAP_FIELD(bool, is, set, StartListPrintStartNumbers)
 		QF_VARIANTMAP_FIELD2(int, s, setS, tagesCount, 1)
 		QF_VARIANTMAP_FIELD2(int, l, setL, egsCount, 1)
@@ -119,7 +120,7 @@ public:
 	StartTimeFormat startTimeFormat() const;
 	StartlistOrderFirstBy startlistOrderFirstBy() const;
 	BreakType breakType() const;
-	Q_INVOKABLE bool isStartListPrintVacants() const;
+	Q_INVOKABLE VacantsOption startListPrintVacantsOption() const;
 	Q_INVOKABLE bool isStartListPrintStartNumbers() const;
 	Q_INVOKABLE bool isBreakAfterEachClass() const {return breakType() != BreakType::None;}
 	Q_INVOKABLE bool isColumnBreak() const {return breakType() == BreakType::Column;}

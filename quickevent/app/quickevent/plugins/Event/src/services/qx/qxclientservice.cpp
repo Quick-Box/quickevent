@@ -203,7 +203,7 @@ void QxClientService::postStartListIofXml3(QObject *context, std::function<void 
 	int current_stage = ep->currentStageId();
 	bool is_relays = ep->eventConfig()->isRelays();
 	if (!is_relays) {
-		auto xml = getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, false);
+		auto xml = getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners);
 		uploadSpecFile(SpecFile::StartListIofXml3, xml.toUtf8(), context, call_back);
 	}
 }

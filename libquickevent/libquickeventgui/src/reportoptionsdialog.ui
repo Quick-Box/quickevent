@@ -349,10 +349,22 @@
        <number>5</number>
       </property>
       <item row="1" column="1">
-       <widget class="QCheckBox" name="chkStartOpts_PrintVacants">
-        <property name="text">
-         <string>Print vacants</string>
-        </property>
+       <widget class="QComboBox" name="cbxStartOpts_PrintVacants">
+        <item>
+         <property name="text">
+          <string>Only runners</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Include vacants with time</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Include all vacants</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item row="1" column="2">
@@ -567,7 +579,7 @@
   <tabstop>chkExcludeDisq</tabstop>
   <tabstop>edStartersOptionsLineSpacing</tabstop>
   <tabstop>cbxStartNumber</tabstop>
-  <tabstop>chkStartOpts_PrintVacants</tabstop>
+  <tabstop>cbxStartOpts_PrintVacants</tabstop>
   <tabstop>chkStartOpts_PrintStartNumbers</tabstop>
   <tabstop>btStartTimes1</tabstop>
   <tabstop>btStartTimes2</tabstop>

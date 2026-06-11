@@ -54,7 +54,7 @@ ReportOptionsDialog::ReportOptionsDialog(QWidget *parent)
 	connect(this, &ReportOptionsDialog::startListOptionsVisibleChanged, ui->grpStartOptions, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::classFilterVisibleChanged, ui->grpClassFilter, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->grpStartersOptions, &QGroupBox::setVisible);
-	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->chkStartOpts_PrintVacants, &QCheckBox::setVisible);
+	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->cbxStartOpts_PrintVacants, &QComboBox::setVisible);
 	connect(this, &ReportOptionsDialog::stagesOptionVisibleChanged, ui->grpStages, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::legsOptionVisibleChanged, ui->grpLegs, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::pageLayoutVisibleChanged, ui->grpPageLayout, &QGroupBox::setVisible);
@@ -117,9 +117,11 @@ ReportOptionsDialog::BreakType ReportOptionsDialog::breakType() const
 	return static_cast<BreakType>(ui->cbxBreakAfterClassType->currentIndex());
 }
 
-bool ReportOptionsDialog::isStartListPrintVacants() const
+ReportOptionsDialog::VacantsOption ReportOptionsDialog::startListPrintVacantsOption() const
 {
-	return ui->chkStartOpts_PrintVacants->isChecked();
+	int ix = ui->cbxStartOpts_PrintVacants->currentIndex();
+	if (ix < 0) ix = 0;
+	return static_cast<ReportOptionsDialog::VacantsOption>(ix);
 }
 
 bool ReportOptionsDialog::isStartListPrintStartNumbers() const
@@ -207,8 +209,8 @@ int ReportOptionsDialog::exec()
 void ReportOptionsDialog::setStartListPrintVacantsVisible(bool b)
 {
 	if(!b)
-		ui->chkStartOpts_PrintVacants->setChecked(b);
-	ui->chkStartOpts_PrintVacants->setVisible(b);
+		ui->cbxStartOpts_PrintVacants->setCurrentIndex(0);
+	ui->cbxStartOpts_PrintVacants->setVisible(b);
 }
 
 void ReportOptionsDialog::setOptions(const ReportOptionsDialog::Options &options)
@@ -232,7 +234,7 @@ void ReportOptionsDialog::setOptions(const ReportOptionsDialog::Options &options
 	ui->btClassNames->setChecked(filter_type == FilterType::ClassName);
 	auto index = ui->cbxStartNumber->findData(options.startNumber());
 	ui->cbxStartNumber->setCurrentIndex(index);
-	ui->chkStartOpts_PrintVacants->setChecked(options.isStartListPrintVacants());
+	ui->cbxStartOpts_PrintVacants->setCurrentIndex(options.startListPrintVacantsOption());
 	ui->chkStartOpts_PrintStartNumbers->setChecked(options.isStartListPrintStartNumbers());
 	ui->edStartersOptionsLineSpacing->setValue(options.startersOptionsLineSpacing());
 	ui->edNumPlaces->setValue(options.resultNumPlaces());
@@ -268,7 +270,7 @@ ReportOptionsDialog::Options ReportOptionsDialog::options() const
 	opts.setStartNumber(ui->cbxStartNumber->currentData().toInt());
 	FilterType filter_type =  ui->btWildCard->isChecked()? FilterType::WildCard: ui->btRegExp->isChecked()? FilterType::RegExp: FilterType::ClassName;
 	opts.setClassFilterType((int)filter_type);
-	opts.setStartListPrintVacants(isStartListPrintVacants());
+	opts.setStartListPrintVacantsOption((int)startListPrintVacantsOption());
 	opts.setStartListPrintStartNumbers(isStartListPrintStartNumbers());
 	opts.setStartersOptionsLineSpacing(ui->edStartersOptionsLineSpacing->value());
 	opts[QStringLiteral("isBreakAfterEachClass")] = isBreakAfterEachClass();
@@ -379,7 +381,7 @@ void ReportOptionsDialog::setStartListForRelays()
 void ReportOptionsDialog::setCurrentStageId(int stageId)
 {
 	ui->cbxStartNumber->clear();
-	ui->cbxStartNumber->addItem(QString("All"), 0);
+	ui->cbxStartNumber->addItem(tr("All"), 0);
 	QString query_str;
 	if (stageId > 0) {
 		query_str = QString("SELECT DISTINCT codes.code FROM codes, coursecodes, classdefs"
@@ -394,7 +396,7 @@ void ReportOptionsDialog::setCurrentStageId(int stageId)
 	while (q.next()) {
 		auto code = q.value(0).toInt();
 		if(auto n = core::CodeDef::codeToStartNumber(code); n.has_value()) {
-			ui->cbxStartNumber->addItem(QString("Start %1").arg(n.value()), n.value());
+			ui->cbxStartNumber->addItem(tr("Start %1").arg(n.value()), n.value());
 		}
 	}
 }

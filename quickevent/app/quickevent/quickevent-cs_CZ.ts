@@ -6896,13 +6896,18 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="286"/>
-        <source>&amp;IOF-XML 3.0</source>
-        <translation>&amp;IOF XML 3.0</translation>
+        <source>&amp;IOF-XML 3.0 only runners</source>
+        <translation>&amp;IOF XML 3.0 pouze závodníci</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="291"/>
-        <source>IOF-XML 3.0 with &amp;vacants</source>
-        <translation>IOF XML 3.0 s &amp;vakanty</translation>
+        <source>IOF-XML 3.0 with &amp;vacants with time</source>
+        <translation>IOF XML 3.0 s &amp;vakanty s časem</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="296"/>
+        <source>IOF-XML 3.0 with &amp;all vacants</source>
+        <translation>IOF XML 3.0 se &amp;všemi vakanty</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="296"/>

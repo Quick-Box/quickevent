@@ -4,6 +4,7 @@
 #include <QFrame>
 
 #include "partwidget.h"
+#include <quickevent/gui/reportoptionsdialog.h>
 
 class QComboBox;
 class QCheckBox;
@@ -47,7 +48,7 @@ public:
 
 	Q_INVOKABLE int selectedStageId();
 public:
-	void export_startList_stage_iofxml30(bool with_vacants);
+	void export_startList_stage_iofxml30(quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);
 	void export_startList_stage_csv_sime();
 	void export_startList_stage_tv_graphics();
 

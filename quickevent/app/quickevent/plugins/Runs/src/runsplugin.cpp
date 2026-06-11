@@ -44,6 +44,8 @@
 #include <QSqlField>
 
 #include <numbers>
+#include <algorithm>
+#include <vector>
 
 namespace qff = qf::gui::framework;
 namespace qfu = qf::core::utils;
@@ -60,6 +62,7 @@ QString datetime_to_string(const QDateTime &dt)
 {
 	return quickevent::core::Utils::dateTimeToIsoStringWithUtcOffset(dt);
 }
+const auto vacant_name_sentinel = QStringLiteral("---");
 }
 RunsPlugin::RunsPlugin(QObject *parent)
 	: Super("Runs", parent)
@@ -1379,7 +1382,7 @@ void RunsPlugin::setRunsRecord(int run_id, const QVariant &rec)
 qf::core::sql::QueryBuilder RunsPlugin::startListQuery()
 {
 	qfs::QueryBuilder qb;
-	qb.select2("competitors", "lastName, firstName, registration, iofId, startNumber, country, club")
+	qb.select2("competitors", "id, lastName, firstName, registration, iofId, startNumber, country, club")
 			.select("COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName")
 			.select2("runs", "id, stageId, siId, startTimeMs")
 			.select2("classes","name")
@@ -1406,14 +1409,14 @@ QVariantMap RunsPlugin::startListRecord(int run_id)
 	return {};
 }
 
-qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &where_expr, const bool insert_vacants, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format)
+qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &where_expr, const quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format)
 {
 	int stage_id = selectedStageId();
 	auto start00_epoch_sec = getPlugin<EventPlugin>()->stageStartDateTime(stage_id).toSecsSinceEpoch();
 
 	qfs::QueryBuilder qb;
 	qb.select2("classes", "id, name")
-		.select2("classdefs", "startTimeMin, lastStartTimeMin, startIntervalMin")
+		.select2("classdefs", "startTimeMin, lastStartTimeMin, startIntervalMin, vacantsBefore, vacantEvery, vacantsAfter, mapCount")
 		.select2("courses", "length, climb, id")
 		.from("classes")
 		.joinRestricted("classes.id", "classdefs.classId", "classdefs.stageId={{stage_id}}")
@@ -1435,7 +1438,7 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &wher
 	tt.appendColumn("courses.startNumber", QMetaType(QMetaType::Int));
 
 	qfs::QueryBuilder qb2;
-	qb2.select2("competitors", "lastName, firstName, registration, iofId, startNumber, country, club")
+	qb2.select2("competitors", "id, lastName, firstName, registration, iofId, startNumber, country, club")
 		.select("COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName")
 		.select2("runs", "id, siId, startTimeMs")
 		.select2("clubs","name, abbr, importId")
@@ -1487,10 +1490,11 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &wher
 		m2.setQueryParameters(qpm);
 		m2.reload();
 		auto tt2 = m2.toTreeTable();
+		// TODO: extract to method (leaving here to minimize PR diffs).
 		int start_time_0 = tt_row.value(QStringLiteral("startTimeMin")).toInt() * 60 * 1000;
 		int start_time_last = tt_row.value(QStringLiteral("lastStartTimeMin")).toInt() * 60 * 1000;
 		int start_interval = tt_row.value(QStringLiteral("startIntervalMin")).toInt() * 60 * 1000;
-		if(start_interval > 0 && insert_vacants) {
+		if(start_interval > 0 && vacants_option != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners) {
 			for(int j=0; j<tt2.rowCount(); j++) {
 				qf::core::utils::TreeTableRow tt2_row = tt2.row(j);
 				int start_time = tt2_row.value(QStringLiteral("startTimeMs")).toInt();
@@ -1501,8 +1505,8 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &wher
 					tt2.insertRow(j);
 					qf::core::utils::TreeTableRow n_row = tt2.row(j);
 					n_row.setValue(QStringLiteral("startTimeMs"), start_time_0);
-					n_row.setValue(QStringLiteral("competitorName"), "---");
-					n_row.setValue(QStringLiteral("registration"), "");
+					n_row.setValue(QStringLiteral("competitorName"), vacant_name_sentinel);
+					n_row.setValue(QStringLiteral("registration"), QString());
 					n_row.setValue(QStringLiteral("siId"), 0);
 					n_row.setValue(QStringLiteral("startNumber"), 0);
 					start_time_0 += start_interval;
@@ -1516,12 +1520,27 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &wher
 				int ix = tt2.appendRow();
 				qf::core::utils::TreeTableRow tt2_row = tt2.row(ix);
 				tt2_row.setValue(QStringLiteral("startTimeMs"), start_time_0);
-				tt2_row.setValue(QStringLiteral("competitorName"), "---");
+				tt2_row.setValue(QStringLiteral("competitorName"), vacant_name_sentinel);
 				tt2_row.setValue(QStringLiteral("registration"), QString());
 				tt2_row.setValue(QStringLiteral("siId"), 0);
 				tt2_row.setValue(QStringLiteral("startNumber"), 0);
 				tt2.setRow(ix, tt2_row);
 				start_time_0 += start_interval;
+			}
+		} else if (start_interval == 0 && vacants_option == quickevent::gui::ReportOptionsDialog::VacantsOption::AllVacants) {
+			int mapCount = tt_row.value(QStringLiteral("mapCount")).toInt();
+			int cnt = tt2.rowCount();
+			int total_vacants = mapCount - cnt;
+			if (total_vacants < 0) total_vacants = 0;
+			for (int k = 0; k < total_vacants; ++k) {
+				int ix = tt2.appendRow();
+				qf::core::utils::TreeTableRow tt2_row = tt2.row(ix);
+				tt2_row.setValue(QStringLiteral("startTimeMs"), start_time_0);
+				tt2_row.setValue(QStringLiteral("competitorName"), vacant_name_sentinel);
+				tt2_row.setValue(QStringLiteral("registration"), QString());
+				tt2_row.setValue(QStringLiteral("siId"), 0);
+				tt2_row.setValue(QStringLiteral("startNumber"), 0);
+				tt2.setRow(ix, tt2_row);
 			}
 		}
 		addStartTimeTextToClass(tt2,start00_epoch_sec, start_time_format);
@@ -1607,11 +1626,12 @@ qf::core::utils::TreeTable RunsPlugin::startListClubsTable(const quickevent::gui
 	return tt;
 }
 
-qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &where_expr)
+qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &where_expr, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option)
 {
 	int stage_id = selectedStageId();
 	auto start00_epoch_sec = getPlugin<EventPlugin>()->stageStartDateTime(stage_id).toSecsSinceEpoch();
 
+	// 1. Fetch real runners natively (zero mapping boilerplate)
 	qfs::QueryBuilder qb;
 	qb.select2("competitors", "registration, id, startNumber, country")
 			.select("COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName")
@@ -1620,10 +1640,12 @@ qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &whe
 			.select2("classes", "name")
 			.from("competitors")
 			.joinRestricted("competitors.id", "runs.competitorId", "runs.stageId={{stage_id}} AND runs.isRunning", "INNER JOIN")
-			.join("competitors.classId", "classes.id")
-			.orderBy("runs.startTimeMs, classes.name, competitors.lastName");//.limit(1);
-	if(!where_expr.isEmpty())
+			.join("competitors.classId", "classes.id");
+
+	if(!where_expr.isEmpty()) {
 		qb.where(where_expr);
+	}
+
 	QVariantMap qpm;
 	qpm["stage_id"] = stage_id;
 	qf::gui::model::SqlTableModel m;
@@ -1631,10 +1653,83 @@ qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &whe
 	m.setQueryParameters(qpm);
 	m.reload();
 	auto tt = m.toTreeTable();
-	addStartTimeTextToClass(tt,start00_epoch_sec, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+
+	// 2. Extract and append vacants
+	if (vacants_option != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners) {
+		auto tt_classes = startListClassesTable(where_expr, vacants_option, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+
+		for(int i=0; i<tt_classes.rowCount(); i++) {
+			auto tt_class_row = tt_classes.row(i);
+			auto tt2 = tt_class_row.table();
+			QString class_name = tt_class_row.value("classes.name").toString();
+
+			for(int j=0; j<tt2.rowCount(); j++) {
+				auto tt2_row = tt2.row(j);
+				if (tt2_row.value("competitorName").toString() == vacant_name_sentinel) {
+					int ix = tt.appendRow();
+					auto vacant_record = tt.row(ix);
+					vacant_record.setValue("classes.name", class_name);
+					vacant_record.setValue("competitorName", vacant_name_sentinel);
+					vacant_record.setValue("startTimeMs", tt2_row.value("startTimeMs"));
+					tt.setRow(ix, vacant_record);
+				}
+			}
+		}
+	}
+
+	// 3. Chronological sort (interleave vacants and push 0-times to the end)
+	std::vector<qf::core::utils::TreeTableRow> start_list;
+	start_list.reserve(tt.rowCount());
+	for(int i=0; i<tt.rowCount(); i++) {
+		start_list.push_back(tt.row(i));
+	}
+
+	std::ranges::sort(start_list, [](const qf::core::utils::TreeTableRow &a, const qf::core::utils::TreeTableRow &b) {
+		int tA = a.value("startTimeMs").toInt();
+		int tB = b.value("startTimeMs").toInt();
+
+		if (tA == 0) {
+			tA = std::numeric_limits<int>::max();
+		}
+		if (tB == 0) {
+			tB = std::numeric_limits<int>::max();
+		}
+
+		if (tA != tB) {
+			return tA < tB;
+		}
+
+		bool a_is_vacant = a.value("competitorName").toString() == vacant_name_sentinel;
+		bool b_is_vacant = b.value("competitorName").toString() == vacant_name_sentinel;
+		if (a_is_vacant != b_is_vacant) {
+			return !a_is_vacant; // Real runners before vacants
+		}
+
+		QString cA = a.value("classes.name").toString();
+		QString cB = b.value("classes.name").toString();
+		if (cA != cB) {
+			return cA < cB;
+		}
+
+		return a.value("competitorName").toString() < b.value("competitorName").toString();
+	});
+
+	QVariantMap map = tt.toVariant().toMap();
+	QVariantList sorted_rows;
+	sorted_rows.reserve(start_list.size());
+	for(const auto &r : start_list) {
+		sorted_rows.append(r.row());
+	}
+	map[qf::core::utils::TreeTable::KEY_ROWS] = sorted_rows;
+	tt = qf::core::utils::TreeTable(map);
+
+	// 4. Format time text globally
+	addStartTimeTextToClass(tt, start00_epoch_sec, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+
 	tt.setValue("stageId", stage_id);
 	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stage_id));
+
 	return tt;
 }
 
@@ -1771,7 +1866,7 @@ void RunsPlugin::report_startListClasses()
 	dlg.setPageLayoutVisible(true);
 	dlg.setStartTimeFormatVisible(true);
 	if(dlg.exec()) {
-		auto tt = startListClassesTable(dlg.sqlWhereExpression(getPlugin<EventPlugin>()->currentStageId()), dlg.isStartListPrintVacants(), dlg.startTimeFormat());
+		auto tt = startListClassesTable(dlg.sqlWhereExpression(getPlugin<EventPlugin>()->currentStageId()), dlg.startListPrintVacantsOption(), dlg.startTimeFormat());
 		auto opts = dlg.optionsMap();
 		QVariantMap props;
 		props["options"] = opts;
@@ -1795,7 +1890,7 @@ void RunsPlugin::report_startListClubs()
 	dlg.setCurrentStageId(getPlugin<EventPlugin>()->currentStageId());
 	dlg.setClassFilterVisible(false);
 	dlg.setStartListOptionsVisible(true);
-	dlg.setStartListPrintVacantsVisible(false);
+	dlg.setStartListPrintVacantsVisible(true);
 	dlg.setPageLayoutVisible(true);
 	dlg.setStartTimeFormatVisible(true);
 	dlg.setStartlistOrderFirstByVisible(true);
@@ -1823,10 +1918,10 @@ void RunsPlugin::report_startListStarters()
 	dlg.setCurrentStageId(getPlugin<EventPlugin>()->currentStageId());
 	dlg.setClassFilterVisible(true);
 	dlg.setStartListOptionsVisible(true);
-	dlg.setStartListPrintVacantsVisible(false);
+	dlg.setStartListPrintVacantsVisible(true);
 	dlg.setStartersOptionsVisible(true);
 	if(dlg.exec()) {
-		auto tt = startListStartersTable(dlg.sqlWhereExpression(getPlugin<EventPlugin>()->currentStageId()));
+		auto tt = startListStartersTable(dlg.sqlWhereExpression(getPlugin<EventPlugin>()->currentStageId()), dlg.startListPrintVacantsOption());
 		auto opts = dlg.optionsMap();
 		QVariantMap props;
 		props["options"] = opts;
@@ -2061,7 +2156,7 @@ void append_list(QVariantList &lst, const QVariantList &new_lst)
 }
 void RunsPlugin::export_startListClassesHtml()
 {
-	qf::core::utils::TreeTable tt1 = startListClassesTable("", false, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+	qf::core::utils::TreeTable tt1 = startListClassesTable("", quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
 	QVariantList body{QStringLiteral("body")};
 	QString h1_str = "{{documentTitle}}";
 	QVariantMap event = tt1.value("event").toMap();
@@ -2458,7 +2553,7 @@ void RunsPlugin::export_resultsHtmlNStages()
 		append_list(table, trr);
 		auto time_to_str = [](int msec) {
 			if(msec == UNREAL_TIME_MSEC)
-				return QStringLiteral("---");
+				return vacant_name_sentinel;
 			quickevent::core::og::TimeMs t(msec);
 			return t.toString();
 		};
@@ -2655,12 +2750,12 @@ QString RunsPlugin::getClubAbbrFromName(QString name)
 	return "";
 }
 
-QString RunsPlugin::startListStageIofXml30(int stage_id, bool with_vacants)
+QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option)
 {
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
 	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
 	//console.debug("print_vacants", print_vacants);
-	auto tt1 = startListClassesTable("", with_vacants, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
+	auto tt1 = startListClassesTable("", vacants_option, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
 	bool is_iof_race = event_config->isIofRace();
 	int iof_xml_race_number = event_config->iofXmlRaceNumber();
 
@@ -2731,64 +2826,72 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, bool with_vacants)
 		qf::core::utils::TreeTable tt2 = tt1_row.table();
 		if (tt2.rowCount() == 0 && is_iof_race)
 			continue; // not save empty class
-		bool has_fixed_start_time = tt1_row.value(QStringLiteral("classdefs.startIntervalMin")).toInt() > 0
-				|| event_config->discipline() == Event::EventConfig::Discipline::MassStart;
 		for(int j=0; j<tt2.rowCount(); j++) {
 			auto tt2_row = tt2.row(j);
 			QVariantList xml_person{"PersonStart"};
-			QVariantList person{"Person"};
-			if (!is_iof_race) {
-				append_list(person, QVariantList{"Id", QVariantMap{{"type", "CZE"}}, tt2_row.value(QStringLiteral("competitors.registration"))});
+			
+			bool is_vacant = tt2_row.value(QStringLiteral("competitorName")).toString() == vacant_name_sentinel;
+			
+			if (!is_vacant) {
+				QVariantList person{"Person"};
+				if (!is_iof_race) {
+					append_list(person, QVariantList{"Id", QVariantMap{{"type", "CZE"}}, tt2_row.value(QStringLiteral("competitors.registration"))});
+				}
+				append_list(person, QVariantList{"Id", QVariantMap{{"type", "QuickEvent"}}, tt2_row.value(QStringLiteral("runs.id"))});
+				auto iof_id = tt2_row.value(QStringLiteral("competitors.iofId"));
+				if (!iof_id.isNull())
+					append_list(person, QVariantList{"Id", QVariantMap{{"type", "IOF"}}, iof_id});
+				auto family = tt2_row.value(QStringLiteral("competitors.lastName"));
+				auto given = tt2_row.value(QStringLiteral("competitors.firstName"));
+				append_list(person, QVariantList{"Name", QVariantList{"Family", family}, QVariantList{"Given", given}});
+				if (is_iof_race) {
+					auto nationality = tt2_row.value(QStringLiteral("competitors.country"));
+					QString nat_code = getClubAbbrFromName(nationality.toString());
+					append_list(person, QVariantList{"Nationality", QVariantMap{{"code", nat_code}}, nationality});
+				}
+				append_list(xml_person, person);
 			}
-			append_list(person, QVariantList{"Id", QVariantMap{{"type", "QuickEvent"}}, tt2_row.value(QStringLiteral("runs.id"))});
-			auto iof_id = tt2_row.value(QStringLiteral("competitors.iofId"));
-			if (!iof_id.isNull())
-				append_list(person, QVariantList{"Id", QVariantMap{{"type", "IOF"}}, iof_id});
-			auto family = tt2_row.value(QStringLiteral("competitors.lastName"));
-			auto given = tt2_row.value(QStringLiteral("competitors.firstName"));
-			append_list(person, QVariantList{"Name", QVariantList{"Family", family}, QVariantList{"Given", given}});
-			if (is_iof_race) {
-				auto nationality = tt2_row.value(QStringLiteral("competitors.country"));
-				QString nat_code = getClubAbbrFromName(nationality.toString());
-				append_list(person, QVariantList{"Nationality", QVariantMap{{"code", nat_code}}, nationality});
-			}
+
 			QVariantList xml_start{"Start", (iof_xml_race_number != 0) ? QVariantMap{{"raceNumber", iof_xml_race_number}} : QVariantMap{}};
 			auto bib_number = tt2_row.value(QStringLiteral("competitors.startNumber"));
-			if(!bib_number.isNull())
+			if(!is_vacant && !bib_number.isNull())
 				append_list(xml_start, QVariantList{"BibNumber", bib_number});
-			if (has_fixed_start_time) {
-				int stime_msec = tt2_row.value("startTimeMs").toInt();
-				append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
-			}
+			
+			int stime_msec = tt2_row.value(QStringLiteral("startTimeMs")).toInt();
+			append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
+			
 			QVariant siId = tt2_row.value(QStringLiteral("runs.siId"));
 			if (siId.toBool()) {
 				append_list(xml_start, QVariantList{"ControlCard", siId.toInt()});
 			}
-			append_list(xml_person, person);
-			if (is_iof_race){
-				append_list(xml_person, QVariantList{"Organisation",
-											QVariantList{"Id", QVariantMap{{"type", "IOF"}},tt2_row.value(QStringLiteral("clubs.importId"))},
-											QVariantList{"Name", tt2_row.value(QStringLiteral("clubs.name"))},
-										}
-							);
-			}
-			else {
-				auto club_abbr = tt2_row.value(QStringLiteral("clubs.abbr")).toString();
-				if (!club_abbr.isEmpty()) {
+
+			if (!is_vacant) {
+				if (is_iof_race){
 					append_list(xml_person, QVariantList{"Organisation",
+												QVariantList{"Id", QVariantMap{{"type", "IOF"}},tt2_row.value(QStringLiteral("clubs.importId"))},
 												QVariantList{"Name", tt2_row.value(QStringLiteral("clubs.name"))},
-												QVariantList{"ShortName", club_abbr},
 											}
-					);
+								);
 				}
 				else {
-					append_list(xml_person, QVariantList{"Organisation",
-												QVariantList{"Name", QString()},
-												QVariantList{"ShortName", tt2_row.value(QStringLiteral("competitors.registration")).toString().left(3)}
-											}
-					);
+					auto club_abbr = tt2_row.value(QStringLiteral("clubs.abbr")).toString();
+					if (!club_abbr.isEmpty()) {
+						append_list(xml_person, QVariantList{"Organisation",
+													QVariantList{"Name", tt2_row.value(QStringLiteral("clubs.name"))},
+													QVariantList{"ShortName", club_abbr},
+												}
+						);
+					}
+					else {
+						append_list(xml_person, QVariantList{"Organisation",
+													QVariantList{"Name", QString()},
+													QVariantList{"ShortName", tt2_row.value(QStringLiteral("competitors.registration")).toString().left(3)}
+												}
+						);
+					}
 				}
 			}
+			
 			append_list(xml_person, xml_start);
 			append_list(class_start, xml_person);
 		}
@@ -2799,14 +2902,14 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, bool with_vacants)
 	return qf::core::utils::HtmlUtils::fromXmlList(xml_root, opts);
 }
 
-bool RunsPlugin::exportStartListStageIofXml30(int stage_id, const QString &file_name, bool with_vacants)
+bool RunsPlugin::exportStartListStageIofXml30(int stage_id, const QString &file_name, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option)
 {
 	QFile f(file_name);
 	if(!f.open(QIODevice::WriteOnly)) {
 		qfError() << "Cannot open file" << f.fileName() << "for writing.";
 		return false;
 	}
-	QString str = startListStageIofXml30(stage_id, with_vacants);
+	QString str = startListStageIofXml30(stage_id, vacants_option);
 	f.write(str.toUtf8());
 	qfInfo() << "exported:" << file_name;
 	return true;
@@ -2867,7 +2970,7 @@ bool RunsPlugin::exportStartListCurrentStageCsvSime(const QString &file_name, bo
 	csv.setGenerateByteOrderMark(true);
 #endif
 
-	auto tt1 = startListClassesTable(sql_where, true, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+	auto tt1 = startListClassesTable(sql_where, quickevent::gui::ReportOptionsDialog::VacantsOption::RegularVacants, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
 	int id = 0;
 	for(int i=0; i<tt1.rowCount(); i++) {
 		qf::core::utils::TreeTableRow tt1_row = tt1.row(i);
@@ -2916,7 +3019,7 @@ bool RunsPlugin::exportStartListCurrentStageTvGraphics(const QString &file_name)
 	csv.setGenerateByteOrderMark(true);
 #endif
 
-	auto tt1 = startListClassesTable("",true, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
+	auto tt1 = startListClassesTable("", quickevent::gui::ReportOptionsDialog::VacantsOption::RegularVacants, quickevent::gui::ReportOptionsDialog::StartTimeFormat::DayTime);
 	int id = 0;
 	csv << "IOF ID;First Name;Last Name;Country;Start;Category;Bib;CountryFull;SI";
 	csv << Qt::endl;
