@@ -23,6 +23,16 @@ SqlApiNode::SqlApiNode(shv::iotqt::node::ShvNode *parent)
 	: Super("sql", parent)
 	, m_sqlApi(new SqlApi(this))
 {
+	connect(m_sqlApi, &SqlApi::recChng, this, [this](const qf::core::sql::QxRecChng &recchng, QObject *source) {
+		Q_UNUSED(source);
+		RpcSignal sig;
+		sig.setSignal("recchng");
+		sig.setShvPath(shvPath().asString());
+		sig.setParams(shv::coreqt::rpc::qVariantToRpcValue(recchng.toVariantMap()));
+		qfInfo() << "emit recchng:" << recchng.table;
+		emitSendRpcMessage(sig);
+	});
+
 }
 
 namespace {

@@ -290,19 +290,19 @@ CREATE TABLE {{eventId}}.lentcards (
 CREATE TABLE {{eventId}}.qxchanges (
 	id serial PRIMARY KEY,
 	stage_id integer,
-	data_id integer,
+	foreign_id integer,
 	data_type character varying,
 	data character varying,
 	orig_data character varying,
-	source character varying,
 	user_id character varying,
 	status character varying,
 	status_message character varying,
 	created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	lock_number integer
 );
-CREATE INDEX qxchanges_ix0 ON {{eventId}}.qxchanges (data_type, data_id);
-CREATE INDEX qxchanges_ix1 ON {{eventId}}.qxchanges (status);
+CREATE INDEX qxchanges_ix0 ON {{eventId}}.qxchanges (stage_id, data_type, foreign_id);
+CREATE INDEX qxchanges_ix1 ON {{eventId}}.qxchanges (stage_id, status);
+CREATE UNIQUE INDEX qxchanges_unique2 ON {{eventId}}.qxchanges (stage_id, foreign_id) WHERE status = 'Pending' AND data_type = 'LateEntry' AND foreign_id IS NOT NULL;
 COMMENT ON COLUMN {{eventId}}.qxchanges.orig_data IS 'Store data overriden by change here to enable change rollback.';
 ;
 ------------------------------------;

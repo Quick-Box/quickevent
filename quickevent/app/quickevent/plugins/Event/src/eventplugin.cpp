@@ -17,6 +17,7 @@
 #include <plugins/Core/src/widgets/settingsdialog.h>
 #include <plugins/Event/src/services/oresultsclient.h>
 #include <plugins/Core/src/coreplugin.h>
+#include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
 #include <quickevent/core/og/timems.h>
 
@@ -40,7 +41,6 @@
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/utils/fileutils.h>
-#include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
 #include <QInputDialog>
 #include <QDate>
@@ -72,23 +72,6 @@ namespace qfs = qf::core::sql;
 using qff::getPlugin;
 
 namespace Event {
-
-class DbEventPayload : public QVariantMap
-{
-private:
-	typedef QVariantMap Super;
-
-	QF_VARIANTMAP_FIELD(QString, e, setE, ventName)
-	QF_VARIANTMAP_FIELD(QString, d, setD, omain)
-	QF_VARIANTMAP_FIELD(int, c, setc, onnectionId)
-	QF_VARIANTMAP_FIELD(QVariant, d, setD, ata)
-public:
-	DbEventPayload(const QVariantMap &data = QVariantMap()) : QVariantMap(data) {}
-
-	static DbEventPayload fromJson(const QByteArray &json);
-
-	QByteArray toJson() const;
-};
 
 DbEventPayload DbEventPayload::fromJson(const QByteArray &json)
 {

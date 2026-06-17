@@ -6,7 +6,9 @@
 
 namespace Event::services::qx {
 
-struct RunChange
+constexpr auto DATA_TYPE_LATE_ENTRY = "LateEntry";
+
+struct LateEntryRecord
 {
 	std::optional<QString> class_name;
 	std::optional<QString> first_name;
@@ -16,8 +18,24 @@ struct RunChange
 	// std::optional<bool> si_id_rent;
 	QString note;
 
-	// static RunChange fromJsonString(const QString &json);
-	static RunChange fromVariantMap(const QVariantMap &map);
+	// static LateEntryRecord fromJsonString(const QString &json);
+	static LateEntryRecord fromVariantMap(const QVariantMap &map);
+};
+
+struct LateEntry
+{
+	int run_id = 0;
+	LateEntryRecord record;
+
+	// static LateEntryRecord fromJsonString(const QString &json);
+	static LateEntry fromVariantMap(const QVariantMap &map);
+};
+
+struct QxChangeData
+{
+	std::optional<LateEntry> lateEntry;
+
+	static QxChangeData fromJson(const QString &json);
 };
 
 struct OrigRunRecord

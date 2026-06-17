@@ -494,14 +494,13 @@ Schema {
 			fields: [
 				Field { name: 'id'; type: Serial { primaryKey: true } },
 				Field { name: 'stage_id'; type: Int { } },
-				// Field { name: 'change_id'; type: Int { } }, // not used
-				Field { name: 'data_id'; type: Int { } }, // not used
+				// Field { name: 'foreign_table'; type: String { } },
+				Field { name: 'foreign_id'; type: Int { } },
 				Field { name: 'data_type'; type: String { } },
 				Field { name: 'data'; type: String { } },
 				Field { name: 'orig_data'; type: String { }
 					comment: 'Store data overriden by change here to enable change rollback.'
 				},
-				Field { name: 'source'; type: String { } }, // issuer
 				Field { name: 'user_id'; type: String { } },
 				Field { name: 'status'; type: String { } },
 				Field { name: 'status_message'; type: String { } },
@@ -512,8 +511,13 @@ Schema {
 				Field { name: 'lock_number'; type: Int { } }
 			]
 			indexes: [
-				Index {fields: ['stage_id', 'data_type', 'data_id']; unique: false },
-				Index {fields: ['stage_id', 'status']; unique: false }
+				Index {fields: ['stage_id', 'data_type', 'foreign_id']; unique: false },
+				Index {fields: ['stage_id', 'status']; unique: false },
+				Index {fields: ['stage_id', 'foreign_id']
+					where: "status = 'Pending' AND data_type = 'LateEntry' AND foreign_id IS NOT NULL"
+					comment: 'Only one pending late entry can be present for single runs.id (foreign_id).'
+					unique: true
+				}
 			]
 		}
 	]

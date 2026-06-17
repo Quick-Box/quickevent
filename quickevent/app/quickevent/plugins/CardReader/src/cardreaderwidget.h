@@ -68,7 +68,7 @@ public:
 	Q_SLOT void reload();
 
 private:
-        void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
+	void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 	void appendLog(NecroLog::Level level, const QString &msg);
 	void processDriverInfo(NecroLog::Level level, const QString &msg);

@@ -672,7 +672,7 @@ QColor TableModel::contrastTextColor(const QColor &background_color)
 	return (qGray(background_color.rgb()) < 128)? QColor(Qt::white) : QColor(Qt::black);
 }
 
-void TableModel::handleQxRecChng(const core::sql::QxRecChng &recchng, QObject *source)
+void TableModel::applyQxRecChng(const core::sql::QxRecChng &recchng, QObject *source)
 {
 	// qfInfo() << __FUNCTION__ << source;
 	if (source == this) {
@@ -685,12 +685,28 @@ void TableModel::handleQxRecChng(const core::sql::QxRecChng &recchng, QObject *s
 					return i;
 				}
 			}
+			qfMessage() << "cannot find table row with id:" << id;
 		} else {
-			qfWarning() << "cannot find table column:" << (table_name + ".id");
+			// not every change is addressing every table model
+			qfMessage() << metaObject()->className() << objectName() << "cannot find table column:" << (table_name + ".id");
 		}
 		return -1;
 	};
-	if (recchng.op == qf::core::sql::RecOp::Update) {
+	if (recchng.op == qf::core::sql::RecOp::Insert) {
+		if (int row = find_row_by_id(recchng.table, recchng.id); row >= 0) {
+			// row exists already
+			return;
+		}
+		if (auto fld_ix = table().fields().fieldIndex(recchng.table + ".id"); fld_ix >= 0) {
+			beginInsertRows({}, 0, 0);
+			auto row = insertTableRow(0);
+			tableRowRef(row).setValue(fld_ix, recchng.id);
+			endInsertRows();
+			qfMessage() << "reloading inserted row:" << row << "table:" << recchng.table;
+			reloadRow(row);
+		}
+	}
+	else if (recchng.op == qf::core::sql::RecOp::Update) {
 		if (int row = find_row_by_id(recchng.table, recchng.id); row >= 0) {
 			for (const auto &[k, v] : recchng.record.asKeyValueRange()) {
 				if (auto col_ix = columnIndexOfTableField(recchng.table + '.' + k); col_ix.has_value()) {
@@ -707,10 +723,16 @@ void TableModel::handleQxRecChng(const core::sql::QxRecChng &recchng, QObject *s
 					}
 				} else {
 					// calculated column
-					qfInfo() << "reloading calculated field, row:" << row << (recchng.table + '.' + k) << "-->" << v;
+					qfMessage() << "reloading calculated field, row:" << row << (recchng.table + '.' + k) << "-->" << v;
 					reloadRow(row);
 				}
 			}
+		}
+	}
+	else if (recchng.op == qf::core::sql::RecOp::Delete) {
+		if (int row = find_row_by_id(recchng.table, recchng.id); row >= 0) {
+			qfMessage() << "deleteing row:" << row << (recchng.table + ".id") << recchng.id;
+			removeRowNoOverload(row, !qf::core::Exception::Throw);
 		}
 	}
 }

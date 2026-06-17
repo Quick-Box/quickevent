@@ -157,7 +157,9 @@ QueryResult QxSqlApiImpl::query(const QString &query, const QVariantMap &params)
 {
 	// qDebug() << query << params;
 	QSqlQuery q(m_db);
-	q.prepare(query);
+	if (!q.prepare(query)) {
+		throw qf::core::Exception(q.lastError().text());
+	}
 	for (const auto &[key, val] : params.asKeyValueRange()) {
 		q.bindValue(QStringLiteral(":%1").arg(key), val);
 	}
@@ -181,7 +183,9 @@ QueryResult QxSqlApiImpl::query(const QString &query, const QVariantMap &params)
 ExecResult QxSqlApiImpl::exec(const QString &query, const QVariantMap &params)
 {
 	QSqlQuery q(m_db);
-	q.prepare(query);
+	if (!q.prepare(query)) {
+		throw qf::core::Exception(q.lastError().text());
+	}
 	for (const auto &[key, val] : params.asKeyValueRange()) {
 		q.bindValue(QStringLiteral(":%1").arg(key), val);
 	}

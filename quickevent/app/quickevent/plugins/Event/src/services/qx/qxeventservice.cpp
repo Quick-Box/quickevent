@@ -2,7 +2,6 @@
 #include "qxeventservicewidget.h"
 #include "nodes.h"
 #include "sqlapinode.h"
-#include "sqlapi.h"
 
 #include "../../eventplugin.h"
 #include "../../../../Runs/src/runsplugin.h"
@@ -103,7 +102,6 @@ void QxEventService::run() {
 void QxEventService::stop()
 {
 	m_eventId = 0;
-	disconnectSSE();
 	if (m_pollChangesTimer) {
 		m_pollChangesTimer->stop();
 	}
@@ -381,113 +379,6 @@ void QxEventService::httpPostJson(const QString &path, const QString &query, QVa
 			}
 			reply->deleteLater();
 		});
-	}
-}
-
-void QxEventService::connectToSSE(int event_id)
-{
-	Q_UNUSED(event_id);
-	// auto url = exchangeServerUrl();
-	// url.setPath(QStringLiteral("/api/event/%1/run/changes/sse").arg(event_id));
-	// QNetworkRequest request(url);
-	// request.setRawHeader(QByteArray("Accept"), QByteArray("text/event-stream"));
-	// request.setHeader(QNetworkRequest::UserAgentHeader, "QuickEvent");
-	// request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
-	// request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::AlwaysNetwork); // Events shouldn't be cached
-
-	// qfInfo() << "Connecting to SSE:" << url.toString();
-	// m_replySSE = networkManager()->get(request);
-	// qfInfo() << "Connected";
-	// connect(m_replySSE, &QNetworkReply::readyRead, this, [this]() {
-	// 	auto data = m_replySSE->readAll();
-	// 	qfInfo() << "DATA:" << data.toStdString();
-	// });
-	// connect(m_replySSE, &QNetworkReply::finished, this, [this]() {
-	// 	qfInfo() << "SSE finished:" << m_replySSE->errorString();
-	// });
-}
-
-void QxEventService::disconnectSSE()
-{
-	if (m_replySSE) {
-		qfInfo() << "Disconnecting SSE:" << m_replySSE;
-		m_replySSE->deleteLater();
-		m_replySSE = nullptr;
-	}
-}
-
-void QxEventService::pollQxChanges()
-{
-	auto event_plugin = getPlugin<EventPlugin>();
-	if(!getPlugin<EventPlugin>()->isEventOpen()) {
-		return;
-	}
-	int stage_id = event_plugin->currentStageId();
-	try {
-		int max_change_id = 0;
-		qf::core::sql::Query q;
-		q.execThrow("SELECT MAX(change_id) FROM qxchanges WHERE stage_id=" + QString::number(event_plugin->currentStageId()));
-		if (q.next()) {
-			max_change_id = q.value(0).toInt();
-		}
-		auto *reply = getQxChangesReply(max_change_id + 1);
-		connect(reply, &QNetworkReply::finished, this, [reply, stage_id]() {
-			QString err;
-			if(reply->error()) {
-				err = reply->errorString();
-				qfWarning() << "Load qxchanges error:" << err;
-			}
-			else {
-				QJsonParseError err;
-				auto data = reply->readAll();
-				auto json = QJsonDocument::fromJson(data, &err);
-				if (err.error != QJsonParseError::NoError) {
-					qfWarning() << "Parse qxchanges error:" << err.errorString();
-				}
-				else {
-					auto records = json.array().toVariantList();
-					qf::core::sql::Query q;
-					q.prepare("INSERT INTO qxchanges (data_type, data, data_id, source, user_id, status, status_message, stage_id, change_id, created)"
-							  " VALUES (:data_type, :data, :data_id, :source, :user_id, :status, :status_message, :stage_id, :change_id, :created)"
-							  " RETURNING id");
-					for (const auto &v : records) {
-						auto rec = v.toMap();
-						auto ba = QJsonDocument::fromVariant(rec.value("data")).toJson(QJsonDocument::Compact);
-						auto data = QString::fromUtf8(ba);
-						q.bindValue(":data_type", rec.value("data_type"));
-						q.bindValue(":data", data);
-						q.bindValue(":data_id", rec.value("data_id"));
-						q.bindValue(":source", rec.value("source"));
-						q.bindValue(":user_id", rec.value("user_id"));
-						q.bindValue(":status", rec.value("status"));
-						q.bindValue(":status_message", rec.value("status_message"));
-						q.bindValue(":stage_id", stage_id);
-						auto change_id = rec.value("id").toInt();
-						Q_ASSERT(change_id > 0);
-						q.bindValue(":change_id", change_id);
-						auto created = QDateTime::fromString(rec.value("created").toString(), Qt::ISODate);
-						qfDebug() << "created:" << created.toString(Qt::ISODate);
-						q.bindValue(":created", created);
-						// may fail on prikey violation if more clients are inserting simultaneously
-						if (q.exec()) {
-							if (q.next()) {
-								auto id = q.value(0).toInt();
-								qfDebug() << "insert ID:" << id;
-								getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_QX_CHANGE_RECEIVED, id, true);
-							}
-						}
-						else {
-							qfInfo() << "sql error:" << q.lastErrorText();
-
-						}
-					}
-				}
-			}
-			reply->deleteLater();
-		});
-	}
-	catch (const qf::core::Exception &e) {
-		qfWarning() << "Load qxchanges error:" << e.message();
 	}
 }
 

@@ -2,15 +2,18 @@
 #include "ui_qxlateentrieswidget.h"
 
 #include "qxeventservice.h"
-#include "runchangedialog.h"
+#include "lateentrydialog.h"
 #include "runchange.h"
 
 #include <plugins/Event/src/eventplugin.h>
 
 #include <qf/gui/framework/mainwindow.h>
+#include <qf/gui/framework/application.h>
 #include <qf/gui/model/sqltablemodel.h>
 #include <qf/core/log.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxrecchng.h>
+#include <qf/core/sql/qxsql.h>
 
 #include <QMenu>
 #include <QJsonDocument>
@@ -23,24 +26,18 @@ using qf::gui::framework::getPlugin;
 namespace Event::services::qx {
 
 constexpr auto COL_ID = "id";
-constexpr auto COL_CHANGE_ID = "change_id";
 constexpr auto COL_DATA_TYPE = "data_type";
-constexpr auto COL_DATA_ID = "data_id";
+constexpr auto COL_FOREIGN_ID = "foreign_id";
 constexpr auto COL_DATA = "data";
 constexpr auto COL_ORIG_DATA = "orig_data";
 constexpr auto COL_STATUS = "status";
 constexpr auto COL_STATUS_MESSAGE = "status_message";
-constexpr auto COL_SOURCE = "source";
 constexpr auto COL_USER_ID = "user_id";
 constexpr auto COL_CREATED = "created";
 constexpr auto COL_LOCK_NUMBER = "lock_number";
 
 constexpr auto STATUS_PENDING = "Pending";
 constexpr auto STATUS_LOCKED = "Locked";
-
-constexpr auto DATA_TYPE_RUN_UPDATE_REQUEST = "RunUpdateRequest";
-
-constexpr auto SOURCE_WWW = "www";
 
 QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	QWidget(parent),
@@ -65,12 +62,10 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	m_model->addColumn(COL_ID).setReadOnly(true).setAlignment(Qt::AlignLeft);
 	m_model->addColumn(COL_STATUS, tr("Status"));
 	m_model->addColumn(COL_DATA_TYPE, tr("Type"));
-	m_model->addColumn(COL_DATA_ID, tr("Data ID")).setAlignment(Qt::AlignLeft);
-	m_model->addColumn(COL_SOURCE, tr("Source"));
+	m_model->addColumn(COL_FOREIGN_ID, tr("Foreign ID")).setAlignment(Qt::AlignLeft);
 	m_model->addColumn(COL_USER_ID, tr("User"));
 	m_model->addColumn(COL_STATUS_MESSAGE, tr("Status message"));
 	m_model->addColumn(COL_CREATED, tr("Created"));
-	m_model->addColumn(COL_CHANGE_ID, tr("Change ID"));
 	m_model->addColumn(COL_LOCK_NUMBER, tr("Lock"));
 	m_model->addColumn(COL_DATA, tr("Data"));//.setToolTip(tr("Locked for drawing"));
 	m_model->addColumn(COL_ORIG_DATA, tr("Orig data"));//.setToolTip(tr("Locked for drawing"));
@@ -94,8 +89,6 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 			break;
 		}
 	});
-
-	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &QxLateEntriesWidget::onDbEventNotify, Qt::QueuedConnection);
 
 	{
 		auto *lst = ui->lstType;
@@ -131,20 +124,12 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 
 		reload();
 	});
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &QxLateEntriesWidget::onQxRecChng, Qt::QueuedConnection);
 }
 
 QxLateEntriesWidget::~QxLateEntriesWidget()
 {
 	delete ui;
-}
-
-void QxLateEntriesWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &payload)
-{
-	Q_UNUSED(connection_id)
-	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_QX_CHANGE_RECEIVED)) {
-		int sql_id = payload.toInt();
-		addQxChangeRow(sql_id);
-	}
 }
 
 void QxLateEntriesWidget::onVisibleChanged(bool is_visible)
@@ -227,7 +212,7 @@ void QxLateEntriesWidget::reload()
 	m_model->reload();
 }
 
-void QxLateEntriesWidget::addQxChangeRow(int sql_id)
+void QxLateEntriesWidget::applyQxChange(int sql_id)
 {
 	qfDebug() << "reloading qxchanges row id:" << sql_id << "col id:" << COL_ID;
 	if(sql_id <= 0) {
@@ -252,23 +237,6 @@ void QxLateEntriesWidget::addQxChangeRow(int sql_id)
 	}
 }
 
-
-void QxLateEntriesWidget::applyCurrentChange()
-{
-	auto row = ui->tableView->currentIndex().row();
-	if (row < 0) {
-		return;
-	}
-	auto status = m_model->value(row, COL_STATUS).toString();
-	if (status != STATUS_PENDING) {
-		return;
-	}
-	//auto run_id = m_model->value(row, COL_RUN_ID).toInt();
-	//int competitor_id = 0;
-	// int result = getPlugin<Competitors::CompetitorsPlugin>()->editCompetitor(competitor_id, run_id == 0? Mode::Insert: Mode::Edit);
-
-}
-
 void QxLateEntriesWidget::onTableCustomContextMenuRequest(const QPoint &pos)
 {
 	QAction a_neco(tr("Neco"), nullptr);
@@ -283,26 +251,23 @@ void QxLateEntriesWidget::onTableCustomContextMenuRequest(const QPoint &pos)
 void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 {
 	auto row = ix.row();
-	auto data_type = m_model->value(row, COL_DATA_TYPE).toString();
-	if (data_type != DATA_TYPE_RUN_UPDATE_REQUEST) {
-		return;
-	}
-	auto source = m_model->value(row, COL_SOURCE).toString();
-	if (source != SOURCE_WWW) {
-		return;
-	}
-	auto change_id = m_model->value(row, COL_CHANGE_ID).toInt();
 	auto status = m_model->value(row, COL_STATUS).toString();
-	auto lock_number = m_model->value(row, COL_LOCK_NUMBER).toInt();
-	auto data_id = m_model->value(row, COL_DATA_ID).toInt();
-	auto data = m_model->value(row, COL_DATA).toString().toUtf8();
-	auto change_rec = QJsonDocument::fromJson(data).toVariant().toMap();
-	auto run_change = RunChange::fromVariantMap(change_rec.value(DATA_TYPE_RUN_UPDATE_REQUEST).toMap());
 	if (status == STATUS_PENDING || status == STATUS_LOCKED) {
-		RunChangeDialog dlg(change_id, data_id, lock_number, run_change, this);
-		dlg.exec();
-		ui->tableView->reloadRow(row);
+		auto data = m_model->value(row, COL_DATA).toString();
+		auto qxdata = QxChangeData::fromJson(data);
+		if (qxdata.lateEntry.has_value()) {
+			auto lock_number = m_model->value(row, COL_LOCK_NUMBER).toInt();
+			auto change_id = m_model->value(row, COL_ID).toInt();
+			LateEntryDialog dlg(change_id, lock_number, qxdata.lateEntry.value(), this);
+			dlg.exec();
+			ui->tableView->reloadRow(row);
+		}
 	}
+}
+
+void QxLateEntriesWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
+{
+	m_model->applyQxRecChng(recchng, source);
 }
 
 }

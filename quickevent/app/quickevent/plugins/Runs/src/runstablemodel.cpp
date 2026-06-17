@@ -363,7 +363,7 @@ void RunsTableModel::onDataChanged(const QModelIndex &top_left, const QModelInde
 
 void RunsTableModel::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
-	handleQxRecChng(recchng, source);
+	applyQxRecChng(recchng, source);
 }
 
 bool RunsTableModel::postRow(int row_no, bool throw_exc)

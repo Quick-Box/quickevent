@@ -79,7 +79,6 @@ private: // shv
 	void sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg);
 	void onBrokerSocketError(const QString &err);
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
-	// void sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng);
 
 	void subscribeChanges();
 private:
@@ -91,11 +90,6 @@ private:
 	QByteArray zlibCompress(QByteArray data);
 
 	void httpPostJson(const QString &path, const QString &query, QVariantMap json, QObject *context = nullptr, const std::function<void (QString)> &call_back = nullptr);
-
-	void connectToSSE(int event_id);
-	void disconnectSSE();
-
-	void pollQxChanges();
 
 	EventInfo eventInfo() const;
 private: // shv

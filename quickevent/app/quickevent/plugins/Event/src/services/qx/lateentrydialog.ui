@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Event::services::qx::RunChangeDialog</class>
- <widget class="QDialog" name="Event::services::qx::RunChangeDialog">
+ <class>Event::services::qx::LateEntryDialog</class>
+ <widget class="QDialog" name="Event::services::qx::LateEntryDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
@@ -309,6 +309,16 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Message</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPlainTextEdit" name="edMessage"/>
+   </item>
+   <item>
     <widget class="QLabel" name="lblError">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -320,20 +330,6 @@
       <string/>
      </property>
     </widget>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Message</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="edStatusMessage"/>
-     </item>
-    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -402,7 +398,6 @@
   <tabstop>edSiCard</tabstop>
   <tabstop>edSiCardRent</tabstop>
   <tabstop>edNote</tabstop>
-  <tabstop>edStatusMessage</tabstop>
   <tabstop>chkForce</tabstop>
   <tabstop>btAccept</tabstop>
   <tabstop>btReject</tabstop>
@@ -413,7 +408,7 @@
   <connection>
    <sender>btCancel</sender>
    <signal>clicked()</signal>
-   <receiver>Event::services::qx::RunChangeDialog</receiver>
+   <receiver>Event::services::qx::LateEntryDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

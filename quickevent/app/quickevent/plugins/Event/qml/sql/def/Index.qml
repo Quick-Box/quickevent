@@ -9,6 +9,7 @@ QtObject
 	property bool primary: false
 	property bool unique: false
 	property ForeignKeyReference references: null
+	property string where
 	property string comment
 
 	function indexName(cnt, table_name)
@@ -55,21 +56,29 @@ QtObject
 			else if(primary) {
 				ret += '\tCONSTRAINT ' + indexName(constr_no, options.tableName) + ' PRIMARY KEY (' + fields.join(', ') + ')';
 			}
-			else if(unique) {
+			else if(unique && !where) {
 				ret += '\tCONSTRAINT ' + indexName(constr_no, options.tableName) + ' UNIQUE (' + fields.join(', ') + ')';
 			}
 		}
 		return ret;
 	}
 
-	function createSqlIndexScript(options)
+	function createSqlIndexScript(index_name, table_name, options)
 	{
-		var ret = '';
 		if(fields) {
-			if(!primary && !unique && !references) {
-				ret = '(' + fields.join(', ') + ')';
+			if (where) {
+				return 'CREATE '
+						+ (unique? 'UNIQUE ': ' ')
+						+'INDEX ' + index_name
+						+ ' ON ' + table_name + ' (' + fields.join(', ') + ')'
+						+ ' WHERE ' + where;
+			}
+			else if(!primary && !unique && !references) {
+				return 'CREATE INDEX ' + index_name
+						+ ' ON ' + table_name
+						+ ' (' + fields.join(', ') + ')';
 			}
 		}
-		return ret;
+		return '';
 	}
 }

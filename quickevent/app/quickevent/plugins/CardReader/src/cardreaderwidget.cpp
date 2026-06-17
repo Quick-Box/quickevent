@@ -522,7 +522,7 @@ void CardReaderWidget::reload()
 void CardReaderWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
 	if(isVisible()) {
-		m_cardsModel->handleQxRecChng(recchng, source);
+		m_cardsModel->applyQxRecChng(recchng, source);
 	}
 }
 

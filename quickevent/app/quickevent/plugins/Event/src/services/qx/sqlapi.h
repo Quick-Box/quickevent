@@ -38,6 +38,8 @@ class SqlApi : public QObject
 public:
 	explicit SqlApi(QObject *parent = nullptr);
 
+	Q_SIGNAL void recChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
+
 	ExecResult exec(const SqlQueryAndParams &params);
 	QueryResult query(const SqlQueryAndParams &params);
 	void transaction(const std::string &query, const shv::chainpack::RpcValue::List &params);

@@ -1,5 +1,5 @@
-#ifndef RUNCHANGEDIALOG_H
-#define RUNCHANGEDIALOG_H
+#ifndef LATEENTRYDIALOG_H
+#define LATEENTRYDIALOG_H
 
 #include "runchange.h"
 
@@ -10,19 +10,19 @@ class QNetworkReply;
 namespace Event::services::qx {
 
 namespace Ui {
-class RunChangeDialog;
+class LateEntryDialog;
 }
 
-struct RunChange;
+struct LateEntryRecord;
 class QxEventService;
 
-class RunChangeDialog : public QDialog
+class LateEntryDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	explicit RunChangeDialog(int change_id, int run_id, int lock_number, const RunChange &run_change, QWidget *parent = nullptr);
-	~RunChangeDialog() override;
+	explicit LateEntryDialog(int change_id, int lock_number, const LateEntry &late_entry, QWidget *parent = nullptr);
+	~LateEntryDialog() override;
 
 private:
 	QxEventService* service();
@@ -34,11 +34,8 @@ private:
 	void lockChange();
 
 	void resolveChanges(bool is_accepted);
-	void applyLocalChanges(bool is_accepted);
-
-	bool checkHttpError(QNetworkReply *reply);
 private:
-	Ui::RunChangeDialog *ui;
+	Ui::LateEntryDialog *ui;
 	int m_changeId = 0;
 	int m_runId = 0;
 	int m_competitorId = 0;
@@ -51,4 +48,4 @@ private:
 } // namespace Event::services::qx
 
 
-#endif // RUNCHANGEDIALOG_H
+#endif // LATEENTRYDIALOG_H

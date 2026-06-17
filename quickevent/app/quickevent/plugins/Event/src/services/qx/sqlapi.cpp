@@ -96,7 +96,8 @@ RpcValue qxRecChngToRpcValue(const qf::core::sql::QxRecChng &chng)
 SqlApi::SqlApi(QObject *parent)
 	: QObject{parent}
 {
-	// connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, )
+	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
+	connect(qxsql, &qf::core::sql::QxSql::recChng, this, &SqlApi::recChng);
 }
 
 // void SqlApi::emitRecChng(const qf::core::sql::QxRecChng &chng)
@@ -201,7 +202,7 @@ void SqlApi::transaction(const std::string &query, const shv::chainpack::RpcValu
 	for (const auto &p : params) {
 		qparams << shv::coreqt::rpc::rpcValueToQVariant(p);
 	}
-	return qxsql->transaction(QString::fromStdString(query), qparams);
+	qxsql->transaction(QString::fromStdString(query), qparams);
 }
 
 RpcValue::List SqlApi::list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit)

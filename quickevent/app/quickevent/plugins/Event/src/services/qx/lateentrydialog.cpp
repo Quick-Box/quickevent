@@ -1,11 +1,13 @@
-#include "runchangedialog.h"
-#include "ui_runchangedialog.h"
+#include "lateentrydialog.h"
+#include "ui_lateentrydialog.h"
 
 #include "qxeventservice.h"
 #include "runchange.h"
 
 #include <plugins/Competitors/src/competitordocument.h>
 
+#include <qf/gui/framework/application.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/log.h>
 
@@ -13,15 +15,17 @@
 #include <QNetworkReply>
 #include <QUrlQuery>
 #include <QJsonDocument>
+#include <QLineEdit>
 #include <QMessageBox>
+#include <QSpinBox>
 
 namespace Event::services::qx {
 
-RunChangeDialog::RunChangeDialog(int change_id, int run_id, int lock_number, const RunChange &run_change, QWidget *parent)
+LateEntryDialog::LateEntryDialog(int change_id, int lock_number, const LateEntry &late_entry, QWidget *parent)
 	: QDialog(parent)
-	, ui(new Ui::RunChangeDialog)
+	, ui(new Ui::LateEntryDialog)
 	, m_changeId(change_id)
-	, m_runId(run_id)
+	, m_runId(late_entry.run_id)
 {
 	ui->setupUi(this);
 
@@ -39,26 +43,43 @@ RunChangeDialog::RunChangeDialog(int change_id, int run_id, int lock_number, con
 		resolveChanges(false);
 	});
 
-	ui->edClassName->setText(run_change.class_name.value_or(QString()));
-	ui->edNote->setText(run_change.note);
+	ui->edClassName->setText(late_entry.record.class_name.value_or(QString()));
+	ui->edNote->setText(late_entry.record.note);
 
-	ui->edRunId->setValue(run_id);
+	ui->edRunId->setValue(m_runId);
 	ui->edChangeId->setValue(change_id);
 	ui->edLockNumber->setValue(lock_number);
 
-	ui->grpFirstName->setChecked(run_change.first_name.has_value());
-	ui->edFirstName->setText(run_change.first_name.has_value()? run_change.first_name.value(): QString());
+	auto update_background = [](QWidget *widget) {
+		bool is_set = false;
+		if (auto *le = qobject_cast<QLineEdit*>(widget)) {
+			is_set = !le->text().isEmpty();
+		}
+		else if (auto *spin_box = qobject_cast<QSpinBox*>(widget)) {
+			is_set = spin_box->value() > 0;
+		}
+		if (is_set) {
+			widget->setStyleSheet("background: honeydew");
+		}
+	};
 
-	ui->grpLastName->setChecked(run_change.last_name.has_value());
-	ui->edLastName->setText(run_change.last_name.has_value()? run_change.last_name.value(): QString());
+	ui->grpFirstName->setChecked(late_entry.record.first_name.has_value());
+	ui->edFirstName->setText(late_entry.record.first_name.has_value()? late_entry.record.first_name.value(): QString());
+	update_background(ui->edFirstName);
 
-	ui->grpRegistration->setChecked(run_change.registration.has_value());
-	ui->edRegistration->setText(run_change.registration.has_value()? run_change.registration.value(): QString());
+	ui->grpLastName->setChecked(late_entry.record.last_name.has_value());
+	ui->edLastName->setText(late_entry.record.last_name.has_value()? late_entry.record.last_name.value(): QString());
+	update_background(ui->edLastName);
 
-	ui->grpSiCard->setChecked(run_change.si_id.has_value());
-	ui->edSiCard->setValue(run_change.si_id.has_value()? run_change.si_id.value(): 0);
+	ui->grpRegistration->setChecked(late_entry.record.registration.has_value());
+	ui->edRegistration->setText(late_entry.record.registration.has_value()? late_entry.record.registration.value(): QString());
+	update_background(ui->edRegistration);
 
-	if (run_id > 0) {
+	ui->grpSiCard->setChecked(late_entry.record.si_id.has_value());
+	ui->edSiCard->setValue(late_entry.record.si_id.has_value()? late_entry.record.si_id.value(): 0);
+	update_background(ui->edSiCard);
+
+	if (m_runId > 0) {
 		loadOrigValues();
 	}
 	else {
@@ -67,19 +88,19 @@ RunChangeDialog::RunChangeDialog(int change_id, int run_id, int lock_number, con
 	lockChange();
 }
 
-RunChangeDialog::~RunChangeDialog()
+LateEntryDialog::~LateEntryDialog()
 {
 	delete ui;
 }
 
-QxEventService *RunChangeDialog::service()
+QxEventService *LateEntryDialog::service()
 {
 	auto *svc = qobject_cast<QxEventService*>(Service::serviceByName(QxEventService::serviceId()));
 	Q_ASSERT(svc);
 	return svc;
 }
 
-void RunChangeDialog::setMessage(const QString &msg, bool error)
+void LateEntryDialog::setMessage(const QString &msg, bool error)
 {
 	if (msg.isEmpty()) {
 		ui->lblError->setStyleSheet({});
@@ -93,7 +114,7 @@ void RunChangeDialog::setMessage(const QString &msg, bool error)
 	ui->lblError->setText(msg);
 }
 
-void RunChangeDialog::loadOrigValues()
+void LateEntryDialog::loadOrigValues()
 {
 	Q_ASSERT(m_runId > 0);
 
@@ -123,7 +144,7 @@ void RunChangeDialog::loadOrigValues()
 	ui->edSiCardOrig->setValue(m_origValues.si_id);
 }
 
-void RunChangeDialog::loadClassId()
+void LateEntryDialog::loadClassId()
 {
 	auto class_name = ui->edClassName->text();
 	if (class_name.isEmpty()) {
@@ -140,7 +161,7 @@ void RunChangeDialog::loadClassId()
 	}
 }
 
-void RunChangeDialog::lockChange()
+void LateEntryDialog::lockChange()
 {
 	// NIY
 	// auto *svc = service();
@@ -200,42 +221,7 @@ void RunChangeDialog::lockChange()
 	// });
 }
 
-void RunChangeDialog::resolveChanges(bool is_accepted)
-{
-	if (is_accepted) {
-		applyLocalChanges(is_accepted);
-	}
-	auto *svc = service();
-	auto *nm = svc->networkManager();
-	QNetworkRequest request;
-	auto url = svc->shvBrokerUrl();
-	// qfInfo() << "url " << url.toString();
-	url.setPath("/api/event/current/changes/resolve-change");
-
-	QUrlQuery query;
-	query.addQueryItem("change_id", QString::number(m_changeId));
-	query.addQueryItem("lock_number", QString::number(m_lockNumber));
-	query.addQueryItem("accepted", is_accepted? "true": "false");
-	query.addQueryItem("status_message", ui->edStatusMessage->text());
-	url.setQuery(query);
-
-	request.setUrl(url);
-	request.setRawHeader(QxEventService::QX_API_TOKEN, svc->apiToken().toUtf8());
-	auto *reply = nm->get(request);
-	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-		if (reply->error() == QNetworkReply::NetworkError::NoError) {
-			accept();
-		}
-		else {
-			QMessageBox::warning(this,
-								 QCoreApplication::applicationName(),
-								 tr("Update change error: %1").arg(reply->errorString()));
-		}
-		reply->deleteLater();
-	});
-}
-
-void RunChangeDialog::applyLocalChanges(bool is_accepted)
+void LateEntryDialog::resolveChanges(bool is_accepted)
 {
 	using namespace qf::gui::model;
 
@@ -267,33 +253,12 @@ void RunChangeDialog::applyLocalChanges(bool is_accepted)
 		}
 	}
 	doc.save();
-	{
-		qf::core::sql::Query q;
-		q.execThrow(QStringLiteral("UPDATE qxchanges SET status='%1' WHERE id=%2")
-					.arg(is_accepted? "Accepted": "Rejected")
-					.arg(m_changeId)
-					);
-	}
-	{
-		auto dc_str = qf::core::Utils::qvariantToJson(m_origValues.toVariantMap());
-		QString qs = "UPDATE qxchanges SET orig_data=:orig_data WHERE id=:id";
-		qf::core::sql::Query q;
-		q.prepare(qs, qf::core::Exception::Throw);
-		q.bindValue(":orig_data", dc_str);
-		q.bindValue(":id", m_changeId);
-		q.exec(qf::core::Exception::Throw);
-	}
-}
 
-bool RunChangeDialog::checkHttpError(QNetworkReply *reply)
-{
-	if (reply->error() != QNetworkReply::NetworkError::NoError) {
-		setMessage(tr("Http error: %1\n%2")
-				   .arg(reply->request().url().toString())
-				   .arg(reply->errorString()), true);
-		return false;
-	}
-	return true;
+	qf::core::sql::Record rec {
+		{"status", is_accepted? "Accepted": "Rejected"},
+		{"orig_data", qf::core::Utils::qvariantToJson(m_origValues.toVariantMap())},
+	};
+	qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
 }
 
 } // namespace Event::services::qx
