@@ -55,7 +55,7 @@ LateEntryDialog::LateEntryDialog(int change_id, int lock_number, const LateEntry
 			is_set = spin_box->value() > 0;
 		}
 		if (is_set) {
-			widget->setStyleSheet("background: honeydew");
+			widget->setStyleSheet("background: palegreen");
 		}
 	};
 
@@ -241,11 +241,10 @@ void LateEntryDialog::resolveChanges(bool is_accepted)
 			doc.setValue("siId", ui->edSiCard->value());
 		}
 		else {
-			qf::core::sql::Query q;
-			q.execThrow(QStringLiteral("UPDATE runs SET siId=%1 WHERE id=%2")
-						.arg(ui->edSiCard->value())
-						.arg(m_runId)
-						);
+			qf::core::sql::Record rec {
+				{ "siId", ui->edSiCard->value() },
+			};
+			qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", m_runId, rec, this);
 		}
 	}
 	doc.save();
