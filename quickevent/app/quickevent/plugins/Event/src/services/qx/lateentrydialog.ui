@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>712</width>
-    <height>569</height>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -334,13 +334,6 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QCheckBox" name="chkForce">
-       <property name="text">
-        <string>Force</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
@@ -398,7 +391,6 @@
   <tabstop>edSiCard</tabstop>
   <tabstop>edSiCardRent</tabstop>
   <tabstop>edNote</tabstop>
-  <tabstop>chkForce</tabstop>
   <tabstop>btAccept</tabstop>
   <tabstop>btReject</tabstop>
   <tabstop>btCancel</tabstop>
