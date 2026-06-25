@@ -32,6 +32,10 @@ LateEntryDialog::LateEntryDialog(int change_id, int lock_number, const LateEntry
 	ui->btAccept->setDisabled(true);
 	ui->btReject->setDisabled(true);
 
+	connect(ui->chkForce, &QCheckBox::checkStateChanged, this, [this]() {
+		ui->btAccept->setDisabled(!ui->chkForce->isChecked());
+		ui->btReject->setDisabled(!ui->chkForce->isChecked());
+	});
 	connect(ui->btAccept, &QPushButton::clicked, this, [this]() {
 		resolveChanges(true);
 	});
