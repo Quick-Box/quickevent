@@ -17,27 +17,15 @@ add_library(libquickeventcore SHARED
 	libquickeventcore.qrc
     )
 
-qt6_add_translation(QM_FILES
-	libquickeventcore-cs_CZ.ts
-	libquickeventcore-fr_FR.ts
-	libquickeventcore-nb_NO.ts
-	libquickeventcore-nl_BE.ts
-	libquickeventcore-pl_PL.ts
-	libquickeventcore-ru_RU.ts
-	libquickeventcore-es.ts
-	libquickeventcore-uk_UA.ts
-	)
-
-qt6_add_lupdate(libquickeventcore TS_FILES
-	libquickeventcore-cs_CZ.ts
-	libquickeventcore-fr_FR.ts
-	libquickeventcore-nb_NO.ts
-	libquickeventcore-nl_BE.ts
-	libquickeventcore-pl_PL.ts
-	libquickeventcore-ru_RU.ts
-	libquickeventcore-es.ts
-	libquickeventcore-uk_UA.ts
-	)
+# Single source of truth for this project's translations: every
+# libquickeventcore-<locale>.ts file in this directory. CONFIGURE_DEPENDS re-runs the
+# glob at build time, so adding a new language is just dropping in a .ts file - no
+# CMake edit, no silently skipped language. OUTPUT_LOCATION emits the compiled .qm
+# next to the quickevent executable (see QE_TRANSLATIONS_OUTPUT_DIR).
+file(GLOB TS_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/libquickeventcore-*.ts")
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "${QE_TRANSLATIONS_OUTPUT_DIR}")
+qt6_add_translation(QM_FILES ${TS_FILES})
+qt6_add_lupdate(libquickeventcore TS_FILES ${TS_FILES})
 
 target_sources(libquickeventcore PRIVATE ${QM_FILES})
 target_compile_definitions(libquickeventcore PRIVATE QUICKEVENTCORE_BUILD_DLL)

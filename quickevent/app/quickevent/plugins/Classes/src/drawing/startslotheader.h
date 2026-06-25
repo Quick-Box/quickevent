@@ -37,7 +37,8 @@ protected:
 private:
 	QGraphicsTextItem *m_textSlotNo;
 	QGraphicsRectItem *m_lockItem;
-	QGraphicsTextItem *m_textStartOffset;
+	QGraphicsRectItem *m_startSpinner = nullptr;
+	QGraphicsRectItem *m_intervalSpinner = nullptr;
 	bool m_dragIn = false;
 };
 

@@ -15,8 +15,9 @@ public:
 	enum class XmlCreators
 	{
 		QuickEvent = 0,
-		Oris,
-		Eventor,
+		Oris,	// https://oris.ceskyorientak.cz/
+		Eventor, // https://eventor.orienteering.sport/
+		ISSZOS, // https://is.orienteering.sk/
 	};
 	struct SPerson
 	{
@@ -26,10 +27,13 @@ public:
 		QString className;
 		QString classNameShort;		// backup, if not defined className
 
-		std::optional<int> iofId;
+		std::optional<int> iofId;	// IOF
 		QString regCz;				// ORIS
 		QString noteOris;			// ORIS
 		std::optional<int> orisId;	// ORIS
+
+		QString regSk;				// ISSZOS
+		std::optional<int> skId;	// ISSZOS
 
 		int siNumber = 0;
 
@@ -66,6 +70,8 @@ protected:
 	bool importClubs(QXmlStreamReader &reader, const XmlCreators creator);
 	bool importRegistration(QXmlStreamReader &reader, const XmlCreators creator);
 	bool importEvent(QXmlStreamReader &reader, const XmlCreators creator);
+
+	bool importClubsAndClassFromEntriesISSZOS(QString filename);
 
 	QString genFakeCzClubAbbr(QString country);
 	QMap <QString,int> fakeCzClubMap;

@@ -454,7 +454,7 @@ void RelaysWidget::print_start_list_classes()
 	if(!dlg.exec())
 		return;
 	QVariantMap props = dlg.reportProperties();
-	bool vacants =  dlg.isStartListPrintVacants();
+	bool vacants = dlg.startListPrintVacantsOption() != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners;
 	QVariant td = getPlugin<RelaysPlugin>()->startListByClassesTableData(dlg.sqlWhereExpression(), vacants);
 	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_classes.qml" : "startList_classes_condensed.qml";
 	qf::gui::reports::ReportViewWidget::showReport(this
@@ -477,7 +477,7 @@ void RelaysWidget::print_start_list_clubs()
 	if(!dlg.exec())
 		return;
 	QVariantMap props = dlg.reportProperties();
-	bool vacants =  dlg.isStartListPrintVacants();
+	bool vacants = dlg.startListPrintVacantsOption() != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners;
 	QVariant td = startListByClubsTableData(vacants);
 	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_clubs.qml" : "startList_clubs_condensed.qml";
 	qf::gui::reports::ReportViewWidget::showReport(this,

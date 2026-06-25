@@ -18,6 +18,7 @@
 
 #include <QtQml>
 #include <QLocale>
+#include <QLibraryInfo>
 
 namespace {
 NecroLog::MessageHandler old_message_handler;
@@ -147,7 +148,14 @@ int main(int argc, char *argv[])
 		{
 			auto *translator = new QTranslator(&app);
 			const auto file_name = QStringLiteral("qt");
-			bool ok = translator->load(QLocale(lc_name), file_name, QString("_"), QString("translations"));
+			// Load Qt's own catalog (standard QMessageBox buttons etc.). Try the
+			// translations dir next to the executable first (installation layout),
+			// then fall back to Qt's installed translations (typical for dev builds).
+			bool ok = translator->load(QLocale(lc_name), file_name, QString("_"), lc_dir);
+			if (!ok) {
+				ok = translator->load(QLocale(lc_name), file_name, QString("_"),
+									  QLibraryInfo::path(QLibraryInfo::TranslationsPath));
+			}
 			if (ok) {
 				ok = QCoreApplication::installTranslator(translator);
 			}

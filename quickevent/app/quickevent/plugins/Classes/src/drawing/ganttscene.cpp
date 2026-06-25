@@ -29,12 +29,15 @@ void GanttScene::load(int stage_id)
 	addItem(m_ganttItem);
 	m_ganttItem->load(stage_id);
 	m_stageId = stage_id;
+	setDirty(false);
 }
 
 void GanttScene::save()
 {
-	if(m_ganttItem)
+	if(m_ganttItem) {
 		m_ganttItem->save(m_stageId);
+		setDirty(false);
+	}
 }
 
 int GanttScene::duToMin(int n) const

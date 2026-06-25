@@ -9,12 +9,14 @@
 
 #include <qf/core/utils.h>
 #include <qf/core/utils/table.h>
+#include <qf/core/utils/treetable.h>
 
 namespace qf {
 	namespace core {
 		namespace utils {
 			class Table;
 			class TreeTable;
+			class TreeTableRow;
 		}
 	}
 	namespace gui {
@@ -74,7 +76,7 @@ public:
 
 	Q_INVOKABLE QVariantMap printAwardsOptionsWithDialog(const QVariantMap &opts);
 
-        bool exportStartListStageIofXml30(int stage_id, const QString &file_name, bool with_vacants);
+        bool exportStartListStageIofXml30(int stage_id, const QString &file_name, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);
 	bool exportStartListCurrentStageCsvSime(const QString &file_name, bool bibs, QString sql_where);
 	bool exportStartListCurrentStageTvGraphics(const QString &file_name);
 
@@ -93,9 +95,9 @@ public:
 	qf::core::sql::QueryBuilder startListQuery();
 	QVariantMap startListRecord(int run_id);
 
-	qf::core::utils::TreeTable startListClassesTable(const QString &where_expr, const bool insert_vacants, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
+	qf::core::utils::TreeTable startListClassesTable(const QString &where_expr, const quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	qf::core::utils::TreeTable startListClubsTable(const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format, const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by);
-	qf::core::utils::TreeTable startListStartersTable(const QString &where_expr);
+	qf::core::utils::TreeTable startListStartersTable(const QString &where_expr, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);
 	qf::core::utils::TreeTable startListClassesNStagesTable(const int stages_count, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	qf::core::utils::TreeTable startListClubsNStagesTable(const int stages_count, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 
@@ -121,7 +123,7 @@ public:
 	QString export_resultsHtmlStage(bool with_laps = false);
 	void export_resultsHtmlStageWithLaps();
 	void export_resultsHtmlNStages();
-        QString startListStageIofXml30(int stage_id, bool with_vacants);
+        QString startListStageIofXml30(int stage_id, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);
 	QString resultsIofXml30Stage(int stage_id);
 	int competitorForRun(int run_id);
 	int runForCompetitorStage(int competitor_id, int stage_id);
@@ -150,3 +152,4 @@ private:
 }
 
 #endif // RUNS_RUNSPLUGIN_H
+

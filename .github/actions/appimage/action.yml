@@ -55,7 +55,7 @@ runs:
       shell: bash
 
     - name: Upload AppImage
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v7
       with:
         name: quickevent-${{ env.VERSION }}-x86_64.Appimage
         path: QuickEvent-*-x86_64.AppImage

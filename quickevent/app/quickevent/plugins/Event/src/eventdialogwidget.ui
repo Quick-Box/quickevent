@@ -85,7 +85,6 @@
      </item>
      <item row="7" column="1">
       <widget class="QComboBox" name="cbxSportId"/>
-
      </item>
      <item row="6" column="1">
       <widget class="QLineEdit" name="ed_mainReferee"/>
@@ -132,7 +131,6 @@
      </item>
      <item row="7" column="3">
       <widget class="QComboBox" name="cbxDisciplineId"/>
-
      </item>
      <item row="7" column="0">
       <widget class="QLabel" name="label_11">
@@ -289,22 +287,7 @@
    </item>
    <item>
     <widget class="QFrame" name="frameIofRace">
-     <layout class="QFormLayout" name="formLayout_2">
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_16">
-        <property name="text">
-         <string>Race number</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="ed_xmlRaceNumber">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IOF Eventor race number - if nonzero, used as &amp;lt;Race&amp;gt; node and for attribute of &amp;lt;Start&amp;gt; node for IOF XML exports&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <layout class="QFormLayout" name="formLayout_2"/>
     </widget>
    </item>
    <item>
@@ -365,6 +348,39 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>IOF XML 3.0 configuration</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Race number</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="ed_xmlRaceNumber">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IOF Eventor race number - if nonzero, used as &amp;lt;Race&amp;gt; node and for attribute of &amp;lt;Start&amp;gt; node for IOF XML exports&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Used to select race number in XML format (for XML import/export)</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Orientation::Vertical</enum>
@@ -395,10 +411,10 @@
   <tabstop>ed_cardChecCheckTimeSec</tabstop>
   <tabstop>ed_oneTenthSecResults</tabstop>
   <tabstop>ed_iofRace</tabstop>
-  <tabstop>ed_xmlRaceNumber</tabstop>
   <tabstop>ed_orisRace</tabstop>
   <tabstop>ed_orisImportId</tabstop>
   <tabstop>ed_orisEventKey</tabstop>
+  <tabstop>ed_xmlRaceNumber</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -132,13 +132,13 @@ void EventConfig::save(const QString &path_to_save)
 			else
 				val_str = val.toString();
 			q_up.bindValue(":key", key);
-			q_up.bindValue(":val", val);
+			q_up.bindValue(":val", val_str);
 			q_up.exec(qf::core::Exception::Throw);
 			if(q_up.numRowsAffected() < 1) {
 				QString type = val.typeName();
 				q_ins.bindValue(":key", key);
 				q_ins.bindValue(":type", type);
-				q_ins.bindValue(":val", val);
+				q_ins.bindValue(":val", val_str);
 				q_ins.exec(qf::core::Exception::Throw);
 			}
 		}

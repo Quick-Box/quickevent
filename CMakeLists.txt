@@ -48,6 +48,14 @@ if(Qt_FOUND)
 	set(CMAKE_AUTOUIC ON)
 	set(CMAKE_AUTORCC ON)
 
+	# Emit all .qm translation files into a single "translations" directory next to
+	# the quickevent executable already at build time, so the app can load them from
+	# QCoreApplication::applicationDirPath()/translations during development (this
+	# mirrors the install layout). The individual library subprojects reference this
+	# variable instead of hard-coding a path back to the application.
+	set(QE_TRANSLATIONS_OUTPUT_DIR "${CMAKE_BINARY_DIR}/quickevent/app/quickevent/translations"
+		CACHE INTERNAL "Build-tree output directory for .qm translation files")
+
 	add_subdirectory(libqf)
 	if(QF_LIB_ONLY)
 		message(STATUS "Building libqf only")

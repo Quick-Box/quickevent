@@ -249,9 +249,9 @@ void TableView::refreshActions()
 		//action("addColumnFilter")->setEnabled(true);
 		//action("removeColumnFilter")->setEnabled(true);
 		//action("deleteColumnFilters")->setEnabled(true);
-		action("setValueInSelection")->setEnabled(true);
-		action("setNullInSelection")->setEnabled(true);
-		action("generateSequenceInSelection")->setEnabled(true);
+		action("setValueInSelection")->setEnabled(is_edit_rows_allowed);
+		action("setNullInSelection")->setEnabled(is_edit_rows_allowed);
+		action("generateSequenceInSelection")->setEnabled(is_edit_rows_allowed);
 		action("paste")->setEnabled(is_edit_rows_allowed && is_insert_rows_allowed);
 	}
 	action("revertRow")->setEnabled(action("postRow")->isEnabled());
@@ -710,28 +710,36 @@ void TableView::editCellContentInEditor()
 			w->loadPersistentOptions();
 		}
 		*/
+		// A read-only view must not be writable through this side door, neither must a non-editable cell.
+		// Otherwise edits race the model auto-refresh/reload, which moves currentIndex, corrupts the wrong row
+		// and crashes (see branch crash-editing-maps). When not editable, open the editor just as a viewer.
+		const bool can_edit = !isReadOnly() && (model()->flags(ix) & Qt::ItemIsEditable);
+		if(!can_edit) {
+			if(auto *te = w->findChild<QTextEdit*>())
+				te->setReadOnly(true);
+		}
 		dialogs::Dialog dlg(this);
-		auto *bb = new DialogButtonBox(QDialogButtonBox::Cancel, this);
-		QAbstractButton *bt_save = bb->addButton(QDialogButtonBox::Save);
-		connect(bt_save, &QAbstractButton::clicked, &dlg, &QDialog::accept);
+		auto *bb = new DialogButtonBox(can_edit? QDialogButtonBox::Cancel: QDialogButtonBox::Close, this);
+		if(can_edit) {
+			QAbstractButton *bt_save = bb->addButton(QDialogButtonBox::Save);
+			connect(bt_save, &QAbstractButton::clicked, &dlg, &QDialog::accept);
+		}
 		dlg.setButtonBox(bb);
 		dlg.setCentralWidget(w);
 		dlg.setPersistentSettingsId("cellEditor");
 		dlg.loadPersistentSettingsRecursively();
 		//connect(w, &reports::PrintTableViewWidget::printRequest, this, &TableView::exportReport_helper);
-		if(dlg.exec()) {
+		if(dlg.exec() && can_edit) {
 #if QT_VERSION_MAJOR >= 6
 			auto cell_type = cell_value.metaType().id();
 #else
 			int cell_type = cell_value.type();
 #endif
-			if(model()->flags(ix) & Qt::ItemIsEditable) {
-				cell_value = w->text();
-				if(cell_type == QMetaType::QByteArray)
-					cell_value = QByteArray(cell_value.toString().toUtf8());
-				//qfInfo() << "text:" << v.toString();
-				model()->setData(ix, cell_value);
-			}
+			cell_value = w->text();
+			if(cell_type == QMetaType::QByteArray)
+				cell_value = QByteArray(cell_value.toString().toUtf8());
+			//qfInfo() << "text:" << v.toString();
+			model()->setData(ix, cell_value);
 		}
 	}
 	else {

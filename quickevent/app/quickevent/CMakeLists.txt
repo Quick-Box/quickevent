@@ -259,27 +259,15 @@ add_executable(quickevent
 	plugins/shared/qml/reports/Space.qml
 )
 
-qt6_add_translation(QM_FILES
-	quickevent-cs_CZ.ts
-	quickevent-fr_FR.ts
-	quickevent-nb_NO.ts
-	quickevent-nl_BE.ts
-	quickevent-pl_PL.ts
-	quickevent-ru_RU.ts
-	quickevent-es.ts
-	quickevent-uk_UA.ts
-)
-
-qt6_add_lupdate(quickevent TS_FILES
-	quickevent-cs_CZ.ts
-	quickevent-fr_FR.ts
-	quickevent-nb_NO.ts
-	quickevent-nl_BE.ts
-	quickevent-pl_PL.ts
-	quickevent-ru_RU.ts
-	quickevent-es.ts
-	quickevent-uk_UA.ts
-)
+# Single source of truth for this project's translations: every quickevent-<locale>.ts
+# file in this directory. CONFIGURE_DEPENDS re-runs the glob at build time, so adding
+# a new language is just dropping in a .ts file - no CMake edit, no silently skipped
+# language. OUTPUT_LOCATION emits the compiled .qm next to the quickevent executable
+# (see QE_TRANSLATIONS_OUTPUT_DIR).
+file(GLOB TS_FILES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/quickevent-*.ts")
+set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "${QE_TRANSLATIONS_OUTPUT_DIR}")
+qt6_add_translation(QM_FILES ${TS_FILES})
+qt6_add_lupdate(quickevent TS_FILES ${TS_FILES})
 
 target_sources(quickevent PRIVATE ${QM_FILES})
 target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)

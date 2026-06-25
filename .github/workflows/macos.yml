@@ -23,7 +23,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           cache: true
-          version: 6.10.2
+          version: 6.10.3
           install-deps: false
           modules: qtserialport qtmultimedia
 
@@ -89,7 +89,7 @@ jobs:
             '${{ github.workspace }}/install/quickevent.app'
 
       - name: Upload DMG
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: quickevent-${{ env.VERSION }}.dmg
           path: ${{ github.workspace }}/quickevent-*.dmg

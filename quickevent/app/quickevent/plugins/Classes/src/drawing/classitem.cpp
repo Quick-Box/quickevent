@@ -14,6 +14,7 @@
 #include <QJsonDocument>
 #include <QMimeData>
 #include <QPainter>
+#include <QPainterPath>
 #include <QCursor>
 #include <QGraphicsSceneMouseEvent>
 #include <QWidget>
@@ -69,7 +70,7 @@ ClassItem::ClassItem(QGraphicsItem *parent)
 	m_classdefsText = new QGraphicsTextItem(this);
 	m_classdefsText->setPos(0, 4 * du_px);
 	QRect r;
-	r.setHeight((6 * du_px) + (du_px/2));
+	r.setHeight(ganttScene()->rowHeight());
 	setRect(r);
 
 	setCursor(Qt::ArrowCursor);
@@ -96,6 +97,26 @@ QColor ClassItem::color() const
 	QColor c;
 	c.setHsvF(hue / 100., 1, 1);
 	return c;
+}
+
+int ClassItem::markerWidth() const
+{
+	return qMax(ganttScene()->displayUnit() / 2, 4);
+}
+
+QRectF ClassItem::boundingRect() const
+{
+	QRectF r = Super::boundingRect();
+	if(r.width() < markerWidth())
+		r.setWidth(markerWidth());
+	return r;
+}
+
+QPainterPath ClassItem::shape() const
+{
+	QPainterPath p;
+	p.addRect(boundingRect());
+	return p;
 }
 
 const StartSlotItem *ClassItem::startSlotItem() const
@@ -135,30 +156,23 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	QColor c_free = c_runner;
 	c_free.setAlpha(64);
 	auto r = rect();
+	bool is_zero_width = r.width() < markerWidth();
+	if(is_zero_width) {
+		// paint zero duration classes as a narrow solid flag, see boundingRect()
+		r.setWidth(markerWidth());
+	}
 	QRectF r1 = r;
 	r1.setWidth(minToPx(1));
 	r1.setHeight(r.height() / 8);
 	painter->save();
-	painter->fillRect(r, c_free);
+	painter->fillRect(r, is_zero_width? c_runner: c_free);
 	auto dt = data();
 	int interval = dt.startIntervalMin();
-	for (int i = 0; i < runsAndVacantCount(); ++i) {
+	for (int i = 0; !is_zero_width && i < runsAndVacantCount(); ++i) {
 		r1.moveLeft(minToPx(i * interval));
 		//QColor c = (i == 0)? c_first: c_runner;
 		painter->fillRect(r1, c_runner);
 		painter->drawRect(r1);
-	}
-	if(isSelected()) {
-		painter->save();
-		qreal w = r.height() / 15;
-		QPen p;
-		p.setColor(QColor(Qt::blue).lighter());
-		p.setWidthF(w);
-		painter->setPen(p);
-		w /= 2;
-		QRectF r2 = r.adjusted(w, w, -w, -w);
-		painter->drawRect(r2);
-		painter->restore();
 	}
 	if(clashingClasses().count()) {
 		painter->save();
@@ -169,6 +183,20 @@ void ClassItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 		painter->setPen(p);
 		w /= 2;
 		QRectF r2 = r.adjusted(w, w, -w, -w);
+		painter->drawRect(r2);
+		painter->restore();
+	}
+	if(isSelected()) {
+		painter->save();
+		qreal w = r.height() / 15;
+		QPen p;
+		p.setColor(QColor(Qt::blue).lighter());
+		p.setWidthF(w);
+		painter->setPen(p);
+		w /= 2;
+		// keep the selection visible inside the clash border
+		qreal inset = clashingClasses().count()? 5 * w: w;
+		QRectF r2 = r.adjusted(inset, inset, -inset, -inset);
 		painter->drawRect(r2);
 		painter->restore();
 	}
@@ -219,6 +247,10 @@ void ClassItem::updateGeometry()
 	r.setWidth(minToPx(durationMin()));
 	setRect(r);
 	//setBrush(color());
+	bool has_width = durationMin() > 0;
+	m_classText->setVisible(has_width);
+	m_courseText->setVisible(has_width);
+	m_classdefsText->setVisible(has_width);
 	m_classText->setHtml(QString("<b>%1</b> %2+%3").arg(dt.className()).arg(dt.runsCount()).arg(runsAndVacantCount() - dt.runsCount()));
 	m_courseText->setHtml(QString("<b>%1</b> (%2)").arg(dt.firstCode()).arg(dt.courseId()));
 	dt.setStartTimeMin(pxToMin(pos().x()));
@@ -262,6 +294,7 @@ void ClassItem::updateToolTip()
 		}
 		tool_tip += tr(", clash with: %1<br/>").arg(sl.join(", "));
 	}
+	tool_tip += "<br/><i>" + tr("Drag the class to move it to another slot,<br/>right-click to edit its definition.") + "</i>";
 	tool_tip += "</body></html>";
 	tool_tip.replace(' ', "&nbsp;");
 	setToolTip(tool_tip);
@@ -300,7 +333,7 @@ int gcd(int a, int b)
 }
 }
 
-ClassItem::ClashType ClassItem::clashWith(ClassItem *other)
+ClassItem::ClashType ClassItem::clashWith(ClassItem *other) const
 {
 	qfLogFuncFrame() << data().className() << "vs" << other->data().className();
 	auto dt = data();
@@ -471,7 +504,20 @@ void ClassItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 			dt.setVacantsAfter(doc->value("vacantsAfter").toInt());
 			dt.setMapCount(doc->value("mapCount").toInt());
 			setData(dt);
-			startSlotItem()->updateGeometry();
+			auto *slot_it = startSlotItem();
+			if(slot_it->classItemIndex(this) == 0) {
+				// the edited start time was written to the database by the dialog,
+				// move the whole slot to keep the layout consistent with a reload
+				StartSlotData sd = slot_it->data();
+				sd.setStartOffset(qMax(dt.startTimeMin(), 0));
+				slot_it->setData(sd);
+			}
+			if(slot_it->classItemCount() > 1) {
+				// start times of the classes chained after this one shift with its new size
+				ganttScene()->setDirty(true);
+			}
+			ganttItem()->updateGeometry();
+			ganttItem()->checkClassClash();
 		}
 	}
 }

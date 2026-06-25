@@ -582,8 +582,8 @@ QString RelaysPlugin::resultsIofXml30()
 			event_lst.insert(event_lst.count(), QVariantList{"Id", QVariantMap{{"type", "ORIS"}}, event.value("importId")});
 		event_lst.insert(event_lst.count(), QVariantList{"Name", event.value("name")});
 		event_lst.insert(event_lst.count(), QVariantList{"StartTime",
-				   QVariantList{"Date", event.value("date")},
-				   QVariantList{"Time", event.value("time")}
+				   QVariantList{"Date", start00.date().toString(Qt::ISODate)},
+				   QVariantList{"Time", start00.time().toString(Qt::ISODate)}
 		});
 		event_lst.insert(event_lst.count(),
 			QVariantList{"Official",
@@ -864,8 +864,8 @@ QString RelaysPlugin::startListIofXml30()
 			event_lst.insert(event_lst.count(), QVariantList{"Id", QVariantMap{{"type", "ORIS"}}, event.value("importId")});
 		event_lst.insert(event_lst.count(), QVariantList{"Name", event.value("name")});
 		event_lst.insert(event_lst.count(), QVariantList{"StartTime",
-				   QVariantList{"Date", event.value("date")},
-				   QVariantList{"Time", event.value("time")}
+				   QVariantList{"Date", start00.date().toString(Qt::ISODate)},
+				   QVariantList{"Time", start00.time().toString(Qt::ISODate)}
 		});
 		event_lst.insert(event_lst.count(),
 			QVariantList{"Official",
