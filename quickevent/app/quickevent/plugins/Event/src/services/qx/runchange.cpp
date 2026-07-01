@@ -11,27 +11,23 @@ namespace Event::services::qx {
 // 	return ret;
 // }
 
-LateEntryRecord LateEntryRecord::fromVariantMap(const QVariantMap &map)
+LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
 {
-	LateEntryRecord ret;
+	LateEntry ret;
 
-	if (auto v = map.value("class_name"); v.isValid()) { ret.class_name = v.toString(); }
+	auto id_map = map.value("id").toMap();
+	if (auto id = id_map.value("RunId").toInt(); id > 0) {
+		ret.id = RunId{id};
+	}
+	if (auto id = id_map.value("ClassId").toInt(); id > 0) {
+		ret.id = ClassId{id};
+	}
 	if (auto v = map.value("firstname"); v.isValid()) { ret.first_name = v.toString(); }
 	if (auto v = map.value("lastname"); v.isValid()) { ret.last_name = v.toString(); }
 	if (auto v = map.value("registration"); v.isValid()) { ret.registration = v.toString(); }
 	if (auto v = map.value("siid"); v.isValid()) { ret.si_id = v.toInt(); }
 	// if (auto v = map.value("si_id_rent"); v.isValid()) { ret.si_id_rent = v.toBool(); }
-	ret.note = map.value("note").toString();
-
-	return ret;
-}
-
-LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
-{
-	LateEntry ret;
-
-	ret.record = LateEntryRecord::fromVariantMap(map.value("record").toMap());
-	ret.run_id = map.value("run_id").toInt();
+	if (auto v = map.value("note"); v.isValid()) { ret.note = v.toString(); }
 
 	return ret;
 }
@@ -39,10 +35,10 @@ LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
 QVariantMap OrigRunRecord::toVariantMap() const
 {
 	QVariantMap ret;
-	ret["first_name"] = first_name;
-	ret["last_name"] = last_name;
+	ret["firstname"] = first_name;
+	ret["lastname"] = last_name;
 	ret["registration"] = registration;
-	ret["si_id"] = si_id;
+	ret["siid"] = si_id;
 	return ret;
 }
 
@@ -57,5 +53,3 @@ QxChangeData QxChangeData::fromJson(const QString &json)
 }
 
 } // namespace Event::services::qx
-
-

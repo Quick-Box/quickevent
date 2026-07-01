@@ -317,6 +317,7 @@ CREATE TABLE lentcards (
 CREATE TABLE qxchanges (
 	id integer PRIMARY KEY,
 	stage_id integer,
+	foreign_table character varying,
 	foreign_id integer,
 	data_type character varying,
 	data character varying,
@@ -329,7 +330,7 @@ CREATE TABLE qxchanges (
 );
 CREATE INDEX qxchanges_ix0 ON qxchanges (stage_id, data_type, foreign_id);
 CREATE INDEX qxchanges_ix1 ON qxchanges (stage_id, status);
-CREATE UNIQUE INDEX qxchanges_unique2 ON qxchanges (stage_id, foreign_id) WHERE status = 'Pending' AND data_type = 'LateEntry' AND foreign_id IS NOT NULL;
+CREATE UNIQUE INDEX qxchanges_unique2 ON qxchanges (stage_id, foreign_id) WHERE status = 'Pending' AND data_type = 'LateEntry' AND foreign_table='runs' AND foreign_id IS NOT NULL;
 -- comments not suported for driver: SQLITE
 -- COMMENT ON COLUMN qxchanges.orig_data IS 'Store data overriden by change here to enable change rollback.';
 ;

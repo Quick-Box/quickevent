@@ -36,9 +36,6 @@ constexpr auto COL_USER_ID = "user_id";
 constexpr auto COL_CREATED = "created";
 constexpr auto COL_LOCK_NUMBER = "lock_number";
 
-constexpr auto STATUS_PENDING = "Pending";
-constexpr auto STATUS_LOCKED = "Locked";
-
 QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::QxLateEntriesWidget)
@@ -101,9 +98,7 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 		lst->setCurrentIndex(0);
 		connect(lst, &QComboBox::currentIndexChanged, this, &QxLateEntriesWidget::reload);
 	}
-	connect(ui->chkNull, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
 	connect(ui->chkPending, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
-	connect(ui->chkLocked, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
 	connect(ui->chkAccepted, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
 	connect(ui->chkRejected, &QCheckBox::checkStateChanged, this, &QxLateEntriesWidget::reload);
 
@@ -111,12 +106,8 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 		QSignalBlocker sb1(ui->lstType);
 		ui->lstType->setCurrentIndex(0);
 
-		QSignalBlocker sb2(ui->chkNull);
-		ui->chkNull->setChecked(true);
 		QSignalBlocker sb3(ui->chkPending);
 		ui->chkPending->setChecked(true);
-		QSignalBlocker sb4(ui->chkLocked);
-		ui->chkLocked->setChecked(true);
 		QSignalBlocker sb5(ui->chkAccepted);
 		ui->chkAccepted->setChecked(true);
 		QSignalBlocker sb6(ui->chkRejected);
@@ -185,14 +176,8 @@ void QxLateEntriesWidget::reload()
 			.where("stage_id=" + QString::number(stage_id))
 			.orderBy("id");
 	QStringList status_cond_list;
-	if (ui->chkNull->isChecked()) {
-		status_cond_list << "status IS NULL";
-	}
 	if (ui->chkPending->isChecked()) {
 		status_cond_list << "status='Pending'";
-	}
-	if (ui->chkLocked->isChecked()) {
-		status_cond_list << "status LIKE 'Locked%'";
 	}
 	if (ui->chkAccepted->isChecked()) {
 		status_cond_list << "status='Accepted'";
@@ -252,23 +237,25 @@ void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 {
 	auto row = ix.row();
 	auto status = m_model->value(row, COL_STATUS).toString();
-	if (status == STATUS_PENDING || status == STATUS_LOCKED) {
-		auto data = m_model->value(row, COL_DATA).toString();
-		auto qxdata = QxChangeData::fromJson(data);
-		if (qxdata.lateEntry.has_value()) {
-			auto lock_number = m_model->value(row, COL_LOCK_NUMBER).toInt();
-			auto change_id = m_model->value(row, COL_ID).toInt();
-			LateEntryDialog dlg(change_id, lock_number, qxdata.lateEntry.value(), this);
-			dlg.exec();
-			ui->tableView->reloadRow(row);
-		}
+	auto data = m_model->value(row, COL_DATA).toString();
+	auto qxdata = QxChangeData::fromJson(data);
+	if (qxdata.lateEntry.has_value()) {
+		// auto lock_number = m_model->value(row, COL_LOCK_NUMBER).toInt();
+		auto change_id = m_model->value(row, COL_ID).toInt();
+		LateEntryDialog dlg(change_id, qxdata.lateEntry.value(), status, this);
+		dlg.exec();
+		ui->tableView->reloadRow(row);
 	}
 }
 
 void QxLateEntriesWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
+	if (recchng.table == "qxchanges" && recchng.record.contains("status")) {
+		// status affect filter, cannot be solved by applyQxRecChng
+		m_model->reload();
+		return;
+	}
 	m_model->applyQxRecChng(recchng, source);
 }
 
 }
-

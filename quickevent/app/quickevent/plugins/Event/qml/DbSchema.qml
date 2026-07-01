@@ -494,7 +494,7 @@ Schema {
 			fields: [
 				Field { name: 'id'; type: Serial { primaryKey: true } },
 				Field { name: 'stage_id'; type: Int { } },
-				// Field { name: 'foreign_table'; type: String { } },
+				Field { name: 'foreign_table'; type: String { } },
 				Field { name: 'foreign_id'; type: Int { } },
 				Field { name: 'data_type'; type: String { } },
 				Field { name: 'data'; type: String { } },
@@ -514,7 +514,8 @@ Schema {
 				Index {fields: ['stage_id', 'data_type', 'foreign_id']; unique: false },
 				Index {fields: ['stage_id', 'status']; unique: false },
 				Index {fields: ['stage_id', 'foreign_id']
-					where: "status = 'Pending' AND data_type = 'LateEntry' AND foreign_id IS NOT NULL"
+					// The WHERE clause means the index only contains rows that satisfy where condition
+					where: "status = 'Pending' AND data_type = 'LateEntry' AND foreign_table='runs' AND foreign_id IS NOT NULL"
 					comment: 'Only one pending late entry can be present for single runs.id (foreign_id).'
 					unique: true
 				}

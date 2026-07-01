@@ -4,30 +4,29 @@
 #include <QVariant>
 #include <QDateTime>
 
+#include <optional>
+#include <variant>
+
 namespace Event::services::qx {
 
 constexpr auto DATA_TYPE_LATE_ENTRY = "LateEntry";
 
-struct LateEntryRecord
+struct RunId { int id = 0; };
+struct ClassId { int id = 0; };
+
+using LateEntryId = std::variant<RunId, ClassId>;
+
+struct LateEntry
 {
-	std::optional<QString> class_name;
+	LateEntryId id = RunId{};
 	std::optional<QString> first_name;
 	std::optional<QString> last_name;
 	std::optional<QString> registration;
 	std::optional<int> si_id;
 	// std::optional<bool> si_id_rent;
-	QString note;
+	std::optional<QString> note;
 
-	// static LateEntryRecord fromJsonString(const QString &json);
-	static LateEntryRecord fromVariantMap(const QVariantMap &map);
-};
-
-struct LateEntry
-{
-	int run_id = 0;
-	LateEntryRecord record;
-
-	// static LateEntryRecord fromJsonString(const QString &json);
+	// static LateEntry fromJsonString(const QString &json);
 	static LateEntry fromVariantMap(const QVariantMap &map);
 };
 
@@ -92,6 +91,3 @@ struct EventChange
 // };
 
 } // namespace Event::services::qx
-
-
-

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>712</width>
-    <height>569</height>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -81,35 +81,6 @@
      </item>
      <item>
       <widget class="QSpinBox" name="edChangeId">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="specialValueText">
-        <string>None</string>
-       </property>
-       <property name="maximum">
-        <number>999999999</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Lock number</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QSpinBox" name="edLockNumber">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -382,7 +353,6 @@
   <tabstop>edClassName</tabstop>
   <tabstop>edRunId</tabstop>
   <tabstop>edChangeId</tabstop>
-  <tabstop>edLockNumber</tabstop>
   <tabstop>grpFirstName</tabstop>
   <tabstop>edFirstNameOrig</tabstop>
   <tabstop>edFirstName</tabstop>

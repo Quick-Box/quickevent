@@ -88,13 +88,6 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QCheckBox" name="chkLocked">
-          <property name="text">
-           <string>Locked</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QCheckBox" name="chkAccepted">
           <property name="text">
            <string>Accepted</string>
@@ -105,13 +98,6 @@
          <widget class="QCheckBox" name="chkRejected">
           <property name="text">
            <string>Rejected</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="chkNull">
-          <property name="text">
-           <string>Null</string>
           </property>
          </widget>
         </item>

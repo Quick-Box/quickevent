@@ -13,34 +13,40 @@ namespace Ui {
 class LateEntryDialog;
 }
 
-struct LateEntryRecord;
+struct LateEntry;
 class QxEventService;
+
+enum class LateEntryStatus {Pending, Accepted, Rejected};
 
 class LateEntryDialog : public QDialog
 {
 	Q_OBJECT
-
+	using Super = QDialog;
 public:
-	explicit LateEntryDialog(int change_id, int lock_number, const LateEntry &late_entry, QWidget *parent = nullptr);
+	explicit LateEntryDialog(int change_id, const LateEntry &late_entry, const QString &status, QWidget *parent = nullptr);
 	~LateEntryDialog() override;
 
+	void done(int result) override;
 private:
+	std::optional<int> runId() const;
 	QxEventService* service();
 	void setMessage(const QString &msg, bool error);
 
-	void loadOrigValues();
-	void loadClassId();
+	void loadOrigValues(int run_id);
+	// void loadClassId();
 
 	void lockChange();
+	void unlockChange() const;
+	void updateButtonsEnabled();
 
-	void resolveChanges(bool is_accepted);
+	void resolveChangesAndClose(bool is_accepted);
 private:
 	Ui::LateEntryDialog *ui;
 	int m_changeId = 0;
-	int m_runId = 0;
+	LateEntryId m_lateEntryId = RunId{};
 	int m_competitorId = 0;
-	int m_classId = 0;
 	int m_lockNumber = 0;
+	LateEntryStatus m_status = LateEntryStatus::Rejected;
 	OrigRunRecord m_origValues;
 };
 
