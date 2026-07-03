@@ -41,7 +41,7 @@ LateEntryStatus lateEntryStatusFromString(const QString &status)
 
 } // namespace
 
-LateEntryDialog::LateEntryDialog(int change_id, const LateEntry &late_entry, const QString &status, QWidget *parent)
+LateEntryDialog::LateEntryDialog(int change_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::LateEntryDialog)
 	, m_changeId(change_id)
@@ -49,6 +49,8 @@ LateEntryDialog::LateEntryDialog(int change_id, const LateEntry &late_entry, con
 	, m_status(lateEntryStatusFromString(status))
 {
 	ui->setupUi(this);
+
+	ui->edStatusMessage->setPlainText(status_message);
 
 	ui->btAccept->setDisabled(true);
 	ui->btReject->setDisabled(true);
@@ -64,6 +66,7 @@ LateEntryDialog::LateEntryDialog(int change_id, const LateEntry &late_entry, con
 		resolveChangesAndClose(false);
 		done(QDialog::Accepted);
 	});
+	connect(ui->btSendMessage, &QPushButton::clicked, this, &LateEntryDialog::updateQxChangeMessage);
 
 	ui->edNote->setText(late_entry.note.value_or(QString()));
 
@@ -102,6 +105,10 @@ LateEntryDialog::LateEntryDialog(int change_id, const LateEntry &late_entry, con
 		auto id = run_id->id;
 		ui->edRunId->setValue(id);
 		loadOrigValues(id);
+	}
+	else if (auto *id = std::get_if<ClassId>(&late_entry.id)) {
+		auto class_id = id->id;
+		loadClassName(class_id);
 	}
 	lockChange();
 }
@@ -162,30 +169,22 @@ void LateEntryDialog::loadOrigValues(int run_id)
 	ui->edSiCardOrig->setValue(m_origValues.si_id);
 }
 
-// void LateEntryDialog::loadClassId()
-// {
-// 	auto class_name = ui->edClassName->text();
-// 	if (class_name.isEmpty()) {
-// 		return;
-// 	}
-// 	qf::core::sql::Query q;
-// 	q.execThrow(QStringLiteral("SELECT id"
-// 							   " FROM classes"
-// 							   " WHERE name='%1'")
-// 				.arg(class_name)
-// 				);
-// 	if (q.next()) {
-// 		m_classId = q.value("id").toInt();
-// 	}
-// }
+void LateEntryDialog::loadClassName(int class_id)
+{
+	qf::core::sql::Query q;
+	q.execThrow(QStringLiteral("SELECT name FROM classes WHERE id=%1")
+				.arg(class_id) );
+	if (q.next()) {
+		ui->edClassName->setText(q.value(0).toString());
+	}
+}
 
 void LateEntryDialog::unlockChange() const
 {
 	if (m_lockNumber > 0 || ui->chkForce->isChecked()) {
 		qf::core::sql::Query q;
 		q.execThrow(QStringLiteral("UPDATE qxchanges SET lock_number=NULL WHERE id=%1")
-					.arg(m_changeId)
-					);
+					.arg(m_changeId) );
 	}
 }
 
@@ -275,15 +274,12 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 	using namespace qf::gui::model;
 
 	if (is_accepted) {
-		bool is_insert = !runId().has_value();
-		if (is_insert) {
-			qfError() << "insert not implemented yet";
-			return;
-		}
+		auto class_id = classId();
+		bool is_insert = class_id.has_value();
 		Competitors::CompetitorDocument doc;
 		doc.load(m_competitorId, is_insert? DataDocument::ModeInsert: DataDocument::ModeEdit);
 		if (is_insert) {
-			// doc.setValue("classId", m_classId);
+			doc.setValue("classId", class_id.value());
 		}
 		if (ui->grpFirstName->isChecked()) {
 			doc.setValue("firstName", ui->edFirstName->text());
@@ -298,11 +294,11 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 			if (is_insert) {
 				doc.setValue("siId", ui->edSiCard->value());
 			}
-			else {
+			else if (auto run_id = runId(); run_id.has_value()) {
 				qf::core::sql::Record rec {
 					{ "siId", ui->edSiCard->value() },
 				};
-				qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", runId().value(), rec, this);
+				qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", run_id.value(), rec, this);
 			}
 		}
 		doc.save();
@@ -310,7 +306,16 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 
 	qf::core::sql::Record rec {
 		{"status", is_accepted? "Accepted": "Rejected"},
-			{"orig_data", qf::core::Utils::qvariantToJson(is_accepted? m_origValues.toVariantMap(): QVariantMap{})},
+		{"status_message", ui->edStatusMessage->toPlainText()},
+		{"orig_data", qf::core::Utils::qvariantToJson(is_accepted? m_origValues.toVariantMap(): QVariantMap{})},
+	};
+	qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
+}
+
+void LateEntryDialog::updateQxChangeMessage()
+{
+	qf::core::sql::Record rec {
+		{ "status_message", ui->edStatusMessage->toPlainText() },
 	};
 	qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
 }
@@ -324,6 +329,14 @@ void LateEntryDialog::done(int result)
 std::optional<int> LateEntryDialog::runId() const
 {
 	if (auto *id = std::get_if<RunId>(&m_lateEntryId)) {
+		return id->id;
+	}
+	return std::nullopt;
+}
+
+std::optional<int> LateEntryDialog::classId() const
+{
+	if (auto *id = std::get_if<ClassId>(&m_lateEntryId)) {
 		return id->id;
 	}
 	return std::nullopt;

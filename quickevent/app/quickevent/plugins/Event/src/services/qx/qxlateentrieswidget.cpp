@@ -28,6 +28,7 @@ namespace Event::services::qx {
 constexpr auto COL_ID = "id";
 constexpr auto COL_DATA_TYPE = "data_type";
 constexpr auto COL_FOREIGN_ID = "foreign_id";
+constexpr auto COL_FOREIGN_TABLE = "foreign_table";
 constexpr auto COL_DATA = "data";
 constexpr auto COL_ORIG_DATA = "orig_data";
 constexpr auto COL_STATUS = "status";
@@ -59,6 +60,7 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	m_model->addColumn(COL_ID).setReadOnly(true).setAlignment(Qt::AlignLeft);
 	m_model->addColumn(COL_STATUS, tr("Status"));
 	m_model->addColumn(COL_DATA_TYPE, tr("Type"));
+	m_model->addColumn(COL_FOREIGN_TABLE, tr("Foreign table"));
 	m_model->addColumn(COL_FOREIGN_ID, tr("Foreign ID")).setAlignment(Qt::AlignLeft);
 	m_model->addColumn(COL_USER_ID, tr("User"));
 	m_model->addColumn(COL_STATUS_MESSAGE, tr("Status message"));
@@ -237,12 +239,13 @@ void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 {
 	auto row = ix.row();
 	auto status = m_model->value(row, COL_STATUS).toString();
+	auto status_message = m_model->value(row, COL_STATUS_MESSAGE).toString();
 	auto data = m_model->value(row, COL_DATA).toString();
 	auto qxdata = QxChangeData::fromJson(data);
 	if (qxdata.lateEntry.has_value()) {
 		// auto lock_number = m_model->value(row, COL_LOCK_NUMBER).toInt();
 		auto change_id = m_model->value(row, COL_ID).toInt();
-		LateEntryDialog dlg(change_id, qxdata.lateEntry.value(), status, this);
+		LateEntryDialog dlg(change_id, qxdata.lateEntry.value(), status, status_message, this);
 		dlg.exec();
 		ui->tableView->reloadRow(row);
 	}

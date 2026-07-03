@@ -14,11 +14,11 @@ constexpr auto DATA_TYPE_LATE_ENTRY = "LateEntry";
 struct RunId { int id = 0; };
 struct ClassId { int id = 0; };
 
-using LateEntryId = std::variant<RunId, ClassId>;
+using LateEntryForeignId = std::variant<RunId, ClassId>;
 
 struct LateEntry
 {
-	LateEntryId id = RunId{};
+	LateEntryForeignId id = RunId{};
 	std::optional<QString> first_name;
 	std::optional<QString> last_name;
 	std::optional<QString> registration;
