@@ -83,11 +83,13 @@ void QxEventService::run() {
 
 	m_rpcConnection = new DeviceConnection("QuickEvent", this);
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
-	RpcValue::Map opts;
-	RpcValue::Map device;
-	device["deviceId"] = api_token.toStdString();
-	opts["device"] = device;
-	m_rpcConnection->setConnectionOptions(opts);
+	if (ss.isExportDatabase()) {
+		RpcValue::Map opts;
+		RpcValue::Map device;
+		device["deviceId"] = api_token.toStdString();
+		opts["device"] = device;
+		m_rpcConnection->setConnectionOptions(opts);
+	}
 
 	connect(m_rpcConnection, &ClientConnection::brokerConnectedChanged, this, &QxEventService::onBrokerConnectedChanged);
 	connect(m_rpcConnection, &ClientConnection::socketError, this, &QxEventService::onBrokerSocketError);

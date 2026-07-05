@@ -6,6 +6,7 @@
 #include "runchange.h"
 
 #include <plugins/Event/src/eventplugin.h>
+#include <plugins/Runs/src/runswidget.h>
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/application.h>
@@ -17,6 +18,7 @@
 
 #include <QMenu>
 #include <QJsonDocument>
+#include <qmessagebox.h>
 
 namespace qfm = qf::gui::model;
 namespace qfs = qf::core::sql;
@@ -25,7 +27,25 @@ using qf::gui::framework::getPlugin;
 
 namespace Event::services::qx {
 
+namespace {
+enum Columns {
+	col_id = 0,
+	col_stage_id,
+	col_data_type,
+	col_foreign_id,
+	col_foreign_table,
+	col_data,
+	col_orig_data,
+	col_status,
+	col_status_message,
+	col_user_id,
+	col_created,
+	col_lock_number,
+	col_COUNT
+};
+
 constexpr auto COL_ID = "id";
+constexpr auto COL_STAGE_ID = "stage_id";
 constexpr auto COL_DATA_TYPE = "data_type";
 constexpr auto COL_FOREIGN_ID = "foreign_id";
 constexpr auto COL_FOREIGN_TABLE = "foreign_table";
@@ -36,6 +56,7 @@ constexpr auto COL_STATUS_MESSAGE = "status_message";
 constexpr auto COL_USER_ID = "user_id";
 constexpr auto COL_CREATED = "created";
 constexpr auto COL_LOCK_NUMBER = "lock_number";
+} // namespace
 
 QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	QWidget(parent),
@@ -57,18 +78,23 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	ui->toolbar->setTableView(ui->tableView);
 	m_model = new qfm::SqlTableModel(this);
 	//m->setObjectName("classes.classesModel");
-	m_model->addColumn(COL_ID).setReadOnly(true).setAlignment(Qt::AlignLeft);
-	m_model->addColumn(COL_STATUS, tr("Status"));
-	m_model->addColumn(COL_DATA_TYPE, tr("Type"));
-	m_model->addColumn(COL_FOREIGN_TABLE, tr("Foreign table"));
-	m_model->addColumn(COL_FOREIGN_ID, tr("Foreign ID")).setAlignment(Qt::AlignLeft);
-	m_model->addColumn(COL_USER_ID, tr("User"));
-	m_model->addColumn(COL_STATUS_MESSAGE, tr("Status message"));
-	m_model->addColumn(COL_CREATED, tr("Created"));
-	m_model->addColumn(COL_LOCK_NUMBER, tr("Lock"));
-	m_model->addColumn(COL_DATA, tr("Data"));//.setToolTip(tr("Locked for drawing"));
-	m_model->addColumn(COL_ORIG_DATA, tr("Orig data"));//.setToolTip(tr("Locked for drawing"));
+
+	m_model->clearColumns(col_COUNT);
+	m_model->setColumn(col_id, qf::gui::model::TableModel::ColumnDefinition(COL_ID).setReadOnly(true).setAlignment(Qt::AlignRight));
+	m_model->setColumn(col_stage_id, qf::gui::model::TableModel::ColumnDefinition(COL_STAGE_ID).setReadOnly(true).setAlignment(Qt::AlignRight));
+	m_model->setColumn(col_data_type, qf::gui::model::SqlTableModel::ColumnDefinition(COL_DATA_TYPE).setReadOnly(true));
+	m_model->setColumn(col_foreign_id, qf::gui::model::SqlTableModel::ColumnDefinition(COL_FOREIGN_ID).setReadOnly(true).setAlignment(Qt::AlignRight));
+	m_model->setColumn(col_foreign_table, qf::gui::model::SqlTableModel::ColumnDefinition(COL_FOREIGN_TABLE).setReadOnly(true));
+	m_model->setColumn(col_data, qf::gui::model::SqlTableModel::ColumnDefinition(COL_DATA).setReadOnly(true));
+	m_model->setColumn(col_orig_data, qf::gui::model::SqlTableModel::ColumnDefinition(COL_ORIG_DATA).setReadOnly(true));
+	m_model->setColumn(col_status, qf::gui::model::SqlTableModel::ColumnDefinition(COL_STATUS).setReadOnly(true));
+	m_model->setColumn(col_status_message, qf::gui::model::SqlTableModel::ColumnDefinition(COL_STATUS_MESSAGE).setReadOnly(true));
+	m_model->setColumn(col_user_id, qf::gui::model::SqlTableModel::ColumnDefinition(COL_USER_ID).setReadOnly(true));
+	m_model->setColumn(col_created, qf::gui::model::SqlTableModel::ColumnDefinition(COL_CREATED).setReadOnly(true));
+	m_model->setColumn(col_lock_number, qf::gui::model::SqlTableModel::ColumnDefinition(COL_LOCK_NUMBER).setReadOnly(true));
 	ui->tableView->setTableModel(m_model);
+
+	ui->tableView->setColumnHidden(col_stage_id, true);
 
 	showMessage(tr("QxEvent service is disabled"), true);
 	setEnabled(false);
@@ -226,26 +252,40 @@ void QxLateEntriesWidget::applyQxChange(int sql_id)
 
 void QxLateEntriesWidget::onTableCustomContextMenuRequest(const QPoint &pos)
 {
-	QAction a_neco(tr("Neco"), nullptr);
+	QAction a_edit_competitor(tr("Edit competitor"), nullptr);
 	QList<QAction*> lst;
-	lst << &a_neco;
+	lst << &a_edit_competitor;
 	QAction *a = QMenu::exec(lst, ui->tableView->viewport()->mapToGlobal(pos));
-	if(a == &a_neco) {
-		//printSelectedCards();
+	if(a == &a_edit_competitor) {
+		if (auto ix = ui->tableView->indexAt(pos); ix.isValid()) {
+			if (auto t = ix.sibling(ix.row(), col_foreign_table).data().toString(); t == "runs") {
+				auto run_id = ix.sibling(ix.row(), col_foreign_id).data().toInt();
+				qf::core::sql::Query q;
+				q.execThrow(QStringLiteral("SELECT competitorId FROM runs WHERE id=%1")
+							.arg(run_id)
+							);
+				if (q.next()) {
+					auto competitor_id = q.value(0).toInt();
+					RunsWidget::showEditCompetitorDialog(competitor_id, this);
+					return;
+				}
+			}
+		}
+		QMessageBox::information(this, tr("Edit competitor"), tr("No competitor found for this run."));
 	}
 }
 
 void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 {
 	auto row = ix.row();
-	auto status = m_model->value(row, COL_STATUS).toString();
-	auto status_message = m_model->value(row, COL_STATUS_MESSAGE).toString();
 	auto data = m_model->value(row, COL_DATA).toString();
 	auto qxdata = QxChangeData::fromJson(data);
 	if (qxdata.lateEntry.has_value()) {
-		// auto lock_number = m_model->value(row, COL_LOCK_NUMBER).toInt();
+		auto status = m_model->value(row, COL_STATUS).toString();
+		auto status_message = m_model->value(row, COL_STATUS_MESSAGE).toString();
 		auto change_id = m_model->value(row, COL_ID).toInt();
-		LateEntryDialog dlg(change_id, qxdata.lateEntry.value(), status, status_message, this);
+		auto stage_id = m_model->value(row, COL_STAGE_ID).toInt();
+		LateEntryDialog dlg(change_id, stage_id, qxdata.lateEntry.value(), status, status_message, this);
 		dlg.exec();
 		ui->tableView->reloadRow(row);
 	}

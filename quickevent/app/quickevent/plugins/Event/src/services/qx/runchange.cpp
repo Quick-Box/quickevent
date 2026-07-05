@@ -25,6 +25,7 @@ LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
 	if (auto v = map.value("firstname"); v.isValid()) { ret.first_name = v.toString(); }
 	if (auto v = map.value("lastname"); v.isValid()) { ret.last_name = v.toString(); }
 	if (auto v = map.value("registration"); v.isValid()) { ret.registration = v.toString(); }
+	if (auto v = map.value("starttimems"); v.isValid()) { ret.start_time_ms = v.toInt(); }
 	if (auto v = map.value("siid"); v.isValid()) { ret.si_id = v.toInt(); }
 	// if (auto v = map.value("si_id_rent"); v.isValid()) { ret.si_id_rent = v.toBool(); }
 	if (auto v = map.value("note"); v.isValid()) { ret.note = v.toString(); }
@@ -39,6 +40,7 @@ QVariantMap OrigRunRecord::toVariantMap() const
 	ret["lastname"] = last_name;
 	ret["registration"] = registration;
 	ret["siid"] = si_id;
+	ret["starttimems"] = start_time_ms;
 	return ret;
 }
 

@@ -19,6 +19,8 @@ public:
 	void setSiid(const QVariant &siid);
 	QVariant siid() const;
 	const QVector<int>& runsIds() const {return m_runsIds;}
+
+	static QList<int> possibleStartTimesMs(int run_id);
 protected:
 	bool loadData() override;
 	bool saveData() override;

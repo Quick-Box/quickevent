@@ -30,8 +30,6 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 {
 	setPersistentSettingsId("QxEventServiceWidget");
 	ui->setupUi(this);
-	connect(ui->edServerUrl, &QLineEdit::textChanged, this, &QxEventServiceWidget::updateOCheckListPostUrl);
-	connect(ui->edApiToken, &QLineEdit::textChanged, this, &QxEventServiceWidget::updateOCheckListPostUrl);
 
 	setMessage("");
 
@@ -41,6 +39,7 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	auto current_stage = event_plugin->currentStageId();
 	auto settings = svc->settings();
 	ui->edServerUrl->setText(settings.shvBrokerUrl());
+	ui->chkExportDatabase->setChecked(settings.isExportDatabase());
 	ui->edApiToken->setText(svc->apiToken());
 	ui->edCurrentStage->setValue(current_stage);
 	ui->edEventId->setValue(svc->eventId());
@@ -99,6 +98,7 @@ bool QxEventServiceWidget::saveSettings()
 	if(svc) {
 		auto ss = svc->settings();
 		ss.setShvBrokerUrl(ui->edServerUrl->text());
+		ss.setExportDatabase(ui->chkExportDatabase->isChecked());
 		svc->setSettings(ss);
 		auto *event_plugin = getPlugin<EventPlugin>();
 
@@ -108,13 +108,6 @@ bool QxEventServiceWidget::saveSettings()
 		event_plugin->setStageData(current_stage, stage_data);
 	}
 	return true;
-}
-
-void QxEventServiceWidget::updateOCheckListPostUrl()
-{
-	auto url = QStringLiteral("%1/api/event/current/oc").arg(ui->edServerUrl->text());
-	ui->edOChecklistUrl->setText(url);
-	ui->edOChecklistUrlHeader->setText(QStringLiteral("qx-api-token=%1").arg(ui->edApiToken->text()));
 }
 
 void QxEventServiceWidget::testConnection()

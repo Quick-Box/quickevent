@@ -16,30 +16,23 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="toolTip">
+        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
+       </property>
        <property name="text">
-        <string>SHV broker url</string>
+        <string>Event ID</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="edServerUrl"/>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="toolTip">
-        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
-       </property>
-       <property name="text">
-        <string>API token</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="edApiToken"/>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_6">
        <property name="toolTip">
         <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
@@ -49,7 +42,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QSpinBox" name="edCurrentStage">
        <property name="enabled">
         <bool>false</bool>
@@ -65,17 +58,14 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="toolTip">
-        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
-       </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Event ID</string>
+        <string>SHV broker url</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QSpinBox" name="edEventId">
        <property name="enabled">
         <bool>false</bool>
@@ -94,37 +84,20 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_3">
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
        <property name="toolTip">
         <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
        </property>
        <property name="text">
-        <string>OCheckList Url</string>
+        <string>API token</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="edOChecklistUrl">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="toolTip">
-        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
-       </property>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="chkExportDatabase">
        <property name="text">
-        <string>Header</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLineEdit" name="edOChecklistUrlHeader">
-       <property name="readOnly">
-        <bool>true</bool>
+        <string>Export database</string>
        </property>
       </widget>
      </item>
@@ -147,6 +120,9 @@
      </item>
      <item row="0" column="2">
       <widget class="QPushButton" name="btExportEventInfo">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Export event info</string>
        </property>
@@ -161,6 +137,9 @@
      </item>
      <item row="1" column="1">
       <widget class="QPushButton" name="btExportStartList">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Export start list</string>
        </property>
@@ -168,6 +147,9 @@
      </item>
      <item row="1" column="2">
       <widget class="QPushButton" name="btExportRuns">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Export runs</string>
        </property>
@@ -202,7 +184,6 @@
  </widget>
  <tabstops>
   <tabstop>edServerUrl</tabstop>
-  <tabstop>edOChecklistUrl</tabstop>
  </tabstops>
  <resources/>
  <connections/>

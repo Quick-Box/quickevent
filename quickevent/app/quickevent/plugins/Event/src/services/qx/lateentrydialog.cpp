@@ -6,6 +6,8 @@
 
 #include <plugins/Competitors/src/competitordocument.h>
 
+#include <quickevent/core/og/timems.h>
+
 #include <qf/gui/framework/application.h>
 #include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/query.h>
@@ -19,6 +21,8 @@
 #include <QMessageBox>
 #include <QSpinBox>
 #include <variant>
+
+using namespace quickevent::core::og;
 
 namespace Event::services::qx {
 
@@ -41,13 +45,16 @@ LateEntryStatus lateEntryStatusFromString(const QString &status)
 
 } // namespace
 
-LateEntryDialog::LateEntryDialog(int change_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent)
+LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::LateEntryDialog)
 	, m_changeId(change_id)
+	, m_stageId(stage_id)
 	, m_lateEntryId(late_entry.id)
 	, m_status(lateEntryStatusFromString(status))
 {
+	Q_ASSERT(change_id > 0);
+
 	ui->setupUi(this);
 
 	ui->edStatusMessage->setPlainText(status_message);
@@ -101,10 +108,17 @@ LateEntryDialog::LateEntryDialog(int change_id, const LateEntry &late_entry, con
 	ui->edSiCard->setValue(late_entry.si_id.value_or(0));
 	update_background(ui->edSiCard);
 
+	ui->grpStartTime->setChecked(late_entry.start_time_ms.has_value());
+	ui->edStartTime->setText(TimeMs(late_entry.start_time_ms.value_or(0)).toString());
+	update_background(ui->edStartTime);
+
+	connect(ui->edStartTime, &QLineEdit::textEdited, this, &LateEntryDialog::checkStartTimeIsValid);
+
 	if (auto *run_id = std::get_if<RunId>(&late_entry.id)) {
 		auto id = run_id->id;
 		ui->edRunId->setValue(id);
 		loadOrigValues(id);
+		checkStartTimeIsValid();
 	}
 	else if (auto *id = std::get_if<ClassId>(&late_entry.id)) {
 		auto class_id = id->id;
@@ -161,11 +175,23 @@ void LateEntryDialog::loadOrigValues(int run_id)
 	m_origValues.first_name = doc.value("firstName").toString();
 	m_origValues.last_name = doc.value("lastName").toString();
 	m_origValues.registration = doc.value("registration").toString();
+	{
+		qf::core::sql::Query q;
+		q.execThrow(QStringLiteral("SELECT startTimeMs"
+								   " FROM runs"
+								   " WHERE id=%1")
+					.arg(run_id)
+					);
+		if (q.next()) {
+			m_origValues.start_time_ms = q.value("startTimeMs").toInt();
+		}
+	}
 	m_origValues.si_id = doc.value("siId").toInt();
 
 	ui->edFirstNameOrig->setText(m_origValues.first_name);
 	ui->edLastNameOrig->setText(m_origValues.last_name);
 	ui->edRegistrationOrig->setText(m_origValues.registration);
+	ui->edStartTimeOrig->setText(TimeMs(m_origValues.start_time_ms).toString());
 	ui->edSiCardOrig->setValue(m_origValues.si_id);
 }
 
@@ -204,63 +230,6 @@ void LateEntryDialog::lockChange()
 		m_lockNumber = lock_number;
 	}
 	updateButtonsEnabled();
-
-	// NIY
-	// auto *svc = service();
-	// auto *nm = svc->networkManager();
-
-	// auto path = QStringLiteral("/api/event/%1/changes").arg(svc->eventId());
-	// QUrlQuery query;
-	// query.addQueryItem("from_id", QString::number(m_changeId));
-	// query.addQueryItem("limit", QString::number(1));
-	// svc->getHttpJson(path, query, this, [this](auto data, auto error) {
-	// 	if (!error.isEmpty()) {
-	// 		setMessage(error, true);
-	// 		return;
-	// 	}
-	// 	auto rec = data.toList().value(0).toMap();
-	// });
-
-
-	// QNetworkRequest request;
-	// auto url = svc->exchangeServerUrl();
-	// // qfInfo() << "url " << url.toString();
-	// url.setPath("/api/event/current/changes/lock-change");
-
-	// QUrlQuery query;
-	// query.addQueryItem("change_id", QString::number(m_changeId));
-	// auto connection_id = QxClientService::currentConnectionId();
-	// query.addQueryItem("lock_number", QString::number(connection_id));
-	// url.setQuery(query);
-	// qfInfo() << "GET " << url.toString();
-
-	// request.setUrl(url);
-	// request.setRawHeader(QxClientService::QX_API_TOKEN, svc->apiToken());
-	// auto *reply = nm->get(request);
-	// connect(reply, &QNetworkReply::finished, this, [this, reply, connection_id]() {
-	// 	auto data = reply->readAll();
-	// 	if (reply->error() == QNetworkReply::NetworkError::NoError) {
-	// 		m_lockNumber = data.toInt();
-	// 		ui->edLockNumber->setValue(m_lockNumber);
-	// 		if (m_lockNumber == connection_id) {
-	// 			ui->btAccept->setDisabled(false);
-	// 			ui->btReject->setDisabled(false);
-
-	// 			qf::core::sql::Query q;
-	// 			q.execThrow(QStringLiteral("UPDATE qxchanges SET lock_number=%1, status='Locked' WHERE id=%2")
-	// 						.arg(connection_id)
-	// 						.arg(m_changeId)
-	// 						);
-	// 		}
-	// 		else {
-	// 			setMessage(tr("Change is locked already by other client: %1, current client id:.%2").arg(m_lockNumber).arg(connection_id), false);
-	// 		}
-	// 	}
-	// 	else {
-	// 		setMessage(tr("Lock change error: %1\n%2").arg(reply->errorString()).arg(QString::fromUtf8(data)), true);
-	// 	}
-	// 	reply->deleteLater();
-	// });
 }
 
 void LateEntryDialog::updateButtonsEnabled()
@@ -294,14 +263,33 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 			if (is_insert) {
 				doc.setValue("siId", ui->edSiCard->value());
 			}
-			else if (auto run_id = runId(); run_id.has_value()) {
-				qf::core::sql::Record rec {
-					{ "siId", ui->edSiCard->value() },
-				};
-				qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", run_id.value(), rec, this);
-			}
 		}
 		doc.save();
+
+		qf::core::sql::Record rec;
+		if (ui->grpSiCard->isChecked()) {
+			rec["siId"] = ui->edSiCard->value();
+		}
+		if (ui->grpStartTime->isChecked()) {
+			rec["starttimems"] = TimeMs::fromString(ui->edStartTime->text()).msec();
+		}
+		if (!rec.isEmpty()) {
+			auto competitor_id = doc.value("id").toInt();
+			Q_ASSERT(competitor_id > 0);
+			int run_id = 0;
+			{
+				qf::core::sql::Query q;
+				q.execThrow(QStringLiteral("SELECT id FROM runs WHERE competitorId=%1 AND stageId=%2")
+							.arg(competitor_id)
+							.arg(m_stageId)
+							);
+				if (q.next()) {
+					run_id = q.value(0).toInt();
+				}
+			}
+			Q_ASSERT(run_id > 0);
+			qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", run_id, rec, this);
+		}
 	}
 
 	qf::core::sql::Record rec {
@@ -318,6 +306,21 @@ void LateEntryDialog::updateQxChangeMessage()
 		{ "status_message", ui->edStatusMessage->toPlainText() },
 	};
 	qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
+}
+
+void LateEntryDialog::checkStartTimeIsValid()
+{
+	if (auto run_id = runId(); run_id.has_value()) {
+		auto stime = TimeMs::fromString(ui->edStartTime->text());
+		if (stime.isValid()) {
+			auto possible_stimes = Competitors::CompetitorDocument::possibleStartTimesMs(run_id.value());
+			if (possible_stimes.contains(stime.msec())) {
+				ui->edStartTime->setStyleSheet({});
+			} else {
+				ui->edStartTime->setStyleSheet("background: red");
+			}
+		}
+	}
 }
 
 void LateEntryDialog::done(int result)

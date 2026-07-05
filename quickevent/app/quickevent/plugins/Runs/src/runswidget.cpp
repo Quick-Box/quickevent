@@ -1230,6 +1230,18 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 	}
 }
 
+void RunsWidget::showEditCompetitorDialog(int competitor_id, QWidget *parent)
+{
+	auto *w = new CompetitorWidget();
+	w->setWindowTitle(tr("Edit Competitor"));
+	qfd::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, parent);
+	dlg.setDefaultButton(QDialogButtonBox::Ok);
+
+	dlg.setCentralWidget(w);
+	w->load(competitor_id, qf::gui::model::DataDocument::ModeEdit);
+	dlg.exec();
+}
+
 void RunsWidget::updateClassComboBox()
 {
 	m_cbxClasses->blockSignals(true);

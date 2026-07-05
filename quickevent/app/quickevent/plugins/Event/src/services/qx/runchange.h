@@ -23,6 +23,7 @@ struct LateEntry
 	std::optional<QString> last_name;
 	std::optional<QString> registration;
 	std::optional<int> si_id;
+	std::optional<int> start_time_ms;
 	// std::optional<bool> si_id_rent;
 	std::optional<QString> note;
 
@@ -42,7 +43,8 @@ struct OrigRunRecord
 	QString first_name;
 	QString last_name;
 	QString registration;
-	int si_id;
+	int start_time_ms = 0;
+	int si_id = 0;
 	// bool si_id_rent;
 
 	QVariantMap toVariantMap() const;

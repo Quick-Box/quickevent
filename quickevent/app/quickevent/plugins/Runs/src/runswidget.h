@@ -51,6 +51,7 @@ public:
 	void export_results_stage_csv();
 
 public:
+	static void showEditCompetitorDialog(int competitor_id, QWidget *parent);
 	void editCompetitor(const QVariant &id, int mode) {editCompetitor_helper(id, mode, 0);}
 	void editCompetitors(int mode);
 	void editCompetitorOnPunch(int siid);
