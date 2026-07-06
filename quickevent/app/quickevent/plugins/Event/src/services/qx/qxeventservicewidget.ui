@@ -15,53 +15,56 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QGroupBox" name="grpShvConnection">
+     <property name="title">
+      <string>SHV broker connection</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Url</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QRadioButton" name="btLocalhost">
+        <property name="text">
+         <string>localhost</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QRadioButton" name="btQxQxOrg">
+        <property name="text">
+         <string>qxqx.org</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QLineEdit" name="edServerUrl"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="toolTip">
-        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
-       </property>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="chkExportDatabase">
        <property name="text">
-        <string>Event ID</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="edServerUrl"/>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="edApiToken"/>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="toolTip">
-        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
-       </property>
-       <property name="text">
-        <string>Current stage</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSpinBox" name="edCurrentStage">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>SHV broker url</string>
+        <string>Export database</string>
        </property>
       </widget>
      </item>
@@ -84,6 +87,35 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="toolTip">
+        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
+       </property>
+       <property name="text">
+        <string>Event ID</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="edApiToken"/>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="edCurrentStage">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_5">
        <property name="toolTip">
@@ -94,10 +126,13 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="chkExportDatabase">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="toolTip">
+        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
+       </property>
        <property name="text">
-        <string>Export database</string>
+        <string>Current stage</string>
        </property>
       </widget>
      </item>
@@ -182,9 +217,6 @@
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>edServerUrl</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>

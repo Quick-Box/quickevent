@@ -43,6 +43,8 @@ private:
 	void resolveChangesAndClose(bool is_accepted);
 	void updateQxChangeMessage();
 
+	void checkDuplicitRegistration();
+	void checkDuplicitName();
 	void checkStartTimeIsValid();
 private:
 	Ui::LateEntryDialog *ui;

@@ -363,6 +363,10 @@ void RunsTableModel::onDataChanged(const QModelIndex &top_left, const QModelInde
 
 void RunsTableModel::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
+	if (recchng.op == qf::core::sql::RecOp::Insert) {
+		// inserts might be in filterred out class or stage, this cannot be solved by applyQxRecChng
+		return;
+	}
 	applyQxRecChng(recchng, source);
 }
 

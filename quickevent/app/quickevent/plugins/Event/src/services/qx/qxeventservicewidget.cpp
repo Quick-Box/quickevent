@@ -47,6 +47,22 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	connect(ui->btExportEventInfo, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportEventInfo);
 	connect(ui->btExportStartList, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportStartList);
 	connect(ui->btExportRuns, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportRuns);
+
+#ifdef QT_DEBUG
+	ui->grpShvConnection->setVisible(true);
+#else
+	ui->grpShvConnection->setVisible(false);
+#endif
+	connect(ui->btQxQxOrg, &QAbstractButton::clicked, this, [this](bool checked) {
+		if (checked) {
+			setDefaultShvBrokerUrl(false);
+		}
+	});
+	connect(ui->btLocalhost, &QAbstractButton::clicked, this, [this](bool checked) {
+		if (checked) {
+			setDefaultShvBrokerUrl(true);
+		}
+	});
 }
 
 QxEventServiceWidget::~QxEventServiceWidget()
@@ -119,11 +135,13 @@ void QxEventServiceWidget::testConnection()
 
 	auto *rpc = new DeviceConnection("QuickEventTest", this);
 	rpc->setConnectionString(ui->edServerUrl->text());
-	RpcValue::Map opts;
-	RpcValue::Map device;
-	device["deviceId"] = ui->edApiToken->text().toStdString();
-	opts["device"] = device;
-	rpc->setConnectionOptions(opts);
+	if (ui->chkExportDatabase->isChecked()) {
+		RpcValue::Map opts;
+		RpcValue::Map device;
+		device["deviceId"] = ui->edApiToken->text().toStdString();
+		opts["device"] = device;
+		rpc->setConnectionOptions(opts);
+	}
 
 	connect(rpc, &ClientConnection::brokerConnectedChanged, this, [this, rpc](bool is_connected) {
 		if (is_connected) {
@@ -205,6 +223,19 @@ void QxEventServiceWidget::exportRuns()
 			setMessage(err, MessageType::Error);
 		}
 	});
+}
+
+void QxEventServiceWidget::setDefaultShvBrokerUrl(bool is_local_host)
+{
+	auto url = QStringLiteral("tcp://%1?user=qe&%2=%3");
+	if (is_local_host) {
+		url = url.arg("localhost");
+	} else {
+		url = url.arg("qxqx.org");
+	}
+	url = url.arg("password");
+	url = url.arg("2ddf6394ea6");
+	ui->edServerUrl->setText(url);
 }
 
 }

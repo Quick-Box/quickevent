@@ -109,7 +109,7 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 	update_background(ui->edSiCard);
 
 	ui->grpStartTime->setChecked(late_entry.start_time_ms.has_value());
-	ui->edStartTime->setText(TimeMs(late_entry.start_time_ms.value_or(0)).toString());
+	ui->edStartTime->setText(late_entry.start_time_ms.has_value()? TimeMs(late_entry.start_time_ms.value()).toString(): QString{});
 	update_background(ui->edStartTime);
 
 	connect(ui->edStartTime, &QLineEdit::textEdited, this, &LateEntryDialog::checkStartTimeIsValid);
@@ -124,6 +124,8 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 		auto class_id = id->id;
 		loadClassName(class_id);
 	}
+	checkDuplicitRegistration();
+	checkDuplicitName();
 	lockChange();
 }
 
@@ -308,8 +310,50 @@ void LateEntryDialog::updateQxChangeMessage()
 	qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
 }
 
+void LateEntryDialog::checkDuplicitRegistration()
+{
+	if (!ui->grpRegistration->isChecked() || !classId().has_value()) {
+		return;
+	}
+	auto reg = ui->edRegistration->text().trimmed().toUpper();
+	qf::core::sql::Query q;
+	q.execThrow(QStringLiteral("SELECT firstName, lastName FROM competitors WHERE registration='%1'")
+				.arg(reg) );
+	if (q.next()) {
+		setMessage(tr("Competitor %1 %2 %3 is registered already.")
+				   .arg(q.value("firstName").toString())
+				   .arg(q.value("lastName").toString())
+				   .arg(reg)
+				   , true);
+	}
+}
+
+void LateEntryDialog::checkDuplicitName()
+{
+    if (!ui->grpFirstName->isChecked() || !ui->grpLastName->isChecked() || !classId().has_value()) {
+		return;
+	}
+	auto first_name = ui->edFirstName->text().trimmed();
+	auto last_name = ui->edLastName->text().trimmed();
+	qf::core::sql::Query q;
+	q.execThrow(QStringLiteral("SELECT registration FROM competitors WHERE firstName='%1' AND lastName='%2'")
+				.arg(first_name)
+				.arg(last_name) );
+	if (q.next()) {
+		setMessage(tr("Competitor %1 %2 %3 is registered already.")
+				   .arg(first_name)
+				   .arg(last_name)
+				   .arg(q.value("registration").toString())
+				   , true);
+	}
+}
+
 void LateEntryDialog::checkStartTimeIsValid()
 {
+	if (!ui->grpStartTime->isChecked()) {
+		ui->edStartTime->setStyleSheet({});
+		return;
+	}
 	if (auto run_id = runId(); run_id.has_value()) {
 		auto stime = TimeMs::fromString(ui->edStartTime->text());
 		if (stime.isValid()) {

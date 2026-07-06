@@ -81,6 +81,7 @@ private: // shv
 	void onBrokerSocketError(const QString &err);
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
 
+	const char* eventctlShvPath() const;
 	void subscribeChanges();
 private:
 	void loadSettings() override;

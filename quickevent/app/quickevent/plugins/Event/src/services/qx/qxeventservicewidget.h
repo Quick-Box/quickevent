@@ -29,6 +29,7 @@ private:
 	void exportEventInfo();
 	void exportStartList();
 	void exportRuns();
+	void setDefaultShvBrokerUrl(bool is_local_host);
 private:
 	Ui::QxEventServiceWidget *ui;
 };
