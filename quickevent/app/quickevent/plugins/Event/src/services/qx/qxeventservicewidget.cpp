@@ -93,6 +93,8 @@ void QxEventServiceWidget::setMessage(const QString &msg, MessageType msg_type)
 
 bool QxEventServiceWidget::acceptDialogDone(int result)
 {
+	// delete testing connection if any
+	delete findChild<shv::iotqt::rpc::DeviceConnection*>();
 	if(result == QDialog::Accepted) {
 		if(!saveSettings()) {
 			return false;
