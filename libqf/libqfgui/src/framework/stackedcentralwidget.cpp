@@ -67,6 +67,13 @@ bool StackedCentralWidget::setActivePart(int part_index, bool set_active)
 	return ret;
 }
 
+void StackedCentralWidget::setPartVisible(const QString &feature_id, bool visible)
+{
+	int ix = featureToIndex(feature_id);
+	if(ix >= 0)
+		m_partSwitch->setPartVisible(ix, visible);
+}
+
 int StackedCentralWidget::featureToIndex(const QString &feature_id)
 {
 	for (int i = 0; i < m_centralWidget->count(); ++i) {

@@ -447,8 +447,9 @@ bool CompetitorWidget::acceptDialogDone(int result)
 {
 	if (result == QDialog::Accepted) {
 		auto *doc = qobject_cast<Competitors::CompetitorDocument*>(dataController()->document());
+		bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
 		if (doc->mode() != Competitors::CompetitorDocument::ModeDelete) {
-			if (doc->value("classId").toInt() == 0) {
+			if (doc->value("classId").toInt() == 0 && !is_relays) {
 				QMessageBox::information(this, tr("Competitor form check"), tr("Class must be set."));
 				return false;
 			}

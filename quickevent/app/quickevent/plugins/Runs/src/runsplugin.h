@@ -56,6 +56,7 @@ public:
 	int courseForRelay(int relay_number, int leg);
 	quickevent::core::CourseDef courseCodesForRunId(int run_id);
 	quickevent::core::CourseDef courseForCourseId(int course_id);
+	static int latlng_distance(double lat1, double lng1, double lat2, double lng2);
 
 	Q_INVOKABLE int cardForRun(int run_id);
 	qf::core::utils::TreeTable currentStageResultsTable(const QString &class_filter = QString(), int max_competitors_in_class = 0, bool exclude_disq = false);

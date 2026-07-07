@@ -66,9 +66,11 @@ RunsTableWidget::RunsTableWidget(QWidget *parent) :
 			ui->tblRuns->setItemDelegateForColumn(RunsTableModel::col_course_id, m_courseItemDelegate);
 		}
 		else if (!is_open && m_courseItemDelegate) {
+			// Clear the column delegate before deleting the object; otherwise the view
+			// holds a dangling pointer and crashes on the next paint.
+			ui->tblRuns->setItemDelegateForColumn(RunsTableModel::col_course_id, nullptr);
 			delete m_courseItemDelegate;
 			m_courseItemDelegate = nullptr;
-			ui->tblRuns->setItemDelegateForColumn(RunsTableModel::col_course_id, nullptr);
 		}
 	});
 	//ui->tblRuns->setSelectionMode(QTableView::SingleSelection);

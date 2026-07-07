@@ -413,10 +413,10 @@ void CardReaderPlugin::updateCheckedCardValuesSql(int card_id, const quickevent:
 			QStringList missing_str;
 			for (const auto &vl : missing_codes) {
 				auto vll = vl.toList();
-				missing_codes << QStringLiteral("%1-%2").arg(vll.value(0).toInt()).arg(vll.value(1).toInt());
+				missing_str << QStringLiteral("%1-%2").arg(vll.value(0).toInt()).arg(vll.value(1).toInt());
 			}
 			QVariantMap rec {
-				{"runIdAssignError", missing_str.join(',')},
+				{"runIdAssignError", tr("Missing codes: %1").arg(missing_str.join(','))},
 			};
 			app->qxSql()->updateRecord("cards", card_id, rec, this);
 		}

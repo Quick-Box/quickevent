@@ -27,8 +27,10 @@ public:
 
 	PartSwitch* partSwitch() {return m_partSwitch;}
 
+	using Super::setActivePart;
 	bool setActivePart(int part_index, bool set_active)  Q_DECL_OVERRIDE;
 	int featureToIndex(const QString &feature_id) Q_DECL_OVERRIDE;
+	void setPartVisible(const QString &feature_id, bool visible);
 private:
 	QStackedWidget *m_centralWidget;
 	PartSwitch *m_partSwitch;

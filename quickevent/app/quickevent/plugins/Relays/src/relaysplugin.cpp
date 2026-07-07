@@ -9,6 +9,7 @@
 #include <quickevent/core/runstatus.h>
 
 #include <qf/gui/framework/mainwindow.h>
+#include <qf/gui/framework/stackedcentralwidget.h>
 #include <qf/gui/framework/dockwidget.h>
 #include <qf/gui/dialogs/dialog.h>
 #include <qf/gui/action.h>
@@ -68,7 +69,24 @@ void RelaysPlugin::onInstalled()
 {
 	m_partWidget = qff::initPluginWidget<RelaysWidget, PartWidget>(tr("&Relays"), featureId());
 
-	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &RelaysPlugin::onDbEventNotify);
+	auto *scw = qobject_cast<qff::StackedCentralWidget*>(qff::MainWindow::frameWork()->centralWidget());
+	if(scw)
+		scw->setPartVisible(featureId(), false);
+
+	auto *event_plugin = getPlugin<EventPlugin>();
+	connect(event_plugin, &Event::EventPlugin::eventOpenChanged, this, [this]() {
+		auto *scw = qobject_cast<qff::StackedCentralWidget*>(qff::MainWindow::frameWork()->centralWidget());
+		if(!scw)
+			return;
+		auto *ep = getPlugin<EventPlugin>();
+		bool event_open = ep->isEventOpen();
+		auto *cfg = event_open ? ep->eventConfig() : nullptr;
+		bool is_relays = cfg && cfg->isRelays();
+		scw->setPartVisible(featureId(), is_relays);
+		if(event_open && !is_relays && m_partWidget && m_partWidget->isActive())
+			scw->setActivePart(QStringLiteral("Runs"), true);
+	});
+	connect(event_plugin, &Event::EventPlugin::dbEventNotify, this, &RelaysPlugin::onDbEventNotify);
 
 	emit nativeInstalled();
 }

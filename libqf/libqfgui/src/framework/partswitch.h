@@ -40,6 +40,7 @@ public:
 	~PartSwitch() Q_DECL_OVERRIDE;
 public:
 	void addPartWidget(PartWidget *widget);
+	void setPartVisible(int part_index, bool visible);
 
 	Q_SIGNAL void partActivated(int ix, bool is_active);
 	void setCurrentPartIndex(int ix, bool is_active = true);

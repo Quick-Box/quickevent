@@ -13,6 +13,7 @@
 #include "services/serviceswidget.h"
 #include "services/emmaclient.h"
 #include "services/qx/qxeventservice.h"
+#include "services/punchingtest/punchingtestservice.h"
 
 #include <plugins/Core/src/widgets/settingsdialog.h>
 #include <plugins/Event/src/services/oresultsclient.h>
@@ -420,6 +421,9 @@ void EventPlugin::onInstalled()
 
 	auto shvapi_client = new services::qx::QxEventService(this);
 	services::Service::addService(shvapi_client);
+
+	auto *punching_test = new services::PunchingTestService(this);
+	services::Service::addService(punching_test);
 
 	{
 		m_servicesDockWidget = new qff::DockWidget(nullptr);

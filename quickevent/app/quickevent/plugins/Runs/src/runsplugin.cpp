@@ -174,8 +174,7 @@ int RunsPlugin::courseForRun(int run_id)
 	}
 	return courseForRun_Classic(run_id);
 }
-namespace {
-int latlng_distance(double lat1, double lng1, double lat2, double lng2)
+int RunsPlugin::latlng_distance(double lat1, double lng1, double lat2, double lng2)
 {
 	/// http://www.movable-type.co.uk/scripts/latlong.html
 	if(qFuzzyIsNull(lng2 - lng1) && qFuzzyIsNull(lat2 - lat1))
@@ -193,7 +192,6 @@ int latlng_distance(double lat1, double lng1, double lat2, double lng2)
 	static constexpr double R = 6371000;
 	double d = std::sqrt(x*x + y*y) * R;
 	return static_cast<int>(std::ceil(d));
-}
 }
 quickevent::core::CourseDef RunsPlugin::courseCodesForRunId(int run_id)
 {
