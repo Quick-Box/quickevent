@@ -227,15 +227,14 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 				QF_ASSERT(num_rows_affected == 1,
 						  tr("numRowsAffected() = %1, should be 1\n%2").arg(num_rows_affected).arg(qs),
 						  return false);
-				auto insert_id = q.lastInsertId();
 				if(serial_ix >= 0 && !serial_ix_explicitly_set) {
-					QVariant v = q.lastInsertId();
-					qfDebug() << "\tsetting serial index:" << serial_ix << "to generated value:" << v;
-					if(v.isValid()) {
-						row_ref.setValue(serial_ix, v);
+					auto insert_id = q.lastInsertId();
+					qfDebug() << "\tsetting serial index:" << serial_ix << "to generated value:" << insert_id;
+					if(insert_id.isValid()) {
+						row_ref.setValue(serial_ix, insert_id);
 						row_ref.setDirty(serial_ix, false);
 						if (auto *app = qobject_cast<qf::gui::framework::Application*>(QApplication::instance()); app) {
-							app->qxSql()->emitRecInserted(table_id, v.value<qint64>(), record_to_map(rec), this);
+							app->qxSql()->emitRecInserted(table_id, insert_id.value<qint64>(), record_to_map(rec), this);
 						}
 					}
 					else {

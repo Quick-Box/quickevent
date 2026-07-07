@@ -304,7 +304,7 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 		auto lst = data.toList();
 		int run_id = lst.value(0).toInt();
 		auto dirty_vals = lst.value(1).toMap();
-		qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED received, run_id: " << run_id << ", dirty keys: " << dirty_vals.keys().join(", ");
+		qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED received, run_id: " << run_id << ", dirty keys: " << dirty_vals.keys().join(", "); // clazy:exclude=container-anti-pattern
 		if (!dirty_vals.isEmpty()) {
 			static const QSet<QString> relevant_fields = {
 				// Run fields (finishTimeMs and timeMs are covered by DBEVENT_CARD_PROCESSED_AND_ASSIGNED)
@@ -319,7 +319,7 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 				QStringLiteral("classid"),
 			};
 			bool has_relevant = false;
-			for (const auto &key : dirty_vals.keys()) {
+			for (const auto &[key, _] : dirty_vals.asKeyValueRange()) {
 				if (relevant_fields.contains(key.section('.', -1).toLower())) {
 					has_relevant = true;
 					break;
@@ -758,7 +758,7 @@ void OFeedClient::testConnection(const QString &host_url,
 		const QByteArray response_bytes = reply->readAll();
 		const QString response_text = QString::fromUtf8(response_bytes).trimmed();
 
-		auto callback_error = [&](const QString &msg) {
+		auto callback_error = [=](const QString &msg) {
 			const QString status_text = http_status > 0 ? QStringLiteral("HTTP %1").arg(http_status) : QStringLiteral("HTTP status unavailable");
 			const QString full_message = response_text.isEmpty()
 											 ? QStringLiteral("%1: %2").arg(status_text, msg)
@@ -1522,7 +1522,7 @@ void OFeedClient::processNewRunner(int ofeed_competitor_id)
 			// Save emits db event
 			doc.save();
 
-			auto competitor_id = doc.value("competitors.id");
+			// auto competitor_id = doc.value("competitors.id"); unused
 
 			// Get runs.id for current stage
 			int current_stage = getPlugin<EventPlugin>()->currentStageId();
@@ -1563,8 +1563,8 @@ void OFeedClient::storeChange(const QJsonObject &change)
 	QString firstname = competitor["firstname"].isString() ? competitor["firstname"].toString() : no_data;
 	QString lastname = competitor["lastname"].isString() ? competitor["lastname"].toString() : no_data;
 
-	QJsonDocument change_json_doc(change);
-	QString change_json = QString::fromUtf8(change_json_doc.toJson(QJsonDocument::Compact));
+	// QJsonDocument change_json_doc(change); unused
+	// QString change_json = QString::fromUtf8(change_json_doc.toJson(QJsonDocument::Compact));
 
 	int change_id = change["id"].toInt();
 	auto created = QDateTime::fromString(change["createdAt"].toString(), Qt::ISODate);
