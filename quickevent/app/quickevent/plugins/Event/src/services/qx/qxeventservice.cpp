@@ -103,6 +103,8 @@ void QxEventService::run() {
 
 void QxEventService::stop()
 {
+	delete m_rpcConnection;
+	m_rpcConnection = nullptr;
 	m_eventId = 0;
 	if (m_pollChangesTimer) {
 		m_pollChangesTimer->stop();

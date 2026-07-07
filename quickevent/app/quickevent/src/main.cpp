@@ -198,6 +198,7 @@ int main(int argc, char *argv[])
 	main_window.show();
 	emit main_window.applicationLaunched();
 
+#ifdef QT_DEBUG
 	QObject::connect(app.qxSql(), &qf::core::sql::QxSql::recChng, &app, [](const qf::core::sql::QxRecChng &recchng) {
 		auto dump_map = [](const QVariantMap &m) {
 			QStringList rows;
@@ -211,6 +212,7 @@ int main(int argc, char *argv[])
 				 << "id:" << recchng.id
 				 << "record:" << dump_map(recchng.record);
 	});
+#endif
 
 	int ret = Application::exec();
 
