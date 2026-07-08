@@ -20,30 +20,12 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QSpinBox>
+
 #include <variant>
 
 using namespace quickevent::core::og;
 
 namespace Event::services::qx {
-
-namespace {
-
-LateEntryStatus lateEntryStatusFromString(const QString &status)
-{
-	if (status.compare(QStringLiteral("Pending"), Qt::CaseInsensitive) == 0) {
-		return LateEntryStatus::Pending;
-	}
-	if (status.compare(QStringLiteral("Accepted"), Qt::CaseInsensitive) == 0) {
-		return LateEntryStatus::Accepted;
-	}
-	if (status.compare(QStringLiteral("Rejected"), Qt::CaseInsensitive) == 0) {
-		return LateEntryStatus::Rejected;
-	}
-	qfWarning() << "Unknown late entry status:" << status;
-	return LateEntryStatus::Rejected;
-}
-
-} // namespace
 
 LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent)
 	: Super(parent)
@@ -51,7 +33,7 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 	, m_changeId(change_id)
 	, m_stageId(stage_id)
 	, m_lateEntryId(late_entry.id)
-	, m_status(lateEntryStatusFromString(status))
+	, m_status(qxChangeStatusFromString(status))
 {
 	Q_ASSERT(change_id > 0);
 
@@ -124,6 +106,15 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 		auto class_id = id->id;
 		loadClassName(class_id);
 	}
+
+	if (late_entry.paid.value_or(false)) {
+		ui->lblPaid->setText(tr("Paid"));
+		ui->lblPaid->setStyleSheet("background:green;color:white");
+	} else {
+		ui->lblPaid->setText(tr("Not Paid"));
+		ui->lblPaid->setStyleSheet("background:red;color:white");
+	}
+
 	checkDuplicitRegistration();
 	checkDuplicitName();
 	lockChange();
@@ -236,8 +227,8 @@ void LateEntryDialog::lockChange()
 
 void LateEntryDialog::updateButtonsEnabled()
 {
-	ui->btAccept->setEnabled(m_status == LateEntryStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
-	ui->btReject->setEnabled(m_status == LateEntryStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
+	ui->btAccept->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
+	ui->btReject->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
 }
 
 void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
@@ -246,7 +237,7 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 
 	if (is_accepted) {
 		auto class_id = classId();
-		bool is_insert = class_id.has_value();
+		bool is_insert = class_id.has_value() && !m_setIsRunning;
 		Competitors::CompetitorDocument doc;
 		doc.load(m_competitorId, is_insert? DataDocument::ModeInsert: DataDocument::ModeEdit);
 		if (is_insert) {
@@ -274,6 +265,9 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 		}
 		if (ui->grpStartTime->isChecked()) {
 			rec["starttimems"] = TimeMs::fromString(ui->edStartTime->text()).msec();
+		}
+		if (m_setIsRunning) {
+			rec["isRunning"] = true;
 		}
 		if (!rec.isEmpty()) {
 			auto competitor_id = doc.value("id").toInt();
@@ -312,40 +306,59 @@ void LateEntryDialog::updateQxChangeMessage()
 
 void LateEntryDialog::checkDuplicitRegistration()
 {
-	if (!ui->grpRegistration->isChecked() || !classId().has_value()) {
+	auto class_id = classId();
+	if (!ui->grpRegistration->isChecked() || !class_id.has_value()) {
 		return;
 	}
 	auto reg = ui->edRegistration->text().trimmed().toUpper();
 	qf::core::sql::Query q;
-	q.execThrow(QStringLiteral("SELECT firstName, lastName FROM competitors WHERE registration='%1'")
-				.arg(reg) );
+	q.execThrow(QStringLiteral("SELECT id, firstName, lastName FROM competitors WHERE registration='%1' AND classId=%2")
+				.arg(reg).arg(class_id.value()) );
 	if (q.next()) {
-		setMessage(tr("Competitor %1 %2 %3 is registered already.")
+		setMessage(tr("Competitor %1 %2 %3 is registered in this class already, run will be updated.")
 				   .arg(q.value("firstName").toString())
 				   .arg(q.value("lastName").toString())
 				   .arg(reg)
 				   , true);
+		auto competitor_id = q.value("id").toInt();
+		Q_ASSERT(competitor_id > 0);
+		changeEventEntryToStageEntry(competitor_id);
 	}
 }
 
 void LateEntryDialog::checkDuplicitName()
 {
-    if (!ui->grpFirstName->isChecked() || !ui->grpLastName->isChecked() || !classId().has_value()) {
+	auto class_id = classId();
+	if (!ui->grpFirstName->isChecked() || !ui->grpLastName->isChecked() || !class_id.has_value()) {
 		return;
 	}
 	auto first_name = ui->edFirstName->text().trimmed();
 	auto last_name = ui->edLastName->text().trimmed();
 	qf::core::sql::Query q;
-	q.execThrow(QStringLiteral("SELECT registration FROM competitors WHERE firstName='%1' AND lastName='%2'")
+	q.execThrow(QStringLiteral("SELECT id, registration FROM competitors WHERE firstName='%1' AND lastName='%2' AND classId=%3")
 				.arg(first_name)
-				.arg(last_name) );
+				.arg(last_name)
+				.arg(class_id.value()));
 	if (q.next()) {
-		setMessage(tr("Competitor %1 %2 %3 is registered already.")
+		setMessage(tr("Competitor %1 %2 %3 is registered in this class already, run will be updated.")
 				   .arg(first_name)
 				   .arg(last_name)
 				   .arg(q.value("registration").toString())
 				   , true);
+		auto competitor_id = q.value("id").toInt();
+		Q_ASSERT(competitor_id > 0);
+		changeEventEntryToStageEntry(competitor_id);
 	}
+}
+
+void LateEntryDialog::changeEventEntryToStageEntry(int competitor_id)
+{
+	m_setIsRunning = true;
+	m_competitorId = competitor_id;
+
+	ui->grpFirstName->setChecked(false);
+	ui->grpLastName->setChecked(false);
+	ui->grpRegistration->setChecked(false);
 }
 
 void LateEntryDialog::checkStartTimeIsValid()

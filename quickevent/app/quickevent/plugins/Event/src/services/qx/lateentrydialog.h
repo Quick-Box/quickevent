@@ -16,8 +16,6 @@ class LateEntryDialog;
 struct LateEntry;
 class QxEventService;
 
-enum class LateEntryStatus {Pending, Accepted, Rejected};
-
 class LateEntryDialog : public QDialog
 {
 	Q_OBJECT
@@ -46,6 +44,7 @@ private:
 	void checkDuplicitRegistration();
 	void checkDuplicitName();
 	void checkStartTimeIsValid();
+	void changeEventEntryToStageEntry(int competitor_id);
 private:
 	Ui::LateEntryDialog *ui;
 	int m_changeId = 0;
@@ -53,8 +52,9 @@ private:
 	LateEntryForeignId m_lateEntryId = RunId{};
 	int m_competitorId = 0;
 	int m_lockNumber = 0;
-	LateEntryStatus m_status = LateEntryStatus::Rejected;
+	QxChangeStatus m_status = QxChangeStatus::Rejected;
 	OrigRunRecord m_origValues;
+	bool m_setIsRunning = false;
 };
 
 

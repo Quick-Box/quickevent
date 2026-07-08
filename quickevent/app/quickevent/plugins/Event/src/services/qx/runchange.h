@@ -26,6 +26,7 @@ struct LateEntry
 	std::optional<int> start_time_ms;
 	// std::optional<bool> si_id_rent;
 	std::optional<QString> note;
+	std::optional<bool> paid;
 
 	// static LateEntry fromJsonString(const QString &json);
 	static LateEntry fromVariantMap(const QVariantMap &map);
@@ -57,12 +58,13 @@ enum class DataType {
 	RadioPunch,
 	CardReadout,
 };
-enum class ChangeStatus {
+enum class QxChangeStatus {
 	Pending,
-	Locked,
 	Accepted,
 	Rejected,
 };
+QxChangeStatus qxChangeStatusFromString(const QString &status);
+
 struct EventChange
 {
 	int64_t id;
@@ -71,7 +73,7 @@ struct EventChange
 	int64_t data_id;
 	QVariant data;
 	QString user_id;
-	ChangeStatus status;
+	QxChangeStatus status;
 	QString status_message;
 	QDateTime created;
 	int64_t lock_number;

@@ -18,6 +18,8 @@
 
 #include <QMenu>
 #include <QJsonDocument>
+#include <QBrush>
+#include <QColor>
 #include <qmessagebox.h>
 
 namespace qfm = qf::gui::model;
@@ -56,6 +58,36 @@ constexpr auto COL_STATUS_MESSAGE = "status_message";
 constexpr auto COL_USER_ID = "user_id";
 constexpr auto COL_CREATED = "created";
 constexpr auto COL_LOCK_NUMBER = "lock_number";
+
+class LateEntriesModel : public qfm::SqlTableModel
+{
+public:
+	using qfm::SqlTableModel::SqlTableModel;
+
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override
+	{
+		if (role == Qt::BackgroundRole) {
+			if (index.column() == col_data) {
+				auto data = index.data().toString();
+				auto qxdata = QxChangeData::fromJson(data);
+				if (auto le = qxdata.lateEntry; le.has_value()) {
+					if (le.value().paid.value_or(false)) {
+						return QColor("lightgreen");
+					}
+				}
+			}
+			else if (index.column() == col_status) {
+				auto status = qxChangeStatusFromString(index.data().toString());
+				switch (status) {
+				case QxChangeStatus::Pending: return {};
+				case QxChangeStatus::Accepted: return QColor("lightgreen");
+				case QxChangeStatus::Rejected: return QColor("salmon");
+				}
+			}
+		}
+		return qfm::SqlTableModel::data(index, role);
+	}
+};
 } // namespace
 
 QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
@@ -76,7 +108,7 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	ui->tableView->setDirtyRowsMenuSectionEnabled(false);
 
 	ui->toolbar->setTableView(ui->tableView);
-	m_model = new qfm::SqlTableModel(this);
+	m_model = new LateEntriesModel(this);
 	//m->setObjectName("classes.classesModel");
 
 	m_model->clearColumns(col_COUNT);
@@ -277,7 +309,7 @@ void QxLateEntriesWidget::onTableCustomContextMenuRequest(const QPoint &pos)
 
 void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 {
-	auto row = ix.row();
+	auto row = ui->tableView->toTableModelIndex(ix).row();
 	auto data = m_model->value(row, COL_DATA).toString();
 	auto qxdata = QxChangeData::fromJson(data);
 	if (qxdata.lateEntry.has_value()) {

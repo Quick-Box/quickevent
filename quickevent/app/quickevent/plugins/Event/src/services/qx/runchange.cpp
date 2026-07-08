@@ -1,5 +1,7 @@
 #include "runchange.h"
 
+#include <qf/core/log.h>
+
 #include <QJsonDocument>
 #include <QVariantMap>
 
@@ -29,6 +31,7 @@ LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
 	if (auto v = map.value("siid"); v.isValid()) { ret.si_id = v.toInt(); }
 	// if (auto v = map.value("si_id_rent"); v.isValid()) { ret.si_id_rent = v.toBool(); }
 	if (auto v = map.value("note"); v.isValid()) { ret.note = v.toString(); }
+	if (auto v = map.value("paid"); v.isValid()) { ret.paid = v.toBool(); }
 
 	return ret;
 }
@@ -52,6 +55,21 @@ QxChangeData QxChangeData::fromJson(const QString &json)
 		ret.lateEntry = LateEntry::fromVariantMap(v.toMap());
 	}
 	return ret;
+}
+
+QxChangeStatus qxChangeStatusFromString(const QString &status)
+{
+	if (status.compare(QStringLiteral("Pending"), Qt::CaseInsensitive) == 0) {
+		return QxChangeStatus::Pending;
+	}
+	if (status.compare(QStringLiteral("Accepted"), Qt::CaseInsensitive) == 0) {
+		return QxChangeStatus::Accepted;
+	}
+	if (status.compare(QStringLiteral("Rejected"), Qt::CaseInsensitive) == 0) {
+		return QxChangeStatus::Rejected;
+	}
+	qfWarning() << "Unknown late entry status:" << status;
+	return QxChangeStatus::Rejected;
 }
 
 } // namespace Event::services::qx
