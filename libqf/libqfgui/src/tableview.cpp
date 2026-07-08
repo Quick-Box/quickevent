@@ -633,40 +633,37 @@ void TableView::paste()
 
 void TableView::setValueInSelection_helper(const QVariant &new_val)
 {
+	auto *sql_m = qobject_cast<qf::gui::model::SqlTableModel *>(tableModel());
+	if (!sql_m) {
+		return;
+	}
 	QModelIndexList lst = selectedIndexes();
 	QMap<int, QModelIndexList> row_selections;
 	foreach(const QModelIndex &ix, lst) {
 		row_selections[ix.row()] << ix;
 	}
-	QList<int> selected_row_indexes = row_selections.keys();
-	if(selected_row_indexes.count() == 1) {
-		int row_ix = selected_row_indexes.value(0);
-		foreach(const QModelIndex &ix, row_selections.value(row_ix)) {
-			model()->setData(ix, new_val);
-		}
-	}
-	else if(selected_row_indexes.count() > 1) {
-		qfc::sql::Connection conn;
-		auto *sql_m = qobject_cast<qf::gui::model::SqlTableModel *>(tableModel());
-		if(sql_m) {
-			try {
-				conn = sql_m->sqlConnection();
-				qfc::sql::Transaction transaction(conn);
-				QF_TIME_SCOPE(QString("Saving %1 rows").arg(selected_row_indexes.count()));
-				foreach(int row_ix, selected_row_indexes) {
-					foreach(const QModelIndex &ix, row_selections.value(row_ix)) {
-						model()->setData(ix, new_val);
-					}
-					sql_m->postRow(toTableModelRowNo(row_ix), qf::core::Exception::Throw);
-				}
-				transaction.commit();
+	auto *proxy_m = qobject_cast<QSortFilterProxyModel*>(lastProxyModel());
+	Q_ASSERT(proxy_m);
+	auto is_dynamic_sort_filter = proxy_m->dynamicSortFilter();
+	proxy_m->setDynamicSortFilter(false);
+	qfc::sql::Connection conn;
+	try {
+		conn = sql_m->sqlConnection();
+		qfc::sql::Transaction transaction(conn);
+		QF_TIME_SCOPE(QString("Saving %1 rows").arg(selected_row_indexes.count()));
+		for(const auto &[row_ix, row_indexes] : row_selections.asKeyValueRange()) {
+			for(const auto &ix : row_indexes) {
+				proxy_m->setData(ix, new_val);
 			}
-			catch(qfc::Exception &e) {
-				dialogs::MessageBox::showException(this, e);
-			}
+			sql_m->postRow(toTableModelRowNo(row_ix), qf::core::Exception::Throw);
 		}
-		update();
+		transaction.commit();
 	}
+	catch(qfc::Exception &e) {
+		dialogs::MessageBox::showException(this, e);
+	}
+	proxy_m->setDynamicSortFilter(is_dynamic_sort_filter);
+	update();
 }
 
 void TableView::setValueInSelection()
