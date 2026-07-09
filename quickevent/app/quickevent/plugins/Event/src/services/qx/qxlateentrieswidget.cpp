@@ -318,6 +318,9 @@ void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 		auto change_id = m_model->value(row, COL_ID).toInt();
 		auto stage_id = m_model->value(row, COL_STAGE_ID).toInt();
 		LateEntryDialog dlg(change_id, stage_id, qxdata.lateEntry.value(), status, status_message, this);
+		connect(&dlg, &LateEntryDialog::editCompetitor, this, [this](int competitor_id) {
+			RunsWidget::showEditCompetitorDialog(competitor_id, this);
+		}, Qt::QueuedConnection);
 		dlg.exec();
 		ui->tableView->reloadRow(row);
 	}

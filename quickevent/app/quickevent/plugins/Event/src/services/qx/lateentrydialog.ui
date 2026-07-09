@@ -432,6 +432,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="btAcceptAndEdit">
+       <property name="text">
+        <string>Accept and Edit</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

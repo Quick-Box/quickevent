@@ -65,21 +65,21 @@ enum class QxChangeStatus {
 };
 QxChangeStatus qxChangeStatusFromString(const QString &status);
 
-struct EventChange
-{
-	int64_t id;
-	QString source;
-	DataType data_type;
-	int64_t data_id;
-	QVariant data;
-	QString user_id;
-	QxChangeStatus status;
-	QString status_message;
-	QDateTime created;
-	int64_t lock_number;
+// struct EventChange
+// {
+// 	int64_t id;
+// 	QString source;
+// 	DataType data_type;
+// 	int64_t data_id;
+// 	QVariant data;
+// 	QString user_id;
+// 	QxChangeStatus status;
+// 	QString status_message;
+// 	QDateTime created;
+// 	int64_t lock_number;
 
-	QVariantMap toVariantMap() const;
-};
+// 	QVariantMap toVariantMap() const;
+// };
 
 // struct ChangeRecord
 // {

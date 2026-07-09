@@ -51,6 +51,11 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 		resolveChangesAndClose(true);
 		done(QDialog::Accepted);
 	});
+	connect(ui->btAcceptAndEdit, &QPushButton::clicked, this, [this]() {
+		resolveChangesAndClose(true);
+		emit editCompetitor(m_competitorId);
+		done(QDialog::Accepted);
+	});
 	connect(ui->btReject, &QPushButton::clicked, this, [this]() {
 		resolveChangesAndClose(false);
 		done(QDialog::Accepted);
@@ -258,7 +263,7 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 			}
 		}
 		doc.save();
-
+		m_competitorId = doc.dataId().toInt();
 		qf::core::sql::Record rec;
 		if (ui->grpSiCard->isChecked()) {
 			rec["siId"] = ui->edSiCard->value();

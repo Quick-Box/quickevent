@@ -24,6 +24,8 @@ public:
 	explicit LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent = nullptr);
 	~LateEntryDialog() override;
 
+	Q_SIGNAL void editCompetitor(int competitor_id);
+
 	void done(int result) override;
 private:
 	std::optional<int> runId() const;
