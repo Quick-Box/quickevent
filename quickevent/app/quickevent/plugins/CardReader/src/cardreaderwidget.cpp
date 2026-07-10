@@ -722,7 +722,7 @@ void CardReaderWidget::processReadCard(const quickevent::core::si::ReadCard &rea
 	if(card_id) {
 		/// receipts printer needs this
 		/// emitDbEvent is using queued invocation
-		getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_CARD_READ, card_id, true);
+		// getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_CARD_READ, card_id, true);
 	}
 }
 
