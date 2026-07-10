@@ -151,7 +151,7 @@ void EditCoursesWidget::updateQuery()
 			.join("courses.id", "classdefs.courseId", qf::core::sql::QueryBuilder::INNER_JOIN)
 			.join("classdefs.classId", "classes.id")
 			.join("classes.id", "competitors.classId")
-			.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning")
+			.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning AND runs.stageId=" QF_IARG(m_stageId))
 			.where("classdefs.stageId=" QF_IARG(m_stageId))
 			.groupBy("courses.id")
 			.orderBy("courses.name");
