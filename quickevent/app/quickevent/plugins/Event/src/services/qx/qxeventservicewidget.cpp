@@ -48,11 +48,11 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	connect(ui->btExportStartList, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportStartList);
 	connect(ui->btExportRuns, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportRuns);
 
-#ifdef QT_DEBUG
+// #ifdef QT_DEBUG
 	ui->grpShvConnection->setVisible(true);
-#else
-	ui->grpShvConnection->setVisible(false);
-#endif
+// #else
+// 	ui->grpShvConnection->setVisible(false);
+// #endif
 	connect(ui->btQxQxOrg, &QAbstractButton::clicked, this, [this](bool checked) {
 		if (checked) {
 			setDefaultShvBrokerUrl(false);
