@@ -476,7 +476,7 @@ void CardReaderWidget::settleDownInPartWidget(::PartWidget *part_widget)
 			a_tools->addActionInto(a);
 		}
 	}
-	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &CardReaderWidget::onDbEventNotify, Qt::QueuedConnection);
+	// connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &CardReaderWidget::onDbEventNotify, Qt::QueuedConnection);
 }
 
 void CardReaderWidget::reset()
@@ -526,16 +526,16 @@ void CardReaderWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObj
 	}
 }
 
-void CardReaderWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
-{
-	Q_UNUSED(connection_id)
-	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_CARD_READ)) {
-		int card_id = data.toInt();
-		if(isVisible()) {
-			updateTableView(card_id);
-		}
-	}
-}
+// void CardReaderWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
+// {
+// 	Q_UNUSED(connection_id)
+// 	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_CARD_READ)) {
+// 		int card_id = data.toInt();
+// 		if(isVisible()) {
+// 			updateTableView(card_id);
+// 		}
+// 	}
+// }
 
 void CardReaderWidget::createActions()
 {
@@ -722,7 +722,7 @@ void CardReaderWidget::processReadCard(const quickevent::core::si::ReadCard &rea
 	if(card_id) {
 		/// receipts printer needs this
 		/// emitDbEvent is using queued invocation
-		// getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_CARD_READ, card_id, true);
+		getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_CARD_READ, card_id, true);
 	}
 }
 
