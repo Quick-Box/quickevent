@@ -44,25 +44,10 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	ui->edCurrentStage->setValue(current_stage);
 	ui->edEventId->setValue(svc->eventId());
 	connect(ui->btTestConnection, &QAbstractButton::clicked, this, &QxEventServiceWidget::testConnection);
-	connect(ui->btExportEventInfo, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportEventInfo);
-	connect(ui->btExportStartList, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportStartList);
-	connect(ui->btExportRuns, &QAbstractButton::clicked, this, &QxEventServiceWidget::exportRuns);
 
-// #ifdef QT_DEBUG
-	ui->grpShvConnection->setVisible(true);
-// #else
-// 	ui->grpShvConnection->setVisible(false);
-// #endif
-	connect(ui->btQxQxOrg, &QAbstractButton::clicked, this, [this](bool checked) {
-		if (checked) {
-			setDefaultShvBrokerUrl(false);
-		}
-	});
-	connect(ui->btLocalhost, &QAbstractButton::clicked, this, [this](bool checked) {
-		if (checked) {
-			setDefaultShvBrokerUrl(true);
-		}
-	});
+	connect(ui->btQxQxOrg, &QRadioButton::toggled, this, &QxEventServiceWidget::setConnectionType);
+	connect(ui->btLocalhost, &QRadioButton::toggled, this, &QxEventServiceWidget::setConnectionType);
+	ui->btQxQxOrg->setChecked(!settings.isLocalBroker());
 }
 
 QxEventServiceWidget::~QxEventServiceWidget()
@@ -115,15 +100,17 @@ bool QxEventServiceWidget::saveSettings()
 	auto *svc = service();
 	if(svc) {
 		auto ss = svc->settings();
-		ss.setShvBrokerUrl(ui->edServerUrl->text());
+		bool is_localhost = ui->btLocalhost->isChecked();
+		if (is_localhost) {
+			ss.setShvBrokerUrl(ui->edServerUrl->text());
+		}
+		ss.setLocalBroker(is_localhost);
 		ss.setExportDatabase(ui->chkExportDatabase->isChecked());
 		svc->setSettings(ss);
-		auto *event_plugin = getPlugin<EventPlugin>();
 
-		auto current_stage = event_plugin->currentStageId();
-		auto stage_data = event_plugin->stageData(current_stage);
-		stage_data.setQxApiToken(ui->edApiToken->text());
-		event_plugin->setStageData(current_stage, stage_data);
+		auto *event_plugin = getPlugin<EventPlugin>();
+		auto *event_config = event_plugin->eventConfig();
+		event_config->setQxApiToken(ui->edApiToken->text());
 	}
 	return true;
 }
@@ -175,69 +162,29 @@ void QxEventServiceWidget::testConnection()
 	rpc->open();
 }
 
-void QxEventServiceWidget::exportEventInfo()
+void QxEventServiceWidget::setConnectionType()
 {
-	auto *svc = service();
-	Q_ASSERT(svc);
-	auto *reply = svc->postEventInfo(ui->edServerUrl->text(), ui->edApiToken->text());
-	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-		auto data = reply->readAll();
-		if (reply->error() == QNetworkReply::NetworkError::NoError) {
-			auto doc = QJsonDocument::fromJson(data);
-			EventInfo event_info(doc.toVariant().toMap());
-			ui->edEventId->setValue(event_info.id());
-			setMessage(tr("Event info updated OK"));
-		}
-		else {
-			setMessage(tr("Event info update error: %1\n%2").arg(reply->errorString()).arg(QString::fromUtf8(data)), MessageType::Error);
-		}
-		reply->deleteLater();
-	});
-}
-
-void QxEventServiceWidget::exportStartList()
-{
-	auto *svc = service();
-	Q_ASSERT(svc);
-	saveSettings();
-	setMessage(tr("Start list export started ..."), MessageType::Progress);
-	svc->postStartListIofXml3(this, [this](auto err) {
-		if (err.isEmpty()) {
-			setMessage(tr("Start list exported Ok"));
-		}
-		else {
-			setMessage(err, MessageType::Error);
-		}
-	});
-}
-
-void QxEventServiceWidget::exportRuns()
-{
-	auto *svc = service();
-	Q_ASSERT(svc);
-	saveSettings();
-	setMessage(tr("Runs export started ..."), MessageType::Progress);
-	svc->postRuns(this, [this](auto err) {
-		if (err.isEmpty()) {
-			setMessage(tr("Runs exported Ok"));
-		}
-		else {
-			setMessage(err, MessageType::Error);
-		}
-	});
-}
-
-void QxEventServiceWidget::setDefaultShvBrokerUrl(bool is_local_host)
-{
-	auto url = QStringLiteral("tcp://%1?user=qe&%2=%3");
-	if (is_local_host) {
-		url = url.arg("localhost");
+	bool is_localhost = ui->btLocalhost->isChecked();
+	if (is_localhost) {
+		ui->lblUrl->setVisible(true);
+		ui->edServerUrl->setVisible(true);
 	} else {
-		url = url.arg("qxqx.org");
+		ui->lblUrl->setVisible(false);
+		ui->edServerUrl->setVisible(false);
 	}
+}
+
+QString QxEventServiceWidget::brokerUrl() const
+{
+	bool is_localhost = ui->btLocalhost->isChecked();
+	if (is_localhost) {
+		return ui->edServerUrl->text();
+	}
+	auto url = QStringLiteral("tcp://%1?user=qe&%2=%3");
+	url = url.arg("qxqx.org");
 	url = url.arg("password");
 	url = url.arg("2ddf6394ea6");
-	ui->edServerUrl->setText(url);
+	return url;
 }
 
 }

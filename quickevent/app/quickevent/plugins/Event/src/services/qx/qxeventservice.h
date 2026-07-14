@@ -18,7 +18,8 @@ class QxEventServiceSettings : public ServiceSettings
 {
 	using Super = ServiceSettings;
 
-	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "tcp://localhost?user=test&password=test")
+	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "tcp://localhost?user=qe&password=test")
+	QF_VARIANTMAP_FIELD2(bool, is, set, LocalBroker, false)
 	QF_VARIANTMAP_FIELD2(bool, is, set, ExportDatabase, false)
 public:
 	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}

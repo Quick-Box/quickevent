@@ -20,6 +20,7 @@ class EventConfig : public QObject
 	Q_PROPERTY(bool iofXmlRaceNumber READ iofXmlRaceNumber)
 	Q_PROPERTY(QString director READ director)
 	Q_PROPERTY(QString mainReferee READ mainReferee)
+	Q_PROPERTY(QString qxApiToken READ qxApiToken)
 	//Q_PROPERTY(QString eventName READ eventName)
 public:
 	enum class Sport {OB = 1, LOB, MTBO, TRAIL};
@@ -72,6 +73,10 @@ public:
 	QString director() const;
 	QString mainReferee() const;
 	QDateTime eventDateTime() const;
+
+	QString qxApiToken() const;
+	void setQxApiToken(const QString &at);
+
 	int dbVersion() const;
 	std::optional<int> maximumCardCheckAdvanceSec() const;
 	bool isOneTenthSecResults() const;

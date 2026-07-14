@@ -40,8 +40,8 @@ Schema {
 					defaultValue: false
 					notNull: true
 				},
-				Field { name: 'drawingConfig'; type: String {} },
-				Field { name: 'qxApiToken'; type: String {} }
+				Field { name: 'drawingConfig'; type: String {} }
+				// Field { name: 'qxApiToken'; type: String {} }
 			]
 			indexes: [
 				Index {fields: ['id']; primary: true }

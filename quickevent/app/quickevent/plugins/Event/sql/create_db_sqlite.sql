@@ -29,7 +29,6 @@ CREATE TABLE stages (
 	startDateTime timestamp,
 	useAllMaps boolean NOT NULL DEFAULT 0,
 	drawingConfig character varying,
-	qxApiToken character varying,
 	CONSTRAINT stages_pkey PRIMARY KEY (id)
 );
 ;

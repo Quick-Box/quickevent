@@ -275,6 +275,19 @@ QDateTime EventConfig::eventDateTime() const
 	}
 	return dt;
 }
+namespace {
+constexpr auto QX_API_TOKEN = "qx.apiToken";
+}
+QString EventConfig::qxApiToken() const
+{
+	return value(QX_API_TOKEN).toString();
+}
+
+void EventConfig::setQxApiToken(const QString &at)
+{
+	setValue(QX_API_TOKEN, at);
+	save(QX_API_TOKEN);
+}
 
 int EventConfig::dbVersion() const
 {

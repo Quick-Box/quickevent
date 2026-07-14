@@ -284,11 +284,8 @@ int QxEventService::eventId() const
 
 QString QxEventService::apiToken() const
 {
-	// API token must not be cached to enable service to point
-	// always to current stage event on qxhttpd
 	auto *event_plugin = getPlugin<EventPlugin>();
-	auto current_stage = event_plugin->currentStageId();
-	return event_plugin->stageData(current_stage).qxApiToken();
+	return event_plugin->eventConfig()->qxApiToken();
 }
 
 QUrl QxEventService::shvBrokerUrl() const
@@ -483,7 +480,7 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 		auto *event_plugin = getPlugin<EventPlugin>();
 		auto current_stage = event_plugin->currentStageId();
 		auto stage_data = event_plugin->stageData(current_stage);
-		auto api_token = stage_data.qxApiToken().toStdString();
+		auto api_token = event_plugin->eventConfig()->qxApiToken().toStdString();
 		auto *rpc_call = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
 				->setShvPath(eventctlShvPath())
 				->setMethod("openEventApiKey")

@@ -30,7 +30,6 @@ CREATE TABLE {{eventId}}.stages (
 	startDateTime timestamp with time zone,
 	useAllMaps boolean NOT NULL DEFAULT false,
 	drawingConfig character varying,
-	qxApiToken character varying,
 	CONSTRAINT stages_pkey PRIMARY KEY (id)
 );
 ;

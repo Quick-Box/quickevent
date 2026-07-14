@@ -26,10 +26,8 @@ private:
 	QxEventService* service();
 	bool saveSettings();
 	void testConnection();
-	void exportEventInfo();
-	void exportStartList();
-	void exportRuns();
-	void setDefaultShvBrokerUrl(bool is_local_host);
+	void setConnectionType();
+	QString brokerUrl() const;
 private:
 	Ui::QxEventServiceWidget *ui;
 };
