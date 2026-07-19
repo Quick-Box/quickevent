@@ -214,7 +214,7 @@ void QxEventService::postStartListIofXml3(QObject *context, std::function<void (
 {
 	auto *ep = getPlugin<EventPlugin>();
 	int current_stage = ep->currentStageId();
-	bool is_relays = ep->eventConfig()->isRelays();
+	bool is_relays = ep->appDbConfig().eventConfig().isRelays();
 	if (!is_relays) {
 		auto xml = getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners);
 		uploadSpecFile(SpecFile::StartListIofXml3, xml.toUtf8(), context, call_back);
@@ -225,7 +225,7 @@ void QxEventService::postRuns(QObject *context, std::function<void (QString)> ca
 {
 	auto *ep = getPlugin<EventPlugin>();
 	int current_stage = ep->currentStageId();
-	bool is_relays = ep->eventConfig()->isRelays();
+	bool is_relays = ep->appDbConfig().eventConfig().isRelays();
 	if (!is_relays) {
 		auto runs = getPlugin<RunsPlugin>()->qxExportRunsCsvJson(current_stage);
 		auto json = qf::core::Utils::qvariantToJsonUtf8(runs, false);
@@ -285,7 +285,7 @@ int QxEventService::eventId() const
 QString QxEventService::apiToken() const
 {
 	auto *event_plugin = getPlugin<EventPlugin>();
-	return event_plugin->eventConfig()->qxApiToken();
+	return event_plugin->appDbConfig().qxConfig().apiToken;
 }
 
 QUrl QxEventService::shvBrokerUrl() const
@@ -386,12 +386,12 @@ void QxEventService::httpPostJson(const QString &path, const QString &query, QVa
 EventInfo QxEventService::eventInfo() const
 {
 	auto *event_plugin = getPlugin<EventPlugin>();
-	auto *event_config = event_plugin->eventConfig();
+	const auto &event_config = event_plugin->appDbConfig().eventConfig();
 	EventInfo ei;
 	ei.set_stage(event_plugin->currentStageId());
 	ei.set_stage_count(event_plugin->stageCount());
-	ei.set_name(event_config->eventName());
-	ei.set_place(event_config->eventPlace());
+	ei.set_name(event_config.name);
+	ei.set_place(event_config.place);
 	ei.set_start_time(event_plugin->stageStartDateTime(event_plugin->currentStageId()).toString(Qt::ISODate));
 
 	qf::core::sql::Query q;
@@ -478,9 +478,8 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
 		auto *event_plugin = getPlugin<EventPlugin>();
-		auto current_stage = event_plugin->currentStageId();
-		auto stage_data = event_plugin->stageData(current_stage);
-		auto api_token = event_plugin->eventConfig()->qxApiToken().toStdString();
+		const auto &app_config = event_plugin->appDbConfig();
+		auto api_token = app_config.qxConfig().apiToken.toStdString();
 		auto *rpc_call = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
 				->setShvPath(eventctlShvPath())
 				->setMethod("openEventApiKey")

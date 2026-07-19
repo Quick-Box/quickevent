@@ -60,7 +60,7 @@ void OResultsClient::stop() {
 void OResultsClient::exportResultsIofXml3()
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	QString str = is_relays
 			? getPlugin<RelaysPlugin>()->resultsIofXml30()
@@ -72,7 +72,7 @@ void OResultsClient::exportResultsIofXml3()
 void OResultsClient::exportStartListIofXml3(std::function<void()> on_success)
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	QString str = is_relays
 			? getPlugin<RelaysPlugin>()->startListIofXml30()
@@ -169,27 +169,31 @@ void OResultsClient::onDbEventNotify(const QString &domain, int connection_id, c
 QString OResultsClient::apiKey() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	return getPlugin<EventPlugin>()->eventConfig()->value("oresults.apiKey.E" + QString::number(current_stage)).toString();
+	return getPlugin<EventPlugin>()->appDbConfig().oresultsConfig(current_stage).apiKey;
 }
 
 void OResultsClient::setApiKey(QString apiKey)
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue("oresults.apiKey.E" + QString::number(current_stage), apiKey);
-	getPlugin<EventPlugin>()->eventConfig()->save("oresults");
+	auto &db = getPlugin<EventPlugin>()->appDbConfig();
+	auto cfg = db.oresultsConfig(current_stage);
+	cfg.apiKey = apiKey;
+	db.setOresultsConfig(current_stage, cfg);
 }
 
 QString OResultsClient::eventName() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	return getPlugin<EventPlugin>()->eventConfig()->value("oresults.eventName.E" + QString::number(current_stage)).toString();
+	return getPlugin<EventPlugin>()->appDbConfig().oresultsConfig(current_stage).eventName;
 }
 
 void OResultsClient::setEventName(const QString &name)
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue("oresults.eventName.E" + QString::number(current_stage), name);
-	getPlugin<EventPlugin>()->eventConfig()->save("oresults");
+	auto &db = getPlugin<EventPlugin>()->appDbConfig();
+	auto cfg = db.oresultsConfig(current_stage);
+	cfg.eventName = name;
+	db.setOresultsConfig(current_stage, cfg);
 }
 
 void OResultsClient::sendCompetitorChange(QString xml) {
@@ -214,20 +218,20 @@ void OResultsClient::sendCompetitorChange(QString xml) {
 		reply->deleteLater();
 	});
 }
-
-static void append_list(QVariantList &lst, const QVariantList &new_lst)
+namespace {
+void append_list(QVariantList &lst, const QVariantList &new_lst)
 {
 	lst.insert(lst.count(), new_lst);
 }
 
-static int mop_start(int runner_start_ms) {
+int mop_start(int runner_start_ms) {
 	int stage_id = getPlugin<EventPlugin>()->currentStageId();
 	QDateTime event_start = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
 	QDateTime runner_start = event_start.addMSecs(runner_start_ms);
 	return event_start.date().startOfDay().msecsTo(runner_start) / 100;
 }
 
-static int mop_run_status_code(
+int mop_run_status_code(
 		int time,
 		bool isDisq,
 		bool isDisqByOrganizer,
@@ -251,7 +255,7 @@ static int mop_run_status_code(
 		return 1; // OK
 	return 0; // Unknown
 }
-
+}
 
 void OResultsClient::onCompetitorChanged(int competitor_id)
 {

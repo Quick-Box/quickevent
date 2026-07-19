@@ -64,7 +64,7 @@ Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const
 		//qfInfo() << flgs;
 	}
 	if(index.column() == col_course_id) {
-		if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+		if (getPlugin<Event::EventPlugin>()->appDbConfig().eventConfig().isRelays()) {
 			flgs &= ~Qt::ItemIsEditable;
 		}
 	}
@@ -74,7 +74,7 @@ Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const
 QVariant RunsTableModel::data(const QModelIndex &index, int role) const
 {
 	if(index.column() == col_course_id && role == Qt::DisplayRole) {
-		if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+		if (getPlugin<Event::EventPlugin>()->appDbConfig().eventConfig().isRelays()) {
 			auto start_number = value(index.row(), "startNumber").toInt();
 			auto leg = value(index.row(), "runs.leg").toInt();
 			return QStringLiteral("%1.%2").arg(start_number).arg(leg);

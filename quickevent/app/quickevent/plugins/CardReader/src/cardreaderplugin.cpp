@@ -116,7 +116,7 @@ int CardReaderPlugin::findRunId(int si_id, int si_finish_time, QString *err_msg)
 		*err_msg = QString();
 	int si_finish_time_msec = getPlugin<EventPlugin>()->msecToStageStartAM(si_finish_time);
 	qf::core::sql::Query q;
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	if(is_relays) {
 		q.exec("SELECT id, leg, startTimeMs, finishTimeMs FROM runs WHERE siId=" QF_IARG(si_id)
 			" AND isRunning"
@@ -552,7 +552,7 @@ void CardReaderPlugin::setStartTime(int relay_id, int leg, int start_time) {
 bool CardReaderPlugin::processCardToRunAssignment(int card_id, int run_id)
 {
 	qfLogFuncFrame();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	if(is_relays) {
 		qf::core::sql::Query q;
 		q.execThrow("SELECT relayId, leg, startTimeMs FROM runs WHERE id=" + QString::number(run_id));

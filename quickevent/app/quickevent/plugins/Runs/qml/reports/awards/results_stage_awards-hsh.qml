@@ -127,7 +127,7 @@ Report {
 									halign: Frame.AlignHCenter
 									textStyle: myStyle.textStyleBold
 									//text: root.eventConfig.event.mainReferee
-									text: root.eventConfig.mainReferee()
+									text: root.eventConfig.mainReferee
 								}
 								Para {
 									width: "%"
@@ -152,7 +152,7 @@ Report {
 										width: "%"
 										halign: Frame.AlignHCenter
 										textStyle: myStyle.textStyleBold
-										text: root.eventConfig.director()
+										text: root.eventConfig.director
 									}
 									Para {
 										width: "%"

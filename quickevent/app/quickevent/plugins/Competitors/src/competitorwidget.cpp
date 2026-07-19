@@ -155,7 +155,7 @@ CompetitorWidget::CompetitorWidget(QWidget *parent) :
 	ui(new Ui::CompetitorWidget)
 {
 	qfLogFuncFrame();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	setPersistentSettingsId("CompetitorWidget");
 	ui->setupUi(this);
@@ -205,7 +205,7 @@ CompetitorWidget::CompetitorWidget(QWidget *parent) :
 	connect(ui->tblRuns, &qfw::TableView::editCellRequest, this, [this](QModelIndex index) {
 		auto col = index.column();
 		if(col == CompetitorRunsModel::col_runs_startTimeMs) {
-			bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+			bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 			if (!is_relays) {
 				saveData();
 				auto row = ui->tblRuns->tableRow();
@@ -387,7 +387,7 @@ void CompetitorWidget::onRegistrationSelected(const QVariantMap &values)
 		qfDebug() << "\t" << s << "->" << values.value(s);
 		doc->setValue(s, values.value(s));
 	}
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	if(!is_relays) {
 		// if no class is set, guess class from registration
 		if(ui->cbxClass->currentText().isEmpty()) {
@@ -427,7 +427,7 @@ void CompetitorWidget::save()
 bool CompetitorWidget::saveData()
 {
 	try {
-		bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+		bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 		auto *doc = qobject_cast<Competitors::CompetitorDocument*>(dataController()->document());
 		if(!is_relays && doc->value(QStringLiteral("classId")).toInt() == 0) {
 			qf::gui::dialogs::MessageBox::showWarning(this, tr("Class should be entered."));
@@ -447,7 +447,7 @@ bool CompetitorWidget::acceptDialogDone(int result)
 {
 	if (result == QDialog::Accepted) {
 		auto *doc = qobject_cast<Competitors::CompetitorDocument*>(dataController()->document());
-		bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+		bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 		if (doc->mode() != Competitors::CompetitorDocument::ModeDelete) {
 			if (doc->value("classId").toInt() == 0 && !is_relays) {
 				QMessageBox::information(this, tr("Competitor form check"), tr("Class must be set."));

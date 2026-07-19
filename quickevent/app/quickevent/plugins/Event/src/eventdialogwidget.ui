@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>619</height>
+    <width>590</width>
+    <height>766</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,19 +16,6 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="6" column="3">
-      <widget class="QLineEdit" name="ed_director"/>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>&amp;Date</string>
-       </property>
-       <property name="buddy">
-        <cstring>ed_date</cstring>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -39,73 +26,13 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="3">
-      <widget class="QTimeEdit" name="ed_time">
-       <property name="displayFormat">
-        <string>h:mm:ss</string>
-       </property>
-       <property name="time">
-        <time>
-         <hour>10</hour>
-         <minute>0</minute>
-         <second>0</second>
-        </time>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QLabel" name="label_7">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>D&amp;irector</string>
-       </property>
-       <property name="buddy">
-        <cstring>ed_director</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QLabel" name="label_12">
-       <property name="text">
-        <string>&amp;Time</string>
+        <string>&amp;Date</string>
        </property>
        <property name="buddy">
         <cstring>ed_date</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>&amp;Place</string>
-       </property>
-       <property name="buddy">
-        <cstring>ed_place</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QComboBox" name="cbxSportId"/>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="ed_mainReferee"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QDateEdit" name="ed_date">
-       <property name="displayFormat">
-        <string>dd.MM.yyyy</string>
-       </property>
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_8">
-       <property name="text">
-        <string>Event ID</string>
-       </property>
-       <property name="buddy">
-        <cstring>ed_name</cstring>
        </property>
       </widget>
      </item>
@@ -119,27 +46,41 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="2">
-      <widget class="QLabel" name="label_13">
+     <item row="3" column="2">
+      <widget class="QLabel" name="label_12">
        <property name="text">
-        <string>Discipline</string>
+        <string>&amp;Time</string>
        </property>
        <property name="buddy">
-        <cstring>ed_handicapLength</cstring>
+        <cstring>ed_date</cstring>
        </property>
       </widget>
      </item>
-     <item row="7" column="3">
-      <widget class="QComboBox" name="cbxDisciplineId"/>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_11">
+     <item row="6" column="2">
+      <widget class="QLabel" name="label_7">
        <property name="text">
-        <string>Sport</string>
+        <string>D&amp;irector</string>
        </property>
        <property name="buddy">
-        <cstring>ed_handicapLength</cstring>
+        <cstring>ed_director</cstring>
        </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="cbxSportId"/>
+     </item>
+     <item row="10" column="3">
+      <widget class="QComboBox" name="ed_oneTenthSecResults">
+       <item>
+        <property name="text">
+         <string>Disabled</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Enabled</string>
+        </property>
+       </item>
       </widget>
      </item>
      <item row="5" column="0">
@@ -152,13 +93,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="3">
-      <widget class="QLineEdit" name="ed_description"/>
-     </item>
-     <item row="4" column="1" colspan="3">
-      <widget class="QLineEdit" name="ed_place"/>
-     </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="label_14">
        <property name="text">
         <string>Card check</string>
@@ -168,7 +103,86 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="10" column="2">
+      <widget class="QLabel" name="label_15">
+       <property name="text">
+        <string>1/10 sec results</string>
+       </property>
+       <property name="buddy">
+        <cstring>ed_handicapLength</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QSpinBox" name="ed_stageCount">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="2">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>&amp;Handicap length</string>
+       </property>
+       <property name="buddy">
+        <cstring>ed_handicapLength</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="3">
+      <widget class="QLineEdit" name="ed_name"/>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Sport</string>
+       </property>
+       <property name="buddy">
+        <cstring>ed_handicapLength</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Event ID</string>
+       </property>
+       <property name="buddy">
+        <cstring>ed_name</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="ed_mainReferee"/>
+     </item>
+     <item row="5" column="1" colspan="3">
+      <widget class="QLineEdit" name="ed_description"/>
+     </item>
+     <item row="6" column="3">
+      <widget class="QLineEdit" name="ed_director"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>&amp;Place</string>
+       </property>
+       <property name="buddy">
+        <cstring>ed_place</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QLabel" name="label_13">
+       <property name="text">
+        <string>Discipline</string>
+       </property>
+       <property name="buddy">
+        <cstring>ed_handicapLength</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
       <widget class="QSpinBox" name="ed_cardChecCheckTimeSec">
        <property name="toolTip">
         <string>Maximal distance between card CHECK and START time</string>
@@ -187,40 +201,6 @@
        </property>
        <property name="singleStep">
         <number>60</number>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="2">
-      <widget class="QLabel" name="label_15">
-       <property name="text">
-        <string>1/10 sec results</string>
-       </property>
-       <property name="buddy">
-        <cstring>ed_handicapLength</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="3">
-      <widget class="QComboBox" name="ed_oneTenthSecResults">
-       <item>
-        <property name="text">
-         <string>Disabled</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Enabled</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="8" column="2">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>&amp;Handicap length</string>
-       </property>
-       <property name="buddy">
-        <cstring>ed_handicapLength</cstring>
        </property>
       </widget>
      </item>
@@ -246,6 +226,43 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="1" colspan="3">
+      <widget class="QLineEdit" name="ed_eventId">
+       <property name="placeholderText">
+        <string>Unique event name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="3">
+      <widget class="QComboBox" name="cbxDisciplineId"/>
+     </item>
+     <item row="3" column="3">
+      <widget class="QTimeEdit" name="ed_time">
+       <property name="displayFormat">
+        <string>h:mm:ss</string>
+       </property>
+       <property name="time">
+        <time>
+         <hour>10</hour>
+         <minute>0</minute>
+         <second>0</second>
+        </time>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDateEdit" name="ed_date">
+       <property name="displayFormat">
+        <string>dd.MM.yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1" colspan="3">
+      <widget class="QLineEdit" name="ed_place"/>
+     </item>
      <item row="8" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
@@ -256,21 +273,39 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
-      <widget class="QSpinBox" name="ed_stageCount">
-       <property name="minimum">
-        <number>1</number>
+     <item row="9" column="0" colspan="4">
+      <widget class="QTableWidget" name="stageStartTimesTable">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="3">
-      <widget class="QLineEdit" name="ed_name"/>
-     </item>
-     <item row="0" column="1" colspan="3">
-      <widget class="QLineEdit" name="ed_eventId">
-       <property name="placeholderText">
-        <string>Unique event name</string>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>120</height>
+        </size>
        </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
+       </property>
+       <property name="columnCount">
+        <number>2</number>
+       </property>
+       <column>
+        <property name="text">
+         <string>#</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Stage start time</string>
+        </property>
+       </column>
       </widget>
      </item>
     </layout>
@@ -299,6 +334,12 @@
    </item>
    <item>
     <widget class="QFrame" name="frameOrisRace">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <layout class="QFormLayout" name="formLayout_3">
       <item row="2" column="0">
        <widget class="QLabel" name="label_17">
@@ -379,19 +420,6 @@
       </item>
      </layout>
     </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Orientation::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>0</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

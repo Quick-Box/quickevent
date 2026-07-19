@@ -117,7 +117,7 @@ void ReceiptsWidget::reset()
 
 void ReceiptsWidget::reload()
 {
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	int current_stage = currentStageId();
 	qfs::QueryBuilder qb;
 	qb.select2("cards", "id, siId, printerConnectionId")

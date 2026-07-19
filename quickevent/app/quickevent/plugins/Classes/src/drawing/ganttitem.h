@@ -3,6 +3,8 @@
 
 #include "classitem.h"
 
+#include <plugins/Event/src/stageconfig.h>
+
 #include <qf/core/utils.h>
 #include <qf/core/exception.h>
 
@@ -17,14 +19,6 @@ namespace drawing {
 class StartSlotItem;
 class ClassItem;
 class GanttRuler;
-
-class DrawingConfig : public QVariantMap
-{
-public:
-	explicit DrawingConfig(const QVariantMap &m = QVariantMap()) : QVariantMap(m) {}
-
-	QF_VARIANTMAP_FIELD(QVariantList, s, setS, tartSlots)
-};
 
 class GanttItem : public QGraphicsRectItem, public IGanttItem
 {
@@ -53,7 +47,7 @@ public:
 	StartSlotItem* addStartSlotItem();
 private:
 	QList<StartSlotItem*> m_startSlotItems;
-	DrawingConfig m_drawingConfig;
+	Event::DrawingConfig m_drawingConfig;
 	GanttRuler *m_ganttRuler;
 	QSet<ClassItem::ClashType> m_clashTypesToCheck;
 };

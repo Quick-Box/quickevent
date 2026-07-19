@@ -33,7 +33,7 @@ void RunsTableItemDelegate::setHighlightedClassId(int class_id, int stage_id)
 
 void RunsTableItemDelegate::reloadHighlightedClassId()
 {
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	m_classDef.load(m_highlightedClassId, m_stageId, is_relays);
 	//qfInfo() << "interval:" << m_classInterval << "first:" << m_classStartFirst << "last:" << m_classStartLast;
 }
@@ -50,7 +50,7 @@ void RunsTableItemDelegate::paintBackground(QPainter *painter, const QStyleOptio
 	auto *tm = qobject_cast<RunsTableModel*>(v->tableModel());
 	if(!(m && tm))
 		return;
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	if(m_highlightedClassId > 0) {
 		if(is_relays) {
 			// check that start time in classes is the same

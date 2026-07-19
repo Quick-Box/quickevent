@@ -43,6 +43,7 @@
 #include <QTextStream>
 #include <QSqlField>
 
+#include <algorithm>
 #include <numbers>
 
 namespace qff = qf::gui::framework;
@@ -168,7 +169,7 @@ int RunsPlugin::courseForRun(int run_id)
 {
 	// TODO: implementation should be dependend on event type and exposed to QML
 	// see: CardCheck pattern
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	if(is_relays) {
 		return courseForRun_Relays(run_id);
 	}
@@ -758,7 +759,7 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 	model.reload();
 	qf::core::utils::TreeTable tt = model.toTreeTable();
 	tt.setValue("stageId", stage_id);
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stage_id));
 
 	{
@@ -959,9 +960,9 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 {
 	QDateTime stage_start_date_time = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);//.toTimeSpec(Qt::OffsetFromUTC);
 	qf::core::utils::TreeTable tt1 = stageResultsTable(stage_id, QString(), 0, false, true);
-	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
-	bool is_iof_race = event_config->isIofRace();
-	int iof_xml_race_number = event_config->iofXmlRaceNumber();
+	const auto &event_config = getPlugin<EventPlugin>()->eventConfig();
+	bool is_iof_race = event_config.iofRace;
+	int iof_xml_race_number = event_config.iofXmlRaceNumber;
 
 	QVariantList result_list{
 		"ResultList",
@@ -1009,7 +1010,7 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 			event_lst.insert(event_lst.count(),
 				QVariantList{"Race",
 					QVariantList{"RaceNumber", iof_xml_race_number},
-					QVariantList{"Name", event_config->eventName()}
+					QVariantList{"Name", event_config.name}
 				}
 			);
 		}
@@ -1178,17 +1179,17 @@ void RunsPlugin::writeCSOSHeader(QTextStream &ts) const
 	auto *evp = getPlugin<EventPlugin>();
 	int stage_id = selectedStageId();
 	QDateTime start_dt = evp->stageStartDateTime(stage_id);
-	Event::EventConfig *ec = evp->eventConfig();
+	const auto &ec = evp->appDbConfig().eventConfig();
 	static constexpr int HWIDTH = -19;
-	ts << make_width("Kod zavodu", HWIDTH) << ": " << ec->importId() << "\r\n";
-	ts << make_width("Nazev zavodu", HWIDTH) << ": " << ec->eventName() << "\r\n";
+	ts << make_width("Kod zavodu", HWIDTH) << ": " << ec.importId << "\r\n";
+	ts << make_width("Nazev zavodu", HWIDTH) << ": " << ec.name << "\r\n";
 	ts << make_width("Zarazeni do soutezi", HWIDTH) << ": " << "" << "\r\n";
 	ts << make_width("Datum konani", HWIDTH) << ": " << start_dt.toString(Qt::ISODate) << "\r\n";
-	ts << make_width("Misto konani", HWIDTH) << ": " << ec->eventPlace() << "\r\n";
+	ts << make_width("Misto konani", HWIDTH) << ": " << ec.place << "\r\n";
 	ts << make_width("Poradatel", HWIDTH) << ": " << "" << "\r\n";
 	ts << make_width("Mapa", HWIDTH) << ": " << "" << "\r\n";
-	ts << make_width("Reditel zavodu", HWIDTH) << ": " << ec->director() << "\r\n";
-	ts << make_width("Hlavni rozhodci", HWIDTH) << ": " << ec->mainReferee() << "\r\n";
+	ts << make_width("Reditel zavodu", HWIDTH) << ": " << ec.director << "\r\n";
+	ts << make_width("Hlavni rozhodci", HWIDTH) << ": " << ec.mainReferee << "\r\n";
 	ts << make_width("Stavitel trati", HWIDTH) << ": " << "" << "\r\n";
 	ts << make_width("JURY", HWIDTH) << ": " << "" << "\r\n";
 	ts << make_width("Protokol", HWIDTH) << ": " << "\r\n";
@@ -1294,7 +1295,7 @@ bool RunsPlugin::exportResultsCsosOverall(int stage_count, const QString &file_n
 
 qf::core::sql::QueryBuilder RunsPlugin::runsQuery(int stage_id, int class_id, bool show_offrace)
 {
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	qfs::QueryBuilder qb;
 	qb.select2("runs", "*")
 			.select2("classes", "name")
@@ -1428,7 +1429,7 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &wher
 	m.reload();
 	auto tt = m.toTreeTable();
 	tt.setValue("stageId", stage_id);
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stage_id));
 	tt.appendColumn("courses.numberOfControls", QMetaType(QMetaType::Int));
 	tt.appendColumn("courses.startNumber", QMetaType(QMetaType::Int));
@@ -1527,9 +1528,7 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(const QString &wher
 			int mapCount = tt_row.value(QStringLiteral("mapCount")).toInt();
 			int cnt = tt2.rowCount();
 			int total_vacants = mapCount - cnt;
-			if (total_vacants < 0) {
-				total_vacants = 0;
-			}
+			total_vacants = std::max(total_vacants, 0);
 			for (int k = 0; k < total_vacants; ++k) {
 				int ix = tt2.appendRow();
 				qf::core::utils::TreeTableRow tt2_row = tt2.row(ix);
@@ -1564,7 +1563,7 @@ qf::core::utils::TreeTable RunsPlugin::startListClubsTable(const quickevent::gui
 	m.reload();
 	auto tt = m.toTreeTable();
 	tt.setValue("stageId", stage_id);
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stage_id));
 	{
 		qf::core::utils::TreeTableColumn c = tt.column(0);
@@ -1633,7 +1632,7 @@ qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &whe
 
 	qf::core::utils::TreeTable tt;
 	tt.setValue("stageId", stage_id);
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stage_id));
 
 	tt.appendColumn("competitors.registration", QMetaType(QMetaType::QString));
@@ -1658,7 +1657,7 @@ qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &whe
 		for(int j=0; j<tt2.rowCount(); j++) {
 			qf::core::utils::TreeTableRow tt2_row = tt2.row(j);
 			QVariantMap competitor_info;
-			
+
 			auto val = [tt2_row](const char* key1, const char* key2) {
 				QVariant v = tt2_row.value(key1);
 				if (v.isValid()) return v;
@@ -1682,7 +1681,7 @@ qf::core::utils::TreeTable RunsPlugin::startListStartersTable(const QString &whe
 			start_list.append(competitor_info);
 		}
 	}
-	
+
 	std::ranges::sort(start_list, [](const QVariantMap &competitor_a, const QVariantMap &competitor_b) {
 		int time_a = competitor_a["startTimeMs"].toInt();
 		int time_b = competitor_b["startTimeMs"].toInt();
@@ -1733,7 +1732,7 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesNStagesTable(const int st
 	m.reload();
 	auto tt = m.toTreeTable();
 	tt.setValue("stageId", sel_stage_id);
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(sel_stage_id));
 	QVector<qint64> start00_epoch_sec;
 	for(int stage_id = 1; stage_id <= stages_count; stage_id++) {
@@ -1781,7 +1780,7 @@ qf::core::utils::TreeTable RunsPlugin::startListClubsNStagesTable(const int stag
 	m.reload();
 	auto tt = m.toTreeTable();
 	tt.setValue("stageId", sel_stage_id);
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(sel_stage_id));
 	{
 		qf::core::utils::TreeTableColumn c = tt.column(0);
@@ -2046,7 +2045,7 @@ void RunsPlugin::report_resultsAwards()
 		return;
 
 	QVariantMap props;
-	props["eventConfig"] = QVariant::fromValue(getPlugin<EventPlugin>()->eventConfig());
+	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
 	auto tt = stageResultsTable(opts.value("stageId").toInt(), QString(), opts.value("numPlaces").toInt());
 	qf::gui::reports::ReportViewWidget::showReport(fwk
 								, findReportFile(rep_path)
@@ -2070,13 +2069,13 @@ void RunsPlugin::report_resultsNStages()
 		return;
 	auto opts = dlg.options();
 	auto tt = nstagesResultsTable(dlg.sqlWhereExpression(), dlg.stagesCount(), opts.resultNumPlaces(), opts.isResultExcludeDisq());
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	//tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stages_count));
 	QVariantMap props;
 	props["stagesCount"] = dlg.stagesCount();
 	props["options"] = opts;
 	qf::gui::reports::ReportViewWidget::showReport(fwk
-								, findReportFile("results_nstages.qml")
+							, findReportFile("results_nstages.qml")
 								, tt.toVariant()
 								, tr("Results after %n stage(s)", "", dlg.stagesCount())
 								, "printResultsNStages"
@@ -2097,13 +2096,13 @@ void RunsPlugin::report_resultsNStagesSpeaker()
 		return;
 	auto opts = dlg.options();
 	auto tt = nstagesResultsTable(dlg.sqlWhereExpression(), dlg.stagesCount(), opts.resultNumPlaces(), opts.isResultExcludeDisq());
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	//tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stages_count));
 	QVariantMap props;
 	props["stagesCount"] = dlg.stagesCount();
 	props["options"] = opts;
 	qf::gui::reports::ReportViewWidget::showReport(fwk
-								, findReportFile("results_nstagesSpeaker.qml")
+							, findReportFile("results_nstagesSpeaker.qml")
 								, tt.toVariant()
 								, tr("Results after %n stage(s)", "", dlg.stagesCount())
 								, "printResultsNStagesWide"
@@ -2122,7 +2121,7 @@ void RunsPlugin::report_nStagesAwards()
 		return;
 
 	QVariantMap props;
-	props["eventConfig"] = QVariant::fromValue(getPlugin<EventPlugin>()->eventConfig());
+	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
 	auto tt = nstagesResultsTable(QString(), opts.value("stageId").toInt(), opts.value("numPlaces").toInt());
 	qf::gui::reports::ReportViewWidget::showReport(fwk
 								, findReportFile(rep_path)
@@ -2473,7 +2472,7 @@ void RunsPlugin::export_resultsHtmlNStages()
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 
 	auto tt1 = nstagesResultsTable(sql_where_expr, stage_id, num_places, exclude_disq);
-	tt1.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt1.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	//tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(stages_count));
 
 	QString file_dir = QDir::tempPath() + "/quickevent/overall-e" + QString::number(stage_id);
@@ -2738,11 +2737,11 @@ QString RunsPlugin::getClubAbbrFromName(QString name)
 QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option)
 {
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
-	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
+	const auto &event_config = getPlugin<EventPlugin>()->eventConfig();
 	//console.debug("print_vacants", print_vacants);
 	auto tt1 = startListClassesTable("", vacants_option, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
-	bool is_iof_race = event_config->isIofRace();
-	int iof_xml_race_number = event_config->iofXmlRaceNumber();
+	bool is_iof_race = event_config.iofRace;
+	int iof_xml_race_number = event_config.iofXmlRaceNumber;
 
 	QVariantList xml_root{"StartList" ,
 		QVariantMap {
@@ -2756,7 +2755,7 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 	QVariantMap event = tt1.value("event").toMap();
 	QVariantList xml_event{"Event"};
 	append_list(xml_event, QVariantList{"Id", QVariantMap{{"type", "ORIS"}}, event.value("importId")});
-	append_list(xml_event, QVariantList{"Name", event_config->eventName()});
+	append_list(xml_event, QVariantList{"Name", event_config.name});
 	append_list(xml_event,
 		QVariantList{"StartTime",
 			QVariantList{"Date", start00.date().toString(Qt::ISODate)},
@@ -2786,11 +2785,11 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 		}
 	);
 
-	if (iof_xml_race_number != 0) {
-		append_list(xml_event,
+	if(iof_xml_race_number != 0) {
+		xml_event.insert(xml_event.count(),
 			QVariantList{"Race",
 				QVariantList{"RaceNumber", iof_xml_race_number},
-				QVariantList{"Name", event_config->eventName()}
+				QVariantList{"Name", event_config.name}
 			}
 		);
 	}
@@ -2814,9 +2813,9 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 		for(int j=0; j<tt2.rowCount(); j++) {
 			auto tt2_row = tt2.row(j);
 			QVariantList xml_person{"PersonStart"};
-			
+
 			bool is_vacant = tt2_row.value(QStringLiteral("competitorName")).toString() == vacant_name_sentinel;
-			
+
 			if (!is_vacant) {
 				QVariantList person{"Person"};
 				if (!is_iof_race) {
@@ -2841,10 +2840,10 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 			auto bib_number = tt2_row.value(QStringLiteral("competitors.startNumber"));
 			if(!is_vacant && !bib_number.isNull())
 				append_list(xml_start, QVariantList{"BibNumber", bib_number});
-			
+
 			int stime_msec = tt2_row.value(QStringLiteral("startTimeMs")).toInt();
 			append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
-			
+
 			QVariant siId = tt2_row.value(QStringLiteral("runs.siId"));
 			if (siId.toBool()) {
 				append_list(xml_start, QVariantList{"ControlCard", siId.toInt()});
@@ -2876,7 +2875,7 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 					}
 				}
 			}
-			
+
 			append_list(xml_person, xml_start);
 			append_list(class_start, xml_person);
 		}

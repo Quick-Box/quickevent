@@ -23,8 +23,8 @@ GanttScene::GanttScene(QObject * parent)
 void GanttScene::load(int stage_id)
 {
 	clear();
-	Event::StageData stage_data = getPlugin<EventPlugin>()->stageData(stage_id);
-	m_useAllMaps = stage_data.isUseAllMaps();
+	const auto &stage_data = getPlugin<EventPlugin>()->stageConfig(stage_id);
+	m_useAllMaps = stage_data.useAllMaps;
 	m_ganttItem = new GanttItem();
 	addItem(m_ganttItem);
 	m_ganttItem->load(stage_id);

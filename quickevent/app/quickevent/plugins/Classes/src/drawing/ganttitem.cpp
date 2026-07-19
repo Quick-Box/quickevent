@@ -63,9 +63,8 @@ StartSlotItem *GanttItem::addStartSlotItem()
 void GanttItem::load(int stage_id)
 {
 	qfLogFuncFrame();
-	Event::StageData stage_data = getPlugin<EventPlugin>()->stageData(stage_id);
-	DrawingConfig dc(stage_data.drawingConfig());
-	QVariantList start_slot_list = dc.startSlots();
+	const auto  &stage_data = getPlugin<EventPlugin>()->stageConfig(stage_id);
+	// const auto &start_slot_list = stage_data.drawingConfig.startSlots;
 
 	qfs::Query q(qfs::Connection::forName());
 	qf::core::sql::QueryBuilder qb1;
@@ -110,11 +109,11 @@ void GanttItem::load(int stage_id)
 			if(slot_ix > curr_slot_ix) {
 				slot_item = addStartSlotItem();
 				curr_slot_ix = slot_ix;
-				StartSlotData sd(start_slot_list.value(slot_ix).toMap());
+				auto sd = stage_data.drawingConfig.startSlotConfig(slot_ix);
 				if(!cd.value(QStringLiteral("startTimeMin")).isNull())
-					sd.setStartOffset(start_time_min);
-				slot_item->setData(sd);
-				curr_slot_end_min = sd.startOffset();
+					sd.startOffset = start_time_min;
+				slot_item->setConfig(sd);
+				curr_slot_end_min = sd.startOffset;
 				curr_slot_is_drawn = true;
 				curr_course_id = -1;
 			}
@@ -129,9 +128,9 @@ void GanttItem::load(int stage_id)
 					&& (start_time_min == 0 || start_time_min == curr_slot_end_min);
 			if(!chains_to_curr_slot) {
 				slot_item = addStartSlotItem();
-				StartSlotData sd;
-				sd.setStartOffset(start_time_min);
-				slot_item->setData(sd);
+				Event::StartSlotConfig sd;
+				sd.startOffset = start_time_min;
+				slot_item->setConfig(sd);
 				curr_slot_end_min = start_time_min;
 				curr_slot_is_drawn = false;
 			}
@@ -154,24 +153,15 @@ void GanttItem::save(int stage_id)
 {
 	qfLogFuncFrame();
 	{
-		Event::StageData stage = getPlugin<EventPlugin>()->stageData(stage_id);
-		DrawingConfig dc(stage.drawingConfig());
-		QVariantList start_slots;
+		auto *event = getPlugin<EventPlugin>();
+		// auto event_config = config->eventConfig();
+		auto stage_config = event->stageConfig(stage_id);
+		stage_config.drawingConfig.startSlots.clear();
 		for (int i = 0; i < startSlotItemCount(); ++i) {
 			StartSlotItem *slot_it = startSlotItemAt(i);
-			StartSlotData sd = slot_it->data();
-			start_slots << sd;
+			stage_config.drawingConfig.startSlots.push_back(slot_it->config());
 		}
-		dc.setStartSlots(start_slots);
-		auto dc_str = qf::core::Utils::qvariantToJson(dc);
-
-		QString qs = "UPDATE stages SET drawingConfig=:drawingConfig WHERE id=:id";
-		qfs::Query q(qfs::Connection::forName());
-		q.prepare(qs, qf::core::Exception::Throw);
-		q.bindValue(":drawingConfig", dc_str);
-		q.bindValue(":id", stage_id);
-		q.exec(qf::core::Exception::Throw);
-		getPlugin<EventPlugin>()->clearStageDataCache();
+		event->appDbConfig().setStageConfig(stage_id, stage_config);
 	}
 	{
 		QString qs = "UPDATE classdefs SET"
@@ -235,7 +225,7 @@ void GanttItem::checkClassClash()
 	QList<ClassClash> clashes;
 	for (int i = 0; i < startSlotItemCount(); ++i) {
 		StartSlotItem *slot_it = startSlotItemAt(i);
-		if(slot_it->data().isIgnoreClassClashCheck())
+		if(slot_it->config().ignoreClassClashCheck)
 			continue;
 		for (int j = 0; j < slot_it->classItemCount(); ++j) {
 			ClassItem *class_it = slot_it->classItemAt(j);
@@ -243,7 +233,7 @@ void GanttItem::checkClassClash()
 			for(ClassItem *other : clashing_class_list) {
 				// every pair is found from both sides, record it once
 				if(quintptr(class_it) < quintptr(other))
-					clashes << ClassClash{class_it, other, class_it->clashWith(other)};
+					clashes << ClassClash{.class1=class_it, .class2=other, .type=class_it->clashWith(other)};
 			}
 		}
 	}
@@ -304,8 +294,3 @@ void GanttItem::moveStartSlotItem(int from_slot_ix, int to_slot_ix)
 		checkClassClash();
 	}
 }
-
-
-
-
-

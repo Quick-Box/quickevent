@@ -32,7 +32,7 @@ EmmaClientWidget::EmmaClientWidget(QWidget *parent)
 		ui->chExportStartListXml30->setCheckState((ss.exportStartListTypeXml3()) ? Qt::Checked : Qt::Unchecked);
 		ui->chExportResultsXml30->setCheckState((ss.exportResultTypeXml3()) ? Qt::Checked : Qt::Unchecked);
 		if (ui->edFileNameBase->text().isEmpty())
-			ui->edFileNameBase->setText(getPlugin<EventPlugin>()->eventName());
+			ui->edFileNameBase->setText(getPlugin<EventPlugin>()->eventDbName());
 		if (ss.startExportType() == EmmaClientSettings::StartExportType::CSV)
 			ui->rbRacomStartCsv->setChecked(true);
 	}
@@ -106,7 +106,7 @@ bool EmmaClientWidget::saveSettings()
 			type = EmmaClientSettings::StartExportType::CSV;
 		ss.setStartExportType(type);
 		if (ss.fileNameBase().isEmpty())
-			ss.setFileNameBase(getPlugin<EventPlugin>()->eventName());
+			ss.setFileNameBase(getPlugin<EventPlugin>()->eventDbName());
 
 		svc->setSettings(ss);
 		if(!dir.isEmpty()) {

@@ -3,7 +3,7 @@
 
 #include "qxeventservice.h"
 
-#include <plugins/Event/src/eventplugin.h>
+#include "../../eventplugin.h"
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/messagebox.h>
@@ -108,9 +108,10 @@ bool QxEventServiceWidget::saveSettings()
 		ss.setExportDatabase(ui->chkExportDatabase->isChecked());
 		svc->setSettings(ss);
 
-		auto *event_plugin = getPlugin<EventPlugin>();
-		auto *event_config = event_plugin->eventConfig();
-		event_config->setQxApiToken(ui->edApiToken->text());
+		auto &app_config = getPlugin<EventPlugin>()->appDbConfig();
+		auto qx_config = app_config.qxConfig();
+		qx_config.apiToken = ui->edApiToken->text().trimmed();
+		app_config.setQxConfig(qx_config);
 	}
 	return true;
 }
@@ -188,4 +189,3 @@ QString QxEventServiceWidget::brokerUrl() const
 }
 
 }
-

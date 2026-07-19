@@ -1,8 +1,8 @@
 #ifndef EVENTPLUGIN_H
 #define EVENTPLUGIN_H
 
-#include "eventconfig.h"
-#include "stage.h"
+#include "appdbconfig.h"
+#include "plugins/Event/src/stageconfig.h"
 
 #include <qf/gui/framework/plugin.h>
 
@@ -17,39 +17,20 @@ namespace qf::gui { class Action; }
 namespace qf::gui::framework { class DockWidget; }
 namespace qf::gui::model { class SqlTableModel; }
 
-class QComboBox;
 class DbSchema;
 
 namespace Event {
 
-
 static constexpr auto START_LIST_IOFXML3_FILE = "startlist-iof3.xml";
 static constexpr auto RESULTS_IOFXML3_FILE = "results-iof3.xml";
-
-class DbEventPayload : public QVariantMap
-{
-private:
-	typedef QVariantMap Super;
-
-	QF_VARIANTMAP_FIELD(QString, e, setE, ventName)
-	QF_VARIANTMAP_FIELD(QString, d, setD, omain)
-	QF_VARIANTMAP_FIELD(int, c, setc, onnectionId)
-	QF_VARIANTMAP_FIELD(QVariant, d, setD, ata)
-public:
-	DbEventPayload(const QVariantMap &data = QVariantMap()) : QVariantMap(data) {}
-
-	static DbEventPayload fromJson(const QByteArray &json);
-
-	QByteArray toJson() const;
-};
 
 class EventPlugin : public qf::gui::framework::Plugin
 {
 	Q_OBJECT
-	Q_PROPERTY(QObject* eventConfig READ eventConfig)
+
 	Q_PROPERTY(int currentStageId READ currentStageId NOTIFY currentStageIdChanged)
 	Q_PROPERTY(int stageCount READ stageCount)
-	Q_PROPERTY(QString eventName READ eventName WRITE setEventName NOTIFY eventNameChanged)
+	Q_PROPERTY(QString eventDbName READ eventDbName WRITE setEventDbName NOTIFY eventDbNameChanged)
 	Q_PROPERTY(bool eventOpen READ isEventOpen WRITE setEventOpen NOTIFY eventOpenChanged)
 	Q_PROPERTY(bool sqlServerConnected READ isSqlServerConnected NOTIFY sqlServerConnectedChanged)
 private:
@@ -58,9 +39,10 @@ public:
 	enum class ConnectionType : int {SqlServer = 0, SingleFile};
 public:
 	EventPlugin(QObject *parent = nullptr);
+	~EventPlugin() override;
 
 	QF_PROPERTY_BOOL_IMPL(e, E, ventOpen)
-	QF_PROPERTY_IMPL(QString, e, E, ventName)
+	QF_PROPERTY_IMPL(QString, e, E, ventDbName)
 
 	/// strange is that 'quickboxDbEvent' just doesn't work without any error
 	/// from psql doc: Commonly, the channel name is the same as the name of some table in the database
@@ -79,33 +61,31 @@ public:
 	static constexpr auto DBEVENT_STAGE_START_CHANGED = "stageStartChanged";
 	static constexpr auto DBEVENT_QX_RECCHNG = "qxRecChng";
 
-	Q_INVOKABLE void initEventConfig();
-	Event::EventConfig* eventConfig(bool reload = false);
-	int stageCount();
+	Event::AppDbConfig& appDbConfig();
+	const Event::AppDbConfig& appDbConfig() const;
+	const Event::EventConfig& eventConfig() const;
+	int stageCount() const;
+	const Event::StageConfig& stageConfig(int stage_id) const;
 
 	Q_SLOT void setCurrentStageId(int stage_id);
 	int currentStageId() const;
 	Q_SIGNAL void currentStageIdChanged(int current_stage);
 
-	Q_INVOKABLE int stageIdForRun(int run_id);
+	Q_INVOKABLE int stageIdForRun(int run_id) const;
 
-	Q_INVOKABLE int stageStartMsec(int stage_id);
-	Q_INVOKABLE QDate stageStartDate(int stage_id);
-	Q_INVOKABLE QTime stageStartTime(int stage_id);
-	Q_INVOKABLE QDateTime stageStartDateTime(int stage_id);
+	int stageStartMsec(int stage_id) const;
+	QDate stageStartDate(int stage_id) const;
+	QTime stageStartTime(int stage_id) const;
+	QDateTime stageStartDateTime(int stage_id) const;
 	//Q_INVOKABLE int currentStageStartMsec();
-	int msecToStageStartAM(int si_am_time_sec, int msec = 0, int stage_id = 0);
+	int msecToStageStartAM(int si_am_time_sec, int msec = 0, int stage_id = 0) const;
 
-	StageData stageData(int stage_id);
-	void setStageData(int stage_id, const StageData &data);
-	Q_SLOT void clearStageDataCache();
-
-	Q_SLOT bool createEvent(const QString &event_name = QString(), const QVariantMap &event_params = QVariantMap());
-	Q_SLOT void editEvent();
-	Q_SLOT bool closeEvent();
-	Q_SLOT bool openEvent(const QString &event_name = QString());
-	Q_SLOT void exportEvent_qbe();
-	Q_SLOT void importEvent_qbe();
+	bool createEvent(const QString &event_name, const EventConfig &event_params);
+	void editEvent();
+	bool closeEvent();
+	bool openEvent(const QString &event_name = QString());
+	void exportEvent_qbe();
+	void importEvent_qbe();
 
 	void emitReloadDataRequest() { emit reloadDataRequest(); }
 	Q_SIGNAL void reloadDataRequest();
@@ -124,9 +104,9 @@ public:
 	QString shvApiEventId() const;
 	static QString createApiKey(int length);
 
-	QString startListIofXml3FileName(std::optional<int> stage_id = std::nullopt);
-	QString resultsIofXml3FileName(std::optional<int> stage_id = std::nullopt);
-	QString fileNameWithStageAndEventName(const QString &fn, std::optional<int> stage_id);
+	QString startListIofXml3FileName(std::optional<int> stage_id = std::nullopt) const;
+	QString resultsIofXml3FileName(std::optional<int> stage_id = std::nullopt) const;
+	QString fileNameWithStageAndEventName(const QString &fn, std::optional<int> stage_id) const;
 
 	DbSchema* dbSchema();
 	static int dbVersion();
@@ -146,11 +126,9 @@ private:
 	QStringList existingSqlEventNames() const;
 	QStringList existingFileEventNames(const QString &dir = QString()) const;
 
-	void onEventOpened();
 	void connectToSqlServer();
-	void loadCurrentStageId();
 	void saveCurrentStageId(int current_stage);
-	void editStage();
+	void setCurrentStage();
 	void onDbEvent(const QString & name, QSqlDriver::NotificationSource source, const QVariant & payload);
 
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
@@ -178,14 +156,11 @@ private:
 	qf::gui::Action *m_actCreateEvent = nullptr;
 	qf::gui::Action *m_actOpenEvent = nullptr;
 	qf::gui::Action *m_actEditEvent = nullptr;
+	qf::gui::Action *m_actSetCurrentStage = nullptr;
 	qf::gui::Action *m_actExportEvent_qbe = nullptr;
 	qf::gui::Action *m_actImportEvent_qbe = nullptr;
-	qf::gui::Action *m_actEditStage = nullptr;
-	Event::EventConfig *m_eventConfig = nullptr;
+	Event::AppDbConfig m_appDbConfig;
 	bool m_sqlServerConnected = false;
-	QComboBox *m_cbxStage = nullptr;
-	int m_currentStageId = 0;
-	QMap<int, StageData> m_stageCache;
 	QMap<int, QString> m_classNameCache;
 
 	qf::gui::framework::DockWidget *m_servicesDockWidget = nullptr;

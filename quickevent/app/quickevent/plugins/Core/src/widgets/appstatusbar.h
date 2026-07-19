@@ -6,6 +6,7 @@
 
 class QLabel;
 class QProgressBar;
+class QPushButton;
 
 namespace Core {
 
@@ -28,17 +29,17 @@ public:
 	int stageNo() const {return m_stageNo;}
 	Q_SLOT void setStageNo(int stage_no);
 	Q_SIGNAL void stageNoChanged();
+	Q_SIGNAL void stageClicked();
 
 	void showProgress(const QString &msg, int completed, int total) Q_DECL_OVERRIDE;
 private:
 	QLabel *m_lblMessage;
 	QProgressBar *m_progress;
 	QLabel *m_lblEvent;
-	QLabel *m_lblStage;
+	QPushButton *m_btCurrentStage;
 
 	QString m_eventName;
 	int m_stageNo = 0;
 };
 
 }
-

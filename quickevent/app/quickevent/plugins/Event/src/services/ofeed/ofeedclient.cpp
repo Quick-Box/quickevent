@@ -109,10 +109,6 @@ namespace Event::services {
 			return base_url.toString();
 		}
 
-		QString stageConfigKey(const QString &prefix, const QString &suffix, int stage)
-		{
-			return prefix + QLatin1Char('.') + suffix + QStringLiteral(".E") + QString::number(stage);
-		}
 	}
 
 OFeedClient::OFeedClient(QObject *parent)
@@ -164,7 +160,7 @@ void OFeedClient::exportResultsIofXml3()
 	m_resultsExportInProgress = true;
 
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	QString str = is_relays
 					  ? getPlugin<RelaysPlugin>()->resultsIofXml30()
@@ -184,7 +180,7 @@ void OFeedClient::exportStartListIofXml3(std::function<void()> on_success)
 	m_startListExportInProgress = true;
 
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	QString str = is_relays
 					  ? getPlugin<RelaysPlugin>()->startListIofXml30()
@@ -304,7 +300,7 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 		auto lst = data.toList();
 		int run_id = lst.value(0).toInt();
 		auto dirty_vals = lst.value(1).toMap();
-		qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED received, run_id: " << run_id << ", dirty keys: " << dirty_vals.keys().join(", "); // clazy:exclude=container-anti-pattern
+		// qfInfo() << serviceName().toStdString() << "DB event RUN CHANGED received, run_id: " << run_id << ", dirty keys: " << dirty_vals.keys().join(", ");
 		if (!dirty_vals.isEmpty()) {
 			static const QSet<QString> relevant_fields = {
 				// Run fields (finishTimeMs and timeMs are covered by DBEVENT_CARD_PROCESSED_AND_ASSIGNED)
@@ -340,127 +336,118 @@ void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, cons
 QString OFeedClient::hostUrl() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	QString key = serviceName().toLower() + ".hostUrl.E" + QString::number(current_stage);
-	return normalized_base_host_url(getPlugin<EventPlugin>()->eventConfig()->value(key, k_default_host_url).toString());
+	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
+	return normalized_base_host_url(cfg.hostUrl);
 }
 
 QString OFeedClient::eventId() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	return getPlugin<EventPlugin>()->eventConfig()->value(serviceName().toLower() + ".eventId.E" + QString::number(current_stage)).toString();
+	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
+	return cfg.eventId;
 }
 
 QString OFeedClient::eventPassword() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	return getPlugin<EventPlugin>()->eventConfig()->value(serviceName().toLower() + ".eventPassword.E" + QString::number(current_stage)).toString();
+	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
+	return cfg.eventPassword;
 }
 
 QString OFeedClient::changelogOrigin() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	QString key = serviceName().toLower() + ".changelogOrigin.E" + QString::number(current_stage);
-    return getPlugin<EventPlugin>()->eventConfig()->value(key, "START").toString();
+	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
+	return cfg.changelogOrigin;
 }
 
 bool OFeedClient::isInsertFromOFeed = false;
 
 QDateTime OFeedClient::lastChangelogCall() {
     int current_stage = getPlugin<EventPlugin>()->currentStageId();
-    QString key = serviceName().toLower() + ".lastChangelogCall.E" + QString::number(current_stage);
-
+    auto config = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
     // Retrieve the stored value from the configuration
-    QVariant value = getPlugin<EventPlugin>()->eventConfig()->value(key);
+    auto last_call = config.lastChangelogCall;
 
     // Check if the value exists
-    if (!value.isValid() || value.toString().isEmpty()) {
+    if (!last_call.isValid() || last_call.toString().isEmpty()) {
         // No valid value exists, set the initial value
-        QDateTime initialValue = QDateTime::fromSecsSinceEpoch(0); // Default to Unix epoch (1970-01-01T00:00:00Z)
-        getPlugin<EventPlugin>()->eventConfig()->setValue(key, initialValue.toString(Qt::ISODate));
-        getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
-        // qDebug() << "No lastChangelogCall found. Setting initial value to:" << initialValue.toString(Qt::ISODate);
-        return initialValue;
+        config.lastChangelogCall = QDateTime::fromSecsSinceEpoch(0); // Default to Unix epoch (1970-01-01T00:00:00Z)
+        getPlugin<EventPlugin>()->appDbConfig().setOfeedConfig(current_stage, config);
+        // qDebug() << "No lastChangelogCall found. Setting initial value to:" << config.lastChangelogCall.toString(Qt::ISODate);
     }
-
-    // Convert the stored string to QDateTime
-    QDateTime lastChangelog = QDateTime::fromString(value.toString(), Qt::ISODate);
-
-    // Check if the conversion was successful
-    if (!lastChangelog.isValid()) {
-        // If invalid, set the default value
-        QDateTime initialValue = QDateTime::fromSecsSinceEpoch(0); // Default to Unix epoch
-        getPlugin<EventPlugin>()->eventConfig()->setValue(key, initialValue.toString(Qt::ISODate));
-        getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
-        // qDebug() << "Invalid lastChangelogCall found. Setting initial value to:" << initialValue.toString(Qt::ISODate);
-        return initialValue;
-    }
-
-    return lastChangelog;
+    return config.lastChangelogCall;
 }
 
 bool OFeedClient::runXmlValidation()
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	QString key = serviceName().toLower() + ".runXmlValidation.E" + QString::number(current_stage);
-	return getPlugin<EventPlugin>()->eventConfig()->value(key, "true").toBool();
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    return config.ofeedConfig(current_stage).runXmlValidation;
 }
 
 bool OFeedClient::runChangesProcessing ()
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	QString key = serviceName().toLower() + ".runChangesProcessing.E" + QString::number(current_stage);
-	return getPlugin<EventPlugin>()->eventConfig()->value(key, "false").toBool();
-};
-
-QString OFeedClient::receiptConfigKey(const QString &suffix) const
-{
-	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	return stageConfigKey(k_event_config_prefix, suffix, current_stage);
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    return config.ofeedConfig(current_stage).runChangesProcessing;
 }
 
-QVariant OFeedClient::receiptConfigValue(const QString &suffix, const QVariant &default_value) const
-{
-	return getPlugin<EventPlugin>()->eventConfig()->value(receiptConfigKey(suffix), default_value);
-}
+// QString OFeedClient::receiptConfigKey(const QString &suffix) const
+// {
+// 	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+// 	return stageConfigKey(k_event_config_prefix, suffix, current_stage);
+// }
 
-void OFeedClient::setReceiptConfigValue(const QString &suffix, const QVariant &value)
-{
-	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
-	event_config->setValue(receiptConfigKey(suffix), value);
-	event_config->save(k_event_config_prefix);
-}
+// QVariant OFeedClient::receiptConfigValue(const QString &suffix, const QVariant &default_value) const
+// {
+// 	return getPlugin<EventPlugin>()->appDbConfig().value(receiptConfigKey(suffix), default_value);
+// }
+
+// void OFeedClient::setReceiptConfigValue(const QString &suffix, const QVariant &value)
+// {
+// 	auto *event_config = getPlugin<EventPlugin>()->appDbConfig();
+// 	event_config.setValue(receiptConfigKey(suffix), value);
+// 	event_config.save(k_event_config_prefix);
+// }
 
 bool OFeedClient::printEventImageOnReceipt() const
 {
-	return receiptConfigValue(QStringLiteral("receiptPrintEventImage"), false).toBool();
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    return config.receiptsConfig(current_stage).printImage;
 }
 
 void OFeedClient::setPrintEventImageOnReceipt(bool on)
 {
-	setReceiptConfigValue(QStringLiteral("receiptPrintEventImage"), on);
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    auto print_config = config.receiptsConfig(current_stage);
+    print_config.printImage = on;
+    config.setReceiptsConfig(current_stage, print_config);
 }
 
 bool OFeedClient::printEventQrCodeOnReceipt() const
 {
-	return receiptConfigValue(QStringLiteral("receiptPrintEventQrCode"), false).toBool();
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    return config.receiptsConfig(current_stage).printQrCode;
 }
 
 void OFeedClient::setPrintEventQrCodeOnReceipt(bool on)
 {
-	setReceiptConfigValue(QStringLiteral("receiptPrintEventQrCode"), on);
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    auto print_config = config.receiptsConfig(current_stage);
+    print_config.printQrCode = on;
+    config.setReceiptsConfig(current_stage, print_config);
 }
 
 int OFeedClient::receiptImageHeightMm() const
 {
-	bool ok = false;
-	int height_mm = receiptConfigValue(QStringLiteral("receiptImageHeightMm"), 18).toInt(&ok);
-	if(!ok)
-		return 18;
-	if(height_mm < 10)
-		return 10;
-	if(height_mm > 60)
-		return 60;
-	return height_mm;
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	return config.receiptsConfig(current_stage).imageHeightMm;
 }
 
 void OFeedClient::setReceiptImageHeightMm(int height_mm)
@@ -469,12 +456,18 @@ void OFeedClient::setReceiptImageHeightMm(int height_mm)
 		height_mm = 10;
 	else if(height_mm > 60)
 		height_mm = 60;
-	setReceiptConfigValue(QStringLiteral("receiptImageHeightMm"), height_mm);
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	auto rc = config.receiptsConfig(current_stage);
+	rc.imageHeightMm = height_mm;
+	config.setReceiptsConfig(current_stage, rc);
 }
 
 QString OFeedClient::receiptEventLinkUrl() const
 {
-	const QString custom_url = receiptConfigValue(QStringLiteral("receiptEventLinkUrl")).toString().trimmed();
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	const QString custom_url = config.receiptsConfig(current_stage).linkUrl;
 	if(!custom_url.isEmpty())
 		return custom_url;
 	return defaultReceiptEventLinkUrl();
@@ -496,12 +489,18 @@ QString OFeedClient::defaultReceiptEventLinkUrl() const
 void OFeedClient::setReceiptEventLinkUrl(QString link_url)
 {
 	link_url = link_url.trimmed();
-	setReceiptConfigValue(QStringLiteral("receiptEventLinkUrl"), link_url);
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	auto rc = config.receiptsConfig(current_stage);
+	rc.linkUrl = link_url;
+	config.setReceiptsConfig(current_stage, rc);
 }
 
 QString OFeedClient::receiptEventQrCodeCaption() const
 {
-	return receiptConfigValue(QStringLiteral("receiptPrintEventQrCodeCaption"), defaultReceiptEventQrCodeCaption()).toString().trimmed();
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	return config.receiptsConfig(current_stage).qrCodeCaption;
 }
 
 QString OFeedClient::defaultReceiptEventQrCodeCaption() const
@@ -512,7 +511,11 @@ QString OFeedClient::defaultReceiptEventQrCodeCaption() const
 void OFeedClient::setReceiptEventQrCodeCaption(QString caption)
 {
 	caption = caption.trimmed();
-	setReceiptConfigValue(QStringLiteral("receiptPrintEventQrCodeCaption"), caption);
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	auto rc = config.receiptsConfig(current_stage);
+	rc.qrCodeCaption = caption;
+	config.setReceiptsConfig(current_stage, rc);
 }
 
 bool OFeedClient::hasCachedEventImage() const
@@ -522,28 +525,36 @@ bool OFeedClient::hasCachedEventImage() const
 
 QString OFeedClient::cachedEventImageBase64() const
 {
-	return receiptConfigValue(QStringLiteral("receiptImageDataBase64")).toString();
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	return config.receiptsConfig(current_stage).imageBase64;
 }
 
 QString OFeedClient::cachedEventImageFormat() const
 {
-	return receiptConfigValue(QStringLiteral("receiptImageFormat"), QStringLiteral("png")).toString().toLower();
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	return config.receiptsConfig(current_stage).imageFormat;
 }
 
 void OFeedClient::setCachedEventImage(const QByteArray &raw_data, const QString &format)
 {
-	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
-	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageDataBase64")), QString::fromLatin1(raw_data.toBase64()));
-	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageFormat")), format.toLower());
-	event_config->save(k_event_config_prefix);
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	auto rc = config.receiptsConfig(current_stage);
+	rc.imageBase64 = QString::fromLatin1(raw_data.toBase64());
+	rc.imageFormat = format.toLower();
+	config.setReceiptsConfig(current_stage, rc);
 }
 
 void OFeedClient::clearCachedEventImage()
 {
-	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
-	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageDataBase64")), QString());
-	event_config->setValue(receiptConfigKey(QStringLiteral("receiptImageFormat")), QString());
-	event_config->save(k_event_config_prefix);
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	auto current_stage = config.eventConfig().currentStageId;
+	auto rc = config.receiptsConfig(current_stage);
+	rc.imageBase64.clear();
+	rc.imageFormat.clear();
+	config.setReceiptsConfig(current_stage, rc);
 }
 
 void OFeedClient::ensureEventImageCachedAtStartup()
@@ -660,67 +671,84 @@ void OFeedClient::refreshEventImageCache(std::function<void(bool, const QString 
 
 void OFeedClient::setHostUrl(QString hostUrl)
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".hostUrl.E" + QString::number(current_stage), hostUrl);
-	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.hostUrl = hostUrl;
+	config.setOfeedConfig(current_stage, cfg);
 	m_eventImageStartupAttempted = false;
 }
 
 void OFeedClient::setEventId(QString eventId)
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".eventId.E" + QString::number(current_stage), eventId);
-	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.eventId = eventId;
+	config.setOfeedConfig(current_stage, cfg);
 	m_eventImageStartupAttempted = false;
 }
 
 void OFeedClient::setEventPassword(QString eventPassword)
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".eventPassword.E" + QString::number(current_stage), eventPassword);
-	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.eventPassword = eventPassword;
+	config.setOfeedConfig(current_stage, cfg);
 	m_eventImageStartupAttempted = false;
 }
 
 void OFeedClient::setChangelogOrigin(QString changelogOrigin)
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".changelogOrigin.E" + QString::number(current_stage), changelogOrigin);
-	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.changelogOrigin = changelogOrigin;
+	config.setOfeedConfig(current_stage, cfg);
 }
 
 void OFeedClient::setLastChangelogCall(QDateTime lastChangelogCall)
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".lastChangelogCall.E" + QString::number(current_stage), lastChangelogCall);
-	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.lastChangelogCall = lastChangelogCall;
+	config.setOfeedConfig(current_stage, cfg);
 }
 
 void OFeedClient::setRunXmlValidation(bool runXmlValidation)
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".runXmlValidation.E" + QString::number(current_stage), runXmlValidation);
-	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.runXmlValidation = runXmlValidation;
+	config.setOfeedConfig(current_stage, cfg);
 }
 
 void OFeedClient::setRunChangesProcessing(bool runChangesProcessing)
 {
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	getPlugin<EventPlugin>()->eventConfig()->setValue(serviceName().toLower() + ".runChangesProcessing.E" + QString::number(current_stage), runChangesProcessing);
-	getPlugin<EventPlugin>()->eventConfig()->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.runChangesProcessing = runChangesProcessing;
+	config.setOfeedConfig(current_stage, cfg);
 }
 
 bool OFeedClient::introTourShowed() const
 {
-	return getPlugin<EventPlugin>()->eventConfig()->value(
-		serviceName().toLower() + QStringLiteral(".introTourShowed"), false).toBool();
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	return config.ofeedConfig(current_stage).introTourShowed;
 }
 
 void OFeedClient::setIntroTourShowed(bool shown)
 {
-	auto *event_config = getPlugin<EventPlugin>()->eventConfig();
-	event_config->setValue(serviceName().toLower() + QStringLiteral(".introTourShowed"), shown);
-	event_config->save(serviceName().toLower());
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.introTourShowed = shown;
+	config.setOfeedConfig(current_stage, cfg);
 }
 
 void OFeedClient::testConnection(const QString &host_url,
@@ -758,7 +786,7 @@ void OFeedClient::testConnection(const QString &host_url,
 		const QByteArray response_bytes = reply->readAll();
 		const QString response_text = QString::fromUtf8(response_bytes).trimmed();
 
-		auto callback_error = [=](const QString &msg) {
+		auto callback_error = [http_status, response_text, callback](const QString &msg) {
 			const QString status_text = http_status > 0 ? QStringLiteral("HTTP %1").arg(http_status) : QStringLiteral("HTTP status unavailable");
 			const QString full_message = response_text.isEmpty()
 											 ? QStringLiteral("%1: %2").arg(status_text, msg)
@@ -1522,7 +1550,7 @@ void OFeedClient::processNewRunner(int ofeed_competitor_id)
 			// Save emits db event
 			doc.save();
 
-			// auto competitor_id = doc.value("competitors.id"); unused
+			// auto competitor_id = doc.value("competitors.id");
 
 			// Get runs.id for current stage
 			int current_stage = getPlugin<EventPlugin>()->currentStageId();
@@ -1563,7 +1591,7 @@ void OFeedClient::storeChange(const QJsonObject &change)
 	QString firstname = competitor["firstname"].isString() ? competitor["firstname"].toString() : no_data;
 	QString lastname = competitor["lastname"].isString() ? competitor["lastname"].toString() : no_data;
 
-	// QJsonDocument change_json_doc(change); unused
+	// QJsonDocument change_json_doc(change);
 	// QString change_json = QString::fromUtf8(change_json_doc.toJson(QJsonDocument::Compact));
 
 	int change_id = change["id"].toInt();

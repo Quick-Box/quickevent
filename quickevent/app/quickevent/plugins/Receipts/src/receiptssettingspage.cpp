@@ -389,21 +389,16 @@ void ReceiptsSettingsPage::load()
 	}
 	auto *event_plugin = qf::gui::framework::getPlugin<Event::EventPlugin>();
 	Q_ASSERT(event_plugin);
-	auto *event_config = event_plugin->eventConfig();
-	Q_ASSERT(event_config);
-	m_stageId = qMax(event_config->currentStageId(), 1);
-	ui->chkPrintReceiptQrCode->setChecked(event_config->value(eventConfigKey(QStringLiteral("receiptPrintEventQrCode")), false).toBool());
-	ui->edReceiptQrCodeBaseUrl->setText(event_config->value(eventConfigKey(QStringLiteral("receiptEventLinkUrl"))).toString().trimmed());
-	ui->edReceiptQrCodeCaption->setText(event_config->value(eventConfigKey(QStringLiteral("receiptPrintEventQrCodeCaption")), defaultReceiptQrCodeCaption()).toString().trimmed());
-	ui->chkPrintReceiptImage->setChecked(event_config->value(eventConfigKey(QStringLiteral("receiptPrintEventImage")), false).toBool());
-	int image_height_mm = event_config->value(eventConfigKey(QStringLiteral("receiptImageHeightMm")), 18).toInt();
-	if(image_height_mm < 10)
-		image_height_mm = 10;
-	else if(image_height_mm > 60)
-		image_height_mm = 60;
-	ui->edReceiptImageHeight->setValue(image_height_mm);
-	m_receiptImageBase64 = event_config->value(eventConfigKey(QStringLiteral("receiptImageDataBase64"))).toString();
-	m_receiptImageFormat = event_config->value(eventConfigKey(QStringLiteral("receiptImageFormat"))).toString().trimmed().toLower();
+	auto &event_config = event_plugin->appDbConfig();
+	m_stageId = qMax(event_config.eventConfig().currentStageId, 1);
+	const auto &rc = event_config.receiptsConfig(m_stageId);
+	ui->chkPrintReceiptQrCode->setChecked(rc.printQrCode);
+	ui->edReceiptQrCodeBaseUrl->setText(rc.linkUrl);
+	ui->edReceiptQrCodeCaption->setText(rc.qrCodeCaption);
+	ui->chkPrintReceiptImage->setChecked(rc.printImage);
+	ui->edReceiptImageHeight->setValue(rc.imageHeightMm);
+	m_receiptImageBase64 = rc.imageBase64;
+	m_receiptImageFormat = rc.imageFormat;
 	if(m_receiptImageBase64.isEmpty()) {
 		m_receiptImageFormat.clear();
 		ui->edReceiptImageFile->clear();
@@ -427,16 +422,16 @@ void ReceiptsSettingsPage::save()
 
 	auto *event_plugin = qf::gui::framework::getPlugin<Event::EventPlugin>();
 	Q_ASSERT(event_plugin);
-	auto *event_config = event_plugin->eventConfig();
-	Q_ASSERT(event_config);
-	event_config->setValue(eventConfigKey(QStringLiteral("receiptPrintEventQrCode")), ui->chkPrintReceiptQrCode->isChecked());
-	event_config->setValue(eventConfigKey(QStringLiteral("receiptEventLinkUrl")), ui->edReceiptQrCodeBaseUrl->text().trimmed());
-	event_config->setValue(eventConfigKey(QStringLiteral("receiptPrintEventQrCodeCaption")), ui->edReceiptQrCodeCaption->text().trimmed());
-	event_config->setValue(eventConfigKey(QStringLiteral("receiptPrintEventImage")), ui->chkPrintReceiptImage->isChecked());
-	event_config->setValue(eventConfigKey(QStringLiteral("receiptImageHeightMm")), ui->edReceiptImageHeight->value());
-	event_config->setValue(eventConfigKey(QStringLiteral("receiptImageDataBase64")), m_receiptImageBase64);
-	event_config->setValue(eventConfigKey(QStringLiteral("receiptImageFormat")), m_receiptImageFormat);
-	event_config->save(QStringLiteral("event"));
+	auto &event_config = event_plugin->appDbConfig();
+	ReceiptsConfig rc;
+	rc.printQrCode = ui->chkPrintReceiptQrCode->isChecked();
+	rc.linkUrl = ui->edReceiptQrCodeBaseUrl->text().trimmed();
+	rc.qrCodeCaption = ui->edReceiptQrCodeCaption->text().trimmed();
+	rc.printImage = ui->chkPrintReceiptImage->isChecked();
+	rc.imageHeightMm = ui->edReceiptImageHeight->value();
+	rc.imageBase64 = m_receiptImageBase64;
+	rc.imageFormat = m_receiptImageFormat;
+	event_config.setReceiptsConfig(m_stageId, rc);
 }
 
 QVariantMap ReceiptsSettingsPage::currentTestReceiptData() const
@@ -445,8 +440,7 @@ QVariantMap ReceiptsSettingsPage::currentTestReceiptData() const
 
 	auto *event_plugin = qf::gui::framework::getPlugin<Event::EventPlugin>();
 	Q_ASSERT(event_plugin);
-	auto *event_config = event_plugin->eventConfig();
-	Q_ASSERT(event_config);
+	auto &event_config = event_plugin->appDbConfig();
 
 	const int stage_id = qMax(m_stageId, 1);
 	const bool print_logo = ui->chkPrintReceiptImage->isChecked();
@@ -514,7 +508,7 @@ QVariantMap ReceiptsSettingsPage::currentTestReceiptData() const
 
 	int stage_start_time_ms = event_plugin->stageStartMsec(stage_id);
 	if(stage_start_time_ms <= 0) {
-		QTime tm = event_config->eventDateTime().time();
+		QTime tm = event_config.eventConfig().time;
 		stage_start_time_ms = tm.isValid() ? tm.msecsSinceStartOfDay() : (10 * 60 * 60 * 1000);
 	}
 

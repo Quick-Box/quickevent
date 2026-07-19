@@ -490,7 +490,7 @@ void CardReaderWidget::reset()
 
 void CardReaderWidget::reload()
 {
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	//QString driver_name = m_cardsModel->sqlConnection().driverName();
 	int current_stage = getPlugin<CardReaderPlugin>()->currentStageId();
 	qfs::QueryBuilder qb;

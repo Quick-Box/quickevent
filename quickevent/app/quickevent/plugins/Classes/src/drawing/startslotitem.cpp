@@ -61,10 +61,10 @@ ClassItem *StartSlotItem::takeClassItemAt(int ix)
 void StartSlotItem::setStartOffset(int start_offset)
 {
 	start_offset = std::max(start_offset, 0);
-	StartSlotData dt = data();
-	if(dt.startOffset() != start_offset) {
-		dt.setStartOffset(start_offset);
-		setData(dt);
+	auto dt = config();
+	if(dt.startOffset != start_offset) {
+		dt.startOffset = start_offset;
+		setConfig(dt);
 		ganttScene()->setDirty(true);
 		updateGeometry();
 		ganttItem()->checkClassClash();
@@ -73,8 +73,8 @@ void StartSlotItem::setStartOffset(int start_offset)
 
 int StartSlotItem::startOffset() const
 {
-	StartSlotData dt = data();
-	return dt.startOffset();
+	auto dt = config();
+	return dt.startOffset;
 }
 
 void StartSlotItem::setStartInterval(int interval_min)
@@ -112,16 +112,16 @@ bool StartSlotItem::isStartIntervalUniform() const
 
 bool StartSlotItem::isIgnoreClassClashCheck() const
 {
-	return data().isIgnoreClassClashCheck();
+	return config().ignoreClassClashCheck;
 }
 
 void StartSlotItem::setIgnoreClassClashCheck(bool b)
 {
-	auto dt = data();
-	if(dt.isIgnoreClassClashCheck() == b)
+	auto dt = config();
+	if(dt.ignoreClassClashCheck == b)
 		return;
-	dt.setIgnoreClassClashCheck(b);
-	setData(dt);
+	dt.ignoreClassClashCheck = b;
+	setConfig(dt);
 	ganttScene()->setDirty(true);
 	updateGeometry();
 	ganttItem()->checkClassClash();
@@ -160,22 +160,22 @@ ClassItem *StartSlotItem::addClassItem()
 	return it;
 }
 
-const StartSlotData& StartSlotItem::data() const
+const Event::StartSlotConfig& StartSlotItem::config() const
 {
-	return m_data;
+	return m_config;
 }
 
-void StartSlotItem::setData(const StartSlotData &data)
+void StartSlotItem::setConfig(const Event::StartSlotConfig &data)
 {
-	m_data = data;
+	m_config = data;
 
 }
 
 void StartSlotItem::updateGeometry()
 {
 	qfLogFuncFrame();
-	auto dt = data();
-	int pos_x = minToPx(dt.startOffset());
+	const auto &dt = config();
+	int pos_x = minToPx(dt.startOffset);
 	double h = m_header->minHeight();
 	for (int i = 0; i < classItemCount(); ++i) {
 		ClassItem *it = classItemAt(i);
@@ -197,13 +197,6 @@ void StartSlotItem::updateGeometry()
 	//qfInfo() << r.left() << r.top() << r.width() << r.height();
 	setRect(r);
 	m_header->updateGeometry();
-	/*
-	setAcceptDrops(!isLocked());
-	for (int i = 0; i < classItemCount(); ++i) {
-		ClassItem *it = classItemAt(i);
-		it->setAcceptDrops(!isLocked());
-	}
-	*/
 }
 
 void StartSlotItem::setClassAreaWidth(int px)
@@ -251,4 +244,3 @@ void StartSlotItem::dropEvent(QGraphicsSceneDragDropEvent *event)
 	m_dragIn = false;
 	update();
 }
-

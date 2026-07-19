@@ -50,7 +50,7 @@ void Service::onEventOpen()
 {
 	auto *event_plugin = getPlugin<EventPlugin>();
 	if(event_plugin->isEventOpen()) {
-		loadSettingsForEvent(event_plugin->eventName());
+		loadSettingsForEvent(event_plugin->eventDbName());
 		ServiceSettings ss = settings();
 		if(ss.isAutoStart()) {
 			run();
