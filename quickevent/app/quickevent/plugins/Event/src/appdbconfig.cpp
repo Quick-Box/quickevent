@@ -107,9 +107,9 @@ void AppDbConfig::load()
 		}
 	};
 	{
-	    auto stages = config.value(STAGE).toMap();
+		auto stages = config.value(STAGE).toMap();
 		Query stages_q(conn);
-		stages_q.exec("SELECT * FROM stages ORDER BY id", qf::core::Exception::Throw);
+		stages_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
 		while(stages_q.next()) {
 			const auto stage_id = stages_q.value("id").toString();
 			if(stages.contains(stage_id))

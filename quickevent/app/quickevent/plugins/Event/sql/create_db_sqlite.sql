@@ -23,15 +23,6 @@ CREATE TABLE config (
 	CONSTRAINT config_pkey PRIMARY KEY (ckey)
 );
 ;
--- create table: stages;
-CREATE TABLE stages (
-	id integer,
-	startDateTime timestamp,
-	useAllMaps boolean NOT NULL DEFAULT 0,
-	drawingConfig character varying,
-	CONSTRAINT stages_pkey PRIMARY KEY (id)
-);
-;
 -- create table: courses;
 CREATE TABLE courses (
 	id integer PRIMARY KEY,
@@ -92,10 +83,10 @@ CREATE TABLE classdefs (
 	drawLock boolean NOT NULL DEFAULT 0,
 	relayStartNumber integer,
 	relayLegCount integer,
-	CONSTRAINT classdefs_foreign0 FOREIGN KEY (stageId) REFERENCES stages (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
 	CONSTRAINT classdefs_foreign1 FOREIGN KEY (classId) REFERENCES classes (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
 	CONSTRAINT classdefs_foreign2 FOREIGN KEY (courseId) REFERENCES courses (id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
+CREATE INDEX classdefs_ix0 ON classdefs (stageId);
 -- comments not suported for driver: SQLITE
 -- COMMENT ON COLUMN classdefs.vacantsBefore IS 'place n vacants gap before first competitor in class start list';
 -- comments not suported for driver: SQLITE
@@ -156,11 +147,10 @@ CREATE TABLE runs (
 	cardLent boolean NOT NULL DEFAULT 0,
 	cardReturned boolean NOT NULL DEFAULT 0,
 	importId integer,
-	CONSTRAINT runs_foreign0 FOREIGN KEY (competitorId) REFERENCES competitors (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-	CONSTRAINT runs_foreign1 FOREIGN KEY (stageId) REFERENCES stages (id) ON UPDATE RESTRICT ON DELETE RESTRICT
+	CONSTRAINT runs_foreign0 FOREIGN KEY (competitorId) REFERENCES competitors (id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
-CREATE INDEX runs_ix2 ON runs (relayId, leg);
-CREATE INDEX runs_ix3 ON runs (stageId, siId);
+CREATE INDEX runs_ix1 ON runs (relayId, leg);
+CREATE INDEX runs_ix2 ON runs (stageId, siId);
 -- comments not suported for driver: SQLITE
 -- COMMENT ON COLUMN runs.corridorTime IS 'DateTime when competitor entered start corridor. (Experimental)';
 -- comments not suported for driver: SQLITE

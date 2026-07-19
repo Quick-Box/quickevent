@@ -24,15 +24,6 @@ CREATE TABLE {{eventId}}.config (
 	CONSTRAINT config_pkey PRIMARY KEY (ckey)
 );
 ;
--- create table: {{eventId}}.stages;
-CREATE TABLE {{eventId}}.stages (
-	id integer,
-	startDateTime timestamp with time zone,
-	useAllMaps boolean NOT NULL DEFAULT false,
-	drawingConfig character varying,
-	CONSTRAINT stages_pkey PRIMARY KEY (id)
-);
-;
 -- create table: {{eventId}}.courses;
 CREATE TABLE {{eventId}}.courses (
 	id serial PRIMARY KEY,
@@ -93,10 +84,10 @@ CREATE TABLE {{eventId}}.classdefs (
 	drawLock boolean NOT NULL DEFAULT false,
 	relayStartNumber integer,
 	relayLegCount integer,
-	CONSTRAINT classdefs_foreign0 FOREIGN KEY (stageId) REFERENCES {{eventId}}.stages (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
 	CONSTRAINT classdefs_foreign1 FOREIGN KEY (classId) REFERENCES {{eventId}}.classes (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
 	CONSTRAINT classdefs_foreign2 FOREIGN KEY (courseId) REFERENCES {{eventId}}.courses (id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
+CREATE INDEX classdefs_ix0 ON {{eventId}}.classdefs (stageId);
 COMMENT ON COLUMN {{eventId}}.classdefs.vacantsBefore IS 'place n vacants gap before first competitor in class start list';
 COMMENT ON COLUMN {{eventId}}.classdefs.vacantEvery IS 'place vacant every n-th competitor in class start list';
 COMMENT ON COLUMN {{eventId}}.classdefs.vacantsAfter IS 'place n vacants gap after last competitor in class start list';
@@ -151,11 +142,10 @@ CREATE TABLE {{eventId}}.runs (
 	cardLent boolean NOT NULL DEFAULT false,
 	cardReturned boolean NOT NULL DEFAULT false,
 	importId integer,
-	CONSTRAINT runs_foreign0 FOREIGN KEY (competitorId) REFERENCES {{eventId}}.competitors (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-	CONSTRAINT runs_foreign1 FOREIGN KEY (stageId) REFERENCES {{eventId}}.stages (id) ON UPDATE RESTRICT ON DELETE RESTRICT
+	CONSTRAINT runs_foreign0 FOREIGN KEY (competitorId) REFERENCES {{eventId}}.competitors (id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
-CREATE INDEX runs_ix2 ON {{eventId}}.runs (relayId, leg);
-CREATE INDEX runs_ix3 ON {{eventId}}.runs (stageId, siId);
+CREATE INDEX runs_ix1 ON {{eventId}}.runs (relayId, leg);
+CREATE INDEX runs_ix2 ON {{eventId}}.runs (stageId, siId);
 COMMENT ON COLUMN {{eventId}}.runs.corridorTime IS 'DateTime when competitor entered start corridor. (Experimental)';
 COMMENT ON COLUMN {{eventId}}.runs.checkTimeMs IS 'in miliseconds';
 COMMENT ON COLUMN {{eventId}}.runs.startTimeMs IS 'in miliseconds';

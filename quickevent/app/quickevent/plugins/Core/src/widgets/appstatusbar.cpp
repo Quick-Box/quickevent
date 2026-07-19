@@ -39,9 +39,13 @@ AppStatusBar::AppStatusBar(QWidget *parent)
 AppStatusBar::~AppStatusBar()
 = default;
 
-void AppStatusBar::setEventName(const QString &event_name)
+QString AppStatusBar::eventDbName() const
 {
-	m_eventName = event_name;
+	return m_lblEvent->text();
+}
+
+void AppStatusBar::setEventDbName(const QString &event_name)
+{
 	m_lblEvent->setText(event_name);
 }
 

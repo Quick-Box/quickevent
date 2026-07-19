@@ -31,22 +31,6 @@ Schema {
 				Index { fields: ['ckey']; primary: true }
 			]
 		},
-		Table { name: 'stages'
-			fields: [
-				Field { name: 'id'; type: Int {} },
-				Field { name: 'startDateTime'; type: DateTime {} },
-				Field { name: 'useAllMaps'
-					type: Boolean {}
-					defaultValue: false
-					notNull: true
-				},
-				Field { name: 'drawingConfig'; type: String {} }
-				// Field { name: 'qxApiToken'; type: String {} }
-			]
-			indexes: [
-				Index {fields: ['id']; primary: true }
-			]
-		},
 		Table { name: 'courses'
 			fields: [
 				Field { name: 'id'; type: Serial { primaryKey: true } },
@@ -150,7 +134,7 @@ Schema {
 				Field { name: 'relayLegCount'; type: Int { } }
 			]
 			indexes: [
-				Index {fields: ['stageId']; references: ForeignKeyReference {table: 'stages'; fields: ['id']; } },
+				Index {fields: ['stageId']},
 				Index {fields: ['classId']; references: ForeignKeyReference {table: 'classes'; fields: ['id']; } },
 				Index {fields: ['courseId']; references: ForeignKeyReference {table: 'courses'; fields: ['id']; } }
 			]
@@ -294,7 +278,6 @@ Schema {
 						onDelete: 'RESTRICT';
 					}
 				},
-				Index {fields: ['stageId']; references: ForeignKeyReference {table: 'stages'; fields: ['id']; } },
 				Index {fields: ['relayId', 'leg']; unique: false },
 				Index {fields: ['stageId', 'siId']; unique: false } // might be duplicate to enable SI card sharing in not overlapping runs
 			]

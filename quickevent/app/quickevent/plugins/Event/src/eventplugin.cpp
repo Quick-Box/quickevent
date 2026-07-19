@@ -335,7 +335,7 @@ void EventPlugin::onInstalled()
 	connect(m_actImportEvent_qbe, &QAction::triggered, this, &EventPlugin::importEvent_qbe);
 
 	if(auto *sb = qobject_cast<Core::AppStatusBar*>(fwk->statusBar())) {
-		connect(this, &EventPlugin::eventDbNameChanged, sb, &Core::AppStatusBar::setEventName);
+		connect(this, &EventPlugin::eventDbNameChanged, sb, &Core::AppStatusBar::setEventDbName);
 		connect(this, &EventPlugin::currentStageIdChanged, sb, &Core::AppStatusBar::setStageNo);
 		connect(sb, &Core::AppStatusBar::stageClicked, this, &EventPlugin::setCurrentStage);
 	}
@@ -653,7 +653,7 @@ void EventPlugin::repairStageStarts(const qf::core::sql::Connection &from_conn, 
 {
 	qfs::Query to_q(to_conn);
 	qfs::Query from_q(from_conn);
-	from_q.exec("SELECT * FROM stages ORDER BY id");
+	from_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
 	while(from_q.next()) {
 		int ix = from_q.fieldIndex(QStringLiteral("startDate"));
 		if(ix < 0)
@@ -1045,9 +1045,10 @@ bool EventPlugin::openEvent(const QString &_event_name)
 			break;
 		}
 	}
-	if(!eventDbName().isEmpty() && db_event_names.contains(eventDbName()) && !ok) // dialog canceled and event is already open => no change
+	if(!eventDbName().isEmpty() && db_event_names.contains(eventDbName()) && !ok) {
+		// dialog canceled and event is already open => no change
 		return true;
-
+	}
 	closeEvent();
 
 	if(ok) {
@@ -1092,7 +1093,7 @@ bool EventPlugin::openEvent(const QString &_event_name)
 		}
 	}
 	if(ok) {
-	    m_appDbConfig = AppDbConfig();
+		m_appDbConfig = AppDbConfig();
 		m_appDbConfig.load();
 		if(m_appDbConfig.dbVersion() < dbVersion()) {
 			qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
