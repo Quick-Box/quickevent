@@ -18,6 +18,7 @@ struct StartSlotConfig
 
 struct DrawingConfig
 {
+    static DrawingConfig fromString(const QString& str);
     static DrawingConfig fromVariantMap(const QVariantMap& map);
     QVariantMap toVariantMap() const;
     const StartSlotConfig& startSlotConfig(int index) const;

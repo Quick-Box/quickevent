@@ -21,6 +21,7 @@
 #include <plugins/Core/src/coreplugin.h>
 #include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
+#include <qhashfunctions.h>
 #include <quickevent/core/og/timems.h>
 
 #include <qf/gui/framework/dockwidget.h>
@@ -652,17 +653,32 @@ void EventPlugin::onRegistrationsDockVisibleChanged(bool on)
 void EventPlugin::repairStageStarts(const qf::core::sql::Connection &from_conn, const qf::core::sql::Connection &to_conn)
 {
 	qfs::Query to_q(to_conn);
+	to_q.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :value, :type)");
+
 	qfs::Query from_q(from_conn);
 	from_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
 	while(from_q.next()) {
-		int ix = from_q.fieldIndex(QStringLiteral("startDate"));
+		int ix = from_q.fieldIndex(QStringLiteral("startDateTime"));
 		if(ix < 0)
 			break;
-		QDate d = from_q.value(ix).toDate();
-		QTime t = from_q.value("startTime").toTime();
-		QDateTime dt(d, t);
-		int id = from_q.value("id").toInt();
-		to_q.exec("UPDATE stages SET startDateTime=" QF_SARG(dt.toString(Qt::ISODate)) " WHERE id=" QF_IARG(id));
+		auto stage_id = from_q.value("id").toInt();
+		StageConfig stage_config;
+		stage_config.startDateTime = from_q.value(ix).toDateTime();
+		stage_config.drawingConfig = DrawingConfig::fromString(from_q.value("drawingConfig").toString());
+		stage_config.useAllMaps = from_q.value("useAllMaps").toBool();
+		auto make_key = [stage_id](const QString& key) {return QStringLiteral("stage.%1.%2").arg(stage_id).arg(key);};
+		to_q.bindValue(":key", make_key("startDateTime"));
+		to_q.bindValue(":value", stage_config.startDateTime);
+		to_q.bindValue(":type", "QDateTime");
+		to_q.exec();
+		to_q.bindValue(":key", make_key("drawingConfig"));
+		to_q.bindValue(":value", qf::core::Utils::qvariantToJson(stage_config.drawingConfig.toVariantMap()));
+		to_q.bindValue(":type", "QString");
+		to_q.exec();
+		to_q.bindValue(":key", make_key("useAllMaps"));
+		to_q.bindValue(":value", stage_config.useAllMaps);
+		to_q.bindValue(":type", "bool");
+		to_q.exec();
 	}
 }
 
@@ -1407,7 +1423,7 @@ bool EventPlugin::convertSqlEvent(const QString &from_event, const QString &to_e
 }
 
 QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection &exp_conn,
-                                     const QString &dest_schema_name)
+									 const QString &dest_schema_name)
 {
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	QString err_str;
@@ -1436,12 +1452,10 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 			err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
 			if(!err_str.isEmpty())
 				break;
-			if(table_name == QLatin1String("stages")) {
-				repairStageStarts(imp_conn, exp_conn);
-			}
 		}
 		if(!err_str.isEmpty())
 			break;
+		repairStageStarts(imp_conn, exp_conn);
 		transaction.commit();
 	} while(false);
 	return err_str;
