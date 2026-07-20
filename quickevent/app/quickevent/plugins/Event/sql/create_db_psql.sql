@@ -24,16 +24,6 @@ CREATE TABLE {{eventId}}.config (
 	CONSTRAINT config_pkey PRIMARY KEY (ckey)
 );
 ;
--- create table: {{eventId}}.stages;
-CREATE TABLE {{eventId}}.stages (
-	id integer,
-	startDateTime timestamp with time zone,
-	useAllMaps boolean NOT NULL DEFAULT false,
-	drawingConfig character varying,
-	qxApiToken character varying,
-	CONSTRAINT stages_pkey PRIMARY KEY (id)
-);
-;
 -- create table: {{eventId}}.courses;
 CREATE TABLE {{eventId}}.courses (
 	id serial PRIMARY KEY,
@@ -94,10 +84,10 @@ CREATE TABLE {{eventId}}.classdefs (
 	drawLock boolean NOT NULL DEFAULT false,
 	relayStartNumber integer,
 	relayLegCount integer,
-	CONSTRAINT classdefs_foreign0 FOREIGN KEY (stageId) REFERENCES {{eventId}}.stages (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
 	CONSTRAINT classdefs_foreign1 FOREIGN KEY (classId) REFERENCES {{eventId}}.classes (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
 	CONSTRAINT classdefs_foreign2 FOREIGN KEY (courseId) REFERENCES {{eventId}}.courses (id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
+CREATE INDEX classdefs_ix0 ON {{eventId}}.classdefs (stageId);
 COMMENT ON COLUMN {{eventId}}.classdefs.vacantsBefore IS 'place n vacants gap before first competitor in class start list';
 COMMENT ON COLUMN {{eventId}}.classdefs.vacantEvery IS 'place vacant every n-th competitor in class start list';
 COMMENT ON COLUMN {{eventId}}.classdefs.vacantsAfter IS 'place n vacants gap after last competitor in class start list';
@@ -152,11 +142,10 @@ CREATE TABLE {{eventId}}.runs (
 	cardLent boolean NOT NULL DEFAULT false,
 	cardReturned boolean NOT NULL DEFAULT false,
 	importId integer,
-	CONSTRAINT runs_foreign0 FOREIGN KEY (competitorId) REFERENCES {{eventId}}.competitors (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-	CONSTRAINT runs_foreign1 FOREIGN KEY (stageId) REFERENCES {{eventId}}.stages (id) ON UPDATE RESTRICT ON DELETE RESTRICT
+	CONSTRAINT runs_foreign0 FOREIGN KEY (competitorId) REFERENCES {{eventId}}.competitors (id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
-CREATE INDEX runs_ix2 ON {{eventId}}.runs (relayId, leg);
-CREATE INDEX runs_ix3 ON {{eventId}}.runs (stageId, siId);
+CREATE INDEX runs_ix1 ON {{eventId}}.runs (relayId, leg);
+CREATE INDEX runs_ix2 ON {{eventId}}.runs (stageId, siId);
 COMMENT ON COLUMN {{eventId}}.runs.corridorTime IS 'DateTime when competitor entered start corridor. (Experimental)';
 COMMENT ON COLUMN {{eventId}}.runs.checkTimeMs IS 'in miliseconds';
 COMMENT ON COLUMN {{eventId}}.runs.startTimeMs IS 'in miliseconds';
@@ -290,19 +279,20 @@ CREATE TABLE {{eventId}}.lentcards (
 CREATE TABLE {{eventId}}.qxchanges (
 	id serial PRIMARY KEY,
 	stage_id integer,
-	change_id integer,
-	data_id integer,
+	foreign_table character varying,
+	foreign_id integer,
 	data_type character varying,
 	data character varying,
 	orig_data character varying,
-	source character varying,
 	user_id character varying,
 	status character varying,
 	status_message character varying,
-	created timestamp with time zone,
-	lock_number integer,
-	CONSTRAINT qxchanges_unique0 UNIQUE (stage_id, change_id)
+	created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	lock_number integer
 );
+CREATE INDEX qxchanges_ix0 ON {{eventId}}.qxchanges (stage_id, data_type, foreign_id);
+CREATE INDEX qxchanges_ix1 ON {{eventId}}.qxchanges (stage_id, status);
+CREATE UNIQUE INDEX qxchanges_unique2 ON {{eventId}}.qxchanges (stage_id, foreign_id) WHERE status = 'Pending' AND data_type = 'LateEntry' AND foreign_table='runs' AND foreign_id IS NOT NULL;
 COMMENT ON COLUMN {{eventId}}.qxchanges.orig_data IS 'Store data overriden by change here to enable change rollback.';
 ;
 ------------------------------------;
@@ -311,4 +301,4 @@ COMMENT ON COLUMN {{eventId}}.qxchanges.orig_data IS 'Store data overriden by ch
 ;
 -- insert into table: {{eventId}}.config;
 INSERT INTO {{eventId}}.config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30500', 'int');
+('db.version', 'Data version', '30600', 'int');

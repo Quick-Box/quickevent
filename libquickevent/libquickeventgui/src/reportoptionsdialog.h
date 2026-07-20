@@ -87,13 +87,13 @@ public:
 	explicit ReportOptionsDialog(QWidget *parent = nullptr);
 	~ReportOptionsDialog() override;
 
-	int exec() Q_DECL_OVERRIDE;
+	int exec() override;
 
 	void setStartListPrintVacantsVisible(bool b);
 	void setStartListForRelays();
 
-	QString persistentSettingsPath() Q_DECL_OVERRIDE;
-	bool setPersistentSettingsId(const QString &id) Q_DECL_OVERRIDE;
+	QString persistentSettingsPath() override;
+	bool setPersistentSettingsId(const QString &id) override;
 	Q_SIGNAL void persistentSettingsIdChanged(const QString &id);
 
 	void setOptions(const Options &options);
@@ -129,7 +129,7 @@ public:
 	static QString sqlWhereExpression(const Options &opts, const int stage_id);
 	static QString getClassesForStartNumber(const int number, const int stage_id);
 protected:
-	//void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
+	//void showEvent(QShowEvent *event) override;
 private:
 	Ui::ReportOptionsDialog *ui;
 };

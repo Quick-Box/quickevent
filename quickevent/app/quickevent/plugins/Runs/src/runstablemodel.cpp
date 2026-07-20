@@ -1,13 +1,15 @@
 #include "runstablemodel.h"
 
+#include "../../Event/src/eventplugin.h"
+
 #include <quickevent/core/og/timems.h>
 #include <quickevent/core/si/siid.h>
-#include "../../Event/src/eventplugin.h"
 
 #include <qf/gui/log.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/application.h>
 
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/qxrecchng.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/connection.h>
@@ -50,7 +52,7 @@ RunsTableModel::RunsTableModel(QObject *parent)
 	setColumn(col_competitors_note, ColumnDefinition("competitors.note", tr("Note")));
 
 	connect(this, &RunsTableModel::dataChanged, this, &RunsTableModel::onDataChanged, Qt::QueuedConnection);
-	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
 }
 
 Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const
@@ -62,7 +64,7 @@ Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const
 		//qfInfo() << flgs;
 	}
 	if(index.column() == col_course_id) {
-		if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+		if (getPlugin<Event::EventPlugin>()->appDbConfig().eventConfig().isRelays()) {
 			flgs &= ~Qt::ItemIsEditable;
 		}
 	}
@@ -72,7 +74,7 @@ Qt::ItemFlags RunsTableModel::flags(const QModelIndex &index) const
 QVariant RunsTableModel::data(const QModelIndex &index, int role) const
 {
 	if(index.column() == col_course_id && role == Qt::DisplayRole) {
-		if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+		if (getPlugin<Event::EventPlugin>()->appDbConfig().eventConfig().isRelays()) {
 			auto start_number = value(index.row(), "startNumber").toInt();
 			auto leg = value(index.row(), "runs.leg").toInt();
 			return QStringLiteral("%1.%2").arg(start_number).arg(leg);
@@ -101,6 +103,12 @@ QVariant RunsTableModel::data(const QModelIndex &index, int role) const
 
 QVariant RunsTableModel::value(int row_ix, int column_ix) const
 {
+	if(column_ix == col_competitorName) {
+		qf::core::utils::TableRow row = tableRow(row_ix);
+		auto first_name = row.value(QStringLiteral("firstName")).toString();
+		auto last_name = row.value(QStringLiteral("lastName")).toString();
+		return last_name + ' ' + first_name;
+	}
 	if(column_ix == col_runFlags) {
 		qf::core::utils::TableRow row = tableRow(row_ix);
 		bool mis_punch = row.value(QStringLiteral("runs.misPunch")).toBool();
@@ -355,7 +363,11 @@ void RunsTableModel::onDataChanged(const QModelIndex &top_left, const QModelInde
 
 void RunsTableModel::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
-	handleQxRecChng(recchng, source);
+	if (recchng.op == qf::core::sql::RecOp::Insert) {
+		// inserts might be in filterred out class or stage, this cannot be solved by applyQxRecChng
+		return;
+	}
+	applyQxRecChng(recchng, source);
 }
 
 bool RunsTableModel::postRow(int row_no, bool throw_exc)

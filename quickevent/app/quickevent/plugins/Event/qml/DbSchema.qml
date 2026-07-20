@@ -31,22 +31,6 @@ Schema {
 				Index { fields: ['ckey']; primary: true }
 			]
 		},
-		Table { name: 'stages'
-			fields: [
-				Field { name: 'id'; type: Int {} },
-				Field { name: 'startDateTime'; type: DateTime {} },
-				Field { name: 'useAllMaps'
-					type: Boolean {}
-					defaultValue: false
-					notNull: true
-				},
-				Field { name: 'drawingConfig'; type: String {} },
-				Field { name: 'qxApiToken'; type: String {} }
-			]
-			indexes: [
-				Index {fields: ['id']; primary: true }
-			]
-		},
 		Table { name: 'courses'
 			fields: [
 				Field { name: 'id'; type: Serial { primaryKey: true } },
@@ -150,7 +134,7 @@ Schema {
 				Field { name: 'relayLegCount'; type: Int { } }
 			]
 			indexes: [
-				Index {fields: ['stageId']; references: ForeignKeyReference {table: 'stages'; fields: ['id']; } },
+				Index {fields: ['stageId']},
 				Index {fields: ['classId']; references: ForeignKeyReference {table: 'classes'; fields: ['id']; } },
 				Index {fields: ['courseId']; references: ForeignKeyReference {table: 'courses'; fields: ['id']; } }
 			]
@@ -294,7 +278,6 @@ Schema {
 						onDelete: 'RESTRICT';
 					}
 				},
-				Index {fields: ['stageId']; references: ForeignKeyReference {table: 'stages'; fields: ['id']; } },
 				Index {fields: ['relayId', 'leg']; unique: false },
 				Index {fields: ['stageId', 'siId']; unique: false } // might be duplicate to enable SI card sharing in not overlapping runs
 			]
@@ -494,22 +477,31 @@ Schema {
 			fields: [
 				Field { name: 'id'; type: Serial { primaryKey: true } },
 				Field { name: 'stage_id'; type: Int { } },
-				Field { name: 'change_id'; type: Int { } },
-				Field { name: 'data_id'; type: Int { } },
+				Field { name: 'foreign_table'; type: String { } },
+				Field { name: 'foreign_id'; type: Int { } },
 				Field { name: 'data_type'; type: String { } },
 				Field { name: 'data'; type: String { } },
 				Field { name: 'orig_data'; type: String { }
 					comment: 'Store data overriden by change here to enable change rollback.'
 				},
-				Field { name: 'source'; type: String { } },
 				Field { name: 'user_id'; type: String { } },
 				Field { name: 'status'; type: String { } },
 				Field { name: 'status_message'; type: String { } },
-				Field { name: 'created'; type: DateTime { } },
+				Field { name: 'created'; type: DateTime { }
+					notNull: true
+					defaultValue: 'CURRENT_TIMESTAMP'
+				},
 				Field { name: 'lock_number'; type: Int { } }
 			]
 			indexes: [
-				Index {fields: ['stage_id', 'change_id']; unique: true }
+				Index {fields: ['stage_id', 'data_type', 'foreign_id']; unique: false },
+				Index {fields: ['stage_id', 'status']; unique: false },
+				Index {fields: ['stage_id', 'foreign_id']
+					// The WHERE clause means the index only contains rows that satisfy where condition
+					where: "status = 'Pending' AND data_type = 'LateEntry' AND foreign_table='runs' AND foreign_id IS NOT NULL"
+					comment: 'Only one pending late entry can be present for single runs.id (foreign_id).'
+					unique: true
+				}
 			]
 		}
 	]

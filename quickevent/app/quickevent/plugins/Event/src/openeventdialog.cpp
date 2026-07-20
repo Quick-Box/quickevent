@@ -1,6 +1,6 @@
 #include "openeventdialog.h"
 #include "ui_openeventdialog.h"
-#include "eventconfig.h"
+#include "appdbconfig.h"
 #include "eventdialogwidget.h"
 
 #include <qf/core/collator.h>

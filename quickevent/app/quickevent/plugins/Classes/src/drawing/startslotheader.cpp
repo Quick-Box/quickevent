@@ -51,8 +51,6 @@ void paintItemRecursively(QGraphicsItem *it, QPainter *painter, QStyleOptionGrap
 	painter->restore();
 }
 
-}
-
 class LockItem : public QGraphicsRectItem
 {
 	Q_DECLARE_TR_FUNCTIONS(drawing::ClassdefsLockItem)
@@ -328,6 +326,7 @@ private:
 	SpinButton *m_btnInc;
 	SpinValueItem *m_value;
 };
+}
 
 StartSlotHeader::StartSlotHeader(StartSlotItem *parent)
 	: Super(parent), IGanttItem(this)
@@ -388,7 +387,7 @@ void StartSlotHeader::updateGeometry()
 	m_lockItem->setPos(0, row_h);
 	auto *start_spinner = static_cast<SpinnerItem*>(m_startSpinner);
 	start_spinner->setGeometry(QRectF(col1_w, 0, 2 * row_h, row_h));
-	start_spinner->setValue(QString::number(slot_it->data().startOffset()));
+	start_spinner->setValue(QString::number(slot_it->config().startOffset));
 	auto *interval_spinner = static_cast<SpinnerItem*>(m_intervalSpinner);
 	interval_spinner->setGeometry(QRectF(col1_w, row_h, 2 * row_h, row_h));
 	if(slot_it->isStartIntervalUniform()) {
@@ -416,8 +415,8 @@ void StartSlotHeader::updateGeometry()
 
 void StartSlotHeader::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-	const StartSlotData &dt = startSlotItem()->data();
-	if(dt.isIgnoreClassClashCheck()) {
+	const auto &dt = startSlotItem()->config();
+	if(dt.ignoreClassClashCheck) {
 		QColor c("khaki");
 		c.setAlpha(128);
 		QRectF r = rect();
@@ -436,7 +435,7 @@ void StartSlotHeader::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
 
 void StartSlotHeader::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-	StartSlotData dt = startSlotItem()->data();
+	const auto &dt = startSlotItem()->config();
 	QMenu menu;
 	QAction *a_append_start_slot = menu.addAction(tr("Append start slot"));
 	QAction *a_set_start = menu.addAction(tr("Set slot start offset"));
@@ -445,7 +444,7 @@ void StartSlotHeader::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 	//a_locked->setCheckable(true);
 	QAction *a_clash = menu.addAction(tr("Ignore class clash check"));
 	a_clash->setCheckable(true);
-	a_clash->setChecked(dt.isIgnoreClassClashCheck());
+	a_clash->setChecked(dt.ignoreClassClashCheck);
 	QAction *a = menu.exec(event->screenPos());
 	if(a == a_append_start_slot) {
 		auto *gi = ganttItem();
@@ -463,7 +462,7 @@ void StartSlotHeader::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 			o = o->parent();
 		}
 		bool ok;
-		int i = QInputDialog::getInt(w, tr("InputDialog"), tr("Start slot offset [min]:"), dt.startOffset(), 0, 1000000, 1, &ok);
+		int i = QInputDialog::getInt(w, tr("InputDialog"), tr("Start slot offset [min]:"), dt.startOffset, 0, 1000000, 1, &ok);
 		if(ok) {
 			startSlotItem()->setStartOffset(i);
 		}

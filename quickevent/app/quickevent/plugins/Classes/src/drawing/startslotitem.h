@@ -3,6 +3,8 @@
 
 #include "iganttitem.h"
 
+#include <plugins/Event/src/stageconfig.h>
+
 #include <qf/core/utils.h>
 #include <qf/core/exception.h>
 
@@ -14,22 +16,12 @@ class ClassItem;
 class GanttItem;
 class StartSlotHeader;
 
-class StartSlotData : public QVariantMap
-{
-public:
-	explicit StartSlotData(const QVariantMap &m = QVariantMap()) : QVariantMap(m) {}
-
-	QF_VARIANTMAP_FIELD(int, s, setS, tartOffset)
-	//QF_VARIANTMAP_FIELD(bool, is, set, Locked)
-	QF_VARIANTMAP_FIELD(bool, is, set, IgnoreClassClashCheck)
-};
-
 class StartSlotItem : public QGraphicsRectItem, public IGanttItem
 {
 private:
 	typedef QGraphicsRectItem Super;
 public:
-	StartSlotItem(QGraphicsItem * parent = 0);
+	StartSlotItem(QGraphicsItem * parent = nullptr);
 
 	QF_FIELD_IMPL2(int, s, S, lotNumber, 0)
 
@@ -59,15 +51,15 @@ public:
 	void updateGeometry();
 	void setClassAreaWidth(int px);
 
-	const StartSlotData& data() const;
-	void setData(const StartSlotData &data);
+	const Event::StartSlotConfig& config() const;
+	void setConfig(const Event::StartSlotConfig &data);
 
 	void dragEnterEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
 	void dragMoveEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
 	void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
 	void dropEvent(QGraphicsSceneDragDropEvent *event) Q_DECL_OVERRIDE;
 private:
-	StartSlotData m_data;
+	Event::StartSlotConfig m_config;
 	QList<ClassItem*> m_classItems;
 	StartSlotHeader *m_header;
 	bool m_dragIn = false;

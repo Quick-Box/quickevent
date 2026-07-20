@@ -1311,6 +1311,7 @@ QVariant Table::sumValue(int field_ix) const
 	}
 	return ret;
 }
+
 namespace {
 void setDomElementText(QDomDocument &owner_doc, QDomElement &el, const QString &str)
 {
@@ -1325,6 +1326,7 @@ void setDomElementText(QDomDocument &owner_doc, QDomElement &el, const QString &
 	}
 }
 }
+
 QDomElement Table::toHtmlElement(QDomDocument &owner_doc, const QString & col_names, TextExportOptions opts) const
 {
 	QList<int> ixs;

@@ -26,6 +26,7 @@
 
 #include <QFile>
 #include <QQmlEngine>
+#include <algorithm>
 
 #include <qf/core/utils/timescope.h>
 
@@ -80,8 +81,7 @@ void RelaysPlugin::onInstalled()
 			return;
 		auto *ep = getPlugin<EventPlugin>();
 		bool event_open = ep->isEventOpen();
-		auto *cfg = event_open ? ep->eventConfig() : nullptr;
-		bool is_relays = cfg && cfg->isRelays();
+		bool is_relays = event_open && ep->appDbConfig().eventConfig().isRelays();
 		scw->setPartVisible(featureId(), is_relays);
 		if(event_open && !is_relays && m_partWidget && m_partWidget->isActive())
 			scw->setActivePart(QStringLiteral("Runs"), true);
@@ -188,7 +188,7 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsResultsTable(const QString &where_
 {
 	qfLogFuncFrame() << "leg cnt:" << leg_count;
 	qf::core::utils::TreeTable tt;
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(1));
 	tt.appendColumn("className", QMetaType(QMetaType::QString));
 	qfs::QueryBuilder qb;
@@ -220,7 +220,7 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsResultsTable(const QString &where_
 	qfDebug() << "nLegsResultsTable table:" << wt();
 	return tt;
 }
-
+namespace {
 QPair <int, QString> getClubFromName(QString name)
 {
 	qf::core::sql::Query q;
@@ -229,7 +229,7 @@ QPair <int, QString> getClubFromName(QString name)
 		return qMakePair(q.value(0).toInt(), q.value(1).toString());
 	return qMakePair<int, QString>(0,"");
 }
-
+}
 
 qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, int leg_count, int max_places, bool exclude_not_finish)
 {
@@ -248,8 +248,7 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 		qfError() << "Leg count not defined for class id:" << class_id;
 		return qf::core::utils::TreeTable();
 	}
-	if(leg_count > max_leg)
-		leg_count = max_leg;
+	leg_count = std::min(leg_count, max_leg);
 
 	QList<Relay> relays;
 	//QStringList relay_ids;
@@ -513,7 +512,7 @@ QVariant RelaysPlugin::startListByClassesTableData(const QString &class_filter, 
 	//console.info("currentStageTable query:", reportModel.effectiveQuery());
 	model.reload();
 	qf::core::utils::TreeTable tt = model.toTreeTable();
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(1));
 	{
 		qf::core::sql::QueryBuilder qb;
@@ -579,8 +578,8 @@ QString RelaysPlugin::resultsIofXml30()
 {
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(1);
 	qfDebug() << "creating table";
-	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
-	bool is_iof_race = event_config->isIofRace();
+	const auto &event_config = getPlugin<EventPlugin>()->eventConfig();
+	bool is_iof_race = event_config.iofRace;
 	//auto tt_classes = getPlugin<RelaysPlugin>()->nLegsResultsTable("classes.name='D105'", 999, 999999, false);
 	auto tt_classes = getPlugin<RelaysPlugin>()->nLegsResultsTable(QString(), 999, 999999, false);
 	QVariantList result_list{
@@ -863,8 +862,8 @@ QString RelaysPlugin::startListIofXml30()
 {
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(1);
 	qfDebug() << "creating table";
-	Event::EventConfig *event_config = getPlugin<EventPlugin>()->eventConfig();
-	bool is_iof_race = event_config->isIofRace();
+	const auto &event_config = getPlugin<EventPlugin>()->eventConfig();
+	bool is_iof_race = event_config.iofRace;
 	qf::core::utils::TreeTable tt_classes = startListByClassesTableData(QString(), false);
 	QVariantList start_list{
 		"StartList",

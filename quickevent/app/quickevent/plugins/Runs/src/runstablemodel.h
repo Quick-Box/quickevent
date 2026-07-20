@@ -1,5 +1,4 @@
-#ifndef RUNSTABLEMODEL_H
-#define RUNSTABLEMODEL_H
+#pragma once
 
 #include <quickevent/gui/og/sqltablemodel.h>
 
@@ -67,4 +66,3 @@ private:
 	void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 };
 
-#endif // RUNSTABLEMODEL_H

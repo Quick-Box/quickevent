@@ -10,6 +10,7 @@
 #include <quickevent/core/si/siid.h>
 #include <quickevent/core/og/timems.h>
 
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/log.h>
 #include <qf/core/logentrymap.h>
 #include <qf/core/utils/settings.h>
@@ -197,7 +198,8 @@ int main(int argc, char *argv[])
 	main_window.show();
 	emit main_window.applicationLaunched();
 
-	QObject::connect(&app, &Application::qxRecChng, &app, [](const qf::core::sql::QxRecChng &recchng) {
+#ifdef QT_DEBUG
+	QObject::connect(app.qxSql(), &qf::core::sql::QxSql::recChng, &app, [](const qf::core::sql::QxRecChng &recchng) {
 		auto dump_map = [](const QVariantMap &m) {
 			QStringList rows;
 			for (const auto &[k, v] : m.asKeyValueRange()) {
@@ -210,6 +212,7 @@ int main(int argc, char *argv[])
 				 << "id:" << recchng.id
 				 << "record:" << dump_map(recchng.record);
 	});
+#endif
 
 	int ret = Application::exec();
 

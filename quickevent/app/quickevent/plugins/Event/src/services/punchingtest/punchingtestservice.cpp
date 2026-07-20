@@ -139,7 +139,7 @@ void PunchingTestService::onTimerTick()
 	// When enabled: 1/badCheckRate chance the runner checked too early (triggers bad-check).
 	// When disabled: natural 1–2 minute window, no bad-check possible.
 	int check_offset_sec;
-	if (auto cfg = event_plugin->eventConfig()->maximumCardCheckAdvanceSec(); cfg.has_value()) {
+	if (auto cfg = event_plugin->appDbConfig().eventConfig().maximumCardCheckAdvanceSec(); cfg.has_value()) {
 		int max_sec = cfg.value();
 		if (rng.bounded(static_cast<quint32>(ss.badCheckRate())) == 0) {
 			// Bad check: checked too early — [max+1, max*3] seconds before start

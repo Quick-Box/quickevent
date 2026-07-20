@@ -7,9 +7,7 @@
 
 class QObject;
 
-namespace qf {
-namespace gui {
-namespace framework {
+namespace qf::gui::framework {
 
 class QFGUI_DECL_EXPORT IPersistentSettings
 {
@@ -38,6 +36,6 @@ private:
 	QString m_persistentSettingsPath;
 };
 
-}}}
+}
 
 #endif

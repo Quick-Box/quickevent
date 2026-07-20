@@ -7,6 +7,7 @@ class RunsTableItemDelegate;
 class CourseItemDelegate;
 
 namespace qf::gui { class TableView; }
+namespace qf::core::sql { struct QxRecChng; }
 
 namespace Ui {
 class RunsTableWidget;

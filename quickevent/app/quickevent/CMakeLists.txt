@@ -60,20 +60,18 @@ add_executable(quickevent
 	plugins/Core/src/widgets/settingsdialog.cpp
 	plugins/Core/src/widgets/settingsdialog.ui
 
+	plugins/Event/src/stageconfig.cpp plugins/Event/src/stageconfig.h
 	plugins/Event/src/connectdbdialogwidget.cpp
 	plugins/Event/src/connectdbdialogwidget.ui
 	plugins/Event/src/connectionsettings.cpp
 	plugins/Event/src/dbschema.cpp
-	plugins/Event/src/eventconfig.cpp
+	plugins/Event/src/appdbconfig.cpp plugins/Event/src/appdbconfig.h
+	plugins/Event/src/eventconfig.cpp plugins/Event/src/eventconfig.h
 	plugins/Event/src/eventdialogwidget.cpp
 	plugins/Event/src/eventdialogwidget.ui
 	plugins/Event/src/eventplugin.cpp
 	plugins/Event/src/openeventdialog.cpp
 	plugins/Event/src/openeventdialog.ui
-	plugins/Event/src/stage.cpp
-	plugins/Event/src/stagedocument.cpp
-	plugins/Event/src/stagewidget.cpp
-	plugins/Event/src/stagewidget.ui
 	plugins/Event/src/findregistrationedit.cpp
 	plugins/Event/src/lentcardssettingspage.cpp
 	plugins/Event/src/lentcardssettingspage.ui
@@ -85,7 +83,10 @@ add_executable(quickevent
 	plugins/Event/src/services/oresultsclient.cpp
 	plugins/Event/src/services/oresultsclientwidget.cpp
 	plugins/Event/src/services/oresultsclientwidget.ui
+	plugins/Event/src/services/oresultsconfig.cpp plugins/Event/src/services/oresultsconfig.h
+
 	plugins/Event/src/services/ofeed/ofeedclient.cpp
+	plugins/Event/src/services/ofeed/ofeedconfig.cpp plugins/Event/src/services/ofeed/ofeedconfig.h
 	plugins/Event/src/services/ofeed/ofeedclientwidget.cpp
 	plugins/Event/src/services/ofeed/ofeedclientwidget.ui
 	plugins/Event/src/services/ofeed/ofeedwelcomedialog.h
@@ -99,15 +100,15 @@ add_executable(quickevent
 	plugins/Event/src/services/serviceswidget.cpp
 	plugins/Event/src/services/servicewidget.cpp
 	plugins/Event/src/services/servicewidget.ui
-	plugins/Event/src/services/qx/qxclientservice.cpp
-	plugins/Event/src/services/qx/qxclientservice.h
-	plugins/Event/src/services/qx/qxclientservicewidget.cpp
-	plugins/Event/src/services/qx/qxclientservicewidget.h
-	plugins/Event/src/services/qx/qxclientservicewidget.ui
-	plugins/Event/src/services/qx/qxlateregistrationswidget.h
-	plugins/Event/src/services/qx/qxlateregistrationswidget.cpp
-	plugins/Event/src/services/qx/qxlateregistrationswidget.ui
-	plugins/Event/src/services/qx/runchangedialog.h plugins/Event/src/services/qx/runchangedialog.cpp plugins/Event/src/services/qx/runchangedialog.ui
+
+	plugins/Event/src/services/qx/qxnode.cpp
+	plugins/Event/src/services/qx/sqlapinode.cpp
+	plugins/Event/src/services/qx/sqlapi.cpp plugins/Event/src/services/qx/sqlapi.h
+	plugins/Event/src/services/qx/nodes.cpp
+	plugins/Event/src/services/qx/qxeventservice.cpp plugins/Event/src/services/qx/qxeventservice.h
+	plugins/Event/src/services/qx/qxeventservicewidget.cpp plugins/Event/src/services/qx/qxeventservicewidget.h plugins/Event/src/services/qx/qxeventservicewidget.ui
+	plugins/Event/src/services/qx/qxlateentrieswidget.h plugins/Event/src/services/qx/qxlateentrieswidget.cpp plugins/Event/src/services/qx/qxlateentrieswidget.ui
+	plugins/Event/src/services/qx/lateentrydialog.h plugins/Event/src/services/qx/lateentrydialog.cpp plugins/Event/src/services/qx/lateentrydialog.ui
 	plugins/Event/src/services/qx/runchange.h plugins/Event/src/services/qx/runchange.cpp
 	plugins/Event/src/services/punchingtest/punchingtestservice.h plugins/Event/src/services/punchingtest/punchingtestservice.cpp
 	plugins/Event/src/services/punchingtest/punchingtestservicewidget.h plugins/Event/src/services/punchingtest/punchingtestservicewidget.cpp
@@ -120,6 +121,7 @@ add_executable(quickevent
 	plugins/Oris/src/txtimporter.cpp
 	plugins/Oris/src/xmlimporter.cpp
 
+	plugins/Receipts/src/receiptsconfig.cpp plugins/Receipts/src/receiptsconfig.h
 	plugins/Receipts/src/receiptsplugin.cpp
 	plugins/Receipts/src/receiptsprinter.cpp
 	plugins/Receipts/src/receiptsprinteroptions.cpp
@@ -128,9 +130,10 @@ add_executable(quickevent
 	plugins/Receipts/src/receiptssettings.cpp
 	plugins/Receipts/src/receiptssettingspage.cpp
 	plugins/Receipts/src/receiptssettingspage.ui
-	plugins/Receipts/src/thirdparty/qrcodegen.cpp
 	plugins/Receipts/src/receiptswidget.cpp
 	plugins/Receipts/src/receiptswidget.ui
+
+	plugins/Receipts/src/thirdparty/qrcodegen.cpp
 
 	plugins/Relays/src/addlegdialogwidget.cpp
 	plugins/Relays/src/addlegdialogwidget.ui
@@ -274,6 +277,10 @@ qt6_add_lupdate(quickevent TS_FILES ${TS_FILES})
 target_sources(quickevent PRIVATE ${QM_FILES})
 target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(quickevent PUBLIC libquickeventcore libquickeventgui libqfgui libsiut)
+if (QF_WITH_LIBSHV)
+	target_link_libraries(quickevent PUBLIC libshviotqt)
+	target_compile_definitions(quickevent PRIVATE QF_WITH_LIBSHV)
+endif()
 
 # Extract version from appversion.h
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/src/appversion.h" APP_VERSION_H)

@@ -305,8 +305,8 @@ QList<ClassItem *> ClassItem::findClashes(const QSet<ClashType> &clash_types)
 	QList<ClassItem*> ret;
 	auto *git = ganttItem();
 	for (int i = 0; i < git->startSlotItemCount(); ++i) {
-		StartSlotItem *slot_it = git->startSlotItemAt(i);
-		if(slot_it->data().isIgnoreClassClashCheck())
+		auto *slot_it = git->startSlotItemAt(i);
+		if(slot_it->config().ignoreClassClashCheck)
 			continue;
 		for (int j = 0; j < slot_it->classItemCount(); ++j) {
 			ClassItem *class_it = slot_it->classItemAt(j);
@@ -508,9 +508,9 @@ void ClassItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 			if(slot_it->classItemIndex(this) == 0) {
 				// the edited start time was written to the database by the dialog,
 				// move the whole slot to keep the layout consistent with a reload
-				StartSlotData sd = slot_it->data();
-				sd.setStartOffset(qMax(dt.startTimeMin(), 0));
-				slot_it->setData(sd);
+				auto sd = slot_it->config();
+				sd.startOffset = qMax(dt.startTimeMin(), 0);
+				slot_it->setConfig(sd);
 			}
 			if(slot_it->classItemCount() > 1) {
 				// start times of the classes chained after this one shift with its new size

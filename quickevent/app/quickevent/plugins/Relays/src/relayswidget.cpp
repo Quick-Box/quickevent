@@ -392,7 +392,7 @@ QVariant RelaysWidget::startListByClubsTableData(bool with_vacants)
 	//console.info("currentStageTable query:", reportModel.effectiveQuery());
 	model.reload();
 	qf::core::utils::TreeTable tt = model.toTreeTable();
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(1));
 	{
 		qf::core::sql::QueryBuilder qb;

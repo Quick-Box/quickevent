@@ -90,7 +90,7 @@ void EmmaClient::exportRadioCodesRacomTxt()
 	QTextStream ts_codes(&f_splitcodes);
 
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	if (is_relays) {
 		qfs::QueryBuilder qb_classes;
@@ -193,7 +193,7 @@ void EmmaClient::exportResultsIofXml3()
 	QString export_dir = ss.exportDir();
 	QString file_name = export_dir + '/' + ss.fileNameBase() + ".results.xml";
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	QString str = is_relays
 			? getPlugin<RelaysPlugin>()->resultsIofXml30()
@@ -213,7 +213,7 @@ void EmmaClient::exportStartListIofXml3()
 	QString export_dir = ss.exportDir();
 	QString file_name = export_dir + '/' + ss.fileNameBase() + ".startlist.xml";
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 
 	QString str = is_relays
 			? getPlugin<RelaysPlugin>()->startListIofXml30()
@@ -405,7 +405,7 @@ void EmmaClient::exportStartListRacomTxt() const
 	QTextStream ts(&f);
 	ts.setGenerateByteOrderMark(true); // BOM
 
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	qfs::QueryBuilder qb;
 	qb.select2("runs", "startTimeMs, siId, competitorId, isrunning, leg, finishTimeMs")
@@ -526,7 +526,7 @@ void EmmaClient::exportStartListRacomCsv() const
 #else
 	ts.setCodec("UTF-8");
 #endif
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	const QString separator(";");
 

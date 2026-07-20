@@ -35,12 +35,7 @@ void ServicesWidget::reload()
 		Service *svc = Service::serviceAt(i);
 
 		auto *sw = new ServiceWidget();
-		sw->setStatus(svc->status());
-		connect(svc, &Service::statusChanged, sw, &ServiceWidget::setStatus);
-		sw->setServiceId(svc->serviceId(), svc->serviceDisplayName());
-		sw->setMessage(svc->statusMessage());
-		connect(svc, &Service::statusMessageChanged, sw, &ServiceWidget::setMessage);
-		connect(sw, &ServiceWidget::setRunningRequest, svc, &Service::setRunning);
+		sw->setService(svc);
 
 		ly2->addWidget(sw);
 	}

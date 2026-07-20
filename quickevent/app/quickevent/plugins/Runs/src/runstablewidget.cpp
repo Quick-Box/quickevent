@@ -8,9 +8,9 @@
 #include "cardflagsdialog.h"
 
 #include <plugins/Classes/src/courseitemdelegate.h>
-#include <plugins/Event/src/eventplugin.h>
 #include <plugins/CardReader/src/cardreaderplugin.h>
 #include <plugins/Receipts/src/receiptsplugin.h>
+#include <plugins/Event/src/eventplugin.h>
 
 #include <quickevent/core/si/siid.h>
 #include <quickevent/core/og/timems.h>
@@ -19,6 +19,8 @@
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
+
+#include <qf/core/sql/qxrecchng.h>
 
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/transaction.h>
@@ -58,7 +60,7 @@ RunsTableWidget::RunsTableWidget(QWidget *parent) :
 	ui->tblRuns->setItemDelegate(m_runsTableItemDelegate);
 	auto *event_plugin = getPlugin<Event::EventPlugin>();
 	connect(event_plugin, &EventPlugin::eventOpenChanged, this, [this, event_plugin](bool is_open) {
-		if (is_open && !event_plugin->eventConfig()->isRelays() && !m_courseItemDelegate) {
+		if (is_open && !event_plugin->appDbConfig().eventConfig().isRelays() && !m_courseItemDelegate) {
 			m_courseItemDelegate = new CourseItemDelegate(ui->tblRuns);
 			m_courseItemDelegate->setNullText(tr("Implicit"));
 			ui->tblRuns->setItemDelegateForColumn(RunsTableModel::col_course_id, m_courseItemDelegate);
@@ -173,7 +175,7 @@ void RunsTableWidget::reload(int stage_id, int class_id, bool show_offrace, cons
 		ui->lblClassStart->setText(class_start_time_min >= 0? QString::number(class_start_time_min): "---");
 		ui->lblClassInterval->setText(class_start_interval_min >= 0? QString::number(class_start_interval_min): "---");
 	}
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	if (!is_relays && m_courseItemDelegate) {
 		m_courseItemDelegate->setCourses(definedCourses());
 	}
@@ -432,5 +434,4 @@ void RunsTableWidget::onBadTableDataInput(const QString &message)
 {
 	qf::gui::dialogs::MessageBox::showError(this, message);
 }
-
 

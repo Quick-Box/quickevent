@@ -19,6 +19,7 @@ namespace qfw = qf::gui;
 namespace qfm = qf::gui::model;
 namespace qfs = qf::core::sql;
 
+namespace {
 class CoursesTableModel : public qfm::SqlTableModel
 {
 	Q_OBJECT
@@ -66,6 +67,7 @@ public:
 		return Super::data(index, role);
 	}
 };
+}
 
 EditCoursesWidget::EditCoursesWidget(int stage_id, QWidget *parent)
 	: Super(parent)
@@ -94,7 +96,7 @@ EditCoursesWidget::EditCoursesWidget(int stage_id, QWidget *parent)
 	QHeaderView *hh = ui->tblCourses->horizontalHeader();
 	hh->setSectionHidden(CoursesTableModel::Col_runCount, true);
 
-	if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+	if (getPlugin<Event::EventPlugin>()->appDbConfig().eventConfig().isRelays()) {
 		ui->cbRunnersCount->setVisible(false);
 	} else {
 		connect (ui->cbRunnersCount,&QCheckBox::clicked,this,&EditCoursesWidget::updateQuery);
@@ -135,7 +137,7 @@ void EditCoursesWidget::updateQuery()
 
 
 	qfs::QueryBuilder qb;
-	if (getPlugin<Event::EventPlugin>()->eventConfig()->isRelays()) {
+	if (getPlugin<Event::EventPlugin>()->appDbConfig().eventConfig().isRelays()) {
 		qb.select2("courses", "*")
 				.select("0 AS run_count")
 				.select(code_list_query + "AS code_list")
@@ -151,7 +153,7 @@ void EditCoursesWidget::updateQuery()
 			.join("courses.id", "classdefs.courseId", qf::core::sql::QueryBuilder::INNER_JOIN)
 			.join("classdefs.classId", "classes.id")
 			.join("classes.id", "competitors.classId")
-			.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning")
+			.joinRestricted("competitors.id", "runs.competitorId", "runs.isRunning AND runs.stageId=" QF_IARG(m_stageId))
 			.where("classdefs.stageId=" QF_IARG(m_stageId))
 			.groupBy("courses.id")
 			.orderBy("courses.name");

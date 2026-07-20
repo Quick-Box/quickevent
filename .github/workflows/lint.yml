@@ -8,8 +8,8 @@ on:
 
 jobs:
   clang-tidy:
-    name: clang-tidy / Ubuntu 22.04
-    runs-on: ubuntu-22.04
+    name: clang-tidy / Ubuntu 24.04
+    runs-on: ubuntu-24.04
     env:
       CC: clang
       CXX: clang++
@@ -26,8 +26,8 @@ jobs:
           exclude_files_pattern: ^quickevent/app/quickevent/plugins/Receipts/src/thirdparty/qrcodegen\.cpp$
 
   clazy:
-    name: clazy / Ubuntu 22.04
-    runs-on: ubuntu-22.04
+    name: clazy / Ubuntu 24.04
+    runs-on: ubuntu-24.04
     env:
       CC: clang
       CXX: clang++

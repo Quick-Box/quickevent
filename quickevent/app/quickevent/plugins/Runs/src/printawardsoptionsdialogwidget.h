@@ -15,7 +15,7 @@ class PrintAwardsOptionsDialogWidget : public qf::gui::framework::DialogWidget
 private:
 	using Super = qf::gui::framework::DialogWidget;
 public:
-	explicit PrintAwardsOptionsDialogWidget(QWidget *parent = 0);
+	explicit PrintAwardsOptionsDialogWidget(QWidget *parent = nullptr);
 	~PrintAwardsOptionsDialogWidget();
 
 	QVariantMap printOptions() const;

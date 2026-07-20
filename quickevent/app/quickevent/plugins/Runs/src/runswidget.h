@@ -13,19 +13,11 @@ class QLabel;
 class QToolButton;
 
 namespace qf {
-namespace core {
-namespace model {
-class SqlTableModel;
-}
-}
-namespace gui {
-class ForeignKeyComboBox;
-}
+namespace core { namespace model { class SqlTableModel; } }
+namespace gui { class ForeignKeyComboBox; }
 }
 
-namespace Event {
-class EventPlugin;
-}
+namespace Event { class EventPlugin; }
 
 namespace Ui {
 class RunsWidget;
@@ -59,6 +51,7 @@ public:
 	void export_results_stage_csv();
 
 public:
+	static void showEditCompetitorDialog(int competitor_id, QWidget *parent);
 	void editCompetitor(const QVariant &id, int mode) {editCompetitor_helper(id, mode, 0);}
 	void editCompetitors(int mode);
 	void editCompetitorOnPunch(int siid);
@@ -71,7 +64,6 @@ private:
 	void onDrawRemoveClicked();
 	void onCbxStageCurrentIndexChanged();
 private:
-
 	/**
 	 * @brief runnersInClubsHistogram
 	 * @return list of runs.id for each club sorted by their count, longest list of runners is first

@@ -10,12 +10,10 @@
 #include <QMap>
 #include <QSqlError>
 
-namespace qf {
-namespace gui {
-namespace sql {
-class Connection;
-}
-namespace model {
+namespace qf::core::sql { struct QxRecChng; }
+namespace qf::gui::sql { class Connection; }
+
+namespace qf::gui::model {
 
 class QFGUI_DECL_EXPORT SqlTableModel : public TableModel
 {
@@ -100,5 +98,5 @@ protected:
 	QMap<QString, QString> m_foreignKeyDependencies;
 };
 
-}}}
+}
 

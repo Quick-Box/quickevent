@@ -73,7 +73,7 @@ RunsWidget::RunsWidget(QWidget *parent) :
 		ui->cbxDrawMethod->clear();
 		if(!getPlugin<EventPlugin>()->isEventOpen())
 			return;
-		bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+		bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 		if(is_relays) {
 			ui->cbxDrawMethod->addItem(tr("Relays first leg"), static_cast<int>(DrawMethod::RelaysFirstLeg));
 		}
@@ -119,7 +119,7 @@ void RunsWidget::reset()
 	}
 	/// Note: You should use QAction::setVisible() to change the visibility of the widget.
 	/// Using QWidget::setVisible(), QWidget::show() and QWidget::hide() does not work.
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	m_toolbarActionLabelLeg->setVisible(is_relays);
 	m_toolbarActionComboLeg->setVisible(is_relays);
 	//qfWarning() << "is relays:" << is_relays << "legs visible:" << m_cbxLeg->isVisible();
@@ -131,7 +131,7 @@ void RunsWidget::reset()
 void RunsWidget::reload()
 {
 	qfLogFuncFrame();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	int stage_id = is_relays? m_cbxLeg->currentData().toInt(): selectedStageId();
 	int class_id = m_cbxClasses->currentData().toInt();
 	ui->wRunsTableWidget->reload(stage_id, class_id, m_chkShowOffRace->isChecked());
@@ -425,8 +425,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 
 	auto updateMenuEnabled = [part_widget]() {
 		auto *ep = getPlugin<EventPlugin>();
-		auto *cfg = ep->isEventOpen() ? ep->eventConfig() : nullptr;
-		bool enabled = !(cfg && cfg->isRelays());
+		bool enabled = !(ep->isEventOpen() && ep->appDbConfig().eventConfig().isRelays());
 		for(const char *path : {"print", "import", "export"}) {
 			if(auto *a = part_widget->menuBar()->actionForPath(path)) {
 				a->setEnabled(enabled);
@@ -508,7 +507,7 @@ QList<int> RunsWidget::runsForClass(int stage_id, int class_id, const QString &e
 QList<RunsWidget::CompetitorForClass> RunsWidget::competitorsForClass(int stage_id, int class_id, const QString &extra_where_condition, const QString &order_by)
 {
 	qfLogFuncFrame() << "stage:" << stage_id << "class:" << class_id;
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	QList<RunsWidget::CompetitorForClass> ret;
 	qf::core::sql::QueryBuilder qb;
 	qb.select2("runs", "id, competitorId")
@@ -690,11 +689,11 @@ void RunsWidget::saveLockedForDrawing(int class_id, int stage_id, bool is_locked
 void RunsWidget::onDrawClicked()
 {
 	qfLogFuncFrame();
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	int stage_id = selectedStageId();
 	DrawMethod draw_method = DrawMethod(ui->cbxDrawMethod->currentData().toInt());
-	Event::StageData stage_data = getPlugin<EventPlugin>()->stageData(stage_id);
-	bool use_all_maps = stage_data.isUseAllMaps();
+	const auto &stage_data = getPlugin<EventPlugin>()->stageConfig(stage_id);
+	bool use_all_maps = stage_data.useAllMaps;
 	qfDebug() << "DrawMethod:" << (int)draw_method << "use_all_maps:" << use_all_maps;
 	QList<int> class_ids;
 	int class_id = m_cbxClasses->currentData().toInt();
@@ -724,7 +723,7 @@ void RunsWidget::onDrawClicked()
 	try {
 		qf::core::sql::Transaction transaction;
 		for(int class_id : class_ids) {
-			int handicap_length_ms = getPlugin<EventPlugin>()->eventConfig()->handicapLength() * 60 * 1000;
+			int handicap_length_ms = getPlugin<EventPlugin>()->eventConfig().handicapLength * 60 * 1000;
 			QVector<int> handicap_times;
 			qf::core::sql::QueryBuilder qb;
 			qb.select2("classdefs", "startTimeMin, startIntervalMin, vacantsBefore, vacantEvery, vacantsAfter, mapCount")
@@ -772,7 +771,7 @@ void RunsWidget::onDrawClicked()
 				runners_draw_ids = group1 + group2 + group3;
 			}
 			else if(draw_method == DrawMethod::Handicap) {
-				int stage_count = getPlugin<EventPlugin>()->eventConfig()->stageCount();
+				int stage_count = getPlugin<EventPlugin>()->eventConfig().stageCount;
 				qf::core::utils::Table results = getPlugin<RunsPlugin>()->nstagesClassResultsTable(stage_count - 1, class_id);
 				QMap<int, int> competitor_to_run;
 				for(const auto &cc : competitorsForClass(stage_count, class_id))
@@ -1057,7 +1056,7 @@ void RunsWidget::export_results_stage_csv()
 	if(fn.isEmpty())
 		return;
 
-	bool is_iof_race = getPlugin<EventPlugin>()->eventConfig()->isIofRace();
+	bool is_iof_race = getPlugin<EventPlugin>()->eventConfig().iofRace;
 	quickevent::core::exporters::StageResultsCsvExporter exp(is_iof_race);
 	QFileInfo fi(fn);
 	exp.setOutDir(fi.absolutePath());
@@ -1140,7 +1139,7 @@ void RunsWidget::report_competitorsStatistics()
 	m.setQueryBuilder(qb);
 	m.reload();
 	qfu::TreeTable tt = m.toTreeTable();
-	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig()->value("event"));
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	for (int stage_id = 1; stage_id <= stage_cnt; ++stage_id) {
 		QString prefix = "e" + QString::number(stage_id) + "_";
 		QString col_runs_count = prefix + "runCount";
@@ -1210,7 +1209,7 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 		QF_ASSERT(doc != nullptr, "Document is null!", return);
 		if(mode == qfm::DataDocument::ModeInsert) {
 			if(siid == 0) {
-				bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+				bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 				if(!is_relays) {
 					int class_id = m_cbxClasses->currentData().toInt();
 					if(class_id > 0)
@@ -1241,6 +1240,18 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 			this->editCompetitor(QVariant(), qf::gui::model::DataDocument::ModeInsert);
 		});
 	}
+}
+
+void RunsWidget::showEditCompetitorDialog(int competitor_id, QWidget *parent)
+{
+	auto *w = new CompetitorWidget();
+	w->setWindowTitle(tr("Edit Competitor"));
+	qfd::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, parent);
+	dlg.setDefaultButton(QDialogButtonBox::Ok);
+
+	dlg.setCentralWidget(w);
+	w->load(competitor_id, qf::gui::model::DataDocument::ModeEdit);
+	dlg.exec();
 }
 
 void RunsWidget::updateClassComboBox()

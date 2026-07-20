@@ -37,6 +37,7 @@
 
 #include <qf/core/assert.h>
 #include <qf/core/exception.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/dbenum.h>
 #include <qf/core/sql/transaction.h>
@@ -111,6 +112,7 @@ public:
 Model::Model(QObject *parent)
 	: Super(parent)
 {
+	setIdColumnName("cards.id");
 	clearColumns(col_COUNT);
 	setColumn(col_cards_id, ColumnDefinition("cards.id", "id").setReadOnly(true));
 	setColumn(col_cards_siId, ColumnDefinition("cards.siId", tr("SI")).setReadOnly(true).setCastType(qMetaTypeId<quickevent::core::si::SiId>()));
@@ -261,7 +263,7 @@ CardReaderWidget::CardReaderWidget(QWidget *parent)
 		}
 	}, Qt::QueuedConnection);
 
-	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &CardReaderWidget::onQxRecChng, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &CardReaderWidget::onQxRecChng, Qt::QueuedConnection);
 }
 
 CardReaderWidget::~CardReaderWidget()
@@ -474,7 +476,7 @@ void CardReaderWidget::settleDownInPartWidget(::PartWidget *part_widget)
 			a_tools->addActionInto(a);
 		}
 	}
-	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &CardReaderWidget::onDbEventNotify, Qt::QueuedConnection);
+	// connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &CardReaderWidget::onDbEventNotify, Qt::QueuedConnection);
 }
 
 void CardReaderWidget::reset()
@@ -488,7 +490,7 @@ void CardReaderWidget::reset()
 
 void CardReaderWidget::reload()
 {
-	bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	//QString driver_name = m_cardsModel->sqlConnection().driverName();
 	int current_stage = getPlugin<CardReaderPlugin>()->currentStageId();
 	qfs::QueryBuilder qb;
@@ -520,20 +522,20 @@ void CardReaderWidget::reload()
 void CardReaderWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
 	if(isVisible()) {
-		m_cardsModel->handleQxRecChng(recchng, source);
+		m_cardsModel->applyQxRecChng(recchng, source);
 	}
 }
 
-void CardReaderWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
-{
-	Q_UNUSED(connection_id)
-	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_CARD_READ)) {
-		int card_id = data.toInt();
-		if(isVisible()) {
-			updateTableView(card_id);
-		}
-	}
-}
+// void CardReaderWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
+// {
+// 	Q_UNUSED(connection_id)
+// 	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_CARD_READ)) {
+// 		int card_id = data.toInt();
+// 		if(isVisible()) {
+// 			updateTableView(card_id);
+// 		}
+// 	}
+// }
 
 void CardReaderWidget::createActions()
 {
@@ -817,7 +819,7 @@ void CardReaderWidget::assignRunnerToSelectedCard()
 				QVariantMap rec {
 					{"isRunning", true},
 				};
-				app->updateDbRecord("runs", run_id, rec, this);
+				app->qxSql()->updateRecord("runs", run_id, rec, this);
 				// QString qs = "UPDATE runs SET isRunning=true WHERE competitorId=" QF_IARG(competitor_id) " AND stageId=" QF_IARG(stage_id);
 				// q.execThrow(qs);
 			}
@@ -834,7 +836,7 @@ void CardReaderWidget::assignRunnerToSelectedCard()
 				QVariantMap rec { {"siId", si_id}, };
 				auto run_id = q.value(0).toInt();
 				if (n++ == 0 || use_si_in_next_stages) {
-					app->updateDbRecord("runs", run_id, rec, this);
+					app->qxSql()->updateRecord("runs", run_id, rec, this);
 				}
 			}
 			// QString qs = "UPDATE runs SET siId=" QF_IARG(si_id) " WHERE competitorId=" QF_IARG(competitor_id) " AND stageId=" QF_IARG(stage_id);

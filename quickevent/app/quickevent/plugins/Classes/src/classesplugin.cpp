@@ -93,7 +93,7 @@ void ClassesPlugin::createCourses(int stage_id, const QList<ImportCourseDef> &co
 {
 	qfLogFuncFrame();
 	try {
-		bool is_relays = getPlugin<EventPlugin>()->eventConfig()->isRelays();
+		bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 		qf::core::sql::Transaction transaction(qf::core::sql::Connection::forName());
 		qf::core::sql::Query q;
 		if (delete_current)
