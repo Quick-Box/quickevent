@@ -79,16 +79,25 @@ RunsPlugin::~RunsPlugin() = default;
 const qf::core::utils::Table &RunsPlugin::runnersTable(int stage_id)
 {
 	if(m_runnersTableCacheStageId != stage_id) {
+		bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 		qfs::QueryBuilder qb;
-		qb.select2("competitors", "registration, startNumber")
+		qb.select2("competitors", "registration")
 				.select("COALESCE(lastName, '') || ' ' || COALESCE(firstName, '') AS competitorName")
-				.select2("runs", "id, siId, competitorId")
+				.select2("runs", "id, siId, competitorId, leg")
 				.select("runs.id AS runId")
 				.select2("classes", "name")
 				.from("competitors")
-				.join("competitors.classId", "classes.id")
 				.joinRestricted("competitors.id", "runs.competitorId", "runs.stageId=" QF_IARG(stage_id), "JOIN")
 				.orderBy("classes.name, lastName, firstName");
+		if(is_relays) {
+			qb.select("relays.number AS \"competitors.startNumber\"")
+					.join("runs.relayId", "relays.id")
+					.join("relays.classId", "classes.id");
+		}
+		else {
+			qb.select2("competitors", "startNumber")
+					.join("competitors.classId", "classes.id");
+		}
 		qf::gui::model::SqlTableModel m;
 		m.setQueryBuilder(qb, false);
 		m.reload();
