@@ -65,37 +65,37 @@
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="323"/>
-        <location filename="src/reportoptionsdialog.ui" line="416"/>
+        <location filename="src/reportoptionsdialog.ui" line="428"/>
         <source>Class names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="487"/>
+        <location filename="src/reportoptionsdialog.ui" line="499"/>
         <source>Result options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="493"/>
+        <location filename="src/reportoptionsdialog.ui" line="505"/>
         <source>Number of places in each class</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="516"/>
+        <location filename="src/reportoptionsdialog.ui" line="528"/>
         <source>Exclude DISQ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="446"/>
+        <location filename="src/reportoptionsdialog.ui" line="458"/>
         <source>Starters options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="464"/>
+        <location filename="src/reportoptionsdialog.ui" line="476"/>
         <source>Space after line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="474"/>
+        <location filename="src/reportoptionsdialog.ui" line="486"/>
         <source>mm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -105,12 +105,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="354"/>
-        <source>Print vacants</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="src/reportoptionsdialog.ui" line="361"/>
+        <location filename="src/reportoptionsdialog.ui" line="373"/>
         <source>Print start numbers</source>
         <translation type="unfinished"></translation>
     </message>
@@ -120,47 +115,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="407"/>
+        <location filename="src/reportoptionsdialog.ui" line="419"/>
         <source>Start list is sorted first by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="413"/>
+        <location filename="src/reportoptionsdialog.ui" line="425"/>
         <source>(class name, start time, runner name)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="423"/>
+        <location filename="src/reportoptionsdialog.ui" line="435"/>
         <source>(start time, class name, runner name)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="426"/>
+        <location filename="src/reportoptionsdialog.ui" line="438"/>
         <source>Start times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="433"/>
+        <location filename="src/reportoptionsdialog.ui" line="445"/>
         <source>(runner name, class name, start time)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="436"/>
+        <location filename="src/reportoptionsdialog.ui" line="448"/>
         <source>Runner names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="381"/>
+        <location filename="src/reportoptionsdialog.ui" line="393"/>
         <source>Start time format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="387"/>
+        <location filename="src/reportoptionsdialog.ui" line="399"/>
         <source>start at 0 (mmm.ss)  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="397"/>
+        <location filename="src/reportoptionsdialog.ui" line="409"/>
         <source>daytime (hh:mm:ss)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -170,7 +165,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="368"/>
+        <location filename="src/reportoptionsdialog.ui" line="380"/>
         <source>Use only class from selected start</source>
         <translation type="unfinished"></translation>
     </message>
@@ -228,18 +223,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="539"/>
+        <location filename="src/reportoptionsdialog.ui" line="355"/>
+        <source>Only runners</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.ui" line="360"/>
+        <source>Include vacants with time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.ui" line="365"/>
+        <source>Include all vacants</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.ui" line="551"/>
         <source>Relay options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.ui" line="545"/>
+        <location filename="src/reportoptionsdialog.ui" line="557"/>
         <source>Show legs details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="34"/>
         <source>Save as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.cpp" line="384"/>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.cpp" line="399"/>
+        <source>Start %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -4,32 +4,32 @@
 <context>
     <name>SICard</name>
     <message>
-        <location filename="src/sicard.cpp" line="38"/>
+        <location filename="src/sicard.cpp" line="79"/>
         <source>stationNumber: %1</source>
         <translation>kod punktu kontrolnego:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="39"/>
+        <location filename="src/sicard.cpp" line="80"/>
         <source>cardNumber: %1</source>
         <translation>numer chipa:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="43"/>
+        <location filename="src/sicard.cpp" line="81"/>
         <source>check: %1</source>
         <translation>kontrola czipa:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="44"/>
+        <location filename="src/sicard.cpp" line="82"/>
         <source>start: %1</source>
         <translation>start: %1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="45"/>
+        <location filename="src/sicard.cpp" line="83"/>
         <source>finish: %1</source>
         <translation>meta:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="46"/>
+        <location filename="src/sicard.cpp" line="85"/>
         <source>batteryStatus: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -70,6 +70,69 @@ Wyczytanie po potwierdzeniu: {{ReadOutAfterPunch}}
         <location filename="src/device/sitask.cpp" line="108"/>
         <source>False</source>
         <translation>Nie</translation>
+    </message>
+</context>
+<context>
+    <name>siut::BtSiDeviceDriver</name>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="217"/>
+        <source>connectToDevice: invalid QBluetoothDeviceInfo.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="222"/>
+        <source>Connecting to BLE device %1 %2 ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="322"/>
+        <source>Connected, discovering services...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="328"/>
+        <source>BT SI device disconnected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="343"/>
+        <source>BT SI Reader controller error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="424"/>
+        <source>BT SI Reader ready.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="427"/>
+        <source>BT SI Reader: SI characteristics not found on device %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="466"/>
+        <source>CardState message too short (%1 bytes).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="480"/>
+        <source>SI card %1 removed from station %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="482"/>
+        <source>SI card %1 inserted at station %2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="504"/>
+        <source>Received card readout with invalid card number.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/device/btsidevicedriver.cpp" line="512"/>
+        <source>SI card %1 readout complete (%2 punches).</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -131,17 +194,17 @@ Lista dostępnych portów:
         <translation>Odebrano nieprawidłowe dane, pominięto %1 znaków z początku bufora</translation>
     </message>
     <message>
-        <location filename="src/device/sidevicedriver.cpp" line="140"/>
+        <location filename="src/device/sidevicedriver.cpp" line="142"/>
         <source>NAK received</source>
         <translation>odebrano NAK</translation>
     </message>
     <message>
-        <location filename="src/device/sidevicedriver.cpp" line="146"/>
+        <location filename="src/device/sidevicedriver.cpp" line="147"/>
         <source>Legacy protocol is not supported, switch station to extended one.</source>
         <translation>Stary protokół nie jest obsługiwany, przełącz stację na rozszerzony protokół.</translation>
     </message>
     <message>
-        <location filename="src/device/sidevicedriver.cpp" line="153"/>
+        <location filename="src/device/sidevicedriver.cpp" line="154"/>
         <source>Valid message shall end with ETX or NAK, throwing data away</source>
         <translation>Poprawny komunikat musi kończyć się ATX lub NAK, dane zostały odrzucone.</translation>
     </message>

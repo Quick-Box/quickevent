@@ -160,316 +160,316 @@
         <translation type="unfinished">Нажатие левой кнопкой мыши выделяет все, нажатие правой кнопкой мыши - для меню.</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="681"/>
+        <location filename="src/tableview.cpp" line="678"/>
         <source>Enter value</source>
         <translation type="unfinished">Введите значение</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="681"/>
+        <location filename="src/tableview.cpp" line="678"/>
         <source>new value:</source>
         <translation type="unfinished">новое значение:</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="788"/>
+        <location filename="src/tableview.cpp" line="793"/>
         <source>Save File</source>
         <translation type="unfinished">Сохранить файл</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="800"/>
+        <location filename="src/tableview.cpp" line="805"/>
         <source>Open File</source>
         <translation type="unfinished">Открыть файл</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="957"/>
+        <location filename="src/tableview.cpp" line="962"/>
         <source>Save as ...</source>
         <translation type="unfinished">Сохранить как ...</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="963"/>
+        <location filename="src/tableview.cpp" line="968"/>
         <source>Cannot open file &apos;%1&apos; for writing.</source>
         <translation type="unfinished">Невозможно открыть файл &apos;% 1&apos; для записи.</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1533"/>
+        <location filename="src/tableview.cpp" line="1545"/>
         <source>Resize columns to contents</source>
         <translation type="unfinished">Изменение размера столбцов по содержимому</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1543"/>
+        <location filename="src/tableview.cpp" line="1555"/>
         <source>Reset columns settings</source>
         <translation type="unfinished">Сбросить настройки столбцов</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1544"/>
+        <location filename="src/tableview.cpp" line="1556"/>
         <source>Reset column widths and positions.</source>
         <translation type="unfinished">Сбросить ширину и положение столбцов.</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1553"/>
+        <location filename="src/tableview.cpp" line="1565"/>
         <source>Reload</source>
         <translation type="unfinished">Перезагрузить</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1555"/>
+        <location filename="src/tableview.cpp" line="1567"/>
         <source>Ctrl+R</source>
         <comment>reload SQL table</comment>
         <translation type="unfinished">Ctrl + R</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1563"/>
+        <location filename="src/tableview.cpp" line="1575"/>
         <source>Copy</source>
         <translation type="unfinished">Копировать</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1566"/>
+        <location filename="src/tableview.cpp" line="1578"/>
         <source>Ctrl+C</source>
         <comment>Copy selection</comment>
         <translation type="unfinished">Ctrl + C</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1574"/>
+        <location filename="src/tableview.cpp" line="1586"/>
         <source>Copy special</source>
         <translation type="unfinished">Специальное копирование</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1584"/>
+        <location filename="src/tableview.cpp" line="1596"/>
         <source>Paste</source>
         <translation type="unfinished">Вставить</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1586"/>
+        <location filename="src/tableview.cpp" line="1598"/>
         <source>Ctrl+V</source>
         <comment>Paste rows</comment>
         <translation type="unfinished">Ctrl + V</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1594"/>
+        <location filename="src/tableview.cpp" line="1606"/>
         <source>Insert row</source>
         <translation type="unfinished">Вставить строку</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1595"/>
+        <location filename="src/tableview.cpp" line="1607"/>
         <source>Ctrl+Ins</source>
         <comment>insert row SQL table</comment>
         <translation type="unfinished">Ctrl + Ins</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1603"/>
+        <location filename="src/tableview.cpp" line="1615"/>
         <source>Delete selected rows</source>
         <translation type="unfinished">Удалить выбранные строки</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1604"/>
+        <location filename="src/tableview.cpp" line="1616"/>
         <source>Ctrl+Del</source>
         <comment>delete row SQL table</comment>
         <translation type="unfinished">Ctrl + Del</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1612"/>
+        <location filename="src/tableview.cpp" line="1624"/>
         <source>Post row edits</source>
         <translation type="unfinished">Перенос данных во все остальные выбранные ячейки после ввода данных в одной из нескольких выбранных ячеек</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1614"/>
+        <location filename="src/tableview.cpp" line="1626"/>
         <source>Ctrl+Return</source>
         <comment>post row SQL table</comment>
         <translation type="unfinished">Ctrl + Return</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1622"/>
+        <location filename="src/tableview.cpp" line="1634"/>
         <source>Revert row edits</source>
         <translation type="unfinished">Отменить редактирование строк</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1624"/>
+        <location filename="src/tableview.cpp" line="1636"/>
         <source>Ctrl+Z</source>
         <comment>revert edited row</comment>
         <translation type="unfinished">Ctrl + Z</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1632"/>
+        <location filename="src/tableview.cpp" line="1644"/>
         <source>Clone row</source>
         <translation type="unfinished">Ввод одинаковых данных в ячейки снизу</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1637"/>
+        <location filename="src/tableview.cpp" line="1649"/>
         <source>Ctrl+D</source>
         <comment>insert row copy</comment>
         <translation type="unfinished">Ctrl + D</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1651"/>
+        <location filename="src/tableview.cpp" line="1663"/>
         <source>Zobrazit ve formulari</source>
         <translation type="unfinished">Показать в форме</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1653"/>
+        <location filename="src/tableview.cpp" line="1665"/>
         <source>Zobrazit radek v formulari pro cteni</source>
         <translation type="unfinished">Показать строку в виде текста</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1660"/>
+        <location filename="src/tableview.cpp" line="1672"/>
         <source>Upravit ve formulari</source>
         <translation type="unfinished">Редактировать в форме</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1662"/>
+        <location filename="src/tableview.cpp" line="1674"/>
         <source>Upravit radek ve formulari</source>
         <translation type="unfinished">Редактировать строку в форме</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1691"/>
+        <location filename="src/tableview.cpp" line="1703"/>
         <source>Filter table</source>
         <translation type="unfinished">Таблица фильтров</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1695"/>
+        <location filename="src/tableview.cpp" line="1707"/>
         <source>Ctrl+F</source>
         <comment>filter table</comment>
         <translation type="unfinished">Ctrl + F</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1702"/>
+        <location filename="src/tableview.cpp" line="1714"/>
         <source>Edit cell content</source>
         <translation type="unfinished">Изменить содержимое ячейки</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1704"/>
+        <location filename="src/tableview.cpp" line="1716"/>
         <source>Ctrl+Shift+T</source>
         <comment>Edit cell content</comment>
         <translation type="unfinished">Ctrl + Shift + T</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1712"/>
+        <location filename="src/tableview.cpp" line="1724"/>
         <source>Save BLOB</source>
         <translation type="unfinished">Сохранить BLOB</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1721"/>
+        <location filename="src/tableview.cpp" line="1733"/>
         <source>Load BLOB from file</source>
         <translation type="unfinished">Загрузить BLOB из файла</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1730"/>
+        <location filename="src/tableview.cpp" line="1742"/>
         <source>Insert rows statement</source>
         <translation type="unfinished">Оператор вставки строк Insert</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1739"/>
+        <location filename="src/tableview.cpp" line="1751"/>
         <source>Set NULL in selection</source>
         <translation type="unfinished">Установить NULL в выделенном фрагменте</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1741"/>
+        <location filename="src/tableview.cpp" line="1753"/>
         <source>Ctrl+Shift+L</source>
         <comment>Set NULL in selection</comment>
         <translation type="unfinished">Ctrl + Shift + L</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1749"/>
+        <location filename="src/tableview.cpp" line="1761"/>
         <source>Set value in selection</source>
         <translation type="unfinished">Установить значение в выделенном фрагменте</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1750"/>
+        <location filename="src/tableview.cpp" line="1762"/>
         <source>Ctrl+Shift+E</source>
         <comment>Set value in selection</comment>
         <translation type="unfinished">Ctrl + Shift + E</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1758"/>
+        <location filename="src/tableview.cpp" line="1770"/>
         <source>Generate sequence in selection</source>
         <translation type="unfinished">Создать последовательность в выделенном фрагменте</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1767"/>
+        <location filename="src/tableview.cpp" line="1779"/>
         <source>Select</source>
         <translation type="unfinished">Выбрать</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1774"/>
+        <location filename="src/tableview.cpp" line="1786"/>
         <source>Select current column</source>
         <translation type="unfinished">Выбрать текущий столбец</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1775"/>
+        <location filename="src/tableview.cpp" line="1787"/>
         <source>Ctrl+Shift+C</source>
         <comment>Select current column</comment>
         <translation type="unfinished">Ctrl+Shift+C</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1784"/>
+        <location filename="src/tableview.cpp" line="1796"/>
         <source>Select current row</source>
         <translation type="unfinished">Выбрать текущую строку</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1794"/>
+        <location filename="src/tableview.cpp" line="1806"/>
         <source>Calculate</source>
         <translation type="unfinished">Подсчитать</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1801"/>
+        <location filename="src/tableview.cpp" line="1813"/>
         <source>Sum column</source>
         <translation type="unfinished">Сумма по столбцам</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1807"/>
+        <location filename="src/tableview.cpp" line="1819"/>
         <source>Sum selection</source>
         <translation type="unfinished">Сумма содержимого выбранного фрагмента</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1814"/>
+        <location filename="src/tableview.cpp" line="1826"/>
         <source>Export</source>
         <translation type="unfinished">Извлечь (экспортировать)</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1821"/>
+        <location filename="src/tableview.cpp" line="1833"/>
         <source>Report</source>
         <translation type="unfinished">Отчет</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1828"/>
-        <location filename="src/tableview.cpp" line="1866"/>
+        <location filename="src/tableview.cpp" line="1840"/>
+        <location filename="src/tableview.cpp" line="1878"/>
         <source>CSV</source>
         <translation type="unfinished">CSV</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1835"/>
+        <location filename="src/tableview.cpp" line="1847"/>
         <source>HTML</source>
         <translation type="unfinished">HTML</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1843"/>
+        <location filename="src/tableview.cpp" line="1855"/>
         <source>XLS - MS Excel</source>
         <translation type="unfinished">XLS - MS Excel</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1851"/>
+        <location filename="src/tableview.cpp" line="1863"/>
         <source>XML (MS Excel 2003)</source>
         <translation type="unfinished">XML (MS Excel 2003)</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1859"/>
+        <location filename="src/tableview.cpp" line="1871"/>
         <source>Import</source>
         <translation type="unfinished">Импортировать</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1992"/>
+        <location filename="src/tableview.cpp" line="2004"/>
         <source>Enter start value</source>
         <translation type="unfinished">Введите начальное значение</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="1992"/>
+        <location filename="src/tableview.cpp" line="2004"/>
         <source>start value:</source>
         <translation type="unfinished">начальное значение:</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="2131"/>
+        <location filename="src/tableview.cpp" line="2143"/>
         <source>Do you really want to remove row?</source>
         <translation type="unfinished">Вы действительно хотите удалить строку?</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="2134"/>
+        <location filename="src/tableview.cpp" line="2146"/>
         <source>Do you really want to remove all selected rows?</source>
         <translation type="unfinished">Вы действительно хотите удалить все выделенные строки?</translation>
     </message>
@@ -917,13 +917,13 @@
 <context>
     <name>qf::gui::model::SqlTableModel</name>
     <message>
-        <location filename="src/model/sqltablemodel.cpp" line="231"/>
+        <location filename="src/model/sqltablemodel.cpp" line="243"/>
         <source>numRowsAffected() = %1, should be 1
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/sqltablemodel.cpp" line="257"/>
+        <location filename="src/model/sqltablemodel.cpp" line="272"/>
         <source>Error executing query: %1
  %2</source>
         <translation type="unfinished"></translation>
@@ -932,65 +932,64 @@
 <context>
     <name>qf::gui::model::TableModel</name>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="347"/>
-        <location filename="src/model/tablemodel.cpp" line="445"/>
-        <location filename="src/model/tablemodel.cpp" line="476"/>
-        <location filename="src/model/tablemodel.cpp" line="580"/>
+        <location filename="src/model/tablemodel.cpp" line="338"/>
+        <location filename="src/model/tablemodel.cpp" line="436"/>
+        <location filename="src/model/tablemodel.cpp" line="467"/>
+        <location filename="src/model/tablemodel.cpp" line="571"/>
         <source>Cannot find table field index for column index: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="441"/>
-        <location filename="src/model/tablemodel.cpp" line="472"/>
-        <location filename="src/model/tablemodel.cpp" line="576"/>
+        <location filename="src/model/tablemodel.cpp" line="432"/>
+        <location filename="src/model/tablemodel.cpp" line="463"/>
+        <location filename="src/model/tablemodel.cpp" line="567"/>
         <source>Invalid table row: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="448"/>
-        <location filename="src/model/tablemodel.cpp" line="479"/>
-        <location filename="src/model/tablemodel.cpp" line="583"/>
+        <location filename="src/model/tablemodel.cpp" line="439"/>
+        <location filename="src/model/tablemodel.cpp" line="470"/>
+        <location filename="src/model/tablemodel.cpp" line="574"/>
         <source>Invalid table field index: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="464"/>
-        <location filename="src/model/tablemodel.cpp" line="509"/>
-        <location filename="src/model/tablemodel.cpp" line="533"/>
-        <location filename="src/model/tablemodel.cpp" line="568"/>
-        <location filename="src/model/tablemodel.cpp" line="594"/>
+        <location filename="src/model/tablemodel.cpp" line="455"/>
+        <location filename="src/model/tablemodel.cpp" line="500"/>
+        <location filename="src/model/tablemodel.cpp" line="524"/>
+        <location filename="src/model/tablemodel.cpp" line="559"/>
+        <location filename="src/model/tablemodel.cpp" line="585"/>
         <source>Cannot find column index for name: &apos;%1&apos;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="495"/>
+        <location filename="src/model/tablemodel.cpp" line="486"/>
         <source>%2 Cannot find table field for column index: %1 (row index: %3)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="520"/>
-        <location filename="src/model/tablemodel.cpp" line="555"/>
+        <location filename="src/model/tablemodel.cpp" line="511"/>
+        <location filename="src/model/tablemodel.cpp" line="546"/>
         <source>Cannot find table field for column index: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="639"/>
-        <location filename="src/model/tablemodel.cpp" line="700"/>
+        <location filename="src/model/tablemodel.cpp" line="630"/>
         <source>Invalid column index: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="648"/>
+        <location filename="src/model/tablemodel.cpp" line="639"/>
         <source>Invalid field for column index: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="689"/>
+        <location filename="src/model/tablemodel.cpp" line="737"/>
         <source>Column named &apos;%1&apos; not found in column list. Existing columns: [%2]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="719"/>
+        <location filename="src/model/tablemodel.cpp" line="766"/>
         <source>Cannot find table field for column index: %1, table index: %2</source>
         <translation type="unfinished"></translation>
     </message>

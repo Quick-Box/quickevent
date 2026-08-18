@@ -159,7 +159,7 @@
         <translation>Не вдалося знайти учасника з чипом: %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="418"/>
+        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="426"/>
         <source>Missing codes: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -186,187 +186,220 @@
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="26"/>
+        <source>Serial (RS232/USB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="35"/>
         <source>De&amp;vice</source>
         <translation>&amp;Пристрій</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="39"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="61"/>
         <source>Baud rate</source>
         <translation>Швидкість передачі</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="53"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="75"/>
         <source>38400</source>
         <translation>38400</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="58"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="80"/>
         <source>4800</source>
         <translation>4800</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="66"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="88"/>
         <source>Data bits</source>
         <translation>Біти даних</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="80"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="102"/>
         <source>8</source>
         <translation>8</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="85"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="107"/>
         <source>7</source>
         <translation>7</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="90"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="112"/>
         <source>6</source>
         <translation>6</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="95"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="117"/>
         <source>5</source>
         <translation>5</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="103"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="125"/>
         <source>Stop bits</source>
         <translation>Біти зупинки</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="114"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="136"/>
         <source>1</source>
         <translation>1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="119"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="141"/>
         <source>2</source>
         <translation>2</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="127"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="149"/>
         <source>Parity</source>
         <translation>Парність</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="138"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="160"/>
         <source>None</source>
         <translation>Немає</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="143"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="165"/>
         <source>Odd</source>
         <translation>Непарні</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="148"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="170"/>
         <source>Even</source>
         <translation>Парні</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="153"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="175"/>
         <source>Mark</source>
         <translation>Позначка</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="158"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="180"/>
         <source>Space</source>
         <translation>Пробіл</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="179"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="188"/>
         <source>Test connection</source>
         <translation>Перевірити з’єднання</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="186"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="198"/>
+        <source>BT SI Reader (Bluetooth LE)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="207"/>
+        <source>BT device address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="221"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="214"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="237"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="238"/>
+        <source>Scan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="279"/>
         <source>Debugging</source>
         <translation>Налагодження</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="202"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="295"/>
         <source>show raw data</source>
         <translation>сирі дані</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="209"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="302"/>
         <source>disable CRC check</source>
         <translation>вимкнути CRC</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="222"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="234"/>
         <source>Reader</source>
         <translation>Зчитувач</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="241"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="253"/>
         <source>Check type</source>
         <translation>Перевіряти тип</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="254"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="266"/>
         <source>Reader mode</source>
         <translation>Режим зчитувача</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="38"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="44"/>
         <source>Card reader</source>
         <translation>Зчитувач карток</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="47"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="54"/>
         <source>Readout</source>
         <translation>Зчитування</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="49"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="55"/>
         <source>Readout mode - default</source>
         <translation>Режим зчитування даних — початковий</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="50"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="56"/>
         <source>Edit on punch</source>
         <translation>Редагування на відмітці</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="52"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="57"/>
         <source>Show Edit/Insert competitor dialog when SI Card is inserted into the reader station</source>
         <translation>Показати діалог Редагування/Додати учасника, коли чип вставлено у станцію зчитувача</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="156"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="203"/>
+        <source>Scanning...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="238"/>
+        <source>Bluetooth scan error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="253"/>
         <source>Loading SI station info ...</source>
         <translation>Завантаження інформації станції SI…</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="156"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="253"/>
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="171"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="268"/>
         <source>Information</source>
         <translation>Інформація</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="171"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="268"/>
         <source>SI reader config:%1</source>
         <translation>Конфігурація зчитувача SI:%1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="174"/>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="190"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="271"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="287"/>
         <source>Warning</source>
         <translation>Попередження</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="174"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="271"/>
         <source>Device %1 is not SI reader</source>
         <translation>Пристрій %1 — не зчитувач SI</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="190"/>
+        <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="287"/>
         <source>Error open device %1 - %2</source>
         <translation>Помилка відкриття пристрою %1 - %2</translation>
     </message>
@@ -493,169 +526,206 @@
         <translation>Форма</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="89"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="52"/>
+        <source>Connect USB SI reader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="55"/>
+        <source>USB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="75"/>
+        <source>Connect BT SI reader</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="78"/>
+        <source>BT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="108"/>
         <source>Test sound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="96"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="115"/>
         <source>Test</source>
         <oldsource>Test punch</oldsource>
         <translation type="unfinished">Тест</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="96"/>
-        <source>Test</source>
-        <translation>Тест</translation>
-    </message>
-    <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="331"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="340"/>
         <source>Show receipt</source>
         <translation>Показати чек</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="333"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="342"/>
         <source>Print receipt</source>
         <translation>Друкувати чек</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="343"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="352"/>
         <source>Show card data</source>
         <translation>Показати дані картки</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="344"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="353"/>
         <source>Print card data</source>
         <translation>Надрукувати дані картки</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="781"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="862"/>
         <source>Assign card to runner</source>
         <translation>Призначити картку бігунові</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="346"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="355"/>
         <source>Recalculate times in selected rows</source>
         <translation>Перерахувати час у вибраних рядках</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="220"/>
         <source>Open COM to connect SI reader</source>
-        <translation>Відкрити COM для з’єднання зі зчитувачем SI</translation>
+        <translation type="vanished">Відкрити COM для з’єднання зі зчитувачем SI</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="379"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="388"/>
         <source>Recalculating times for %1</source>
         <translation>Перерахунок часу для %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="408"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="417"/>
         <source>&amp;Station</source>
         <translation>&amp;Станція</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="412"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="421"/>
         <source>Station info</source>
         <translation>Інформація про станцію</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="429"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="438"/>
         <source>Read station memory</source>
         <translation>Прочитати пам’ять станції</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="456"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="465"/>
         <source>&amp;Tools</source>
         <translation>&amp;Інструменти</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="458"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="467"/>
         <source>Import cards</source>
         <translation>Імпортувати картки</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="460"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="469"/>
         <source>Laps only CSV</source>
         <translation>CSV лише етапів</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="465"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="474"/>
         <source>SI reader backup memory CSV</source>
         <translation>CSV резервної пам’яті зчитувача SI</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="472"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="481"/>
         <source>Test audio</source>
         <translation>Перевірити звук</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="223"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="589"/>
         <source>SI station not connected</source>
-        <translation>Станцію SI не під’єднано</translation>
+        <translation type="vanished">Станцію SI не під’єднано</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="337"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="346"/>
         <source>Show error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="339"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="348"/>
         <source>Show error long</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="541"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="551"/>
         <source>Assign card to runner	Ctrl + Enter</source>
         <translation>Призначити картку бігунові	Ctrl + Enter</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="580"/>
         <source>Connected to %1 in direct mode.</source>
-        <translation>З’єднано з %1 у прямому режимі.</translation>
+        <translation type="vanished">З’єднано з %1 у прямому режимі.</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="583"/>
         <source>Error set SI station to direct mode.</source>
-        <translation>Помилка перемикання станції SI у прямий режим.</translation>
+        <translation type="vanished">Помилка перемикання станції SI у прямий режим.</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="605"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="231"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="624"/>
+        <source>Not connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="618"/>
+        <source>USB: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="622"/>
+        <source>BT: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="666"/>
         <source>Error open device %1 - %2</source>
         <translation>Помилка відкриття пристрою %1 - %2</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="651"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="682"/>
+        <source>Connecting to BT SI Reader %1 …</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="686"/>
+        <source>BT SI Reader: no device address configured.
+Please set it in Settings Card reader.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="732"/>
         <source>DriverInfo: &lt;%1&gt; %2</source>
         <translation>DriverInfo: &lt;%1&gt; %2</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="659"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="740"/>
         <source>DriverRawData: %1</source>
         <translation>DriverRawData: %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="670"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="751"/>
         <source>card: %1</source>
         <translation>картка: %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="734"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="815"/>
         <source>Cannot find run for punch record SI: %1</source>
         <translation>Не вдалося знайти забіг для запису відмітки SI: %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="741"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="822"/>
         <source>Saved punch: %1 %2</source>
         <translation>Збережено відмітку: %1 %2</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="808"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="889"/>
         <source>Competitor off-race</source>
         <translation>Учасник поза гонкою</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="809"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="890"/>
         <source>Runner to which you are assinging SI card
 is currently flagged &quot;not running&quot; for this stage (race).
 If you continue, this flag will be removed</source>
@@ -664,84 +734,84 @@ If you continue, this flag will be removed</source>
 Якщо продовжити, позначку буде знято</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="940"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1021"/>
         <source>&lt;p&gt;CSV record must have format:&lt;/p&gt;&lt;p&gt;7203463,&quot;2,28&quot;,&quot;3,34&quot;,&quot;2,42&quot;,&quot;3,29&quot;,&quot;3,12&quot;,&quot;1,38&quot;,&quot;1,13&quot;,&quot;3,18&quot;,&quot;1,17&quot;,&quot;0,15&quot;&lt;/p&gt;&lt;p&gt;Any row can be commented by leading #&lt;/p&gt;&lt;p&gt;Decimal point is also supported, the quotes can be omited than.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Запис CSV повинен мати формат:&lt;/p&gt;&lt;p&gt;7203463,&quot;2,28&quot;,&quot;3,34&quot;,&quot;2,42&quot;,&quot;3,29&quot;,&quot;3,12&quot;,&quot;1,38&quot;,&quot;1,13&quot;,&quot;3,18&quot;,&quot;1,17&quot;,&quot;0,15&quot;&lt;/p&gt;&lt;p&gt;Будь-який рядок можна закоментувати, почавши його з #&lt;/p&gt;&lt;p&gt;Десяткова крапка також підтримується, тоді можна обійтися без лапок.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="944"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1025"/>
         <source>Import CSV</source>
         <translation>Імпортувати CSV</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="949"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1135"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1030"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1216"/>
         <source>Cannot open file &apos;%1&apos; for reading.</source>
         <translation>Не вдалося відкрити для читання файл «%1».</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="968"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1139"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1049"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1220"/>
         <source>Bad stage!</source>
         <translation>Некоректний забіг!</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="990"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1071"/>
         <source>Cannot find runs record for SI %1!</source>
         <translation>Не вдалося знайти запис забігу для SI %1!</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="991"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1072"/>
         <source>Cannot find class for SI %1!</source>
         <translation>Не вдалося знайти групу для SI %1!</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1004"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1085"/>
         <source>SI: %1 class %2 - Number of punches (%3) and number of codes including finish (%4) should be the same! Remove or comment invalid line by #.</source>
         <translation>SI: %1 група %2 - Кількість відміток (%3) і кількість кодів разом із фінішом (%4) має бути однакова! Видаліть або закоментуйте некоректний рядок з допомогою #.</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1130"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1211"/>
         <source>Import TXT</source>
         <translation>Імпортувати TXT</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1219"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1300"/>
         <source>Downloading station backup ...</source>
         <translation>Завантажити резервну копію станції…</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1221"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1302"/>
         <source>Cancelled by user</source>
         <translation>Скасовано користувачем</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1251"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
         <source>No.</source>
         <translation>Ні.</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1251"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
         <source>SI</source>
         <translation>Чип</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1251"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
         <source>DateTime</source>
         <translation>ДатаЧас</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1251"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
         <source>Card error</source>
         <translation>Помилка картки</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1254"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1335"/>
         <source>Station %1 backup memory</source>
         <translation>Резервна пам’ять станції %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1256"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1337"/>
         <source>Station backup memory</source>
         <translation>Резервна пам’ять станції</translation>
     </message>
@@ -2243,7 +2313,6 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
     </message>
     <message>
         <location filename="plugins/Classes/src/editcodeswidget.cpp" line="28"/>
-        <location filename="plugins/Classes/src/editcodeswidget.cpp" line="28"/>
         <source>Out of order</source>
         <translation>Некоректний порядок</translation>
     </message>
@@ -2371,74 +2440,74 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
 <context>
     <name>Event::EventPlugin</name>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="295"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="296"/>
         <source>&amp;Connect to database</source>
         <translation>&amp;З’єднання з базою даних</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="299"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="300"/>
         <source>&amp;Open event</source>
         <translation>&amp;Відкрити подію</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="304"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="305"/>
         <source>Create eve&amp;nt</source>
         <translation>Створити &amp;подію</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="308"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="309"/>
         <source>E&amp;dit event</source>
         <translation>&amp;Редагувати подію</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="315"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="316"/>
         <source>Set current &amp;stage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="320"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="324"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="321"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="325"/>
         <source>Event (*.qbe)</source>
         <translation>Подія (*.qbe)</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="343"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="344"/>
         <source>&amp;Event</source>
         <translation>&amp;Подія</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="362"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="363"/>
         <source>Event</source>
         <translation>Подія</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="369"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="457"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="370"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="458"/>
         <source>Set current stage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="374"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="375"/>
         <source>Current stage E%1</source>
         <translation>Поточний забіг E%1</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="400"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="401"/>
         <source>Services</source>
         <translation>Служби</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="417"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="418"/>
         <source>Registrations</source>
         <translation type="unfinished">Реєстрації</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="458"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="459"/>
         <source>Stage:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="736"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="737"/>
         <source>You are not connected to database.
 Program features will be limited.
 
@@ -2451,12 +2520,12 @@ To connect to a database or to choose a working directory where event files can 
  «Файл -&gt; Під’єднатись до бази даних» </translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="780"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="781"/>
         <source>Connect Database Error: %1</source>
         <translation>Помилка під’єднання до бази даних: %1</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="787"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="788"/>
         <source>Path to the working directory cannot be empty.
 
 Enter path to the working directory or connect to SQL server.</source>
@@ -2465,7 +2534,7 @@ Enter path to the working directory or connect to SQL server.</source>
 Введіть шлях до робочого каталогу або під’єднайтесь до сервера SQL.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="791"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="792"/>
         <source>Entered directory does not exist:
 %1
 
@@ -2476,57 +2545,57 @@ Enter a valid path to the working directory.</source>
 Введіть коректний шлях до робочого каталогу.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="849"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="850"/>
         <source>Create event</source>
         <translation>Створити подію</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="859"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="860"/>
         <source>Event ID cannot be empty.</source>
         <translation>ІД події не може бути порожнім.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="863"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="864"/>
         <source>Event ID %1 exists already.</source>
         <translation>ІД події %1 вже існує.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="886"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1076"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1246"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1335"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1346"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1376"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1385"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="887"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1077"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1247"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1336"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1347"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1377"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1386"/>
         <source>Open Database Error: %1</source>
         <translation>Помилка відкриття бази даних: %1</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="925"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1263"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1419"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="926"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1264"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1420"/>
         <source>Create Database Error: %1</source>
         <translation>Помилка створення бази даних: %1</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="929"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="930"/>
         <source>Cannot create event, database is not open: %1</source>
         <translation>Неможливо створити подію, база даних не відкрита: %1</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="951"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="952"/>
         <source>Edit event</source>
         <translation>Редагувати подію</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="996"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="997"/>
         <source>Connected to an empty database.
 Start by creating or importing an event.</source>
         <translation>Під’єднано до порожньої бази даних.
 Почніть зі створення або імпорту події.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1000"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1001"/>
         <source>Working directory does not contain any event files.
 Start by creating or importing an event.</source>
         <translation>Робочий каталог не містить файлів змагань.
@@ -2541,107 +2610,107 @@ Start by creating or importing an event.</source>
         <translation type="vanished">Виберіть змагання, які відкрити:</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1081"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1082"/>
         <source>Database file %1 doesn&apos;t exist.</source>
         <translation>Файл бази даних %1 не існує.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1091"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1092"/>
         <source>Event data version (%1) is too low, minimal version is (%2).
 Use: File --&gt; Import --&gt; Event (*.qbe) to convert event to current version.</source>
         <translation>Версія даних події (%1) занадто стара, підтримується версія не нижче (%2).
 Користуйтесь: Файл --&gt; Імпорт --&gt; Подія (*.qbe), щоб перетворити змаганя до поточної версії.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1098"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1099"/>
         <source>Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.</source>
         <translation>Подію було створено новішою версією QuickEvent (%1) і додаток може не працювати як слід. Наполегливо радимо отримати найновіший QuickEvent.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1228"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1229"/>
         <source>Export as Quick Event</source>
         <translation>Експортувати як Quick Event</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1228"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1447"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1229"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1448"/>
         <source>Quick Event files *%1 (*%1)</source>
         <translation>Файли Quick Event *%1 (*%1)</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1238"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1239"/>
         <source>Cannot delete existing file %1</source>
         <translation>Не можна видалити файл %1</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1256"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1411"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1257"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1412"/>
         <source>Creating database</source>
         <translation>Створення бази даних</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1271"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1426"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1272"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1427"/>
         <source>Copying table %1</source>
         <translation>Копіювання таблиці %1</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1301"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1302"/>
         <source>Cannot delete event file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1307"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1308"/>
         <source>Cannot delete event schema &apos;%1&apos;: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1447"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1448"/>
         <source>Import as Quick Event</source>
         <translation>Імпортувати як Quick Event</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1451"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1452"/>
         <source>Query</source>
         <translation>Запит</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1451"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1452"/>
         <source>Event will be imported as ID:</source>
         <translation>Подію буде імпортовано з ІД:</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1456"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1457"/>
         <source>PostgreSQL schema must start with small letter and it may contain small letters, digits and underscores only.</source>
         <translation>Схема PostgreSQL має починатися з малої літери і може мати тільки малі літери, цифри і підкреслення.</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1461"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1462"/>
         <source>Event ID &apos;%1&apos; exists already!</source>
         <translation>ІД події «%1» вже існує!</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1465"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1466"/>
         <source>Open imported event &apos;%1&apos;?</source>
         <translation>Відкрити імпортовану подію «%1»?</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1516"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1517"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1517"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1518"/>
         <source>Reg</source>
         <translation type="unfinished">Реє</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1518"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1519"/>
         <source>Lic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1519"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1520"/>
         <source>SI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3492,7 +3561,7 @@ In case of unexpected errors, contact support@oresults.eu </oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="244"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="243"/>
         <source>Card SI %1, %2 controls</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4045,113 +4114,143 @@ In case of unexpected errors, contact support@oresults.eu </oldsource>
         <translation>Форма</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="125"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="178"/>
         <source>Event ID</source>
         <translation>ІД події</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="208"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="59"/>
         <source>Unique event name</source>
         <translation>Унікальна назва події</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="22"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="240"/>
         <source>&amp;Name</source>
         <translation>&amp;Назва</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="245"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="253"/>
         <source>&amp;Stage count</source>
         <translation>&amp;К-сть забігів</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="32"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="295"/>
         <source>&amp;Date</source>
         <translation>&amp;Дата</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="232"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="120"/>
         <source>dd.MM.yyyy</source>
         <translation>dd.MM.yyyy</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="144"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="66"/>
         <source>&amp;Place</source>
         <translation>&amp;Місце</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="75"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="103"/>
         <source>Des&amp;cription</source>
         <translation>&amp;Опис</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="42"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="33"/>
         <source>Main r&amp;eferee</source>
         <translation>Головний с&amp;уддя</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="62"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="24"/>
+        <source>Event</source>
+        <translation type="unfinished">Подія</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="49"/>
         <source>D&amp;irector</source>
         <translation>Кер&amp;івник</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="102"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="188"/>
         <source>&amp;Handicap length</source>
         <translation>&amp;Гандикап</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="186"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="263"/>
         <source>No handicap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="189"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="266"/>
         <source> min</source>
         <translation> хв</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="277"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="416"/>
+        <source>data from Eventor - eventor.orienteering.org</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="432"/>
+        <source>IOF Race</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="439"/>
+        <source>ORIS Race</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="473"/>
+        <source>Results</source>
+        <translation type="unfinished">Результати</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="479"/>
+        <source>Point results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="488"/>
+        <source>Max points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="495"/>
+        <source>Maximum points for the winner (1000-points formula: max_points * best_time / runner_time)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="152"/>
         <source>#</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="282"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="157"/>
         <source>Stage start time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="295"/>
-        <source>Is IOF Race (data from Eventor - eventor.orienteering.org)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="323"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="390"/>
         <source>Event key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="333"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="403"/>
         <source>Unique event security key (32 chars)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="350"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="373"/>
         <source>Event id</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="370"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="331"/>
         <source>IOF XML 3.0 configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="390"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="344"/>
         <source>Used to select race number in XML format (for XML import/export)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="307"/>
-        <source>Is ORIS Race (data from ORIS - oris.orientacnisporty.cz)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4159,22 +4258,17 @@ In case of unexpected errors, contact support@oresults.eu </oldsource>
         <translation type="vanished">ІД імпорту</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="376"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="337"/>
         <source>Race number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="383"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IOF Eventor race number - if nonzero, used as &amp;lt;Race&amp;gt; node and for attribute of &amp;lt;Start&amp;gt; node for IOF XML exports&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="292"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="429"/>
         <source>IOF Eventor race - used for IOF XML exports</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="115"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="168"/>
         <source>Sport</source>
         <translation>Вид</translation>
     </message>
@@ -4195,38 +4289,38 @@ In case of unexpected errors, contact support@oresults.eu </oldsource>
         <translation type="vanished">ТРЕЙЛ</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="52"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="285"/>
         <source>&amp;Time</source>
         <translation>&amp;Час</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="218"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="89"/>
         <source>h:mm:ss</source>
         <oldsource>h:mm</oldsource>
         <translation>h:mm</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="154"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="220"/>
         <source>Discipline</source>
         <translation>Дисципліна</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="170"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="174"/>
         <source>Long distance</source>
         <translation>Довга дистанція</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="171"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="175"/>
         <source>Middle distance</source>
         <translation>Середня дистанція</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="173"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="177"/>
         <source>Sprint</source>
         <translation>Спринт</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="172"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="176"/>
         <source>Ultralong distance</source>
         <translation>Ультра довга</translation>
     </message>
@@ -4235,77 +4329,87 @@ In case of unexpected errors, contact support@oresults.eu </oldsource>
         <translation type="vanished">Естафета</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="175"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="179"/>
         <source>Teams</source>
         <translation>Команди</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="85"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="230"/>
         <source>Card check</source>
         <translation>Випробування чипів</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="164"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="198"/>
         <source>Maximal distance between card CHECK and START time</source>
         <translation>Максимальний час між Випробуванням і Стартом</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="167"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="201"/>
         <source>Disabled</source>
         <translation>Вимкнено</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="170"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="204"/>
         <source> sec</source>
         <translation> сек</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="340"/>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="325"/>
+        <source>Import/Export</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="363"/>
+        <source>data from ORIS - oris.orientacnisporty.cz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="397"/>
         <source>Used for import one-time clubs. Source - ORIS-&gt;Event-&gt;Information-&gt;Event key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="174"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="178"/>
         <source>Relays</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="176"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="180"/>
         <source>Free order</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="177"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="181"/>
         <source>Night</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="178"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="182"/>
         <source>Sprint relays</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="179"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="183"/>
         <source>Knock-out sprint</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="180"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="184"/>
         <source>TempO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="181"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="185"/>
         <source>Multi stages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="183"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="187"/>
         <source>Indoor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="182"/>
+        <location filename="plugins/Event/src/eventdialogwidget.cpp" line="186"/>
         <source>Mass start</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4617,67 +4721,67 @@ In case of unexpected errors, contact support@oresults.eu </oldsource>
 <context>
     <name>Model</name>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="116"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="123"/>
         <source>SI</source>
         <translation>ЧИП</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="117"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="124"/>
         <source>Class</source>
         <translation>Група</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="118"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="125"/>
         <source>Name</source>
         <translation>Ім’я</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="119"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="126"/>
         <source>Reg</source>
         <translation>Реє</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="120"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="127"/>
         <source>Bib</source>
         <translation type="unfinished">Bib</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="121"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="128"/>
         <source>Start</source>
         <translation>Старт</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="122"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="129"/>
         <source>Time</source>
         <translation>Час</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="123"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="130"/>
         <source>Finish</source>
         <translation>Фініш</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="124"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="131"/>
         <source>Run flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="125"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="132"/>
         <source>CR</source>
         <translation type="unfinished">CR</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="125"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="132"/>
         <source>Card rent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="126"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="133"/>
         <source>CRT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="131"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="138"/>
         <source>Error</source>
         <translation>Помилка</translation>
     </message>
@@ -4694,99 +4798,99 @@ In case of unexpected errors, contact support@oresults.eu </oldsource>
         <translation type="vanished">Дискваліфікація</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="126"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="133"/>
         <source>Card in rent table</source>
         <translation>ЧИП в переліку орендованих</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="127"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="134"/>
         <source>Card returned</source>
         <translation>ЧИП повернуто</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="127"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="134"/>
         <source>CRET</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="128"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="135"/>
         <source>CTIME</source>
         <translation>Чпер</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="128"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="135"/>
         <source>Card check time</source>
         <translation>Час випробування картки</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="129"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="136"/>
         <source>STIME</source>
         <translation>Чстарт</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="129"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="136"/>
         <source>Card start time</source>
         <translation>Час старту в картці</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="130"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="137"/>
         <source>FTIME</source>
         <translation>Чфін</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="130"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="137"/>
         <source>Card finish time</source>
         <translation>Час фінішу в картці</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="131"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="138"/>
         <source>Assign card to runner error</source>
         <translation>Помилка призначення картки учасникові</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="183"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="190"/>
         <source>NC</source>
         <comment>NotCompeting</comment>
         <translation type="unfinished">NC</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="185"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="192"/>
         <source>MP</source>
         <comment>MisPunch</comment>
         <translation type="unfinished">MP</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="187"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="194"/>
         <source>BC</source>
         <comment>BadCheck</comment>
         <translation type="unfinished">BC</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="189"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="196"/>
         <source>DNS</source>
         <comment>DidNotStart</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="191"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="198"/>
         <source>DNF</source>
         <comment>DidNotFinish</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="193"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="200"/>
         <source>DO</source>
         <comment>disqualifiedByOrganizer</comment>
         <translation type="unfinished">DO</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="195"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="202"/>
         <source>OT</source>
         <comment>OverTime</comment>
         <translation type="unfinished">OT</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="197"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="204"/>
         <source>DSQ</source>
         <comment>Disqualified</comment>
         <translation type="unfinished">DSQ</translation>
@@ -6096,44 +6200,44 @@ Press refresh button to show imported data.</source>
 <context>
     <name>Runs::RunsPlugin</name>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="121"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="122"/>
         <source>&amp;Runs</source>
         <translation>&amp;Пробіги</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="138"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="139"/>
         <source>Event statistics</source>
         <translation>Статистика події</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="156"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="157"/>
         <source>Late registrations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="1158"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="1276"/>
         <source>E%1 IOF XML stage results</source>
         <translation>E%1 IOF XML результати забігу</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="1927"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2296"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2045"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2483"/>
         <source>Start list by classes</source>
         <translation>Стартовий протокол по групах</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="1956"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2395"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2074"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2582"/>
         <source>Start list by clubs</source>
         <translation>Стартовий протокол по клубах</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="1982"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2100"/>
         <source>Start list for starters</source>
         <translation>Стартовий протокол для суддів старту</translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2015"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2133"/>
         <source>Start list by classes for %n stage(s)</source>
         <translation>
             <numerusform>Стартовий протокол по групах для %n забігу</numerusform>
@@ -6142,7 +6246,7 @@ Press refresh button to show imported data.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2047"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2165"/>
         <source>Start list by clubs for %n stage(s)</source>
         <translation>
             <numerusform>Стартовий протокол по клубах для %n забігу</numerusform>
@@ -6151,19 +6255,19 @@ Press refresh button to show imported data.</source>
         </translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2071"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2097"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2189"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2215"/>
         <source>Results by classes</source>
         <translation>Протокол результатів по групах</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2120"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2238"/>
         <source>Stage awards</source>
         <translation>Нагородження забігу</translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2147"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2174"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2265"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2292"/>
         <source>Results after %n stage(s)</source>
         <translation>
             <numerusform>Результати після %n забігу</numerusform>
@@ -6172,169 +6276,193 @@ Press refresh button to show imported data.</source>
         </translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2196"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2314"/>
         <source>Awards after %1 stages</source>
         <translation>Переможці після %1 забігу(ів)</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2247"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2453"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2326"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2361"/>
+        <source>Point results are not enabled. Enable them in Event settings, Results tab.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2349"/>
+        <source>Points after %n stage(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2383"/>
+        <source>Results by points after %n stage(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2434"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2640"/>
         <source>length:</source>
         <translation>довжина:</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2249"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2455"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2436"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2642"/>
         <source>climb:</source>
         <translation>набір:</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2252"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2350"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2459"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2583"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2439"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2537"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2646"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2770"/>
         <source>Top</source>
         <translation>Вгору</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2265"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2363"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2452"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2550"/>
         <source>St. Num</source>
         <translation>№</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2266"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2365"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2467"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2591"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2692"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2453"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2552"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2654"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2778"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2879"/>
         <source>Name</source>
         <translation>Ім’я</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2267"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2366"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2468"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2592"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2706"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2454"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2553"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2655"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2779"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2893"/>
         <source>Registration</source>
         <translation>Реєстрація</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2268"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2367"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2455"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2554"/>
         <source>SI</source>
         <translation>ЧИП</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2269"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2368"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2456"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2555"/>
         <source>Start</source>
         <translation>Старт</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2364"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2551"/>
         <source>Class</source>
         <translation>Група</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2410"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2597"/>
         <source>Preparing data</source>
         <translation>Підготування данних</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2439"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2569"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2626"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2756"/>
         <source>Procesing class %1</source>
         <translation>Обробляється група %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2458"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2645"/>
         <source>Laps</source>
         <translation>Етапи</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2466"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2590"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2691"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2653"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2777"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2878"/>
         <source>Place</source>
         <translation>Місце</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2469"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2593"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2656"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2780"/>
         <source>Club</source>
         <translation>Клуб</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2470"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2601"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2693"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2657"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2788"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2880"/>
         <source>Time</source>
         <translation>Час</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2471"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2602"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2694"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2658"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2789"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2881"/>
         <source>Loss</source>
         <translation>Програш</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2641"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2828"/>
         <source>NC</source>
         <comment>Not Competing</comment>
         <translation>NC</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2644"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2831"/>
         <source>DISQ</source>
         <translation>DISQ</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2952"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="3139"/>
         <source>E%1 IOF XML stage startlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2507"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2658"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2785"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2694"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2845"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2972"/>
         <source>Stage results</source>
         <translation>Результати забігу</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2526"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2713"/>
         <source>Warning</source>
         <translation>Попередження</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2526"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2713"/>
         <source>Export error</source>
         <translation>Помилка експорту</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2528"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2715"/>
         <source>Information</source>
         <translation>Інформація</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2528"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2715"/>
         <source>Results exported to %1</source>
         <translation>Результати експортовано в %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2548"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2735"/>
         <source>Overall results after stage %1</source>
         <translation>Підсумкові результати після забігу %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2598"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2785"/>
         <source>Stage %1</source>
         <translation>Забіг %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2699"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2886"/>
         <source>FIN</source>
         <translation>FIN</translation>
     </message>
@@ -7016,9 +7144,9 @@ Press refresh button to show imported data.</source>
         <translation>E%1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="405"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="1249"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="1296"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="416"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="1260"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="1307"/>
         <source>--- all ---</source>
         <translation>--- усі ---</translation>
     </message>
@@ -7029,19 +7157,19 @@ Press refresh button to show imported data.</source>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="155"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="270"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="281"/>
         <source>&amp;Start list</source>
         <translation>&amp;Стартовий протокол</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="158"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="274"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="285"/>
         <source>&amp;Classes</source>
         <translation>&amp;Групи</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="163"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="279"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="290"/>
         <source>C&amp;lubs</source>
         <translation>К&amp;луби</translation>
     </message>
@@ -7096,50 +7224,60 @@ Press refresh button to show imported data.</source>
         <translation>Нагородження N забігів</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="225"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="1183"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="223"/>
+        <source>Points after n stages condensed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="228"/>
+        <source>Points after n stages</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="236"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="1194"/>
         <source>Competitors statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="231"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="242"/>
         <source>&amp;Competitors with rented cards</source>
         <translation>&amp;Учасники з орендованими чипами</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="252"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="263"/>
         <source>Competitors with rented cards</source>
         <translation>Учасники з орендованими чипами</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="261"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="272"/>
         <source>&amp;Import</source>
         <translation>&amp;Імпорт</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="263"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="274"/>
         <source>Start times</source>
         <translation>Стартовий час</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="264"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="275"/>
         <source>OB 2000</source>
         <translation>OB 2000</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="269"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="280"/>
         <source>E&amp;xport</source>
         <translation>Е&amp;кспорт</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="271"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="325"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="344"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="282"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="336"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="355"/>
         <source>&amp;HTML</source>
         <translation>&amp;HTML</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="284"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="295"/>
         <source>&amp;XML</source>
         <translation>&amp;XML</translation>
     </message>
@@ -7148,154 +7286,154 @@ Press refresh button to show imported data.</source>
         <translation type="vanished">&amp;IOF-XML 3.0</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="302"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="337"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="313"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="348"/>
         <source>&amp;CSV</source>
         <translation>&amp;CSV</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="305"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="316"/>
         <source>&amp;SIME startlist (Starter Clock)</source>
         <translation>&amp;SIME startlist (Starter Clock)</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="310"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="321"/>
         <source>&amp;Startlist for TV Graphics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="316"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="327"/>
         <source>Results</source>
         <translation>Результати</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="321"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="332"/>
         <source>IOF XML &amp;3.0</source>
         <translation>IOF XML &amp;3.0</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="329"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="340"/>
         <source>HTML with &amp;laps</source>
         <translation>HTML із &amp;проміжками</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="333"/>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="348"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="344"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="359"/>
         <source>CSOS</source>
         <translation>CSOS</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="1076"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="1087"/>
         <source>Really delete all the selected competitors? This action cannot be reverted.</source>
         <translation type="unfinished">Дійсно видалити всіх вибраних учасників? Цю дію не можна повернути.</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="1094"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="1105"/>
         <source>Confirm deletion of %1 competitors.</source>
         <translation type="unfinished">Підтвердить видалення %1 учасників.</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="1197"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="1208"/>
         <source>Edit Competitor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="1201"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="1212"/>
         <source>Ok and &amp;next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="317"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="328"/>
         <source>Current stage</source>
         <translation>Поточний забіг</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="287"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="298"/>
         <source>&amp;IOF-XML 3.0 only runners</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="292"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="303"/>
         <source>IOF-XML 3.0 with &amp;vacants with time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="297"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="308"/>
         <source>IOF-XML 3.0 with &amp;all vacants</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="341"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="352"/>
         <source>Overall</source>
         <translation>Всього</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="356"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="367"/>
         <source>Stage </source>
         <translation>Забіг </translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="366"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="377"/>
         <source> &amp;Class </source>
         <translation> &amp;Група </translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="385"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="396"/>
         <source>Previous class</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="391"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="402"/>
         <source>Next class</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="399"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="410"/>
         <source>&amp;Leg </source>
         <translation>&amp;Проміжок </translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="414"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="425"/>
         <source>Show o&amp;ff-race</source>
         <translation>Показати по&amp;за гонкою</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="415"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="426"/>
         <source>Include competitors who are not running in this stage</source>
         <translation>Включити учасників, які не біжать у цьому забігу</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="420"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="431"/>
         <source>&amp;Draw options</source>
         <translation>Опції &amp;розміщення</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="537"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="548"/>
         <source>Import</source>
         <translation>Імпорт</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="623"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="634"/>
         <source>Save as %1</source>
         <translation>Зберегти %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="701"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="712"/>
         <source>Draw all classes without draw lock?</source>
         <translation>Розміщувати всі групи без блокування?</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="717"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="728"/>
         <source>Class is locked for drawing.</source>
         <translation>Групу заблоковано для розміщення.</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="903"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="914"/>
         <source>Start interval is zero, proceed anyway?</source>
         <translation>Стартовий інтервал нуль, все одно продовжити?</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="983"/>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="994"/>
         <source>Reset all start times and unlock drawing for this class?</source>
         <translation>Скинути стартовий час і розблокувати розміщення цієї групи?</translation>
     </message>
@@ -7964,6 +8102,65 @@ editing is disabled.</source>
         <location filename="plugins/Runs/qml/reports/results_nstagesSpeaker.qml" line="167"/>
         <source>DISQ</source>
         <translation>DISQ</translation>
+    </message>
+</context>
+<context>
+    <name>results_nstages_points</name>
+    <message numerus="yes">
+        <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="15"/>
+        <source>Points after %n stage(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="149"/>
+        <source>Reg</source>
+        <translation type="unfinished">Реє</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="153"/>
+        <source>Stage </source>
+        <translation type="unfinished">Забіг </translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="156"/>
+        <source>Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="158"/>
+        <source>Diff.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>results_nstages_points_condensed</name>
+    <message numerus="yes">
+        <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="15"/>
+        <source>Points after %n stage(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="87"/>
+        <source>Reg</source>
+        <translation type="unfinished">Реє</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="93"/>
+        <source>Result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="99"/>
+        <source>Diff.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
