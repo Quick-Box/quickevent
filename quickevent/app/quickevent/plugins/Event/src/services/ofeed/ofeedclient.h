@@ -37,6 +37,7 @@ public:
 
 	void run() override;
 	void stop() override;
+	void setRunning(bool on) override;
 	OFeedClientSettings settings() const {return OFeedClientSettings(m_settings);}
 
 	static QString serviceName();

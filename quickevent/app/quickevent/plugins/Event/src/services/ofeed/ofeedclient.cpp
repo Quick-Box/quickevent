@@ -5,6 +5,7 @@
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/dialog.h>
+#include <qf/gui/dialogs/messagebox.h>
 #include <qf/core/log.h>
 #include <qf/core/utils/htmlutils.h>
 
@@ -136,6 +137,24 @@ void OFeedClient::run()
 	m_exportTimer->start();
 	QTimer::singleShot(3000, this, &OFeedClient::checkCredentials);
 	m_credentialCheckTimer->start();
+}
+
+void OFeedClient::setRunning(bool on)
+{
+	if (on && !isRunning() && !runChangesProcessing()) {
+		qf::gui::dialogs::MessageBox mbx(qf::gui::framework::MainWindow::frameWork());
+		mbx.setIcon(QMessageBox::Question);
+		mbx.setWindowTitle(serviceDisplayName());
+		mbx.setText(tr("Do you really want to start the service without processing changes from O Checklist?"));
+		mbx.setInformativeText(tr("Choose No to switch changes processing on before the service starts."));
+		mbx.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		mbx.setDefaultButton(QMessageBox::No);
+		mbx.setDoNotShowAgainPersistentKey(QStringLiteral("ofeed/startWithoutChangesProcessing"));
+		if (mbx.exec() == QMessageBox::No) {
+			setRunChangesProcessing(true);
+		}
+	}
+	Super::setRunning(on);
 }
 
 void OFeedClient::stop()
@@ -1414,6 +1433,7 @@ void OFeedClient::processCardChange(int runs_id, const QString &new_value)
 {
 	qf::core::sql::Query q;
 	try
+	{
 		q.prepare("UPDATE runs SET siId=:siId WHERE id=:runsId", qf::core::Exception::Throw);
 		q.bindValue(":runsId", runs_id);
 		q.bindValue(":siId", new_value.toInt());
