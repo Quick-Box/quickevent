@@ -184,7 +184,7 @@ void OFeedClient::exportStartListIofXml3(std::function<void()> on_success)
 
 	QString str = is_relays
 					  ? getPlugin<RelaysPlugin>()->startListIofXml30()
-					  : getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners);
+					  : getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, quickevent::gui::ReportOptionsDialog::VacantsOption::AllVacants);
 
 	sendFile(tr("start list upload"), "/rest/v1/upload/iof", str, on_success, [this]() {
 		m_startListExportInProgress = false;
@@ -1414,7 +1414,6 @@ void OFeedClient::processCardChange(int runs_id, const QString &new_value)
 {
 	qf::core::sql::Query q;
 	try
-	{
 		q.prepare("UPDATE runs SET siId=:siId WHERE id=:runsId", qf::core::Exception::Throw);
 		q.bindValue(":runsId", runs_id);
 		q.bindValue(":siId", new_value.toInt());
@@ -2066,7 +2065,6 @@ void OFeedClient::onCompetitorReadOut(int competitor_id)
 		int running_time = q.value(QStringLiteral("timeMs")).toInt();
 		QString status = getIofResultStatus(running_time, is_disq, is_disq_by_organizer, is_miss_punch, is_bad_check, is_did_not_start, is_did_not_finish, is_not_competing);
 		QString origin = "IT";
-		QString note = "QE read-out, " + q.value(QStringLiteral("note")).toString();
 
 		// Use std::stringstream to build the JSON string
 		std::stringstream json_payload;
@@ -2076,8 +2074,7 @@ void OFeedClient::onCompetitorReadOut(int competitor_id)
 					 << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(start_time)).toStdString() << R"(",)"
 					 << R"("finishTime":")" << datetime_to_string(stage_start_date_time.addMSecs(finish_time)).toStdString() << R"(",)"
 					 << R"("time":)" << running_time / 1000 << ","
-					 << R"("status":")" << status.toStdString() << R"(",)"
-					 << R"("note":")" << note.toStdString() << R"(")"
+					 << R"("status":")" << status.toStdString() << R"(")"
 					 << "}";
 
 		// Get the final JSON string
