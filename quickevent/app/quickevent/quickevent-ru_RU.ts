@@ -2756,149 +2756,159 @@ Use: File --&gt; Import --&gt; Event (*.qbe) to convert event to current version
 <context>
     <name>Event::services::OFeedClient</name>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="169"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="148"/>
+        <source>Do you really want to start the service without processing changes from O Checklist?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="149"/>
+        <source>Choose No to switch changes processing on before the service starts.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="188"/>
         <source>results upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="189"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="208"/>
         <source>start list upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="578"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="597"/>
         <source>Missing OFeed event credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="585"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="770"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="604"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="789"/>
         <source>Invalid OFeed URL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="608"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="627"/>
         <source>No event image is available in OFeed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="610"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="629"/>
         <source>Event image download failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="615"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="634"/>
         <source>No event image payload received from OFeed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="625"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="644"/>
         <source>Event image cached as SVG.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="644"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="663"/>
         <source>Unsupported image format received from OFeed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="656"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="675"/>
         <source>Cannot encode cached event image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="662"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="681"/>
         <source>Cached image encoding produced empty payload.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="667"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="686"/>
         <source>Event image cached (%1x%2).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="764"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="783"/>
         <source>Please fill URL, event id, and password.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="804"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="823"/>
         <source>Unexpected HTTP response</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="812"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="831"/>
         <source>Invalid JSON response.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="824"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="843"/>
         <source>Password has expired.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="826"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="845"/>
         <source>Event ID mismatch.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="828"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="847"/>
         <source>Authentication required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="830"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="849"/>
         <source>Invalid credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="838"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="857"/>
         <source>Event not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="922"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="941"/>
         <source>OFeed — Invalid Credentials</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="923"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="942"/>
         <source>OFeed password is invalid or has expired.
 
 Please open OFeed service settings and update your credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1307"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1326"/>
         <source>Exception occurred while getting changes by origin: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1423"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1448"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1473"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1499"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1442"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1467"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1492"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1518"/>
         <source>Database query failed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1428"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1453"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1478"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1503"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1447"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1472"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1497"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1522"/>
         <source>Exception occurred while executing query: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1432"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1457"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1482"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1507"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1451"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1476"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1501"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1526"/>
         <source>Unknown exception occurred while executing query.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1574"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1593"/>
         <source>No data received or an error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
