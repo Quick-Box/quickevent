@@ -1620,10 +1620,12 @@ void OFeedClient::storeChange(const QJsonObject &change)
 	qf::core::sql::Query q;
 	try
 	{
-		q.prepare("INSERT INTO qxchanges (data_type, data, orig_data, source, user_id, stage_id, change_id, created, status, status_message)"
-				  " VALUES (:dataType, :data, :origData, :source, :userId, :stageId, :changeId, :created, :status, :statusMessage)");
+		q.prepare("INSERT INTO qxchanges (data_type, data, data_id, orig_data, source, user_id, stage_id, change_id, created, status, status_message)"
+				  " VALUES (:dataType, :data, :dataId, :origData, :source, :userId, :stageId, :changeId, :created, :status, :statusMessage)"
+				  " RETURNING id");
 		q.bindValue(":dataType", change["type"].toString());
 		q.bindValue(":data", new_value);
+		q.bindValue(":dataId", runs_id);
 		q.bindValue(":origData", previous_value);
 		q.bindValue(":source", "OFeed");
 		q.bindValue(":userId", competitor_id);
@@ -1635,6 +1637,10 @@ void OFeedClient::storeChange(const QJsonObject &change)
 		if (!q.exec(qf::core::Exception::Throw))
 		{
 			qfError() << "Database query failed:" << q.lastError().text();
+		}
+		else if (q.next())
+		{
+			getPlugin<EventPlugin>()->emitDbEvent(EventPlugin::DBEVENT_QX_CHANGE_RECEIVED, q.value(0).toInt(), true);
 		}
 	}
 	catch (const std::exception &e)

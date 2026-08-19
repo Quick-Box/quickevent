@@ -24,6 +24,8 @@ public:
 	void onVisibleChanged(bool is_visible);
 private:
 	QxClientService* service();
+	void updateEnabled();
+	void loadTypes(int stage_id);
 	void reload();
 	void addQxChangeRow(int sql_id);
 
