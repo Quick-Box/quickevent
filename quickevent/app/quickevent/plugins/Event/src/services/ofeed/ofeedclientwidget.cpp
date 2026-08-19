@@ -432,12 +432,16 @@ void OFeedClientWidget::onBtRefreshEventImageClicked()
 	updateTestConnectionState();
 
 	QPointer<OFeedClientWidget> widget_guard(this);
-	svc->refreshEventImageCache([widget_guard](bool success, const QString &message) {
+	svc->refreshEventImageCache([widget_guard, svc](bool success, const QString &message) {
 		if(!widget_guard)
 			return;
 		widget_guard->m_isImageRefreshRunning = false;
 		widget_guard->ui->lbEventImageCacheStatus->setStyleSheet(success ? "color:#0a7a2f;" : "color:#b00020;");
 		widget_guard->ui->lbEventImageCacheStatus->setText(message);
+		if(success) {
+			// image height was derived from the downloaded image, don't save the stale spin box value back
+			widget_guard->ui->edReceiptImageHeight->setValue(svc->receiptImageHeightMm());
+		}
 		widget_guard->updateTestConnectionState();
 	});
 }

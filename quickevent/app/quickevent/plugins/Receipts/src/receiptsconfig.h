@@ -9,6 +9,8 @@ struct ReceiptsConfig
 	ReceiptsConfig();
 	static ReceiptsConfig fromVariantMap(const QVariantMap &map);
 	QVariantMap toVariantMap() const;
+	/// height at which the image fills the receipt width, derived from its aspect ratio
+	static int imageHeightMmForImage(const QByteArray &image_data, int fallback_mm);
 
 	bool printQrCode = false;
 	QString linkUrl;

@@ -680,6 +680,9 @@ void ReceiptsSettingsPage::onSelectReceiptImageClicked()
 
 	m_receiptImageBase64 = image_base64;
 	m_receiptImageFormat = image_format;
+	ui->edReceiptImageHeight->setValue(ReceiptsConfig::imageHeightMmForImage(
+		QByteArray::fromBase64(image_base64.toLatin1()),
+		ui->edReceiptImageHeight->value()));
 	ui->edReceiptImageFile->setText(QDir::toNativeSeparators(file_path));
 	ui->edReceiptImageFile->setToolTip(QDir::toNativeSeparators(file_path));
 	ui->chkPrintReceiptImage->setChecked(true);

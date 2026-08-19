@@ -563,6 +563,7 @@ void OFeedClient::setCachedEventImage(const QByteArray &raw_data, const QString 
 	auto rc = config.receiptsConfig(current_stage);
 	rc.imageBase64 = QString::fromLatin1(raw_data.toBase64());
 	rc.imageFormat = format.toLower();
+	rc.imageHeightMm = Receipts::ReceiptsConfig::imageHeightMmForImage(raw_data, rc.imageHeightMm);
 	config.setReceiptsConfig(current_stage, rc);
 }
 
