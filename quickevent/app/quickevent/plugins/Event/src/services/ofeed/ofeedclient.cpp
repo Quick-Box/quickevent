@@ -55,6 +55,7 @@ namespace Event::services {
 	{
 		const QString k_default_host_url = QStringLiteral("https://api.orienteerfeed.com");
 		const QString k_event_config_prefix = QStringLiteral("event");
+		const QString k_start_changelog_origin = QStringLiteral("START");
 		const QString k_office_changelog_origin = QStringLiteral("OFFICE");
 
 		QString normalized_base_host_url(QString host_url)
@@ -264,7 +265,7 @@ void OFeedClient::processChanges(std::function<void()> on_done)
 		}
 	};
 	if (runStartChangesProcessing()) {
-		getChangesByOrigin(changelogOrigin(), process_office);
+		getChangesByOrigin(k_start_changelog_origin, process_office);
 	}
 	else {
 		process_office();
@@ -428,13 +429,6 @@ QString OFeedClient::eventPassword() const
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
 	return cfg.eventPassword;
-}
-
-QString OFeedClient::changelogOrigin() const
-{
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
-	return cfg.changelogOrigin;
 }
 
 bool OFeedClient::isInsertFromOFeed = false;
@@ -782,15 +776,6 @@ void OFeedClient::setEventPassword(QString eventPassword)
 	cfg.eventPassword = eventPassword;
 	config.setOfeedConfig(current_stage, cfg);
 	m_eventImageStartupAttempted = false;
-}
-
-void OFeedClient::setChangelogOrigin(QString changelogOrigin)
-{
-	auto &config = getPlugin<EventPlugin>()->appDbConfig();
-	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	auto cfg = config.ofeedConfig(current_stage);
-	cfg.changelogOrigin = changelogOrigin;
-	config.setOfeedConfig(current_stage, cfg);
 }
 
 void OFeedClient::setLastChangelogCall(const QString &origin, QDateTime lastChangelogCall)
@@ -1447,7 +1432,7 @@ void OFeedClient::processCompetitorsChanges(QJsonArray data_array)
 		qfInfo() << "Processing change for competitorId (OFeed externalId):" << runs_id << ", type:" << type << ", " << previous_value << " -> " << new_value;
 
 		bool is_dns = type == QLatin1String("status_change") && new_value == QLatin1String("DidNotStart");
-		if (origin == QLatin1String("START") && created_at.isValid() && !is_dns)
+		if (origin == k_start_changelog_origin && created_at.isValid() && !is_dns)
 			processCorridorTimeUpdate(runs_id, created_at);
 
 		// Handle each type of change

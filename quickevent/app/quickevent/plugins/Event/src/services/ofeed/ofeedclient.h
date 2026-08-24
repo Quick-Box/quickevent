@@ -55,8 +55,6 @@ public:
 	void setEventId(QString eventId);
 	QString eventPassword() const;
 	void setEventPassword(QString eventPassword);
-	QString changelogOrigin() const;
-	void setChangelogOrigin(QString changelogOrigin);
 	QDateTime lastChangelogCall(const QString &origin);
 	void setLastChangelogCall(const QString &origin, QDateTime lastChangelogCall);
 	bool runXmlValidation();

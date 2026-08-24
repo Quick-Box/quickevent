@@ -14,7 +14,6 @@ struct OFeedConfig
 	QString hostUrl;
 	QString eventId;
 	QString eventPassword;
-	QString changelogOrigin;
 	QDateTime lastStartChangelogCall;
 	QDateTime lastOfficeChangelogCall;
 	bool runXmlValidation = true;
