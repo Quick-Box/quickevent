@@ -142,7 +142,7 @@ void OFeedClient::run()
 
 void OFeedClient::setRunning(bool on)
 {
-	if (on && !isRunning() && !runChangesProcessing()) {
+	if (on && !isRunning() && !runStartChangesProcessing()) {
 		qf::gui::dialogs::MessageBox mbx(qf::gui::framework::MainWindow::frameWork());
 		mbx.setIcon(QMessageBox::Question);
 		mbx.setWindowTitle(serviceDisplayName());
@@ -152,7 +152,7 @@ void OFeedClient::setRunning(bool on)
 		mbx.setDefaultButton(QMessageBox::No);
 		mbx.setDoNotShowAgainPersistentKey(QStringLiteral("ofeed/startWithoutChangesProcessing"));
 		if (mbx.exec() == QMessageBox::No) {
-			setRunChangesProcessing(true);
+			setRunStartChangesProcessing(true);
 		}
 	}
 	Super::setRunning(on);
@@ -211,12 +211,7 @@ void OFeedClient::exportStartListIofXml3(std::function<void()> on_success)
 	});
 }
 
-void OFeedClient::triggerChangesProcessing()
-{
-	processChanges(true);
-}
-
-void OFeedClient::processChanges(bool include_start, std::function<void()> on_done)
+void OFeedClient::processChanges(std::function<void()> on_done)
 {
 	auto process_office = [this, on_done]() {
 		if (runOfficeChangesProcessing()) {
@@ -226,7 +221,7 @@ void OFeedClient::processChanges(bool include_start, std::function<void()> on_do
 			on_done();
 		}
 	};
-	if (include_start) {
+	if (runStartChangesProcessing()) {
 		getChangesByOrigin(changelogOrigin(), process_office);
 	}
 	else {
@@ -271,14 +266,14 @@ void OFeedClient::init()
 void OFeedClient::onExportTimerTimeOut()
 {
 	emit exportTimerFired();
-	const bool process_changes = runChangesProcessing() || runOfficeChangesProcessing();
+	const bool process_changes = runStartChangesProcessing() || runOfficeChangesProcessing();
 	if (process_changes && m_changesProcessingInProgress) {
 		// Skip - ongoing cycle will export start list + results after processing completes.
 		// Exporting now would send stale data and overwrite OFeed changes.
 		return;
 	}
 	if (process_changes) {
-		processChanges(runChangesProcessing(), [this]() {
+		processChanges([this]() {
 			exportStartListIofXml3([this]() { exportResultsIofXml3(); });
 		});
 	}
@@ -407,7 +402,7 @@ QDateTime OFeedClient::lastChangelogCall(const QString &origin) {
     auto config = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
     const bool is_office = origin == k_office_changelog_origin;
     // Retrieve the stored value from the configuration, each origin is tracked separately
-    auto &last_call = is_office ? config.lastOfficeChangelogCall : config.lastChangelogCall;
+    auto &last_call = is_office ? config.lastOfficeChangelogCall : config.lastStartChangelogCall;
 
     // Check if the value exists
     if (!last_call.isValid() || last_call.toString().isEmpty()) {
@@ -426,11 +421,11 @@ bool OFeedClient::runXmlValidation()
     return config.ofeedConfig(current_stage).runXmlValidation;
 }
 
-bool OFeedClient::runChangesProcessing ()
+bool OFeedClient::runStartChangesProcessing ()
 {
     auto &config = getPlugin<EventPlugin>()->appDbConfig();
     auto current_stage = config.eventConfig().currentStageId;
-    return config.ofeedConfig(current_stage).runChangesProcessing;
+    return config.ofeedConfig(current_stage).runStartChangesProcessing;
 }
 
 bool OFeedClient::runOfficeChangesProcessing ()
@@ -765,7 +760,7 @@ void OFeedClient::setLastChangelogCall(const QString &origin, QDateTime lastChan
 		cfg.lastOfficeChangelogCall = lastChangelogCall;
 	}
 	else {
-		cfg.lastChangelogCall = lastChangelogCall;
+		cfg.lastStartChangelogCall = lastChangelogCall;
 	}
 	config.setOfeedConfig(current_stage, cfg);
 }
@@ -779,12 +774,12 @@ void OFeedClient::setRunXmlValidation(bool runXmlValidation)
 	config.setOfeedConfig(current_stage, cfg);
 }
 
-void OFeedClient::setRunChangesProcessing(bool runChangesProcessing)
+void OFeedClient::setRunStartChangesProcessing(bool runStartChangesProcessing)
 {
 	auto &config = getPlugin<EventPlugin>()->appDbConfig();
 	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	auto cfg = config.ofeedConfig(current_stage);
-	cfg.runChangesProcessing = runChangesProcessing;
+	cfg.runStartChangesProcessing = runStartChangesProcessing;
 	config.setOfeedConfig(current_stage, cfg);
 }
 

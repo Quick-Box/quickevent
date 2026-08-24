@@ -126,7 +126,6 @@ private:
 	void onCompetitorReadOut(int competitor_id);
 	void sendGraphQLRequest(const QString &query, const QJsonObject &variables, std::function<void(QJsonObject)> callback, bool withAuthorization);
 	void getChangesByOrigin(const QString &origin, std::function<void()> on_done = nullptr);
-	void processChanges(bool include_start, std::function<void()> on_done = nullptr);
 	void processCompetitorsChanges(QJsonArray data_array);
 	void markChangelogEntryAsProcessed(int protocolId);
 	void processCardChange(int runs_id, const QString &new_value);

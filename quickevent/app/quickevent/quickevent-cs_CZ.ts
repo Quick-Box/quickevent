@@ -3329,9 +3329,9 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <translation type="unfinished">Zpracovat dohlášky a změny z OFeedu</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="375"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, changes from the start are automatically processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Když je tato možnost povolena, změny ze startu se automaticky zpracují a zobrazí v modulu &lt;span style=&quot; font-weight:700;&quot;&gt;Pozdní registrace&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="409"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When one of the options is enabled, the changes are automatically processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Když je jedna z možností povolena, změny se automaticky zpracují a zobrazí v modulu &lt;span style=&quot; font-weight:700;&quot;&gt;Pozdní registrace&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="401"/>
@@ -3509,6 +3509,11 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="252"/>
         <source>Show password value</source>
         <translation>Zobrazit heslo</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="372"/>
+        <source>No changes processing is switched on. Enable processing of requested changes in the settings.</source>
+        <translation type="unfinished">Není zapnuto zpracování žádných změn. Povolte v nastavení zpracování požadovaných změn.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="388"/>

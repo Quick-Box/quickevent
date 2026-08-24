@@ -370,16 +370,6 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="processChangesDescription">
-       <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, changes from the start are automatically processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <layout class="QHBoxLayout" name="processOfficeChangesLayout">
        <item>
         <widget class="ToggleSwitch" name="processOfficeChangesOnOffButton">
@@ -412,6 +402,16 @@
         </spacer>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="processChangesDescription">
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When one of the options is enabled, the changes are automatically processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QFrame" name="separatorProcessChanges">

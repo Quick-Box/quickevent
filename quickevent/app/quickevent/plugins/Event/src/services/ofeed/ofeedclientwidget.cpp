@@ -207,7 +207,7 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		ui->lbReceiptEventQrCodeCaption->setEnabled(svc->printEventQrCodeOnReceipt());
 		ui->edReceiptEventQrCodeCaption->setEnabled(svc->printEventQrCodeOnReceipt());
 		ui->lbEventImageCacheStatus->setText(svc->hasCachedEventImage() ? tr("Cached image is available") : tr("No cached image"));
-		ui->processChangesOnOffButton->setChecked(svc->runChangesProcessing());
+		ui->processChangesOnOffButton->setChecked(svc->runStartChangesProcessing());
 		ui->processOfficeChangesOnOffButton->setChecked(svc->runOfficeChangesProcessing());
 		updateCredentialStatus(svc->credentialsValid() == 1);
 		connect(svc, &OFeedClient::credentialsStatusChanged, this, &OFeedClientWidget::updateCredentialStatus);
@@ -237,7 +237,7 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	connect(ui->processChangesOnOffButton, &QAbstractButton::toggled, this, [this](bool checked) {
 		OFeedClient *svc = service();
 		if(svc)
-			svc->setRunChangesProcessing(checked);
+			svc->setRunStartChangesProcessing(checked);
 	});
 	connect(ui->processOfficeChangesOnOffButton, &QAbstractButton::toggled, this, [this](bool checked) {
 		OFeedClient *svc = service();
@@ -369,9 +369,13 @@ void OFeedClientWidget::onBtProcessChangesClicked()
 {
 	OFeedClient *svc = service();
 	if(svc) {
+		if(!svc->runStartChangesProcessing() && !svc->runOfficeChangesProcessing()) {
+			qf::gui::dialogs::MessageBox::showWarning(this, tr("No changes processing is switched on. Enable processing of requested changes in the settings."));
+			return;
+		}
 		saveSettings();
 		qfInfo() << OFeedClient::serviceName() + " [process changes - manual trigger]";
-		svc->triggerChangesProcessing();
+		svc->processChanges();
 	}
 }
 
