@@ -132,12 +132,54 @@ QString OFeedClient::serviceName()
 
 void OFeedClient::run()
 {
+	if (m_startupCheckInProgress)
+		return;
+
+	const QString event_id = eventId().trimmed();
+	const QString event_password = eventPassword().trimmed();
+	if (event_id.isEmpty() || event_password.isEmpty()) {
+		setCredentialsInvalid();
+		showStartupCredentialError(tr("OFeed event ID or password is not set."));
+		return;
+	}
+
+	m_startupCheckInProgress = true;
+	testConnection(hostUrl(), event_id, event_password, [this](bool success, const QString &message) {
+		m_startupCheckInProgress = false;
+		if (!success) {
+			setCredentialsInvalid();
+			showStartupCredentialError(message);
+			return;
+		}
+		m_credentialsValid = 1;
+		m_credentialWarningShown = false;
+		emit credentialsStatusChanged(true);
+		startService();
+	});
+}
+
+void OFeedClient::startService()
+{
 	Super::run();
 	ensureEventImageCachedAtStartup();
 	exportStartListIofXml3([this]() { exportResultsIofXml3(); });
 	m_exportTimer->start();
-	QTimer::singleShot(3000, this, &OFeedClient::checkCredentials);
 	m_credentialCheckTimer->start();
+}
+
+void OFeedClient::setCredentialsInvalid()
+{
+	m_credentialsValid = 0;
+	emit credentialsStatusChanged(false);
+}
+
+void OFeedClient::showStartupCredentialError(const QString &message)
+{
+	QMessageBox::warning(
+		qf::gui::framework::MainWindow::frameWork(),
+		serviceDisplayName(),
+		tr("The service cannot be started, OFeed credentials check has not passed.\n\n%1\n\nPlease open OFeed service settings and update your credentials.").arg(message)
+	);
 }
 
 void OFeedClient::setRunning(bool on)

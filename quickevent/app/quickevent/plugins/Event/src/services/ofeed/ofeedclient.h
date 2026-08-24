@@ -105,12 +105,16 @@ private:
 	bool m_startListExportInProgress = false;
 	bool m_changesProcessingInProgress = false;
 	bool m_processingOFeedChanges = false;
+	bool m_startupCheckInProgress = false;
 
 private:
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 	void onExportTimerTimeOut();
 	void init();
 	void ensureEventImageCachedAtStartup();
+	void startService();
+	void setCredentialsInvalid();
+	void showStartupCredentialError(const QString &message);
 	// QString receiptConfigKey(const QString &suffix) const;
 	// QVariant receiptConfigValue(const QString &suffix, const QVariant &default_value = QVariant()) const;
 	// void setReceiptConfigValue(const QString &suffix, const QVariant &value);
