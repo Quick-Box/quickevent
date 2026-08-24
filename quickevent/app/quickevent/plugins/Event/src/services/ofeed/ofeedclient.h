@@ -45,7 +45,7 @@ public:
 
 	void exportResultsIofXml3();
 	void exportStartListIofXml3(std::function<void()> on_success = nullptr);
-	void triggerChangesProcessing();
+	void processChanges(std::function<void()> on_done = nullptr);
 	void loadSettings() override;
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 
@@ -57,12 +57,14 @@ public:
 	void setEventPassword(QString eventPassword);
 	QString changelogOrigin() const;
 	void setChangelogOrigin(QString changelogOrigin);
-	QDateTime lastChangelogCall();
-	void setLastChangelogCall(QDateTime lastChangelogCall);
+	QDateTime lastChangelogCall(const QString &origin);
+	void setLastChangelogCall(const QString &origin, QDateTime lastChangelogCall);
 	bool runXmlValidation();
 	void setRunXmlValidation(bool runXmlValidation);
-	bool runChangesProcessing();
-	void setRunChangesProcessing(bool runChangesProcessing);
+	bool runStartChangesProcessing();
+	void setRunStartChangesProcessing(bool runStartChangesProcessing);
+	bool runOfficeChangesProcessing();
+	void setRunOfficeChangesProcessing(bool runOfficeChangesProcessing);
 	bool printEventImageOnReceipt() const;
 	void setPrintEventImageOnReceipt(bool on);
 	bool printEventQrCodeOnReceipt() const;
@@ -123,7 +125,8 @@ private:
 	void onRunChanged(int run_id, const QVariantMap &dirty_vals);
 	void onCompetitorReadOut(int competitor_id);
 	void sendGraphQLRequest(const QString &query, const QJsonObject &variables, std::function<void(QJsonObject)> callback, bool withAuthorization);
-	void getChangesByOrigin(std::function<void()> on_done = nullptr);
+	void getChangesByOrigin(const QString &origin, std::function<void()> on_done = nullptr);
+	void processChanges(bool include_start, std::function<void()> on_done = nullptr);
 	void processCompetitorsChanges(QJsonArray data_array);
 	void markChangelogEntryAsProcessed(int protocolId);
 	void processCardChange(int runs_id, const QString &new_value);

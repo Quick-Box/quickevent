@@ -15,9 +15,11 @@ struct OFeedConfig
 	QString eventId;
 	QString eventPassword;
 	QString changelogOrigin;
-	QDateTime lastChangelogCall;
+	QDateTime lastStartChangelogCall;
+	QDateTime lastOfficeChangelogCall;
 	bool runXmlValidation = true;
-	bool runChangesProcessing = false;
+	bool runStartChangesProcessing = false;
+	bool runOfficeChangesProcessing = false;
 	// Non-stage-specific field, stored as ofeed.introTourShowed
 	bool introTourShowed = false;
 };

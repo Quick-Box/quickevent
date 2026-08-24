@@ -208,6 +208,7 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		ui->edReceiptEventQrCodeCaption->setEnabled(svc->printEventQrCodeOnReceipt());
 		ui->lbEventImageCacheStatus->setText(svc->hasCachedEventImage() ? tr("Cached image is available") : tr("No cached image"));
 		ui->processChangesOnOffButton->setChecked(svc->runChangesProcessing());
+		ui->processOfficeChangesOnOffButton->setChecked(svc->runOfficeChangesProcessing());
 		updateCredentialStatus(svc->credentialsValid() == 1);
 		connect(svc, &OFeedClient::credentialsStatusChanged, this, &OFeedClientWidget::updateCredentialStatus);
 	}
@@ -237,6 +238,11 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		OFeedClient *svc = service();
 		if(svc)
 			svc->setRunChangesProcessing(checked);
+	});
+	connect(ui->processOfficeChangesOnOffButton, &QAbstractButton::toggled, this, [this](bool checked) {
+		OFeedClient *svc = service();
+		if(svc)
+			svc->setRunOfficeChangesProcessing(checked);
 	});
 	connect(ui->btPasteSetupLink, &QPushButton::clicked, this, &OFeedClientWidget::onBtPasteSetupLinkClicked);
 	connect(ui->btTestConnection, &QPushButton::clicked, this, &OFeedClientWidget::onBtTestConnectionClicked);

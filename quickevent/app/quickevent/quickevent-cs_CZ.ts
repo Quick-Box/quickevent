@@ -3319,6 +3319,16 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <translation type="unfinished">Zpracovat změny ze startu (O Checklistu)</translation>
     </message>
     <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="387"/>
+        <source>Enable or disable automatic processing of late entries and changes from the OFeed office</source>
+        <translation type="unfinished">Zapnout nebo vypnout automatické zpracování dohlášek a změn z kanceláře OFeedu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="397"/>
+        <source>Process late entries and changes from OFeed</source>
+        <translation type="unfinished">Zpracovat dohlášky a změny z OFeedu</translation>
+    </message>
+    <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="375"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When enabled, changes from the start are automatically processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Když je tato možnost povolena, změny ze startu se automaticky zpracují a zobrazí v modulu &lt;span style=&quot; font-weight:700;&quot;&gt;Pozdní registrace&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>

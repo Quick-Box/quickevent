@@ -55,6 +55,7 @@ namespace Event::services {
 	{
 		const QString k_default_host_url = QStringLiteral("https://api.orienteerfeed.com");
 		const QString k_event_config_prefix = QStringLiteral("event");
+		const QString k_office_changelog_origin = QStringLiteral("OFFICE");
 
 		QString normalized_base_host_url(QString host_url)
 		{
@@ -212,7 +213,25 @@ void OFeedClient::exportStartListIofXml3(std::function<void()> on_success)
 
 void OFeedClient::triggerChangesProcessing()
 {
-	getChangesByOrigin();
+	processChanges(true);
+}
+
+void OFeedClient::processChanges(bool include_start, std::function<void()> on_done)
+{
+	auto process_office = [this, on_done]() {
+		if (runOfficeChangesProcessing()) {
+			getChangesByOrigin(k_office_changelog_origin, on_done);
+		}
+		else if (on_done) {
+			on_done();
+		}
+	};
+	if (include_start) {
+		getChangesByOrigin(changelogOrigin(), process_office);
+	}
+	else {
+		process_office();
+	}
 }
 
 int OFeedClient::credentialCheckRemainingMs() const
@@ -252,13 +271,14 @@ void OFeedClient::init()
 void OFeedClient::onExportTimerTimeOut()
 {
 	emit exportTimerFired();
-	if (runChangesProcessing() && m_changesProcessingInProgress) {
+	const bool process_changes = runChangesProcessing() || runOfficeChangesProcessing();
+	if (process_changes && m_changesProcessingInProgress) {
 		// Skip - ongoing cycle will export start list + results after processing completes.
 		// Exporting now would send stale data and overwrite OFeed changes.
 		return;
 	}
-	if (runChangesProcessing()) {
-		getChangesByOrigin([this]() {
+	if (process_changes) {
+		processChanges(runChangesProcessing(), [this]() {
 			exportStartListIofXml3([this]() { exportResultsIofXml3(); });
 		});
 	}
@@ -382,20 +402,21 @@ QString OFeedClient::changelogOrigin() const
 
 bool OFeedClient::isInsertFromOFeed = false;
 
-QDateTime OFeedClient::lastChangelogCall() {
+QDateTime OFeedClient::lastChangelogCall(const QString &origin) {
     int current_stage = getPlugin<EventPlugin>()->currentStageId();
     auto config = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
-    // Retrieve the stored value from the configuration
-    auto last_call = config.lastChangelogCall;
+    const bool is_office = origin == k_office_changelog_origin;
+    // Retrieve the stored value from the configuration, each origin is tracked separately
+    auto &last_call = is_office ? config.lastOfficeChangelogCall : config.lastChangelogCall;
 
     // Check if the value exists
     if (!last_call.isValid() || last_call.toString().isEmpty()) {
         // No valid value exists, set the initial value
-        config.lastChangelogCall = QDateTime::fromSecsSinceEpoch(0); // Default to Unix epoch (1970-01-01T00:00:00Z)
+        last_call = QDateTime::fromSecsSinceEpoch(0); // Default to Unix epoch (1970-01-01T00:00:00Z)
         getPlugin<EventPlugin>()->appDbConfig().setOfeedConfig(current_stage, config);
-        // qDebug() << "No lastChangelogCall found. Setting initial value to:" << config.lastChangelogCall.toString(Qt::ISODate);
+        // qDebug() << "No lastChangelogCall found. Setting initial value to:" << last_call.toString(Qt::ISODate);
     }
-    return config.lastChangelogCall;
+    return last_call;
 }
 
 bool OFeedClient::runXmlValidation()
@@ -410,6 +431,13 @@ bool OFeedClient::runChangesProcessing ()
     auto &config = getPlugin<EventPlugin>()->appDbConfig();
     auto current_stage = config.eventConfig().currentStageId;
     return config.ofeedConfig(current_stage).runChangesProcessing;
+}
+
+bool OFeedClient::runOfficeChangesProcessing ()
+{
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    return config.ofeedConfig(current_stage).runOfficeChangesProcessing;
 }
 
 // QString OFeedClient::receiptConfigKey(const QString &suffix) const
@@ -728,12 +756,17 @@ void OFeedClient::setChangelogOrigin(QString changelogOrigin)
 	config.setOfeedConfig(current_stage, cfg);
 }
 
-void OFeedClient::setLastChangelogCall(QDateTime lastChangelogCall)
+void OFeedClient::setLastChangelogCall(const QString &origin, QDateTime lastChangelogCall)
 {
 	auto &config = getPlugin<EventPlugin>()->appDbConfig();
 	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	auto cfg = config.ofeedConfig(current_stage);
-	cfg.lastChangelogCall = lastChangelogCall;
+	if (origin == k_office_changelog_origin) {
+		cfg.lastOfficeChangelogCall = lastChangelogCall;
+	}
+	else {
+		cfg.lastChangelogCall = lastChangelogCall;
+	}
 	config.setOfeedConfig(current_stage, cfg);
 }
 
@@ -752,6 +785,15 @@ void OFeedClient::setRunChangesProcessing(bool runChangesProcessing)
 	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	auto cfg = config.ofeedConfig(current_stage);
 	cfg.runChangesProcessing = runChangesProcessing;
+	config.setOfeedConfig(current_stage, cfg);
+}
+
+void OFeedClient::setRunOfficeChangesProcessing(bool runOfficeChangesProcessing)
+{
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.runOfficeChangesProcessing = runOfficeChangesProcessing;
 	config.setOfeedConfig(current_stage, cfg);
 }
 
@@ -1233,7 +1275,7 @@ void OFeedClient::sendGraphQLRequest(const QString &query,
 	});
 }
 
-void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
+void OFeedClient::getChangesByOrigin(const QString &origin, std::function<void()> on_done)
 {
 	if (m_changesProcessingInProgress) {
 		qfDebug() << serviceName() << "changes processing already in progress, skipping";
@@ -1245,7 +1287,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 
 	try
 	{
-		QDateTime last_changelog_call_value = lastChangelogCall();
+		QDateTime last_changelog_call_value = lastChangelogCall(origin);
 		QDateTime initial_value = QDateTime::fromSecsSinceEpoch(0); // Unix epoch
 
 		QString graphQLquery = R"(
@@ -1269,7 +1311,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 
 		QJsonObject variables;
 		variables["eventId"] = eventId();
-		variables["origin"] = changelogOrigin();
+		variables["origin"] = origin;
 
 		// Check if last_changelog_call_value is valid/not default
 		if (last_changelog_call_value != initial_value)
@@ -1296,7 +1338,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 			variables["since"] = last_changelog_call_value.toString(Qt::ISODate);
 		}
 
-		sendGraphQLRequest(graphQLquery, variables, [this, on_done](QJsonObject data)
+		sendGraphQLRequest(graphQLquery, variables, [this, origin, on_done](QJsonObject data)
 						   {
 			if (!data.isEmpty())
 			{
@@ -1305,7 +1347,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 					QJsonArray changelog_array = data["changelogByEvent"].toArray();
 
 					if (changelog_array.isEmpty()) {
-						qfInfo() << "No changes from origin: " << changelogOrigin();
+						qfInfo() << "No changes from origin: " << origin;
 					}
 					else {
 						// Process the data
@@ -1313,7 +1355,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 
 						// Update last changelog call with the adjusted execution time
 						QDateTime request_execution_time = QDateTime::currentDateTimeUtc();
-						setLastChangelogCall(request_execution_time);
+						setLastChangelogCall(origin, request_execution_time);
 					}
 				}
 			}

@@ -380,6 +380,40 @@
       </widget>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="processOfficeChangesLayout">
+       <item>
+        <widget class="ToggleSwitch" name="processOfficeChangesOnOffButton">
+         <property name="toolTip">
+          <string>Enable or disable automatic processing of late entries and changes from the OFeed office</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="processOfficeChangesOnOffLabel">
+         <property name="text">
+          <string>Process late entries and changes from OFeed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="processOfficeChangesHorizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
       <widget class="QFrame" name="separatorProcessChanges">
        <property name="frameShape">
         <enum>QFrame::Shape::HLine</enum>
