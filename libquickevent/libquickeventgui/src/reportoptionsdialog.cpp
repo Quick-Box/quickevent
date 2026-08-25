@@ -14,6 +14,7 @@
 #include <QShowEvent>
 #include <QSqlDatabase>
 #include <QTimer>
+#include <algorithm>
 
 
 namespace quickevent::gui {
@@ -23,12 +24,13 @@ auto persistent_settings_path_prefix = QStringLiteral("ui/MainWindow/");
 auto default_persistent_settings_id =  QStringLiteral("reportOptionsDialog");
 }
 
-ReportOptionsDialog::ReportOptionsDialog(QWidget *parent)
+ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 	: QDialog(parent)
 	, qf::gui::framework::IPersistentSettings(this)
 	, ui(new Ui::ReportOptionsDialog)
 {
 	ui->setupUi(this);
+	ui->edStagesCount->setMaximum(max_stage_count);
 	setPersistentSettingsId(default_persistent_settings_id);
 
 	//ui->edFilter->setText("h1%");
@@ -120,7 +122,7 @@ ReportOptionsDialog::BreakType ReportOptionsDialog::breakType() const
 ReportOptionsDialog::VacantsOption ReportOptionsDialog::startListPrintVacantsOption() const
 {
 	int ix = ui->cbxStartOpts_PrintVacants->currentIndex();
-	if (ix < 0) ix = 0;
+	ix = std::max(ix, 0);
 	return static_cast<ReportOptionsDialog::VacantsOption>(ix);
 }
 
@@ -403,4 +405,3 @@ void ReportOptionsDialog::setCurrentStageId(int stageId)
 
 
 }
-

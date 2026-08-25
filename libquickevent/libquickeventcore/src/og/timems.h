@@ -6,11 +6,16 @@
 #include <QChar>
 #include <QMetaType>
 
+class QDateTime;
 class QString;
 
-namespace quickevent {
-namespace core {
-namespace og {
+namespace quickevent::core::og {
+
+enum class TimeMeasurementPrecision { Second = 0, MSec100, MSec10, MSec1 };
+
+QUICKEVENTCORE_DECL_EXPORT int timePrecisionMsec(TimeMeasurementPrecision precision);
+QUICKEVENTCORE_DECL_EXPORT int quantizeTimeMsec(int time_ms, TimeMeasurementPrecision precision);
+QUICKEVENTCORE_DECL_EXPORT QDateTime quantizeDatetimeMsec(QDateTime date_time, TimeMeasurementPrecision precision);
 
 class QUICKEVENTCORE_DECL_EXPORT TimeMs
 {
@@ -47,7 +52,13 @@ public:
 
 	static TimeMs fromVariant(const QVariant &time_v);
 	static TimeMs fromString(const QString &time_str);
+
+	static void setDefaultTimeMeasurementPrecision(TimeMeasurementPrecision prec);
+	static TimeMeasurementPrecision defaultTimeMeasurementPrecision() { return m_defaultTimeMeasurementPrecision; }
+
 	QString toString() const;
+	QString toString(TimeMeasurementPrecision prec) const;
+
 	int msec() const {return isValid()? m_msec: 0;}
 
 	/// while time2 < time1 add 12 hours to time2 and return it
@@ -57,14 +68,15 @@ public:
 	static void registerQVariantFunctions();
 
 private:
-	QString toString(QChar sec_sep, QChar msec_sep) const;
+	QString toString(QChar sec_sep, QChar msec_sep, TimeMeasurementPrecision prec) const;
 private:
 	int m_msec;
 	bool m_isValid;
-	//static bool m_oneTenthSecPrecision;
+
+	static TimeMeasurementPrecision m_defaultTimeMeasurementPrecision;
 };
 
-}}}
+}
 
 Q_DECLARE_METATYPE(quickevent::core::og::TimeMs)
 

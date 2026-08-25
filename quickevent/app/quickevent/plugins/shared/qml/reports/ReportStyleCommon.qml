@@ -6,6 +6,8 @@ StyleSheet {
 	property alias textStyleDefault: tsDefault
 	property alias textStyleBig: tsBig
 	property alias textStyleBold: tsBold
+	property alias textStyleStrikeOut: tsStrikeOut
+
 	property alias penBlack1: penBlack1
 	property alias penBlue1: penBlack1
 	objectName: "MyStyleSheet"
@@ -94,6 +96,12 @@ StyleSheet {
 			style: Font.StyleItalic
 		},
 		Font {
+			id: fontStrikeOut
+			name: "strikeOut"
+			basedOn: "default"
+			strikeOut: Font.StrikeOutTrue
+		},
+		Font {
 			id: fontBig
 			pointSize: fontDefault.pointSize * 2
 		}
@@ -117,6 +125,11 @@ StyleSheet {
 			name: "reportHeader"
 			font: fontItalic
 			pen: penBlue1
+		},
+		TextStyle {
+			id: tsStrikeOut
+			name: "strikeOut"
+			font: fontStrikeOut
 		},
 		TextStyle {
 			id: tsBig

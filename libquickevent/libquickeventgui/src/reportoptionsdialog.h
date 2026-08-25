@@ -84,7 +84,7 @@ public:
 			Options(const QVariantMap &o = QVariantMap()) : QVariantMap(o) {}
 	};
 public:
-	explicit ReportOptionsDialog(QWidget *parent = nullptr);
+	explicit ReportOptionsDialog(int max_stage_count, QWidget *parent = nullptr);
 	~ReportOptionsDialog() override;
 
 	int exec() Q_DECL_OVERRIDE;

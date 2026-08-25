@@ -20,9 +20,11 @@ EventDialogWidget::EventDialogWidget(QWidget *parent) :
 	ui->stageStartTimesTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
 	ui->stageStartTimesTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 	ui->stageStartTimesTable->verticalHeader()->hide();
-	connect(ui->ed_stageCount, QOverload<int>::of(&QSpinBox::valueChanged), this, [this]() {
+	connect(ui->ed_stageCount, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int stage_count) {
+		ui->pointResultsBestResultsCount->setMaximum(stage_count - 1);
 		updateStageStartTimeEditors(saveParams());
 	});
+	ui->pointResultsBestResultsCount->setMaximum(ui->ed_stageCount->value() - 1);
 
 	connect(ui->ed_iofRace, &QAbstractButton::toggled, ui->frameIofRace, &QWidget::setVisible);
 	ui->frameIofRace->hide();
@@ -109,6 +111,7 @@ void EventDialogWidget::loadParams(const EventDialogWidget::Params &params)
 		const QSignalBlocker blocker(ui->ed_stageCount);
 		ui->ed_stageCount->setValue(params.eventConfig.stageCount);
 	}
+	ui->pointResultsBestResultsCount->setMaximum(ui->ed_stageCount->value() - 1);
 	updateStageStartTimeEditors(params);
 
 	ui->ed_description->setText(params.eventConfig.description);
@@ -130,8 +133,14 @@ void EventDialogWidget::loadParams(const EventDialogWidget::Params &params)
 	ui->ed_cardChecCheckTimeSec->setValue(params.eventConfig.cardCheckTimeSec);
 	ui->ed_iofRace->setChecked(params.eventConfig.iofRace);
 	ui->ed_xmlRaceNumber->setValue(params.eventConfig.iofXmlRaceNumber);
-	ui->pointResults->setChecked(params.eventConfig.pointResults);
-	ui->pointResultsMaxPoints->setValue(params.eventConfig.pointResultsMaxPoints > 0 ? params.eventConfig.pointResultsMaxPoints : 1000);
+
+	ui->pointResultsMaxPoints->setValue(std::max(params.eventConfig.pointResultsMaxPoints, 1000));
+	ui->pointResultsBestResultsCount->setValue(std::max(params.eventConfig.pointResultsBestResultsCount, 0));
+
+	ui->cbxTimePrec->setCurrentIndex(static_cast<int>(params.eventConfig.timeMeasurementPrecision));
+
+	ui->edStartGateTolerance->setValue(std::max(params.eventConfig.startGateToleranceMs, 3000));
+	ui->edFinishGateTolerance->setValue(std::max(params.eventConfig.finishGateToleranceMs, 2000));
 }
 
 EventDialogWidget::Params EventDialogWidget::saveParams()
@@ -162,8 +171,14 @@ EventDialogWidget::Params EventDialogWidget::saveParams()
 	params.eventConfig.cardCheckTimeSec = ui->ed_cardChecCheckTimeSec->value();
 	params.eventConfig.iofRace = ui->ed_iofRace->isChecked();
 	params.eventConfig.iofXmlRaceNumber = ui->ed_xmlRaceNumber->value();
-	params.eventConfig.pointResults = ui->pointResults->isChecked();
+
 	params.eventConfig.pointResultsMaxPoints = ui->pointResultsMaxPoints->value();
+	params.eventConfig.pointResultsBestResultsCount = ui->pointResultsBestResultsCount->value();
+
+	params.eventConfig.timeMeasurementPrecision = static_cast<Event::EventConfig::TimeMeasurementPrecision>(ui->cbxTimePrec->currentIndex());
+
+	params.eventConfig.startGateToleranceMs = ui->edStartGateTolerance->value();
+	params.eventConfig.finishGateToleranceMs = ui->edFinishGateTolerance->value();
 	return params;
 }
 

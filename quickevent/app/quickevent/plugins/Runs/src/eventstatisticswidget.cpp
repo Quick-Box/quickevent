@@ -551,7 +551,7 @@ void EventStatisticsWidget::printResultsForRows(const QList<int> &rows)
 	EventStatisticsOptions::Options stat_opts(options());
 	bool with_dialog = stat_opts.isShowPrintDialog();
 	if(with_dialog) {
-		quickevent::gui::ReportOptionsDialog dlg(this);
+		quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), this);
 		dlg.setPersistentSettingsId("resultsReportOptions");
 		dlg.setClassNamesFilter(class_names);
 		if(!dlg.exec())

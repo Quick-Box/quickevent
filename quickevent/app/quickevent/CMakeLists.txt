@@ -156,8 +156,8 @@ add_executable(quickevent
 	plugins/Runs/src/findrunneredit.cpp
 	plugins/Runs/src/findrunnerwidget.cpp
 	plugins/Runs/src/findrunnerwidget.ui
-	plugins/Runs/src/nstagesreportoptionsdialog.cpp
-	plugins/Runs/src/nstagesreportoptionsdialog.ui
+
+
 	plugins/Runs/src/printawardsoptionsdialogwidget.cpp
 	plugins/Runs/src/printawardsoptionsdialogwidget.ui
 	plugins/Runs/src/runflagsdialog.cpp

@@ -7,6 +7,9 @@ Report {
 
 	property string reportTitle: qsTr("Start list by classes")
 	property var options
+	property var eventConfig
+	property var stageConfig
+	property int stageId
 	property bool isBreakAfterEachClass: options.isBreakAfterEachClass? true: false
 	property bool isColumnBreak: options.isColumnBreak? true: false
 	property bool isPrintStartNumbers: options.isStartListPrintStartNumbers? true: false
@@ -53,7 +56,9 @@ Report {
 				width: "%"
 				height: "%"
 				QuickEventReportHeader {
-					dataBand: band
+					eventConfig: root.eventConfig
+					stageConfig: root.stageConfig
+					stageId: root.stageId
 					reportTitle: root.reportTitle
 				}
 				Space { height: 5 }
@@ -99,7 +104,7 @@ Report {
 							layout: Frame.LayoutHorizontal
 							function dataFn(field_name) {return function() {return rowData(field_name);}}
 							Cell {
-								width: 16
+								width: 13
 								halign: Frame.AlignRight
 								textFn: runnersDetail.dataFn("startTimeText");
 							}

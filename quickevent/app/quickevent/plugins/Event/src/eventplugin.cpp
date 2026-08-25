@@ -930,12 +930,12 @@ bool EventPlugin::createEvent(const QString &event_name, const EventConfig &even
 		qfd::MessageBox::showError(fwk, tr("Cannot create event, database is not open: %1").arg(conn.lastError().text()));
 	}
 	if(ok) {
-	    AppDbConfig cfg;
+		AppDbConfig cfg;
 		cfg.setEventConfig(new_params.eventConfig);
 		for(int i=0; i<stage_count; i++) {
-		    StageConfig stcfg;
-		    stcfg.startDateTime = new_params.stageStarts.value(i);
-		    cfg.setStageConfig(i+1, stcfg);
+			StageConfig stcfg;
+			stcfg.startDateTime = new_params.stageStarts.value(i);
+			cfg.setStageConfig(i+1, stcfg);
 		}
 		ok = openEvent(event_id);
 	}

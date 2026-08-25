@@ -445,7 +445,7 @@ QVariant RelaysWidget::startListByClubsTableData(bool with_vacants)
 
 void RelaysWidget::print_start_list_classes()
 {
-	quickevent::gui::ReportOptionsDialog dlg(this);
+	quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), this);
 	dlg.setPersistentSettingsId("relaysStartReportOptions");
 	dlg.loadPersistentSettings();
 	dlg.setStartListForRelays();
@@ -454,21 +454,24 @@ void RelaysWidget::print_start_list_classes()
 	if(!dlg.exec())
 		return;
 	QVariantMap props = dlg.reportProperties();
+	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
+	props["stageId"] = 1;
+	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(1).toVariantMap();
 	bool vacants = dlg.startListPrintVacantsOption() != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners;
 	QVariant td = getPlugin<RelaysPlugin>()->startListByClassesTableData(dlg.sqlWhereExpression(), vacants);
 	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_classes.qml" : "startList_classes_condensed.qml";
 	qf::gui::reports::ReportViewWidget::showReport(this
-														  , getPlugin<RelaysPlugin>()->findReportFile(report_name)
-														  , td
-														  , tr("Start list by classes")
-														  , "printStartList"
-														  , props
-														  );
+												  , getPlugin<RelaysPlugin>()->findReportFile(report_name)
+												  , td
+												  , tr("Start list by classes")
+												  , "printStartList"
+												  , props
+												  );
 }
 
 void RelaysWidget::print_start_list_clubs()
 {
-	quickevent::gui::ReportOptionsDialog dlg(this);
+	quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), this);
 	dlg.setPersistentSettingsId("relaysStartReportOptions");
 	dlg.loadPersistentSettings();
 	dlg.setStartListForRelays();
@@ -477,16 +480,19 @@ void RelaysWidget::print_start_list_clubs()
 	if(!dlg.exec())
 		return;
 	QVariantMap props = dlg.reportProperties();
+	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
+	props["stageId"] = 1;
+	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(1).toVariantMap();
 	bool vacants = dlg.startListPrintVacantsOption() != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners;
 	QVariant td = startListByClubsTableData(vacants);
 	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_clubs.qml" : "startList_clubs_condensed.qml";
 	qf::gui::reports::ReportViewWidget::showReport(this,
-														  getPlugin<RelaysPlugin>()->findReportFile(report_name)
-														  , td
-														  , tr("Start list by clubs")
-														  , "printStartList"
-														  , props
-														  );
+												  getPlugin<RelaysPlugin>()->findReportFile(report_name)
+												  , td
+												  , tr("Start list by clubs")
+												  , "printStartList"
+												  , props
+												  );
 }
 
 void RelaysWidget::print_results_nlegs()
@@ -496,7 +502,7 @@ void RelaysWidget::print_results_nlegs()
 	default_opts.setLegsCount(1);
 	default_opts.setResultExcludeDisq(true);
 
-	quickevent::gui::ReportOptionsDialog dlg(this);
+	quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), this);
 	dlg.setLegsOptionVisible(true);
 	dlg.setResultOptionsVisible(true);
 	dlg.setPersistentSettingsId("relaysResultsNLegsReportOptions");
@@ -504,23 +510,26 @@ void RelaysWidget::print_results_nlegs()
 	if(!dlg.exec())
 		return;
 	QVariantMap props = dlg.reportProperties();
+	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
+	props["stageId"] = 1;
+	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(1).toVariantMap();
 	quickevent::gui::ReportOptionsDialog::Options opts = dlg.options();
 	//qfDebug() << opts;
 	qfDebug() << "opts.resultNumPlaces:" << opts.resultNumPlaces();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(dlg.sqlWhereExpression(), opts.legsCount(), opts.resultNumPlaces(), opts.isResultExcludeDisq());
 	qf::gui::reports::ReportViewWidget::showReport(this,
-														  getPlugin<RelaysPlugin>()->findReportFile("results.qml")
-														  , td.toVariant()
-														  , tr("Results")
-														  , "relaysResults"
-														  , props
-														  );
+												  getPlugin<RelaysPlugin>()->findReportFile("results.qml")
+												  , td.toVariant()
+												  , tr("Results")
+												  , "relaysResults"
+												  , props
+												  );
 }
 
 void RelaysWidget::print_results_overal()
 {
 	qfLogFuncFrame();
-	quickevent::gui::ReportOptionsDialog dlg(this);
+	quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), this);
 	dlg.setLegsOptionVisible(false);
 	dlg.setResultOptionsVisible(true);
 	dlg.setPersistentSettingsId("relaysResultsOverallReportOptions");
@@ -528,23 +537,26 @@ void RelaysWidget::print_results_overal()
 	if(!dlg.exec())
 		return;
 	QVariantMap props = dlg.reportProperties();
+	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
+	props["stageId"] = 1;
+	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(1).toVariantMap();
 	quickevent::gui::ReportOptionsDialog::Options opts = dlg.options();
 	//qfDebug() << opts;
 	qfDebug() << "opts.resultNumPlaces:" << opts.resultNumPlaces();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(dlg.sqlWhereExpression(), 999, opts.resultNumPlaces(), opts.isResultExcludeDisq());
 	qf::gui::reports::ReportViewWidget::showReport(this,
-														  getPlugin<RelaysPlugin>()->findReportFile("results.qml")
-														  , td.toVariant()
-														  , tr("Results")
-														  , "relaysResults"
-														  , props
-														  );
+												  getPlugin<RelaysPlugin>()->findReportFile("results.qml")
+												  , td.toVariant()
+												  , tr("Results")
+												  , "relaysResults"
+												  , props
+												  );
 }
 
 void RelaysWidget::print_results_overal_condensed()
 {
 	qfLogFuncFrame();
-	quickevent::gui::ReportOptionsDialog dlg(this);
+	quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), this);
 	dlg.setLegsOptionVisible(false);
 	dlg.setResultOptionsVisible(true);
 	dlg.setPersistentSettingsId("relaysResultsOverallCondensedReportOptions");
@@ -552,12 +564,15 @@ void RelaysWidget::print_results_overal_condensed()
 	if(!dlg.exec())
 		return;
 	QVariantMap props = dlg.reportProperties();
+	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
+	props["stageId"] = 1;
+	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(1).toVariantMap();
 	quickevent::gui::ReportOptionsDialog::Options opts = dlg.options();
 	//qfDebug() << opts;
 	qfDebug() << "opts.resultNumPlaces:" << opts.resultNumPlaces();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(dlg.sqlWhereExpression(), 999, opts.resultNumPlaces(), opts.isResultExcludeDisq());
 	qf::gui::reports::ReportViewWidget::showReport(this,
-														  getPlugin<RelaysPlugin>()->findReportFile("results_condensed.qml")
+												  getPlugin<RelaysPlugin>()->findReportFile("results_condensed.qml")
 														  , td.toVariant()
 														  , tr("Results")
 														  , "relaysResults"

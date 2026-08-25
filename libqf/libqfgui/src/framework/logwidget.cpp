@@ -107,7 +107,7 @@ LogWidget::LogWidget(QWidget *parent)
 	ui->setupUi(this);
 	ui->btClearLog->setIcon(qf::gui::Style::icon("clear"));
 	ui->btCopyToClipboard->setIcon(qf::gui::Style::icon("copy"));
-	ui->btResizeColumns->setIcon(qf::gui::Style::icon("zoom-fitwidth"));
+	ui->btResizeColumns->setIcon(qf::gui::Style::icon("zoom_fitwidth"));
 	ui->btTableMenu->setIcon(qf::gui::Style::icon("menu"));
 	//setPersistentSettingsId();
 	ui->btCopyToClipboard->setDefaultAction(ui->tableView->copySelectionToClipboardAction());

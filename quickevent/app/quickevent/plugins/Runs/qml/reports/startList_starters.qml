@@ -8,6 +8,9 @@ Report {
 
 	property string reportTitle: qsTr("Start list for starters")
 	property var options
+	property var eventConfig
+	property var stageConfig
+	property int stageId
 	property bool isPrintStartNumbers: options.isStartListPrintStartNumbers? true: false
 	property int lineSpacing: options.startersOptionsLineSpacing > 0? options.startersOptionsLineSpacing: 0
 
@@ -56,7 +59,9 @@ Report {
 				width: "%"
 				height: "%"
 				QuickEventReportHeader {
-					dataBand: band
+					eventConfig: root.eventConfig
+					stageConfig: root.stageConfig
+					stageId: root.stageId
 					reportTitle: root.reportTitle
 				}
 				Detail {
@@ -142,7 +147,7 @@ Report {
 							objectName: "minuteCellStartTimeMs"
 							width: 12
 							halign: Frame.AlignRight
-							text: OGTime.msecToString_mmss(detail.data(detail.currentIndex, "startTimeMs"));
+							text: OGTime.msecToString_mmss(detail.data(detail.currentIndex, "startTimeMs"), OGTime.TimeMeasurementPrecision.Second);
 						}
 					}
 					// strihani pro Zbyndu

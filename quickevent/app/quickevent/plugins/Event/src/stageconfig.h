@@ -9,30 +9,30 @@ namespace Event {
 
 struct StartSlotConfig
 {
-    static StartSlotConfig fromVariantMap(const QVariantMap& map);
-    QVariantMap toVariantMap() const;
+	static StartSlotConfig fromVariantMap(const QVariantMap &map);
+	QVariantMap toVariantMap() const;
 
-    int startOffset;
+	int startOffset;
 	bool ignoreClassClashCheck = false;
 };
 
 struct DrawingConfig
 {
-    static DrawingConfig fromVariantMap(const QVariantMap& map);
-    QVariantMap toVariantMap() const;
-    const StartSlotConfig& startSlotConfig(int index) const;
+	static DrawingConfig fromVariantMap(const QVariantMap &map);
+	QVariantMap toVariantMap() const;
+	const StartSlotConfig &startSlotConfig(int index) const;
 
-    std::vector<StartSlotConfig> startSlots;
+	std::vector<StartSlotConfig> startSlots;
 };
 
 struct StageConfig
 {
-    static StageConfig fromVariantMap(const QVariantMap& map);
-    QVariantMap toVariantMap() const;
+	static StageConfig fromVariantMap(const QVariantMap &map);
+	QVariantMap toVariantMap() const;
 
 	QDateTime startDateTime;
 	bool useAllMaps = false;
 	DrawingConfig drawingConfig;
 };
 
-}
+} // namespace Event

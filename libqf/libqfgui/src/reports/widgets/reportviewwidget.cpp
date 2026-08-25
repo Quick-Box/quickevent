@@ -601,7 +601,7 @@ qf::gui::framework::DialogWidget::ActionMap ReportViewWidget::createActions()
 	{
 		qf::gui::Action *a;
 		a = new qf::gui::Action(tr("Zoom to fit width"), this);
-		a->setIcon(qf::gui::Style::icon("zoom-fitwidth"));
+		a->setIcon(qf::gui::Style::icon("zoom_fitwidth"));
 		ret[QStringLiteral("view.zoomFitWidth")] = a;
 		connect(a, &QAction::triggered, this, &ReportViewWidget::view_zoomToFitWidth);
 	}

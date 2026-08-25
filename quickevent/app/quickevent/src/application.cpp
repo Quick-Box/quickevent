@@ -4,6 +4,11 @@
 #include <qf/gui/reports/processor/reportprocessor.h>
 #include <qf/gui/style.h>
 
+#include <quickevent/core/og/timems.h>
+
+#include <QQmlEngine>
+#include <QJSValue>
+
 #include <qf/core/log.h>
 
 #include <QNetworkProxy>
@@ -17,6 +22,11 @@ Application::Application(int &argc, char **argv, AppCliOptions *cli_opts)
 	: Super(argc, argv)
 	, m_cliOptions(cli_opts)
 {
+	qf::gui::reports::ReportProcessor::addQmlEngineInitializer([](QQmlEngine *engine) {
+		engine->globalObject().setProperty(
+			QStringLiteral("ogDefaultTimeMeasurementPrecision"),
+			static_cast<int>(quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision()));
+	});
 	if(cli_opts->appFontScale() != 1.) {
 		QFont app_font = font();
 		app_font.setPointSizeF(app_font.pointSizeF() * cli_opts->appFontScale());

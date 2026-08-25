@@ -24,6 +24,13 @@ using namespace qf::gui::reports;
 //===================================================
 // ReportProcessor
 //===================================================
+static QList<ReportProcessor::QmlEngineInitializer> s_engineInitializers;
+
+void ReportProcessor::addQmlEngineInitializer(const QmlEngineInitializer &fn)
+{
+	s_engineInitializers.append(fn);
+}
+
 QString ReportProcessor::HTML_ATTRIBUTE_ITEM = QStringLiteral("__qf_qml_report_item");
 QString ReportProcessor::HTML_ATTRIBUTE_LAYOUT = QStringLiteral("__qf_qml_report_layout");
 
@@ -57,7 +64,7 @@ bool ReportProcessor::setReport(const QString &rep_file_name, const QVariantMap 
 	QF_TIME_SCOPE("ReportProcessor::setReport()");
 	m_reportInitProperties = report_init_properties;
 	QF_SAFE_DELETE(m_reportDocumentComponent)
-	m_reportDocumentComponent = new ReportDocument(qmlEngine(true), this);
+	m_reportDocumentComponent = new ReportDocument(qmlEngine(), this);
 	//QString fn = rep_file_name;
 	//if(fn.startsWith(QLatin1String("qrc://")))
 	//	fn = fn.mid(3);
@@ -343,21 +350,8 @@ QStringList ReportProcessor::qmlEngineImportPaths()
 	return lst;
 }
 
-QQmlEngine *ReportProcessor::qmlEngine(bool throw_exc)
+QQmlEngine *ReportProcessor::qmlEngine()
 {
-#ifdef USE_APP_ENGINE
-	QQmlEngine *ret = nullptr;
-	qf::gui::framework::Application *app = qobject_cast<qf::gui::framework::Application*>(QCoreApplication::instance());
-	if(throw_exc)
-		QF_ASSERT_EX(app != nullptr, "Application is not a type of qf::gui::framework::Application");
-	if(app) {
-		ret = app->qmlEngine();
-		if(throw_exc)
-			QF_ASSERT_EX(ret != nullptr, "Application has not QML engine created.");
-	}
-	return ret;
-#else
-	Q_UNUSED(throw_exc)
 	if(!m_qmlEngine) {
 		qfMessage() << "Creating report processor QML engine";
 		m_qmlEngine = new QQmlEngine(this);
@@ -367,9 +361,10 @@ QQmlEngine *ReportProcessor::qmlEngine(bool throw_exc)
 			qfMessage() << "Adding ReportProcessor QML engine import path:" << path;
 			m_qmlEngine->addImportPath(path);
 		}
+		for (const auto &init : s_engineInitializers)
+			init(m_qmlEngine);
 	}
 	return m_qmlEngine;
-#endif
 }
 
 void ReportProcessor::dump()

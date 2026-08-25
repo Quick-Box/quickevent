@@ -65,6 +65,15 @@ QFont Font::font()
 			if(sz > 0)
 				m_font.setPointSizeF(sz);
 		}
+		{
+			StrikeOut so = strikeOut();
+			if(so == StrikeOutInherited) {
+				if(!is_inherited)
+					m_font.setStrikeOut(false);
+			} else {
+				m_font.setStrikeOut(so == StrikeOutTrue);
+			}
+		}
 	}
 	return m_font;
 }

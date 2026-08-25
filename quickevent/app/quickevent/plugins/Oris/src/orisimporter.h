@@ -25,13 +25,13 @@ public:
 	void importMissingOneTimeClubs();
 
 	static void saveJsonBackup(const QString &fn, const QJsonDocument &jsd);
-	void getJsonAndProcess(const QUrl &url, QObject *context, std::function<void (const QJsonDocument &data)> process_call_back);
+	void getJsonAndProcess(const QUrl &url, QObject *context, std::function<void (const QJsonDocument &data)> process_call_back, std::function<void ()> finished_callback = nullptr);
 	void getTextAndProcess(const QUrl &url, QObject *context, std::function<void (const QByteArray &)> process_call_back);
 protected:
 	void syncEventEntries(int event_id, std::function<void()> success_callback);
 	void syncRelaysEntries(int event_id, std::function<void()> success_callback);
 
-	void getAndImportClub(const QString &club, const QString &key);
+	void getAndImportClub(const QString &club, const QString &key, std::function<void (bool imported)> finished_callback = nullptr);
 
 private:
 	QNetworkAccessManager *networkAccessManager();

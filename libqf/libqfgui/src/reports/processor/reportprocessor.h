@@ -22,6 +22,7 @@
 #include <QBrush>
 #include <QPainter>
 #include <QPointer>
+#include <functional>
 
 class QPrinter;
 class QQmlEngine;
@@ -106,10 +107,14 @@ protected:
 	//! prelozi dalsi stranku reportu (takhle delam multithreading, protoze QFont musi bezet v GUI threadu)
 	void processSinglePage(QPaintDevice *paint_device) {process(paint_device, SinglePage);}
 public:
-	/// Every QnlEngine created by ReportProcessor will have this import paths
+	/// Every QmlEngine created by ReportProcessor will have this import paths
 	static QStringList qmlEngineImportPaths();
+	/// Register a callback invoked on every newly created QQmlEngine.
+	/// Use this to inject global JS properties visible to .pragma library modules.
+	using QmlEngineInitializer = std::function<void(QQmlEngine *)>;
+	static void addQmlEngineInitializer(const QmlEngineInitializer &fn);
 protected:
-	QQmlEngine* qmlEngine(bool throw_exc = true);
+	QQmlEngine* qmlEngine();
 private:
 	ImageMap m_imageMap;
 

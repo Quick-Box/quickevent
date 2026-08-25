@@ -8,6 +8,9 @@ Report {
 	objectName: "root"
 
 	property var options
+	property var eventConfig
+	property var stageConfig
+	property int stageId
 	property bool isBreakAfterEachClass: options.isBreakAfterEachClass? true: false
 	property bool isColumnBreak: options.isColumnBreak? true: false
 	property int stagesCount: (options.stagesCount > 0)? options.stagesCount: 1
@@ -55,7 +58,9 @@ Report {
 				objectName: "band"
 				width: "%"
 				QuickEventReportHeader {
-					dataBand: band
+					eventConfig: root.eventConfig
+					stageConfig: root.stageConfig
+					stageId: root.stageId
 					reportTitle: root.reportTitle
 					showStageNumber: false
 				}
@@ -137,7 +142,7 @@ Report {
 								halign: Frame.AlignRight
 								textFn: function() {
 									var pts = runnersDetail.dataFn("pointsloss")();
-									return (pts === null || pts === undefined)? "": "- " + pts;
+									return (pts === null || pts === undefined || pts === 0)? "": "- " + pts;
 								}
 							}
 						}

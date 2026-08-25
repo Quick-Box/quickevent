@@ -1,27 +1,44 @@
 .pragma library
 
-function msecToString_mmss(msec, sec_sep, msec_sep)
+// Mirrors C++ enum quickevent::core::og::TimeMeasurementPrecision
+var TimeMeasurementPrecision = {
+	Second:  0,
+	MSec100: 1,
+	MSec10:  2,
+	MSec1:   3
+};
+
+// Injected by ReportProcessor via QJSEngine::globalObject().setProperty()
+// to match TimeMs::defaultTimeMeasurementPrecision() at engine-creation time.
+var defaultTimeMeasurementPrecision = (typeof ogDefaultTimeMeasurementPrecision !== 'undefined')
+	? ogDefaultTimeMeasurementPrecision
+	: TimeMeasurementPrecision.Second;
+
+function msecToString_mmss(msec, prec)
 {
-	if(msec < 0) {
-		console.warn("negative numbers conversion is not implemented properly");
-		return "" + (msec / 1000);
-	}
-	if(!sec_sep)
-		sec_sep = ":"
+	if(msec < 0)
+		return '-' + msecToString_mmss(-msec);
 	var ms = msec % 1000;
 	var sec = ((msec / 1000) >> 0) % 60;
 	var min = (msec / (1000 * 60)) >> 0;
-	var ret = min + sec_sep;
+	var ret = min + ".";
 	if(sec < 10)
 		ret += '0';
 	ret += sec;
-	if(msec_sep) {
-		ret += msec_sep;
-		if(ms < 100)
-			ret += '0';
-		if(ms < 10)
-			ret += '0';
-		ret += ms;
+	var digits = 0;
+
+	if (typeof prec === 'undefined') {
+		prec = defaultTimeMeasurementPrecision
+	}
+
+	switch (prec) {
+	case TimeMeasurementPrecision.MSec100: digits = 1; break;
+	case TimeMeasurementPrecision.MSec10:  digits = 2; break;
+	case TimeMeasurementPrecision.MSec1:   digits = 3; break;
+	}
+	if(digits > 0) {
+		var ms_str = (ms < 100 ? '0' : '') + (ms < 10 ? '0' : '') + ms;
+		ret += '/' + ms_str.substring(0, digits);
 	}
 	return ret;
 }
@@ -87,3 +104,14 @@ var DISQ_TIME_MSEC = NOT_COMPETITING_TIME_MSEC - 1;
 var MISPUNCH_TIME_MSEC = DISQ_TIME_MSEC - 1;
 var OVERTIME_TIME_MSEC = MISPUNCH_TIME_MSEC - 1;
 var MAX_REAL_TIME_MSEC = OVERTIME_TIME_MSEC - 1;
+
+function timeMsColumnWidth(time_prec)
+{
+	switch (time_prec) {
+	// case TimeMeasurementPrecision.Second: return 12;
+	case TimeMeasurementPrecision.MSec100: return 16;
+	case TimeMeasurementPrecision.MSec10:  return 18;
+	case TimeMeasurementPrecision.MSec1:   return 20;
+	}
+	return 13
+}

@@ -26,6 +26,7 @@ class QFGUI_DECL_EXPORT Font : public StyleObject
 	Q_PROPERTY(FontStyleHint hint READ hint WRITE setHint NOTIFY hintChanged)
 	Q_PROPERTY(FontWeight weight READ weight WRITE setWeight NOTIFY weightChanged)
 	Q_PROPERTY(qreal pointSize READ pointSize WRITE setPointSize NOTIFY pointSizeChanged)
+	Q_PROPERTY(StrikeOut strikeOut READ strikeOut WRITE setStrikeOut NOTIFY strikeOutChanged)
 public:
 	explicit Font(QObject *parent = nullptr);
 	~Font() Q_DECL_OVERRIDE;
@@ -60,9 +61,15 @@ public:
 		WeightBlack = QFont::Black,
 		WeightInherited
 	};
+	enum StrikeOut {
+		StrikeOutFalse = 0,
+		StrikeOutTrue = 1,
+		StrikeOutInherited
+	};
 	Q_ENUM(FontStyle)
 	Q_ENUM(FontStyleHint)
 	Q_ENUM(FontWeight)
+	Q_ENUM(StrikeOut)
 
 	QF_PROPERTY_IMPL(QVariant, b, B, asedOn)
 	QF_PROPERTY_IMPL(QString, f, F, amily)
@@ -70,6 +77,7 @@ public:
 	QF_PROPERTY_IMPL2(FontStyleHint, h, H, int, HintInherited)
 	QF_PROPERTY_IMPL2(FontWeight, w, W, eight, WeightInherited)
 	QF_PROPERTY_IMPL2(qreal, p, P, ointSize, 0)
+	QF_PROPERTY_IMPL2(StrikeOut, s, S, trikeOut, StrikeOutInherited)
 public:
 	QFont font();
 private:

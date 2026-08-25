@@ -14,8 +14,6 @@ struct RadioSenderConfig
 	int port = 1122;
 	int startControl = 11;
 	int finishControl = 901;
-	int startToleranceMs = 3000;
-	int finishToleranceMs = 2000;
 };
 
 } // namespace Event::services

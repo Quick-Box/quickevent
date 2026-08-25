@@ -140,10 +140,10 @@ QVariant RunsTableModel::data(const QModelIndex &index, int role) const
 		}
 		if(index.column() == col_runs_startGateTime || index.column() == col_runs_finishGateTime) {
 			if (role == Qt::BackgroundRole) {
-				const auto &config = event_plugin->appDbConfig().radioSenderConfig();
+				const auto &config = event_plugin->appDbConfig().eventConfig();
 				const bool is_start = index.column() == col_runs_startGateTime;
 				const int time_col = is_start ? col_runs_startTimeMs : col_runs_finishTimeMs;
-				const int tolerance = is_start ? config.startToleranceMs : config.finishToleranceMs;
+				const int tolerance = is_start ? config.startGateToleranceMs : config.finishGateToleranceMs;
 				auto check_gate = [&](const QModelIndex &idx, int tc, int tol) -> QVariant {
 					auto gate_time = Super::data(idx, Qt::EditRole).toDateTime();
 					if(!gate_time.isValid()) {

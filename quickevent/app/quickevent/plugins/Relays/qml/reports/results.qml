@@ -11,6 +11,9 @@ Report {
 	property bool isColumnBreak: false
 	property bool isPrintStartNumbers: false
 	property var options
+	property var eventConfig
+	property var stageConfig
+	property int stageId
 
 	function ogSumTimeToString(time_ms)
 	{
@@ -86,7 +89,9 @@ Report {
 				width: "%"
 				height: "%"
 				QuickEventReportHeader {
-					dataBand: band
+					eventConfig: root.eventConfig
+					stageConfig: root.stageConfig
+					stageId: root.stageId
 					reportTitle: root.reportTitle
 				}
 				Space { height: 5 }

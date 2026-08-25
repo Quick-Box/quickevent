@@ -101,6 +101,7 @@ void AppDbConfig::load()
 	m_qxConfig = QxConfig::fromVariantMap(config.value(QX).toMap());
 	m_radioSenderConfig = services::RadioSenderConfig::fromVariantMap(config.value(RADIO_SENDER).toMap());
 	m_eventConfig = EventConfig::fromVariantMap(config.value(EVENT).toMap());
+	quickevent::core::og::TimeMs::setDefaultTimeMeasurementPrecision(m_eventConfig.timeMeasurementPrecision);
 
 	const auto load_stage_config = [&config](const QString &group, auto &target, auto fromVariantMap) {
 		for ( const auto &[stage, val] : config.value(group).toMap().asKeyValueRange()) {
@@ -108,7 +109,7 @@ void AppDbConfig::load()
 		}
 	};
 	{
-	    auto stages = config.value(STAGE).toMap();
+		auto stages = config.value(STAGE).toMap();
 		Query stages_q(conn);
 		stages_q.exec("SELECT * FROM stages ORDER BY id", qf::core::Exception::Throw);
 		while(stages_q.next()) {
@@ -179,6 +180,7 @@ void AppDbConfig::setRadioSenderConfig(const services::RadioSenderConfig &config
 
 void AppDbConfig::setEventConfig(const EventConfig &config)
 {
+	quickevent::core::og::TimeMs::setDefaultTimeMeasurementPrecision(config.timeMeasurementPrecision);
 	const QVariantMap changed_values = changedValues(m_eventConfig.toVariantMap(), config.toVariantMap());
 	m_eventConfig = config;
 	save(EVENT, changed_values);

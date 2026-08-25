@@ -27,8 +27,6 @@ RadioSenderServiceWidget::RadioSenderServiceWidget(RadioSenderService *service, 
 	ui->edPort->setValue(config.port);
 	ui->edStartControl->setValue(config.startControl);
 	ui->edFinishControl->setValue(config.finishControl);
-	ui->edStartTolerance->setValue(config.startToleranceMs);
-	ui->edFinishTolerance->setValue(config.finishToleranceMs);
 
 	ui->edTestPunch->addItem("11;1;09:34:02.714;;;");     // bib 1 start
 	ui->edTestPunch->addItem("901;1;09:34:08.892;;;");// bib 1 finish
@@ -90,8 +88,6 @@ void RadioSenderServiceWidget::saveConfig()
 	config.port = ui->edPort->value();
 	config.startControl = ui->edStartControl->value();
 	config.finishControl = ui->edFinishControl->value();
-	config.startToleranceMs = ui->edStartTolerance->value();
-	config.finishToleranceMs = ui->edFinishTolerance->value();
 	event_plugin->appDbConfig().setRadioSenderConfig(config);
 
 	if (m_service->isRunning()) {

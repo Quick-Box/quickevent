@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>520</height>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,34 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QFormLayout" name="formLayout">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="3">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Service</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="edStartControl">
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+       <property name="value">
+        <number>11</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QPushButton" name="btStart">
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="lblListenAddress">
        <property name="text">
@@ -23,17 +50,10 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="edListenAddress">
-       <property name="placeholderText">
-        <string>0.0.0.0</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="lblPort">
+     <item row="1" column="3">
+      <widget class="QPushButton" name="btStop">
        <property name="text">
-        <string>Port</string>
+        <string>Stop</string>
        </property>
       </widget>
      </item>
@@ -47,6 +67,13 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="edListenAddress">
+       <property name="placeholderText">
+        <string>0.0.0.0</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="lblStartControl">
        <property name="text">
@@ -54,13 +81,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QSpinBox" name="edStartControl">
-       <property name="maximum">
-        <number>9999</number>
-       </property>
-       <property name="value">
-        <number>11</number>
+     <item row="1" column="0">
+      <widget class="QLabel" name="lblPort">
+       <property name="text">
+        <string>Port</string>
        </property>
       </widget>
      </item>
@@ -81,52 +105,8 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="lblStartTolerance">
-       <property name="text">
-        <string>Start tolerance</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QSpinBox" name="edStartTolerance">
-       <property name="suffix">
-        <string> ms</string>
-       </property>
-       <property name="maximum">
-        <number>10000</number>
-       </property>
-       <property name="value">
-        <number>3000</number>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="lblFinishTolerance">
-       <property name="text">
-        <string>Finish tolerance</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QSpinBox" name="edFinishTolerance">
-       <property name="suffix">
-        <string> ms</string>
-       </property>
-       <property name="maximum">
-        <number>10000</number>
-       </property>
-       <property name="value">
-        <number>2000</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="serviceButtonsLayout">
-     <item>
-      <spacer name="serviceButtonsSpacer">
+     <item row="2" column="2">
+      <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
        </property>
@@ -137,27 +117,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Service</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btStart">
-       <property name="text">
-        <string>Start</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btStop">
-       <property name="text">
-        <string>Stop</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
@@ -217,6 +176,12 @@
      <layout class="QVBoxLayout" name="receivedLinesLayout">
       <item>
        <widget class="QPlainTextEdit" name="edReceivedLines">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="lineWrapMode">
          <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
         </property>

@@ -41,6 +41,10 @@ using Event::EventPlugin;
 using Runs::RunsPlugin;
 
 namespace Relays {
+namespace {
+using qog::quantizeDatetimeMsec;
+using qog::quantizeTimeMsec;
+}
 
 RelaysPlugin::RelaysPlugin(QObject *parent)
 	: Super("Relays", parent)
@@ -581,6 +585,13 @@ QString RelaysPlugin::resultsIofXml30()
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(1);
 	qfDebug() << "creating table";
 	const auto &event_config = getPlugin<EventPlugin>()->eventConfig();
+	const auto time_precision = event_config.timeMeasurementPrecision;
+	auto quantize_time = [time_precision](int time_ms) {
+		return quantizeTimeMsec(time_ms, time_precision);
+	};
+	auto quantize_datetime = [time_precision](QDateTime date_time) {
+		return quantizeDatetimeMsec(date_time, time_precision);
+	};
 	bool is_iof_race = event_config.iofRace;
 	//auto tt_classes = getPlugin<RelaysPlugin>()->nLegsResultsTable("classes.name='D105'", 999, 999999, false);
 	auto tt_classes = getPlugin<RelaysPlugin>()->nLegsResultsTable(QString(), 999, 999999, false);
@@ -773,17 +784,17 @@ QString RelaysPlugin::resultsIofXml30()
 					}
 				}
 
-				append_list(person_result, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime))});
-				append_list(person_result, QVariantList{"FinishTime", datetime_to_string(start00.addMSecs(ftime))});
-				append_list(person_result, QVariantList{"Time", time_msec / 1000});
-				append_list(person_result, QVariantList{"TimeBehind", QVariantMap{{"type", "Leg"}}, tt_leg_row.value(QStringLiteral("loss")).toInt() / 1000});
+				append_list(person_result, QVariantList{"StartTime", datetime_to_string(quantize_datetime(start00.addMSecs(stime)))});
+				append_list(person_result, QVariantList{"FinishTime", datetime_to_string(quantize_datetime(start00.addMSecs(ftime)))});
+				append_list(person_result, QVariantList{"Time", static_cast<double>(quantize_time(time_msec)) / 1000});
+				append_list(person_result, QVariantList{"TimeBehind", QVariantMap{{"type", "Leg"}}, static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("loss")).toInt())) / 1000});
 				append_list(person_result, QVariantList{"Position", QVariantMap{{"type", "Leg"}}, tt_leg_row.value(QStringLiteral("pos"))});
 				// MISSING position course append_list(person_result, QVariantList{"Position", QVariantMap{{"type", "course"}}, tt_laps_row.value(QStringLiteral("pos"))});
 				append_list(person_result, QVariantList{"Status", tt_leg_row.value(QStringLiteral("status"))});
 				QVariantList overall_result{"OverallResult"};
 				{
-					append_list(overall_result, QVariantList{"Time", tt_leg_row.value(QStringLiteral("stime")).toInt() / 1000});
-					append_list(overall_result, QVariantList{"TimeBehind", tt_leg_row.value(QStringLiteral("lossOverall")).toInt() / 1000});
+					append_list(overall_result, QVariantList{"Time", static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("stime")).toInt())) / 1000});
+					append_list(overall_result, QVariantList{"TimeBehind", static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("lossOverall")).toInt())) / 1000});
 					append_list(overall_result, QVariantList{"Position", tt_leg_row.value(QStringLiteral("spos"))});
 					append_list(overall_result, QVariantList{"Status", tt_leg_row.value(QStringLiteral("sstatus"))});
 				}
@@ -843,7 +854,7 @@ QString RelaysPlugin::resultsIofXml30()
 						if(time == 0)
 							split.insert(1, QVariantMap{ {QStringLiteral("status"), QStringLiteral("Missing")} });
 						else
-							append_list(split, QVariantList{"Time", time / 1000});
+							append_list(split, QVariantList{"Time", static_cast<double>(quantize_time(time)) / 1000});
 						append_list(person_result, split);
 					}
 				}

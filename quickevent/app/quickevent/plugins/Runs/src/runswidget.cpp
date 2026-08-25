@@ -242,7 +242,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		auto *a = new qfw::Action(tr("&Competitors with rented cards"));
 		connect(a, &qfw::Action::triggered, this, [this]() {
 			qff::MainWindow *fwk = qff::MainWindow::frameWork();
-			quickevent::gui::ReportOptionsDialog dlg(fwk);
+			quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), fwk);
 			dlg.setPersistentSettingsId("competitorsWithRentedCards");
 			dlg.loadPersistentSettings();
 			dlg.setClassFilterVisible(false);
@@ -1036,7 +1036,7 @@ void RunsWidget::export_startList_stage_iofxml30(quickevent::gui::ReportOptionsD
 void RunsWidget::export_startList_stage_csv_sime()
 {
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
-	quickevent::gui::ReportOptionsDialog dlg(fwk);
+	quickevent::gui::ReportOptionsDialog dlg(getPlugin<EventPlugin>()->stageCount(), fwk);
 	dlg.setPersistentSettingsId("startListCsvSimeReportOptions");
 	dlg.loadPersistentSettings();
 	dlg.setCurrentStageId(selectedStageId());

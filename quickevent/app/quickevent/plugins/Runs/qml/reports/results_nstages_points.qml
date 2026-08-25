@@ -8,14 +8,18 @@ Report {
 	id: root
 
 	property var options
+	property var eventConfig
+	property var stageConfig
+	property int stageId
+
 	property bool isBreakAfterEachClass: options.isBreakAfterEachClass? true: false
 	property bool isColumnBreak: options.isColumnBreak? true: false
 	property int stagesCount: (options.stagesCount > 0)? options.stagesCount: 1
 
 	property string reportTitle: qsTr("Points after %n stage(s)", "", root.stagesCount)
-	property int pointsCellWidth: 13
+	property int pointsCellWidth: OGTime.timeMsColumnWidth(eventConfig.timeMeasurementPrecision)
 	property int posCellWidth: 9
-	property int totalCellWidth: 15
+	property int totalCellWidth: root.pointsCellWidth + 2
 	property int diffCellWidth: 13
 
 	property int unrealTimeMs: OGTime.UNREAL_TIME_MSEC
@@ -34,8 +38,10 @@ Report {
 				property int stageNo: 0
 				layout: Frame.LayoutVertical
 				Cell {
-					textStyle: myStyle.textStyleBold
 					property string fieldName: (frame.stageNo)? "points" + frame.stageNo: "points"
+					textStyle: (frame.stageNo > 0 && runnersDetail.data(runnersDetail.currentIndex, "dropped" + frame.stageNo))
+						? root.textStyleStrikeOut
+						: myStyle.textStyleBold
 					textFn: function() {
 						var pts = runnersDetail.data(runnersDetail.currentIndex, fieldName);
 						return (pts && pts > 0)? pts: "";
@@ -69,13 +75,15 @@ Report {
 				property string fieldName: "pointsloss"
 				textFn: function() {
 					var pointsloss = runnersDetail.data(runnersDetail.currentIndex, fieldName);
-					return (pointsloss === null || pointsloss === undefined)? "": "- " + pointsloss;
+					return (pointsloss === null || pointsloss === undefined || pointsloss === 0)? "": "- " + pointsloss;
 				}
 			}
 		}
 	}
 
 	//debugLevel: 1
+	property var textStyleStrikeOut: myStyle.textStyleStrikeOut
+
 	styleSheet: StyleSheet {
 		objectName: "portraitStyleSheet"
 		basedOn: ReportStyleCommon { id: myStyle }
@@ -116,9 +124,10 @@ Report {
 				width: "%"
 				height: "%"
 				QuickEventReportHeader {
-					dataBand: band
+					eventConfig: root.eventConfig
+					stageConfig: root.stageConfig
+					stageId: root.stageId
 					reportTitle: root.reportTitle
-					showStageNumber: false
 				}
 				Detail {
 					id: detail
