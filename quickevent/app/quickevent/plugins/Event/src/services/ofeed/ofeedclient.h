@@ -4,11 +4,16 @@
 #pragma once
 
 #include "../service.h"
+
+#include <QMap>
+#include <QVariantMap>
+
 #include <functional>
 
 class QTimer;
 class QNetworkAccessManager;
 
+namespace qf::core::sql { struct QxRecChng; }
 
 namespace Event::services {
 
@@ -47,7 +52,7 @@ public:
 	void exportStartListIofXml3(std::function<void()> on_success = nullptr);
 	void processChanges(std::function<void()> on_done = nullptr);
 	void loadSettings() override;
-	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
+	void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 
 	QString hostUrl() const;
 	void setHostUrl(QString eventId);
@@ -92,8 +97,17 @@ public:
 	int exportTimerIntervalMs() const;
 
 private:
+	/// changed fields of one runs record, collected between the flush timer shots
+	struct PendingRunChange
+	{
+		QVariantMap runFields;
+		QVariantMap competitorFields;
+	};
+
 	QTimer *m_exportTimer = nullptr;
 	QTimer *m_credentialCheckTimer = nullptr;
+	QTimer *m_runChangeFlushTimer = nullptr;
+	QMap<int, PendingRunChange> m_pendingRunChanges;
 	QNetworkAccessManager *m_networkManager = nullptr;
 	const QString OFEED_API_URL = "https://api.orienteerfeed.com";
 	bool m_eventImageStartupAttempted = false;
@@ -124,8 +138,9 @@ private:
 	void sendCompetitorAdded(QString json_body);
 	void sendCompetitorDeleted(int run_id);
 	void onCompetitorAdded(int competitor_id);
-	void onRunChanged(int run_id, const QVariantMap &dirty_vals);
-	void onCompetitorReadOut(int competitor_id);
+	void queueRunChange(int run_id, const QString &table, const QVariantMap &fields);
+	void flushRunChanges();
+	void onRunChanged(int run_id, const QVariantMap &run_fields, const QVariantMap &competitor_fields);
 	void sendGraphQLRequest(const QString &query, const QJsonObject &variables, std::function<void(QJsonObject)> callback, bool withAuthorization);
 	void getChangesByOrigin(const QString &origin, std::function<void()> on_done = nullptr);
 	void processCompetitorsChanges(QJsonArray data_array);
