@@ -192,17 +192,41 @@ void OFeedClient::showStartupCredentialError(const QString &message)
 
 void OFeedClient::setRunning(bool on)
 {
-	if (on && !isRunning() && !runStartChangesProcessing()) {
+	const bool start_changes_off = !runStartChangesProcessing();
+	const bool office_changes_off = !runOfficeChangesProcessing();
+	if (on && !isRunning() && (start_changes_off || office_changes_off)) {
+		QString text;
+		QString informative_text;
+		if (start_changes_off && office_changes_off) {
+			text = tr("Do you really want to start the service without processing any changes from OFeed?");
+			informative_text = tr("Neither start changes from O Checklist nor late entries and changes from the office will be processed."
+								  " Choose No to switch both of them on before the service starts.");
+		}
+		else if (start_changes_off) {
+			text = tr("Do you really want to start the service without processing start changes from O Checklist?");
+			informative_text = tr("Late entries and changes from the office will be processed."
+								  " Choose No to switch the start changes processing on as well.");
+		}
+		else {
+			text = tr("Do you really want to start the service without processing late entries and changes from the office?");
+			informative_text = tr("Start changes from O Checklist will be processed."
+								  " Choose No to switch the office changes processing on as well.");
+		}
 		qf::gui::dialogs::MessageBox mbx(qf::gui::framework::MainWindow::frameWork());
 		mbx.setIcon(QMessageBox::Question);
 		mbx.setWindowTitle(serviceDisplayName());
-		mbx.setText(tr("Do you really want to start the service without processing changes from O Checklist?"));
-		mbx.setInformativeText(tr("Choose No to switch changes processing on before the service starts."));
+		mbx.setText(text);
+		mbx.setInformativeText(informative_text);
 		mbx.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
 		mbx.setDefaultButton(QMessageBox::No);
 		mbx.setDoNotShowAgainPersistentKey(QStringLiteral("ofeed/startWithoutChangesProcessing"));
 		if (mbx.exec() == QMessageBox::No) {
-			setRunStartChangesProcessing(true);
+			if (start_changes_off) {
+				setRunStartChangesProcessing(true);
+			}
+			if (office_changes_off) {
+				setRunOfficeChangesProcessing(true);
+			}
 		}
 	}
 	Super::setRunning(on);
