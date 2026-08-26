@@ -13,6 +13,7 @@
 #include <qf/core/log.h>
 #include <qf/core/sql/query.h>
 
+#include <QDockWidget>
 #include <QMenu>
 #include <QJsonDocument>
 
@@ -143,11 +144,19 @@ QxClientService *QxLateRegistrationsWidget::service()
 
 void QxLateRegistrationsWidget::updateEnabled()
 {
-	auto *ofeed = Service::serviceByName(OFeedClient::serviceName());
-	bool is_enabled = service()->isRunning() || (ofeed && ofeed->isRunning());
+	auto *ofeed = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
+	bool is_ofeed_running = ofeed && ofeed->isRunning();
+	bool is_enabled = service()->isRunning() || is_ofeed_running;
 	setEnabled(is_enabled);
 	if (is_enabled) {
 		reload();
+	}
+	// the changes are stored into this table only when the processing is switched on,
+	// the dock is revealed then, so that the records are not hidden from the user
+	if (is_ofeed_running && (ofeed->runStartChangesProcessing() || ofeed->runOfficeChangesProcessing())) {
+		if (auto *dock = qobject_cast<QDockWidget*>(parentWidget())) {
+			dock->show();
+		}
 	}
 }
 
