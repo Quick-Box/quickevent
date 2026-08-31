@@ -35,8 +35,9 @@ runs:
         echo cmake_extra_args="'-DMINGW=ON' '-G MinGW Makefiles'" >> "$GITHUB_ENV"
       shell: bash
 
-    # Qt
+    # Qt for non-Windows using jurplel
     - name: Install Qt
+      if: runner.os != 'Windows'
       uses: jurplel/install-qt-action@v4
       with:
         cache: true
@@ -45,11 +46,17 @@ runs:
         install-deps: false
         modules: ${{ inputs.modules }}
     
-    #- name: Setup Ninja
-    #  uses: ashutoshvarma/setup-ninja@master
-    #  with:
-    #    # ninja version to download. Default: 1.10.0
-    #    version: 1.10.0
+    # Qt for Windows using jdpurcell with naqt enabled (aqtinstall still not support Qt6.11)
+    - name: Install Qt
+      if: runner.os == 'Windows'
+      uses: jdpurcell/install-qt-action@v5
+      with:
+        cache: true
+        version: ${{ inputs.qt_version }}
+        arch: ${{ inputs.qt_arch }}
+        install-deps: false
+        modules: ${{ inputs.modules }}
+        use-naqt: true
 
     - name: Get Git SHA
       run: echo "COMMIT_SHA=${GITHUB_SHA}" >> $GITHUB_ENV

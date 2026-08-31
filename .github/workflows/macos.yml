@@ -8,7 +8,7 @@ on:
 
 jobs:
   macos:
-    name: Qt 6.10 / macOS 15
+    name: Qt 6.11 / macOS 15
     runs-on: macos-15
     steps:
       - name: Clone the repository
@@ -23,7 +23,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           cache: true
-          version: 6.11.1
+          version: 6.11.2
           install-deps: false
           modules: qtserialport qtmultimedia qtconnectivity
 
