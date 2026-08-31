@@ -123,6 +123,8 @@ OFeedClient::OFeedClient(QObject *parent)
 	m_networkManager = new QNetworkAccessManager(this);
 	m_exportTimer = new QTimer(this);
 	connect(m_exportTimer, &QTimer::timeout, this, &OFeedClient::onExportTimerTimeOut);
+	m_changesTimer = new QTimer(this);
+	connect(m_changesTimer, &QTimer::timeout, this, &OFeedClient::onChangesTimerTimeOut);
 	m_credentialCheckTimer = new QTimer(this);
 	connect(m_credentialCheckTimer, &QTimer::timeout, this, &OFeedClient::checkCredentials);
 	m_runChangeFlushTimer = new QTimer(this);
@@ -170,8 +172,9 @@ void OFeedClient::startService()
 {
 	Super::run();
 	ensureEventImageCachedAtStartup();
-	exportStartListIofXml3([this]() { exportResultsIofXml3(); });
+	exportStartListAndResults();
 	m_exportTimer->start();
+	m_changesTimer->start();
 	m_credentialCheckTimer->start();
 }
 
@@ -236,7 +239,9 @@ void OFeedClient::stop()
 {
 	Super::stop();
 	m_exportTimer->stop();
+	m_changesTimer->stop();
 	m_credentialCheckTimer->stop();
+	m_exportDeferred = false;
 	m_credentialsValid = -1;
 	m_credentialWarningShown = false;
 	m_resultsExportInProgress = false;
@@ -325,6 +330,16 @@ int OFeedClient::exportTimerIntervalMs() const
 	return m_exportTimer->interval();
 }
 
+int OFeedClient::changesTimerRemainingMs() const
+{
+	return m_changesTimer->remainingTime();
+}
+
+int OFeedClient::changesTimerIntervalMs() const
+{
+	return m_changesTimer->interval();
+}
+
 qf::gui::framework::DialogWidget *OFeedClient::createDetailWidget()
 {
 	auto *w = new OFeedClientWidget();
@@ -335,27 +350,45 @@ void OFeedClient::init()
 {
 	OFeedClientSettings ss = settings();
 	m_exportTimer->setInterval(ss.exportIntervalSec() * 1000);
+	m_changesTimer->setInterval(ss.changesIntervalSec() * 1000);
 	m_credentialCheckTimer->setInterval(ss.credentialCheckIntervalMin() * 60 * 1000);
 	ensureEventImageCachedAtStartup();
+}
+
+void OFeedClient::exportStartListAndResults()
+{
+	exportStartListIofXml3([this]() { exportResultsIofXml3(); });
 }
 
 void OFeedClient::onExportTimerTimeOut()
 {
 	emit exportTimerFired();
-	const bool process_changes = runStartChangesProcessing() || runOfficeChangesProcessing();
-	if (process_changes && m_changesProcessingInProgress) {
-		// Skip - ongoing cycle will export start list + results after processing completes.
-		// Exporting now would send stale data and overwrite OFeed changes.
+	if (m_changesProcessingInProgress) {
+		// Exporting now would send stale data and overwrite OFeed changes, the running
+		// changes cycle triggers the deferred export as soon as it is done.
+		m_exportDeferred = true;
 		return;
 	}
-	if (process_changes) {
-		processChanges([this]() {
-			exportStartListIofXml3([this]() { exportResultsIofXml3(); });
-		});
+	exportStartListAndResults();
+}
+
+void OFeedClient::onChangesTimerTimeOut()
+{
+	emit changesTimerFired();
+	if (!runStartChangesProcessing() && !runOfficeChangesProcessing()) {
+		runDeferredExport();
+		return;
 	}
-	else {
-		exportStartListIofXml3([this]() { exportResultsIofXml3(); });
+	processChanges([this]() { runDeferredExport(); });
+}
+
+void OFeedClient::runDeferredExport()
+{
+	if (!m_exportDeferred) {
+		return;
 	}
+	m_exportDeferred = false;
+	exportStartListAndResults();
 }
 
 void OFeedClient::loadSettings()

@@ -189,6 +189,7 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	if(svc) {
 		OFeedClientSettings ss = svc->settings();
 		ui->edExportInterval->setValue(ss.exportIntervalSec());
+		ui->edChangesInterval->setValue(ss.changesIntervalSec());
 		ui->edCredentialCheckInterval->setValue(ss.credentialCheckIntervalMin());
 		ui->edHostUrl->setText(userFacingHostUrl(svc->hostUrl()));
 		ui->edEventId->setText(svc->eventId());
@@ -216,12 +217,18 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	m_exportTimerIndicator->setToolTip(tr("Time until next automatic export"));
 	ui->exportIntervalLayout->addWidget(m_exportTimerIndicator);
 
+	m_changesTimerIndicator = new CircularTimerWidget(this);
+	m_changesTimerIndicator->setToolTip(tr("Time until next changes download"));
+	// keep the indicator right next to the spin box, in front of the trailing spacer
+	ui->changesIntervalLayout->insertWidget(2, m_changesTimerIndicator);
+
 	m_credentialTimerIndicator = new CircularTimerWidget(this);
 	m_credentialTimerIndicator->setToolTip(tr("Time until next credential check"));
 	ui->credentialCheckIntervalLayout->addWidget(m_credentialTimerIndicator);
 
 	if(svc) {
 		connect(svc, &OFeedClient::exportTimerFired, m_exportTimerIndicator, &CircularTimerWidget::markJustFired);
+		connect(svc, &OFeedClient::changesTimerFired, m_changesTimerIndicator, &CircularTimerWidget::markJustFired);
 		connect(svc, &OFeedClient::credentialCheckFired, m_credentialTimerIndicator, &CircularTimerWidget::markJustFired);
 	}
 
@@ -330,6 +337,7 @@ bool OFeedClientWidget::saveSettings()
 	if(svc) {
 		OFeedClientSettings ss = svc->settings();
 		ss.setExportIntervalSec(ui->edExportInterval->value());
+		ss.setChangesIntervalSec(ui->edChangesInterval->value());
 		ss.setCredentialCheckIntervalMin(ui->edCredentialCheckInterval->value());
 		svc->setHostUrl(ui->edHostUrl->text().trimmed());
 		svc->setEventId(ui->edEventId->text().trimmed());
@@ -502,6 +510,10 @@ void OFeedClientWidget::updateTimerIndicators()
 	m_exportTimerIndicator->setProgress(
 		svc ? svc->exportTimerRemainingMs() : -1,
 		svc ? svc->exportTimerIntervalMs() : 0
+	);
+	m_changesTimerIndicator->setProgress(
+		svc ? svc->changesTimerRemainingMs() : -1,
+		svc ? svc->changesTimerIntervalMs() : 0
 	);
 	m_credentialTimerIndicator->setProgress(
 		svc ? svc->credentialCheckRemainingMs() : -1,

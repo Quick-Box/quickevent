@@ -48,6 +48,7 @@ private:
 	QString m_lastAutoReceiptEventLink;
 	QTimer *m_uiTickTimer = nullptr;
 	CircularTimerWidget *m_exportTimerIndicator = nullptr;
+	CircularTimerWidget *m_changesTimerIndicator = nullptr;
 	CircularTimerWidget *m_credentialTimerIndicator = nullptr;
 };
 

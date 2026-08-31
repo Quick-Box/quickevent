@@ -22,6 +22,7 @@ class OFeedClientSettings : public ServiceSettings
 	using Super = ServiceSettings;
 
 	QF_VARIANTMAP_FIELD2(int, e, setE, xportIntervalSec, 60)
+	QF_VARIANTMAP_FIELD2(int, c, setC, hangesIntervalSec, 15)
 	QF_VARIANTMAP_FIELD2(int, c, setC, redentialCheckIntervalMin, 60)
 public:
 	OFeedClientSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
@@ -35,6 +36,7 @@ class OFeedClient : public Service
 signals:
 	void credentialsStatusChanged(bool valid);
 	void exportTimerFired();
+	void changesTimerFired();
 	void credentialCheckFired();
 
 public:
@@ -95,6 +97,8 @@ public:
 	int credentialCheckIntervalMs() const;
 	int exportTimerRemainingMs() const;
 	int exportTimerIntervalMs() const;
+	int changesTimerRemainingMs() const;
+	int changesTimerIntervalMs() const;
 
 private:
 	/// changed fields of one runs record, collected between the flush timer shots
@@ -105,6 +109,7 @@ private:
 	};
 
 	QTimer *m_exportTimer = nullptr;
+	QTimer *m_changesTimer = nullptr;
 	QTimer *m_credentialCheckTimer = nullptr;
 	QTimer *m_runChangeFlushTimer = nullptr;
 	QMap<int, PendingRunChange> m_pendingRunChanges;
@@ -118,10 +123,15 @@ private:
 	bool m_changesProcessingInProgress = false;
 	bool m_processingOFeedChanges = false;
 	bool m_startupCheckInProgress = false;
+	/// export tick that was skipped because a changes cycle was running
+	bool m_exportDeferred = false;
 
 private:
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 	void onExportTimerTimeOut();
+	void onChangesTimerTimeOut();
+	void exportStartListAndResults();
+	void runDeferredExport();
 	void init();
 	void ensureEventImageCachedAtStartup();
 	void startService();

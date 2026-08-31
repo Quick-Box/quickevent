@@ -3150,8 +3150,8 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="95"/>
-        <source>Export interval</source>
-        <translation>Interval pro exportování</translation>
+        <source>Interval</source>
+        <translation>Interval</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="110"/>
@@ -3291,12 +3291,12 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="68"/>
         <source>⚠ OFeed password is invalid or has expired. Please update your credentials.</source>
-        <translation type="unfinished">OFeed heslo vypršelo nebo je neplatné. Uprav přihlašovací údaje.</translation>
+        <translation type="unfinished">⚠ OFeed heslo vypršelo nebo je neplatné. Uprav přihlašovací údaje.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="272"/>
-        <source>Manual execution</source>
-        <translation type="unfinished">Ruční spuštění</translation>
+        <source>Start list and results upload setup</source>
+        <translation type="unfinished">Nastavení nahrávání startovky a výsledků</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="306"/>
