@@ -1,4 +1,5 @@
 #include "plugin.h"
+#include "reportfilecache.h"
 
 #include <qf/core/utils.h>
 #include <qf/core/log.h>
@@ -12,8 +13,6 @@
 #include <algorithm>
 
 using namespace qf::gui::framework;
-
-QString Plugin::m_reportsDir;
 
 Plugin::Plugin(const QString &feature_id, QObject *parent)
 	: QObject(parent)
@@ -33,29 +32,23 @@ Plugin::~Plugin()
 	qfLogFuncFrame() << this;
 }
 
+ReportFileCache *Plugin::reportFileCache()
+{
+	static ReportFileCache cache;
+	return &cache;
+}
+
 QString Plugin::pluginDataDir()
 {
 	static QString dir = ":/quickevent";
 	return dir;
 }
 
-QString Plugin::effectiveReportsDir()
-{
-	if(m_reportsDir.isEmpty())
-		m_reportsDir = defaultReportsDir();
-	return m_reportsDir;
-}
-
-QString Plugin::defaultReportsDir()
-{
-	static auto dir = QCoreApplication::applicationDirPath() + "/reports";
-	return dir;
-}
 
 QString Plugin::findReportFile(const QString &report_file_path) const
 {
 	QStringList search_paths;
-	search_paths << effectiveReportsDir() + '/' + m_featureId + "/qml/reports";
+	search_paths << Plugin::reportFileCache()->effectiveReportsDir() + '/' + m_featureId + "/qml/reports";
 	//search_paths << qmlReportsDir();
 	for(const QString &dir : search_paths) {
 		qfMessage() << "search_path:" << dir;
@@ -75,7 +68,7 @@ QList<Plugin::ReportFileInfo> Plugin::listReportFiles(const QString &report_dir,
 {
 	QList<ReportFileInfo> report_files;
 	QStringList search_paths;
-	search_paths << effectiveReportsDir() + '/' + m_featureId + "/qml/reports";
+	search_paths << Plugin::reportFileCache()->effectiveReportsDir() + '/' + m_featureId + "/qml/reports";
 	for(const QString &dir : search_paths) {
 		QDirIterator it(dir + '/' + report_dir, QDirIterator::NoIteratorFlags);
 		while (it.hasNext()) {
