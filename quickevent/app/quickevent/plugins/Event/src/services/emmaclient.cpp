@@ -390,6 +390,8 @@ void EmmaClient::exportFinishRacomTxt() const
 		s += run_status.toEmmaExportString();
 		ts << s << "\n";
 	}
+	qfInfo() << tr("EmmaClient export finish txt done.");
+
 }
 
 void EmmaClient::exportStartListRacomTxt() const
@@ -408,7 +410,7 @@ void EmmaClient::exportStartListRacomTxt() const
 	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	qfs::QueryBuilder qb;
-	qb.select2("runs", "startTimeMs, siId, competitorId, isrunning, leg, finishTimeMs")
+	qb.select2("runs", "startTimeMs, siId, competitorId, isRunning, leg, finishTimeMs")
 			.select2("competitors","firstName, lastName, registration")
 			.select2("classes","name")
 			.select2("cards", "id, startTime")
@@ -417,7 +419,7 @@ void EmmaClient::exportStartListRacomTxt() const
 			.join("runs.id", "cards.runId")
 			.where("runs.stageId=" QF_IARG(current_stage));
 	if(is_relays) {
-		qb.select2("relays","number, isrunning");
+		qb.select2("relays","number, isRunning");
 		qb.join("runs.relayId", "relays.id");
 		qb.join("relays.classId", "classes.id");
 		qb.orderBy("runs.leg, relays.number ASC");
@@ -438,16 +440,19 @@ void EmmaClient::exportStartListRacomTxt() const
 		if (id == last_id)
 			continue;
 		bool is_running = (q2.value("runs.isrunning").isNull()) ? false : q2.value("runs.isrunning").toBool();
-		bool is_rel_running = (q2.value("relays.isrunning").isNull()) ? false : q2.value("relays.isrunning").toBool();
-		if (!is_running || !is_rel_running)
+		if (!is_running)
 			continue;
+		if (is_relays) {
+			bool is_rel_running = ((q2.value("relays.isrunning").isNull()) ? false : q2.value("relays.isrunning").toBool());
+			if (!is_rel_running)
+				continue;
+		}
 		last_id = id;
 		int si = q2.value("runs.siId").toInt();
 		int start_time = q2.value("runs.startTimeMs").toInt();
-		bool start_time_null = q2.value("runs.startTimeMs").isNull();
 		int start_time_card = q2.value("cards.startTime").toInt();
 		bool start_time_card_null = q2.value("cards.startTime").isNull();
-		if ((start_time_card == INVALID_SI_TIME || start_time_card_null) && start_time_null)
+		if ((start_time_card == INVALID_SI_TIME || start_time_card_null))
 			start_time_card = 0;
 		QString name = q2.value("competitors.lastName").toString() + " " + q2.value("competitors.firstName").toString();
 		QString class_name = q2.value("classes.name").toString();
@@ -507,6 +512,7 @@ void EmmaClient::exportStartListRacomTxt() const
 			ts << s << "\n";
 		}
 	}
+	qfInfo() << tr("EmmaClient export start txt done.");
 }
 
 void EmmaClient::exportStartListRacomCsv() const
@@ -567,17 +573,20 @@ void EmmaClient::exportStartListRacomCsv() const
 		if (id == last_id)
 			continue;
 		bool is_running = (q2.value("runs.isrunning").isNull()) ? false : q2.value("runs.isrunning").toBool();
-		bool is_rel_running = (q2.value("relays.isrunning").isNull()) ? false : q2.value("relays.isrunning").toBool();
-		if (!is_running || !is_rel_running)
+		if (!is_running)
 			continue;
+		if (is_relays) {
+			bool is_rel_running = ((q2.value("relays.isrunning").isNull()) ? false : q2.value("relays.isrunning").toBool());
+			if (!is_rel_running)
+				continue;
+		}
 		last_id = id;
 		int si = q2.value("runs.siId").toInt();
 		int start_time = q2.value("runs.startTimeMs").toInt();
 		int bib = q2.value("competitors.startNumber").toInt();
-		bool start_time_null = q2.value("runs.startTimeMs").isNull();
 		int start_time_card = q2.value("cards.startTime").toInt();
 		bool start_time_card_null = q2.value("cards.startTime").isNull();
-		if ((start_time_card == INVALID_SI_TIME || start_time_card_null) && start_time_null)
+		if ((start_time_card == INVALID_SI_TIME || start_time_card_null))
 			start_time_card = 0;
 		QString name = q2.value("competitors.lastName").toString() + " " + q2.value("competitors.firstName").toString();
 		QString class_name = q2.value("classes.name").toString();
@@ -651,6 +660,7 @@ void EmmaClient::exportStartListRacomCsv() const
 			ts << "\n";
 		}
 	}
+	qfInfo() << tr("EmmaClient export start csv done.");
 }
 
 void EmmaClient::loadSettings()
