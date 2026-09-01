@@ -339,10 +339,18 @@ CREATE TABLE qxchanges (
 -- comments not suported for driver: SQLITE
 -- COMMENT ON COLUMN qxchanges.orig_data IS 'Store data overriden by change here to enable change rollback.';
 ;
+-- create table: reports;
+CREATE TABLE reports (
+	id integer PRIMARY KEY,
+	path character varying,
+	data BLOB,
+	CONSTRAINT reports_unique0 UNIQUE (path)
+);
+;
 ------------------------------------;
 -- insert initial data;
 ------------------------------------;
 ;
 -- insert into table: config;
 INSERT INTO config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30600', 'int');
+('db.version', 'Data version', '30700', 'int');

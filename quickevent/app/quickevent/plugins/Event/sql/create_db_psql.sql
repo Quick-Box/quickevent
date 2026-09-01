@@ -309,10 +309,18 @@ CREATE TABLE {{eventId}}.qxchanges (
 );
 COMMENT ON COLUMN {{eventId}}.qxchanges.orig_data IS 'Store data overriden by change here to enable change rollback.';
 ;
+-- create table: {{eventId}}.reports;
+CREATE TABLE {{eventId}}.reports (
+	id serial PRIMARY KEY,
+	path character varying,
+	data BYTEA,
+	CONSTRAINT reports_unique0 UNIQUE (path)
+);
+;
 ------------------------------------;
 -- insert initial data;
 ------------------------------------;
 ;
 -- insert into table: {{eventId}}.config;
 INSERT INTO {{eventId}}.config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30600', 'int');
+('db.version', 'Data version', '30700', 'int');
