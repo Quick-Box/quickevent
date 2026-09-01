@@ -51,7 +51,8 @@ QList<FieldDef> runsFields()
 	};
 }
 
-static Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qreal h,
+namespace {
+Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qreal h,
 	const QString &font_family, int font_size, bool bold,
 	const QString &color = QStringLiteral("#000000"),
 	int halign = Qt::AlignHCenter)
@@ -63,6 +64,7 @@ static Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qr
 	it.fontFamily = font_family; it.fontSize = font_size; it.bold = bold;
 	it.color = color; it.halign = halign;
 	return it;
+}
 }
 
 Design Design::defaultRelayDesign()
@@ -152,8 +154,8 @@ Design Design::defaultRunsDesign()
 }
 
 // --- Typst serialization ------------------------------------------------------
-
-static QString escapeTypstString(const QString &s)
+namespace {
+QString escapeTypstString(const QString &s)
 {
 	QString out = s;
 	out.replace(QLatin1Char('\\'), QStringLiteral("\\\\"));
@@ -162,7 +164,7 @@ static QString escapeTypstString(const QString &s)
 	return out;
 }
 
-static QString typstAlignment(int halign)
+QString typstAlignment(int halign)
 {
 	if (halign == Qt::AlignLeft)
 		return QStringLiteral("left");
@@ -174,17 +176,17 @@ static QString typstAlignment(int halign)
 // key=value tag encoding for the `// @item`/`// @design` round-trip comments.
 // Values are percent-encoded so they never contain spaces or '=', keeping parsing
 // a plain split. This is not JSON — the comment is inert Typst the compiler ignores.
-static QString enc(const QString &s)
+QString enc(const QString &s)
 {
 	return QString::fromLatin1(QUrl::toPercentEncoding(s));
 }
 
-static QString dec(const QString &s)
+QString dec(const QString &s)
 {
 	return QString::fromUtf8(QByteArray::fromPercentEncoding(s.toLatin1()));
 }
 
-static QString itemTag(const Item &it)
+QString itemTag(const Item &it)
 {
 	QStringList kv;
 	kv << QStringLiteral("kind=") + QString::number(it.kind);
@@ -208,7 +210,7 @@ static QString itemTag(const Item &it)
 	return QStringLiteral("  // @item ") + kv.join(QLatin1Char(' ')) + QLatin1Char('\n');
 }
 
-static Item itemFromTag(const QString &tag)
+Item itemFromTag(const QString &tag)
 {
 	QHash<QString, QString> m;
 	const auto parts = QStringView(tag).split(QLatin1Char(' '), Qt::SkipEmptyParts);
@@ -239,7 +241,7 @@ static Item itemFromTag(const QString &tag)
 	return it;
 }
 
-static QString itemToTypstSnippet(const Item &item, int index)
+QString itemToTypstSnippet(const Item &item, int index)
 {
 	const QString dx = QString::number(item.x, 'f', 3) + QStringLiteral("mm");
 	const QString dy = QString::number(item.y, 'f', 3) + QStringLiteral("mm");
@@ -282,7 +284,7 @@ static QString itemToTypstSnippet(const Item &item, int index)
 	snippet += QStringLiteral("  ]\n");
 	return snippet;
 }
-
+}
 QString Design::toTypst() const
 {
 	QList<Item> sorted = items;
@@ -455,23 +457,23 @@ bool Design::deleteFromDb(const QString &name)
 	return q.numRowsAffected() > 0;
 }
 
-bool loadTypstTemplate(const QString &path, QString &out_source, QStringList &out_image_files)
+std::tuple<QString, QStringList> loadTypstTemplate(const QString &path)
 {
 	QFile f(path);
 	if (!f.open(QIODevice::ReadOnly)) {
 		qfWarning() << "Cannot open Typst award template:" << path;
-		return false;
+		return {};
 	}
-	out_source = QString::fromUtf8(f.readAll());
+	QString out_source = QString::fromUtf8(f.readAll());
 
-	out_image_files.clear();
+	QStringList out_image_files;
 	QDir images_dir(QFileInfo(path).absolutePath() + QStringLiteral("/images"));
 	if (images_dir.exists()) {
 		const auto entries = images_dir.entryInfoList(QDir::Files, QDir::Name);
 		for (const QFileInfo &fi : entries)
 			out_image_files << fi.absoluteFilePath();
 	}
-	return true;
+	return { out_source, out_image_files };
 }
 
 } // namespace AwardDesigner

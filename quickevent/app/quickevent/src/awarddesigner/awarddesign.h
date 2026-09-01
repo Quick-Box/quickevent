@@ -92,10 +92,6 @@ struct Design {
 	static Design defaultRunsDesign();
 };
 
-// Read a bundled/general .typ template file. out_image_files is filled with the
-// absolute paths of every file in the template's sibling "images" directory, which
-// the renderer copies next to the document (templates reference them by file name).
-// Returns false if the template file cannot be read.
-bool loadTypstTemplate(const QString &path, QString &out_source, QStringList &out_image_files);
+std::tuple<QString, QStringList> loadTypstTemplate(const QString &path);
 
 } // namespace AwardDesigner

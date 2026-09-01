@@ -627,9 +627,8 @@ void RelaysWidget::print_results_awards()
 		return;
 	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
-		QString typ;
-		QStringList images;
-		if(!AwardDesigner::loadTypstTemplate(getPlugin<RelaysPlugin>()->findReportFile(rep_path), typ, images)) {
+		auto [typ, images] = AwardDesigner::loadTypstTemplate(getPlugin<RelaysPlugin>()->findReportFile(rep_path));
+		if(typ.isEmpty()) {
 			qfWarning() << "Cannot load Typst award template:" << rep_path;
 			return;
 		}

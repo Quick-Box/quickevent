@@ -2313,9 +2313,8 @@ void RunsPlugin::report_resultsAwards()
 		return;
 	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
-		QString typ;
-		QStringList images;
-		if(!AwardDesigner::loadTypstTemplate(findReportFile(rep_path), typ, images)) {
+		auto [typ, images] = AwardDesigner::loadTypstTemplate(findReportFile(rep_path));
+		if(typ.isEmpty()) {
 			qfWarning() << "Cannot load Typst award template:" << rep_path;
 			return;
 		}
@@ -2407,9 +2406,8 @@ void RunsPlugin::report_nStagesAwards()
 		return;
 	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
-		QString typ;
-		QStringList images;
-		if(!AwardDesigner::loadTypstTemplate(findReportFile(rep_path), typ, images)) {
+		auto [typ, images] = AwardDesigner::loadTypstTemplate(findReportFile(rep_path));
+		if(typ.isEmpty()) {
 			qfWarning() << "Cannot load Typst award template:" << rep_path;
 			return;
 		}
