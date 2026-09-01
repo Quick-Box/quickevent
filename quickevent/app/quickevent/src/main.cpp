@@ -14,6 +14,8 @@
 #include <qf/core/logentrymap.h>
 #include <qf/core/utils/settings.h>
 #include <qf/gui/model/logtablemodel.h>
+#include <qf/gui/framework/plugin.h>
+#include <qf/gui/framework/reportfilecache.h>
 
 #include <QtQml>
 #include <QLocale>
@@ -107,6 +109,7 @@ int main(int argc, char *argv[])
 	}
 
 	Application app(argc, argv, &cli_opts);
+	qf::gui::framework::Plugin::reportFileCache()->initialize();
 
 	qfInfo() << "Abort on exception:" << qf::core::Exception::isAbortOnException();
 	qfInfo() << "Application file:" << QCoreApplication::applicationFilePath();

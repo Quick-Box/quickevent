@@ -25,7 +25,7 @@ public:
 	AwardDesigner::Design currentDesign() const;
 	QString designName() const;
 
-private Q_SLOTS:
+private:
 	void onSelectedItemChanged(AwardSceneItem *item);
 	void onAddFieldClicked();
 	void onAddImageClicked();

@@ -3,6 +3,7 @@
 #include "reportpainter.h"
 //#include "../../framework/application.h"
 #include "../../framework/plugin.h"
+#include "../../framework/reportfilecache.h"
 
 #include <qf/core/utils/fileutils.h>
 #include <qf/core/log.h>
@@ -345,7 +346,7 @@ QStringList ReportProcessor::qmlEngineImportPaths()
 	lst << QCoreApplication::applicationDirPath() + "/../lib/qml";
 #endif
 	lst << QCoreApplication::applicationDirPath() + "/qml";
-	lst << framework::Plugin::effectiveReportsDir();
+	lst << framework::Plugin::reportFileCache()->effectiveReportsDir();
 	lst << ":/quickevent";
 	return lst;
 }

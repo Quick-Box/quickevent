@@ -6,6 +6,7 @@ Field 1.0 Field.qml
 Index 1.0 Index.qml
 ForeignKeyReference 1.0 ForeignKeyReference.qml
 String 1.0 String.qml
+Blob 1.0 Blob.qml
 Serial 1.0 Serial.qml
 Int 1.0 Int.qml
 Real 1.0 Real.qml

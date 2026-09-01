@@ -518,6 +518,16 @@ Schema {
 			indexes: [
 				Index {fields: ['stage_id', 'change_id']; unique: true }
 			]
+		},
+		Table { name: 'reports'
+			fields: [
+				Field { name: 'id'; type: Serial { primaryKey: true } },
+				Field { name: 'path'; type: String { } },
+				Field { name: 'data'; type: Blob { } }
+			]
+			indexes: [
+				Index {fields: ['path']; unique: true }
+			]
 		}
 	]
 	inserts: [
