@@ -72,19 +72,28 @@ void PunchingTestService::onTimerTick()
 	int stage_id = event_plugin->currentStageId();
 
 	qf::core::sql::Query q;
+	// Classes without start interval have a free (or mass) start, their competitors punch
+	// the start unit. Competitors of classes with drawn start times start on a signal and
+	// have no start punch in the card.
 	if (!q.exec(QStringLiteral(
-			"SELECT id, siId, startTimeMs FROM runs"
-			" WHERE stageId=%1"
-			" AND isRunning"
-			" AND siId>0"
-			" AND (finishTimeMs IS NULL OR finishTimeMs=0)").arg(stage_id))) {
+			"SELECT runs.id, runs.siId, runs.startTimeMs,"
+			" COALESCE(classdefs.startIntervalMin, 0)=0 AS isFreeStart"
+			" FROM runs"
+			" LEFT JOIN competitors ON competitors.id=runs.competitorId"
+			" LEFT JOIN relays ON relays.id=runs.relayId"
+			" LEFT JOIN classdefs ON (classdefs.classId=competitors.classId OR classdefs.classId=relays.classId)"
+			" AND classdefs.stageId=runs.stageId"
+			" WHERE runs.stageId=%1"
+			" AND runs.isRunning"
+			" AND runs.siId>0"
+			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id))) {
 		qfWarning() << "PunchingTestService: cannot query runs";
 		return;
 	}
 
 	QList<QVariantList> candidates;
 	while (q.next())
-		candidates << QVariantList{q.value(0), q.value(1), q.value(2)};
+		candidates << QVariantList{q.value(0), q.value(1), q.value(2), q.value(3)};
 
 	if (candidates.isEmpty()) {
 		setStatusMessage(tr("No eligible runners left"));
@@ -96,6 +105,7 @@ void PunchingTestService::onTimerTick()
 	int run_id = cand[0].toInt();
 	int si_id = cand[1].toInt();
 	int start_time_ms = cand[2].toInt(); // ms relative to stage start
+	bool is_free_start = cand[3].toBool();
 
 	auto *runs_plugin = getPlugin<Runs::RunsPlugin>();
 	quickevent::core::CourseDef course = runs_plugin->courseCodesForRunId(run_id);
@@ -120,7 +130,9 @@ void PunchingTestService::onTimerTick()
 		return ((abs_ms / 1000) % SI_HALF_DAY_SEC + SI_HALF_DAY_SEC) % SI_HALF_DAY_SEC;
 	};
 
-	int si_start_sec = toSiSec(abs_start_ms);
+	// Start punch exists only in classes with a free start, otherwise the card start time
+	// must stay empty, so that the drawn start time in runs is not overwritten.
+	int si_start_sec = is_free_start ? toSiSec(abs_start_ms) : siut::SICard::INVALID_SI_TIME;
 	int si_finish_sec = toSiSec(abs_finish_ms);
 
 	auto &rng = *QRandomGenerator::global();
