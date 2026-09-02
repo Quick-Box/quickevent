@@ -19,6 +19,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGuiApplication>
+#include <QPixmap>
 #include <QPointer>
 #include <QUrl>
 #include <QUrlQuery>
@@ -199,6 +200,7 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		ui->edReceiptImageHeight->setValue(svc->receiptImageHeightMm());
 		ui->lbReceiptImageHeight->setEnabled(svc->printEventImageOnReceipt());
 		ui->edReceiptImageHeight->setEnabled(svc->printEventImageOnReceipt());
+		ui->lbEventImageCacheStatus->setEnabled(svc->printEventImageOnReceipt());
 		ui->additionalSettingsPrintEventQrCodeOnReceipt->setChecked(svc->printEventQrCodeOnReceipt());
 		ui->edReceiptEventLink->setText(svc->receiptEventLinkUrl());
 		ui->edReceiptEventQrCodeCaption->setText(svc->receiptEventQrCodeCaption());
@@ -208,6 +210,8 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		ui->lbReceiptEventQrCodeCaption->setEnabled(svc->printEventQrCodeOnReceipt());
 		ui->edReceiptEventQrCodeCaption->setEnabled(svc->printEventQrCodeOnReceipt());
 		ui->lbEventImageCacheStatus->setText(svc->hasCachedEventImage() ? tr("Cached image is available") : tr("No cached image"));
+		ui->lbEventImagePreview->setEnabled(svc->printEventImageOnReceipt());
+		updateEventImagePreview();
 		ui->processChangesOnOffButton->setChecked(svc->runStartChangesProcessing());
 		ui->processOfficeChangesOnOffButton->setChecked(svc->runOfficeChangesProcessing());
 		updateCredentialStatus(svc->credentialsValid() == 1);
@@ -219,8 +223,7 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 
 	m_changesTimerIndicator = new CircularTimerWidget(this);
 	m_changesTimerIndicator->setToolTip(tr("Time until next changes download"));
-	// keep the indicator right next to the spin box, in front of the trailing spacer
-	ui->changesIntervalLayout->insertWidget(2, m_changesTimerIndicator);
+	ui->changesIntervalLayout->addWidget(m_changesTimerIndicator);
 
 	m_credentialTimerIndicator = new CircularTimerWidget(this);
 	m_credentialTimerIndicator->setToolTip(tr("Time until next credential check"));
@@ -251,6 +254,12 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		if(svc)
 			svc->setRunOfficeChangesProcessing(checked);
 	});
+	connect(ui->btContinueToSynchronization, &QPushButton::clicked, this, [this]() {
+		ui->tabWidget->setCurrentWidget(ui->tabSynchronization);
+	});
+	connect(ui->btContinueToReceipt, &QPushButton::clicked, this, [this]() {
+		ui->tabWidget->setCurrentWidget(ui->tabReceipt);
+	});
 	connect(ui->btPasteSetupLink, &QPushButton::clicked, this, &OFeedClientWidget::onBtPasteSetupLinkClicked);
 	connect(ui->btTestConnection, &QPushButton::clicked, this, &OFeedClientWidget::onBtTestConnectionClicked);
 	connect(ui->btRefreshEventImage, &QPushButton::clicked, this, &OFeedClientWidget::onBtRefreshEventImageClicked);
@@ -269,6 +278,8 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	connect(ui->additionalSettingsPrintEventImageOnReceipt, &QAbstractButton::toggled, this, [this](bool on) {
 		ui->lbReceiptImageHeight->setEnabled(on);
 		ui->edReceiptImageHeight->setEnabled(on);
+		ui->lbEventImageCacheStatus->setEnabled(on);
+		ui->lbEventImagePreview->setEnabled(on);
 		updateTestConnectionState();
 	});
 	connect(ui->additionalSettingsPrintEventQrCodeOnReceipt, &QAbstractButton::toggled, this, [this](bool on) {
@@ -460,6 +471,7 @@ void OFeedClientWidget::onBtRefreshEventImageClicked()
 			// image height was derived from the downloaded image, don't save the stale spin box value back
 			widget_guard->ui->edReceiptImageHeight->setValue(svc->receiptImageHeightMm());
 		}
+		widget_guard->updateEventImagePreview();
 		widget_guard->updateTestConnectionState();
 	});
 }
@@ -502,6 +514,13 @@ void OFeedClientWidget::updateTestConnectionState()
 	ui->btOpenEventWebsite->setToolTip(has_event_website_url ? tr("Open event page in browser") : tr("Fill Url and Event id to open event page"));
 	ui->btTestConnection->setEnabled(has_required_credentials && !m_isTestConnectionRunning);
 	ui->btRefreshEventImage->setEnabled(can_refresh_event_image);
+	// setup is expected to go credentials → synchronization → receipt, lock the later steps until credentials are filled in
+	ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tabSynchronization), has_required_credentials);
+	ui->tabWidget->setTabEnabled(ui->tabWidget->indexOf(ui->tabReceipt), has_required_credentials);
+	ui->btContinueToSynchronization->setEnabled(has_required_credentials);
+	ui->btContinueToSynchronization->setToolTip(has_required_credentials
+		? tr("Continue with the synchronization setup")
+		: tr("Fill in the credentials to continue with the synchronization setup"));
 }
 
 void OFeedClientWidget::updateTimerIndicators()
@@ -519,6 +538,27 @@ void OFeedClientWidget::updateTimerIndicators()
 		svc ? svc->credentialCheckRemainingMs() : -1,
 		svc ? svc->credentialCheckIntervalMs() : 0
 	);
+}
+
+void OFeedClientWidget::updateEventImagePreview()
+{
+	static constexpr int PREVIEW_HEIGHT_PX = 64;
+	OFeedClient *svc = service();
+	QPixmap image;
+	if(svc) {
+		image.loadFromData(QByteArray::fromBase64(svc->cachedEventImageBase64().toLatin1()));
+	}
+	if(image.isNull()) {
+		ui->lbEventImagePreview->clear();
+		ui->lbEventImagePreview->setVisible(false);
+		return;
+	}
+	const qreal device_pixel_ratio = devicePixelRatioF();
+	const int height = qMin(PREVIEW_HEIGHT_PX, image.height());
+	QPixmap preview = image.scaledToHeight(qRound(height * device_pixel_ratio), Qt::SmoothTransformation);
+	preview.setDevicePixelRatio(device_pixel_ratio);
+	ui->lbEventImagePreview->setPixmap(preview);
+	ui->lbEventImagePreview->setVisible(true);
 }
 
 void OFeedClientWidget::updateCredentialStatus(bool valid)
