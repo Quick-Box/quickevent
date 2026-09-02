@@ -1,6 +1,6 @@
-#include "printawardsoptionsdialogwidget.h"
-#include "ui_printawardsoptionsdialogwidget.h"
-#include "runsplugin.h"
+#include "printrelayawardsoptionsdialogwidget.h"
+#include "ui_printrelayawardsoptionsdialogwidget.h"
+#include "relaysplugin.h"
 
 #include <awarddesigner/awarddesign.h>
 #include <awarddesigner/awarddesignerdialog.h>
@@ -12,41 +12,41 @@
 
 static const QLatin1String DB_PREFIX("db:");
 
-PrintAwardsOptionsDialogWidget::PrintAwardsOptionsDialogWidget(QWidget *parent)
+PrintRelayAwardsOptionsDialogWidget::PrintRelayAwardsOptionsDialogWidget(QWidget *parent)
 	: Super(parent)
-	, ui(new Ui::PrintAwardsOptionsDialogWidget)
+	, ui(new Ui::PrintRelayAwardsOptionsDialogWidget)
 {
 	setPersistentSettingsId(objectName());
 	ui->setupUi(this);
-	ui->edNumPlaces->setValue(3);
 
 	refreshTemplateList();
 
-	connect(ui->btnDesigner, &QPushButton::clicked, this, &PrintAwardsOptionsDialogWidget::onDesignerClicked);
+	connect(ui->btnDesigner, &QPushButton::clicked, this, &PrintRelayAwardsOptionsDialogWidget::onDesignerClicked);
 }
 
-PrintAwardsOptionsDialogWidget::~PrintAwardsOptionsDialogWidget()
+PrintRelayAwardsOptionsDialogWidget::~PrintRelayAwardsOptionsDialogWidget()
 {
 	delete ui;
 }
 
-void PrintAwardsOptionsDialogWidget::refreshTemplateList()
+void PrintRelayAwardsOptionsDialogWidget::refreshTemplateList()
 {
 	QString currentData = ui->edReportPath->currentData().toString();
 	ui->edReportPath->clear();
 
 	// DB-stored designer templates (user-defined) are listed first
-	for (const QString &name : AwardDesigner::Design::listFromDb(QStringLiteral("runs"))) {
+	for (const QString &name : AwardDesigner::Design::listFromDb(QStringLiteral("relay"))) {
 		ui->edReportPath->addItem(QStringLiteral("★ ") + name,
 			QString(DB_PREFIX) + name);
 	}
 
-	auto *runs_plugin = qf::gui::framework::getPlugin<Runs::RunsPlugin>();
+	auto *relays_plugin = qf::gui::framework::getPlugin<Relays::RelaysPlugin>();
 	// General (bundled) Typst templates
-	for (const auto &i : runs_plugin->listReportFiles("awards", QStringLiteral("typ"))) {
+	for (const auto &i : relays_plugin->listReportFiles("awards", QStringLiteral("typ"))) {
 		ui->edReportPath->addItem(i.reportName, i.reportFilePath);
 	}
 
+	// Restore previous selection
 	if (!currentData.isEmpty()) {
 		int ix = ui->edReportPath->findData(currentData);
 		if (ix >= 0)
@@ -54,12 +54,11 @@ void PrintAwardsOptionsDialogWidget::refreshTemplateList()
 	}
 }
 
-QVariantMap PrintAwardsOptionsDialogWidget::printOptions() const
+QVariantMap PrintRelayAwardsOptionsDialogWidget::printOptions() const
 {
 	QVariantMap ret;
 	if (ui->edReportPath->currentIndex() >= 0) {
 		ret["numPlaces"] = ui->edNumPlaces->value();
-		ret["stageId"]   = ui->edStageNumber->value();
 		ret["reportPath"] = ui->edReportPath->currentData().toString();
 	}
 
@@ -71,7 +70,7 @@ QVariantMap PrintAwardsOptionsDialogWidget::printOptions() const
 	       : ui->btRegExp->isChecked()    ? 1
 	       : 2;
 	filterOpts.setClassFilterType(ft);
-	ret["classFilter"]       = quickevent::gui::ReportOptionsDialog::sqlWhereExpression(filterOpts, ui->edStageNumber->value());
+	ret["classFilter"]       = quickevent::gui::ReportOptionsDialog::sqlWhereExpression(filterOpts, 0);
 	ret["classFilterText"]   = filterOpts.classFilter();
 	ret["classFilterType"]   = filterOpts.classFilterType();
 	ret["useClassFilter"]    = filterOpts.isUseClassFilter();
@@ -80,10 +79,9 @@ QVariantMap PrintAwardsOptionsDialogWidget::printOptions() const
 	return ret;
 }
 
-void PrintAwardsOptionsDialogWidget::setPrintOptions(const QVariantMap &opts)
+void PrintRelayAwardsOptionsDialogWidget::setPrintOptions(const QVariantMap &opts)
 {
 	ui->edNumPlaces->setValue(opts.value("numPlaces", 3).toInt());
-	ui->edStageNumber->setValue(opts.value("stageId").toInt());
 	QString report_path = opts.value("reportPath").toString();
 	if (!report_path.isEmpty()) {
 		int ix = ui->edReportPath->findData(report_path);
@@ -100,8 +98,9 @@ void PrintAwardsOptionsDialogWidget::setPrintOptions(const QVariantMap &opts)
 	else              ui->btWildCard->setChecked(true);
 }
 
-void PrintAwardsOptionsDialogWidget::onDesignerClicked()
+void PrintRelayAwardsOptionsDialogWidget::onDesignerClicked()
 {
+	// Load currently selected design if it is a DB design
 	AwardDesigner::Design design;
 	QString currentData = ui->edReportPath->currentData().toString();
 	if (currentData.startsWith(DB_PREFIX)) {
@@ -109,13 +108,15 @@ void PrintAwardsOptionsDialogWidget::onDesignerClicked()
 		design = AwardDesigner::Design::loadFromDb(name);
 	}
 
-	AwardDesignerDialog dlg(AwardDesigner::runsFields(), AwardDesigner::Design::defaultRunsDesign(), this);
+	AwardDesignerDialog dlg(AwardDesigner::relayFields(), AwardDesigner::Design::defaultRelayDesign(), this);
 	if (design.isValid())
 		dlg.loadDesign(design);
 	dlg.exec();
 
+	// Refresh dropdown so any newly saved designs appear
 	refreshTemplateList();
 
+	// Try to select the design that was just edited/created
 	QString savedName = dlg.designName();
 	if (!savedName.isEmpty()) {
 		int ix = ui->edReportPath->findData(QString(DB_PREFIX) + savedName);

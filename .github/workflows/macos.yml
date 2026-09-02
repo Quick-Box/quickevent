@@ -55,6 +55,15 @@ jobs:
           cp $(brew --prefix qt-postgresql)/share/qt/plugins/sqldrivers/libqsqlpsql.dylib \
              '${{ github.workspace }}/install/quickevent.app/Contents/PlugIns/sqldrivers/'
 
+      - name: Bundle Typst binary
+        run: |
+          curl -L "https://github.com/typst/typst/releases/download/${TYPST_VERSION}/typst-aarch64-apple-darwin.tar.xz" -o typst.tar.xz
+          tar -xf typst.tar.xz
+          cp "typst-aarch64-apple-darwin/typst" '${{ github.workspace }}/install/quickevent.app/Contents/MacOS/'
+          chmod +x '${{ github.workspace }}/install/quickevent.app/Contents/MacOS/typst'
+        env:
+          TYPST_VERSION: v0.15.0
+
       - name: Run macdeployqt
         run: |
           macdeployqt '${{ github.workspace }}/install/quickevent.app' \

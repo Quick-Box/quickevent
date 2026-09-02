@@ -46,6 +46,7 @@ private:
 	void print_results_nlegs();
 	void print_results_overal();
 	void print_results_overal_condensed();
+	void print_results_awards();
 
 	void export_results_iofxml3();
 	void export_start_list_iofxml3();

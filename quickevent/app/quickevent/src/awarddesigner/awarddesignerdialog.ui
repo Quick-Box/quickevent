@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AwardDesignerDialog</class>
+ <widget class="QDialog" name="AwardDesignerDialog">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1100</width><height>820</height></rect>
+  </property>
+  <property name="minimumSize">
+   <size><width>800</width><height>600</height></size>
+  </property>
+  <property name="windowTitle">
+   <string>Designer diplomů</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+
+   <!-- Top toolbar -->
+   <item>
+    <layout class="QHBoxLayout" name="topBarLayout">
+     <item>
+      <widget class="QLabel">
+       <property name="text"><string>Název návrhu:</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edDesignName">
+       <property name="placeholderText"><string>Název návrhu diplomu</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnNew">
+       <property name="text"><string>Nový</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnLoad">
+       <property name="text"><string>Načíst...</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSave">
+       <property name="text"><string>Uložit</string></property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnZoomIn">
+       <property name="text"><string>+</string></property>
+       <property name="maximumWidth"><number>28</number></property>
+       <property name="toolTip"><string>Přiblížit (Ctrl+kolečko)</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnZoomOut">
+       <property name="text"><string>−</string></property>
+       <property name="maximumWidth"><number>28</number></property>
+       <property name="toolTip"><string>Oddálit (Ctrl+kolečko)</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnFitView">
+       <property name="text"><string>Přizpůsobit</string></property>
+       <property name="toolTip"><string>Přizpůsobit pohled ploše</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+
+   <!-- Canvas + properties splitter -->
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
+     <property name="childrenCollapsible"><bool>false</bool></property>
+
+     <!-- Canvas -->
+     <widget class="QGraphicsView" name="graphicsView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>3</horstretch><verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+
+     <!-- Properties panel -->
+     <widget class="QWidget" name="propsPanel">
+      <property name="minimumWidth"><number>260</number></property>
+      <layout class="QVBoxLayout" name="propsPanelLayout">
+       <property name="margin"><number>4</number></property>
+
+       <!-- Add item group -->
+       <item>
+        <widget class="QGroupBox" name="grpAddItem">
+         <property name="title"><string>Přidat položku</string></property>
+         <layout class="QHBoxLayout">
+          <item>
+           <widget class="QPushButton" name="btnAddField">
+            <property name="text"><string>+ Textové pole</string></property>
+            <property name="toolTip"><string>Přidat datové textové pole</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnAddImage">
+            <property name="text"><string>+ Obrázek</string></property>
+            <property name="toolTip"><string>Přidat obrázek (PNG, JPG, SVG)</string></property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+
+       <!-- Properties group -->
+       <item>
+        <widget class="QGroupBox" name="grpProperties">
+         <property name="title"><string>Vlastnosti vybrané položky</string></property>
+         <property name="enabled"><bool>false</bool></property>
+         <layout class="QVBoxLayout">
+          <property name="spacing"><number>4</number></property>
+
+          <!-- Field content (visible for Field items) -->
+          <item>
+           <widget class="QFrame" name="frameFieldContent">
+            <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+            <layout class="QFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel"><property name="text"><string>Pole:</string></property></widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="cbxItemField"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="lblCustomText">
+               <property name="text"><string>Text:</string></property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="edCustomText">
+               <property name="placeholderText"><string>Vlastní text</string></property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+
+          <!-- Image content (visible for Image items) -->
+          <item>
+           <widget class="QFrame" name="frameImageContent">
+            <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+            <layout class="QFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel"><property name="text"><string>Soubor:</string></property></widget>
+             </item>
+             <item row="0" column="1">
+              <layout class="QHBoxLayout">
+               <item>
+                <widget class="QLineEdit" name="edImagePath">
+                 <property name="readOnly"><bool>true</bool></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btnBrowseImage">
+                 <property name="text"><string>...</string></property>
+                 <property name="maximumWidth"><number>28</number></property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QCheckBox" name="chkScaleProportional">
+               <property name="text"><string>Zachovat poměr stran</string></property>
+               <property name="checked"><bool>true</bool></property>
+               <property name="toolTip"><string>Při změně velikosti zachovat poměr stran obrázku</string></property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+
+          <!-- Separator -->
+          <item>
+           <widget class="QFrame">
+            <property name="frameShape"><enum>QFrame::HLine</enum></property>
+           </widget>
+          </item>
+
+          <!-- Position / size -->
+          <item>
+           <widget class="QFrame" name="framePosition">
+            <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+            <layout class="QFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel"><property name="text"><string>X (mm):</string></property></widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="spX">
+               <property name="maximum"><double>500.0</double></property>
+               <property name="singleStep"><double>1.0</double></property>
+               <property name="decimals"><number>1</number></property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel"><property name="text"><string>Y (mm):</string></property></widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="spY">
+               <property name="maximum"><double>500.0</double></property>
+               <property name="singleStep"><double>1.0</double></property>
+               <property name="decimals"><number>1</number></property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel"><property name="text"><string>Šířka (mm):</string></property></widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QDoubleSpinBox" name="spW">
+               <property name="minimum"><double>5.0</double></property>
+               <property name="maximum"><double>500.0</double></property>
+               <property name="singleStep"><double>1.0</double></property>
+               <property name="decimals"><number>1</number></property>
+               <property name="value"><double>50.0</double></property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel"><property name="text"><string>Výška (mm):</string></property></widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QDoubleSpinBox" name="spH">
+               <property name="minimum"><double>3.0</double></property>
+               <property name="maximum"><double>500.0</double></property>
+               <property name="singleStep"><double>1.0</double></property>
+               <property name="decimals"><number>1</number></property>
+               <property name="value"><double>15.0</double></property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+
+          <!-- Text style (visible for Field items only) -->
+          <item>
+           <widget class="QFrame" name="frameTextStyle">
+            <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+            <layout class="QFormLayout">
+             <item row="0" column="0">
+              <widget class="QLabel"><property name="text"><string>Písmo:</string></property></widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QFontComboBox" name="cbxFont"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel"><property name="text"><string>Velikost (pt):</string></property></widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="spFontSize">
+               <property name="minimum"><number>4</number></property>
+               <property name="maximum"><number>200</number></property>
+               <property name="value"><number>14</number></property>
+              </widget>
+             </item>
+             <item row="2" column="0" colspan="2">
+              <layout class="QHBoxLayout">
+               <item>
+                <widget class="QCheckBox" name="chkBold">
+                 <property name="text"><string>Tučné</string></property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="chkItalic">
+                 <property name="text"><string>Kurzíva</string></property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel"><property name="text"><string>Barva:</string></property></widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QPushButton" name="btnColor">
+               <property name="text"><string>■ Zvolit barvu</string></property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel"><property name="text"><string>Zarovnání:</string></property></widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QComboBox" name="cbxAlign"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+
+          <!-- Delete -->
+          <item>
+           <widget class="QPushButton" name="btnDelete">
+            <property name="text"><string>Smazat položku</string></property>
+           </widget>
+          </item>
+
+         </layout>
+        </widget>
+       </item>
+
+       <!-- Vertical spacer -->
+       <item>
+        <spacer>
+         <property name="orientation"><enum>Qt::Vertical</enum></property>
+         <property name="sizeHint" stdset="0"><size><width>20</width><height>10</height></size></property>
+        </spacer>
+       </item>
+
+      </layout>
+     </widget>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QFrame">
+     <property name="frameShape"><enum>QFrame::HLine</enum></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons"><set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set></property>
+    </widget>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender><signal>accepted()</signal>
+   <receiver>AwardDesignerDialog</receiver><slot>accept()</slot>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender><signal>rejected()</signal>
+   <receiver>AwardDesignerDialog</receiver><slot>reject()</slot>
+  </connection>
+ </connections>
+</ui>

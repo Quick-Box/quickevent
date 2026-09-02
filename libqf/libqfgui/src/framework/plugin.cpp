@@ -71,7 +71,7 @@ QString Plugin::findReportFile(const QString &report_file_path) const
 	return {};
 }
 
-QList<Plugin::ReportFileInfo> Plugin::listReportFiles(const QString &report_dir) const
+QList<Plugin::ReportFileInfo> Plugin::listReportFiles(const QString &report_dir, const QString &suffix) const
 {
 	QList<ReportFileInfo> report_files;
 	QStringList search_paths;
@@ -81,7 +81,7 @@ QList<Plugin::ReportFileInfo> Plugin::listReportFiles(const QString &report_dir)
 		while (it.hasNext()) {
 			it.next();
 			QFileInfo fi = it.fileInfo();
-			if(fi.isFile() && fi.suffix() == "qml") {
+			if(fi.isFile() && fi.suffix() == suffix) {
 				ReportFileInfo i {
 					.reportName = fi.baseName(),
 					.reportFilePath = report_dir + '/' + fi.fileName()

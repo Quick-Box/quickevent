@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PrintAwardsOptionsDialogWidget</class>
- <widget class="QWidget" name="PrintAwardsOptionsDialogWidget">
+ <class>PrintRelayAwardsOptionsDialogWidget</class>
+ <widget class="QWidget" name="PrintRelayAwardsOptionsDialogWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>628</width>
-    <height>220</height>
+    <width>500</width>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Print Relay Awards</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="margin">
@@ -22,7 +22,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Number of places in each class</string>
+        <string>Počet oceněných míst:</string>
        </property>
       </widget>
      </item>
@@ -37,44 +37,37 @@
        <property name="maximum">
         <number>55</number>
        </property>
+       <property name="value">
+        <number>3</number>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Stage number</string>
+        <string>Šablona diplomu:</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSpinBox" name="edStageNumber">
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>55</number>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Awards report</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
       <layout class="QHBoxLayout">
        <item>
-        <widget class="QComboBox" name="edReportPath"/>
+        <widget class="QComboBox" name="edReportPath">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btnDesigner">
          <property name="text">
           <string>Designer...</string>
+         </property>
+         <property name="toolTip">
+          <string>Otevřít designer diplomů</string>
          </property>
         </widget>
        </item>
@@ -169,7 +162,6 @@
  </widget>
  <tabstops>
   <tabstop>edNumPlaces</tabstop>
-  <tabstop>edStageNumber</tabstop>
   <tabstop>edReportPath</tabstop>
   <tabstop>btnDesigner</tabstop>
   <tabstop>grpClassFilter</tabstop>

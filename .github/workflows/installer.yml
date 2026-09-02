@@ -95,6 +95,14 @@ jobs:
           cp libssl-3-x64.dll libcrypto-3-x64.dll '${{ github.workspace }}/install/bin/'
         shell: bash
 
+      - name: Bundle Typst binary
+        run: |
+          curl -L "https://github.com/typst/typst/releases/download/${{ env.TYPST_VERSION }}/typst-x86_64-pc-windows-msvc.zip" -o typst.zip
+          7z e typst.zip -o'${{ github.workspace }}/install/bin' typst.exe
+        shell: bash
+        env:
+          TYPST_VERSION: v0.15.0
+
       - name: Get app version
         run: echo "VERSION=$(grep APP_VERSION quickevent/app/quickevent/src/appversion.h | cut -d\" -f2)" >> "$GITHUB_ENV"
         shell: bash

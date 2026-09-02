@@ -15,6 +15,10 @@
 #include "../../Event/src/eventplugin.h"
 #include "../../Event/src/services/qx/qxlateregistrationswidget.h"
 
+#include <awarddesigner/awarddesign.h>
+#include <awarddesigner/awardtypstrenderer.h>
+#include <awarddesigner/awardreportviewwidget.h>
+
 #include <quickevent/core/codedef.h>
 #include <quickevent/core/utils.h>
 #include <quickevent/core/si/punchrecord.h>
@@ -1062,12 +1066,17 @@ QVariant RunsPlugin::stageResultsTableData(int stage_id, const QString &class_fi
 	return tt.toVariant();
 }
 
-QVariantMap RunsPlugin::printAwardsOptionsWithDialog(const QVariantMap &opts)
+QVariantMap RunsPlugin::editPrintAwardsOptionsInDialog(const QVariantMap &opts)
 {
-	qfInfo() << Q_FUNC_INFO;
 	QVariantMap ret;
-	auto *w = new PrintAwardsOptionsDialogWidget();
-	w->setPrintOptions(opts);
+	PrintAwardsOptionsDialogWidget *w;
+	{
+		// building the widget contacts the DB for available templates
+		// qf::gui::framework::CursorOverrider cov(Qt::WaitCursor);
+		// QApplication::processEvents(); // paint the wait cursor before the blocking DB query
+		w = new PrintAwardsOptionsDialogWidget();
+		w->setPrintOptions(opts);
+	}
 	qf::gui::dialogs::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, m_partWidget);
 	dlg.setCentralWidget(w);
 	if(dlg.exec()) {
@@ -2280,24 +2289,42 @@ void RunsPlugin::report_resultsAwards()
 {
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	QVariantMap opts;
-	opts = printAwardsOptionsWithDialog(opts);
+	opts["stageId"] = getPlugin<EventPlugin>()->currentStageId();
+	opts = editPrintAwardsOptionsInDialog(opts);
 	QString rep_path = opts.value("reportPath").toString();
 	if(rep_path.isEmpty())
 		return;
 
-	int awards_stage_id = getPlugin<EventPlugin>()->currentStageId();
-	QVariantMap props;
-	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
-	props["stageId"] = awards_stage_id;
-	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(awards_stage_id).toVariantMap();
-	auto tt = stageResultsTable(awards_stage_id, QString(), opts.value("numPlaces").toInt());
-	qf::gui::reports::ReportViewWidget::showReport(fwk
-								, findReportFile(rep_path)
-								, tt.toVariant()
-								, tr("Stage awards")
-								, "printResultsAwards"
-								, props
-								);
+	static const QLatin1String DB_PREFIX("db:");
+	auto tt = stageResultsTable(opts.value("stageId").toInt(), opts.value("classFilter").toString(), opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
+
+	if(rep_path.startsWith(DB_PREFIX)) {
+		QString design_name = rep_path.mid(DB_PREFIX.size());
+		auto design = AwardDesigner::Design::loadFromDb(design_name);
+		if(!design.isValid()) {
+			qfWarning() << "Award design not found in DB:" << design_name;
+			return;
+		}
+		QString typ = design.toTypst();
+		QStringList images = design.imageFiles();
+		AwardTypstRenderer renderer(typ, images);
+		auto pages = renderer.collectRunsPagesData(tt, getPlugin<EventPlugin>()->eventConfig());
+		AwardReportViewWidget::showReport(typ, images, pages, fwk);
+		return;
+	}
+	if(rep_path.endsWith(QStringLiteral(".typ"))) {
+		QString typ;
+		QStringList images;
+		if(!AwardDesigner::loadTypstTemplate(findReportFile(rep_path), typ, images)) {
+			qfWarning() << "Cannot load Typst award template:" << rep_path;
+			return;
+		}
+		AwardTypstRenderer renderer(typ, images);
+		auto pages = renderer.collectRunsPagesData(tt, getPlugin<EventPlugin>()->eventConfig());
+		AwardReportViewWidget::showReport(typ, images, pages, fwk);
+		return;
+	}
+	qfWarning() << "Unsupported award template:" << rep_path;
 }
 
 void RunsPlugin::report_resultsNStages()
@@ -2357,21 +2384,41 @@ void RunsPlugin::report_nStagesAwards()
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	QVariantMap opts;
 	opts["stageId"] = getPlugin<EventPlugin>()->currentStageId();
-	opts = printAwardsOptionsWithDialog(opts);
+	opts = editPrintAwardsOptionsInDialog(opts);
 	QString rep_path = opts.value("reportPath").toString();
 	if(rep_path.isEmpty())
 		return;
 
-	QVariantMap props;
-	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
-	auto tt = nstagesResultsTable(QString(), opts.value("stageId").toInt(), opts.value("numPlaces").toInt());
-	qf::gui::reports::ReportViewWidget::showReport(fwk
-								, findReportFile(rep_path)
-								, tt.toVariant()
-								, tr("Awards after %1 stages").arg(opts.value("stageId").toInt())
-								, "printResultsAwardsNStages"
-								, props
-								);
+	static const QLatin1String DB_PREFIX("db:");
+	auto tt = nstagesResultsTable(opts.value("classFilter").toString(), opts.value("stageId").toInt(), opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
+
+	if(rep_path.startsWith(DB_PREFIX)) {
+		QString design_name = rep_path.mid(DB_PREFIX.size());
+		AwardDesigner::Design design = AwardDesigner::Design::loadFromDb(design_name);
+		if(!design.isValid()) {
+			qfWarning() << "Award design not found in DB:" << design_name;
+			return;
+		}
+		QString typ = design.toTypst();
+		QStringList images = design.imageFiles();
+		AwardTypstRenderer renderer(typ, images);
+		auto pages = renderer.collectRunsPagesData(tt, getPlugin<EventPlugin>()->eventConfig());
+		AwardReportViewWidget::showReport(typ, images, pages, fwk);
+		return;
+	}
+	if(rep_path.endsWith(QStringLiteral(".typ"))) {
+		QString typ;
+		QStringList images;
+		if(!AwardDesigner::loadTypstTemplate(findReportFile(rep_path), typ, images)) {
+			qfWarning() << "Cannot load Typst award template:" << rep_path;
+			return;
+		}
+		AwardTypstRenderer renderer(typ, images);
+		auto pages = renderer.collectRunsPagesData(tt, getPlugin<EventPlugin>()->eventConfig());
+		AwardReportViewWidget::showReport(typ, images, pages, fwk);
+		return;
+	}
+	qfWarning() << "Unsupported award template:" << rep_path;
 }
 
 void RunsPlugin::report_resultsPointsNStagesCondensed()

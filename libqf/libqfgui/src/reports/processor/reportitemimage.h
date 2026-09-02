@@ -10,6 +10,8 @@
 #include "reportitemframe.h"
 #include "../../guiglobal.h"
 
+#include <QJSValue>
+
 namespace qf {
 namespace gui {
 namespace reports {
@@ -25,6 +27,7 @@ class QFGUI_DECL_EXPORT ReportItemImage : public ReportItemFrame
 	Q_PROPERTY(DataCompression dataCompression READ dataCompression WRITE setDataCompression NOTIFY dataCompressionChanged)
 	Q_PROPERTY(AspectRatio aspectRatio READ aspectRatio WRITE setAspectRatio NOTIFY aspectRatioChanged)
 	Q_PROPERTY(bool suppressPrintout READ isSuppressPrintout WRITE setSuppressPrintout NOTIFY suppressPrintoutChanged)
+	Q_PROPERTY(QJSValue dataFn READ dataFn WRITE setDataFn)
 private:
 	typedef ReportItemFrame Super;
 public:
@@ -64,7 +67,12 @@ public:
 	QF_PROPERTY_IMPL2(AspectRatio, a, A, spectRatio, AspectRatioKeep)
 	QF_PROPERTY_BOOL_IMPL(s, S, uppressPrintout)
 
+	QJSValue dataFn() const { return m_dataFn; }
+	void setDataFn(const QJSValue &val);
+
 private:
+	QJSValue m_dataFn;
+
 	void updateResolvedDataSource();
 protected:
 	//--virtual bool childrenSynced();

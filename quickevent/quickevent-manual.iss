@@ -7,6 +7,7 @@
 #define QT_DIR "c:\Qt\6.7.2\mingw_64"
 #define MINGW_DIR "c:\Qt\Tools\mingw1310_64"
 #define POSTGRES_DIR "c:\Users\x\Downloads\pgsql"
+#define TYPST_DIR "c:\Users\x\Downloads\typst-x86_64-pc-windows-msvc"
 #define BUILD_DIR "c:\p\quickbox\build\Desktop-Release\install"
 
 [Setup]
@@ -55,6 +56,8 @@ Source: {#POSTGRES_DIR}\bin\libpgtypes.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#POSTGRES_DIR}\bin\libcrypto-3-x64.dll; DestDir: {app}; Flags: ignoreversion recursesubdirs
 Source: {#POSTGRES_DIR}\bin\libecpg.dll; DestDir: {app}; Flags: ignoreversion recursesubdirs
 Source: {#POSTGRES_DIR}\bin\libssl-3-x64.dll; DestDir: {app}; Flags: ignoreversion recursesubdirs
+
+Source: {#TYPST_DIR}\typst.exe; DestDir: {app}; Flags: ignoreversion recursesubdirs
 
 [Icons]
 Name: {group}\{#APP_NAME}; Filename: {app}\{#APP_NAME_LOWER}.exe

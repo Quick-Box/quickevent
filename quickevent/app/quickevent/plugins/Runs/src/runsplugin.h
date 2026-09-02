@@ -76,7 +76,7 @@ public:
 
 	Q_INVOKABLE bool reloadTimesFromCard(int run_id);
 
-	Q_INVOKABLE QVariantMap printAwardsOptionsWithDialog(const QVariantMap &opts);
+	Q_INVOKABLE QVariantMap editPrintAwardsOptionsInDialog(const QVariantMap &opts);
 
 	bool exportStartListStageIofXml30(int stage_id, const QString &file_name, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);
 	bool exportStartListCurrentStageCsvSime(const QString &file_name, bool bibs, QString sql_where);

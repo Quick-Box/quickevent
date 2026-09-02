@@ -42,7 +42,8 @@ public:
 			return reportName == o.reportName && reportFilePath == o.reportFilePath;
 		}
 	};
-	QList<ReportFileInfo> listReportFiles(const QString &report_dir) const;
+	QList<ReportFileInfo> listReportFiles(const QString &report_dir,
+		const QString &suffix = QStringLiteral("qml")) const;
 
 	Q_SIGNAL void installed();
 private:

@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/fvacek/quickbox
 Package: quickevent
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recomends: libqt5sql5-sqlite libqt5sql5-psql
+Recommends: libqt5sql5-sqlite, libqt5sql5-psql, typst
 Description: Quick Event - Orienteering Software
  Quick Event - Orienteering Software.
 

@@ -4,7 +4,12 @@
 
 #include "relaydocument.h"
 #include "relaysplugin.h"
+#include "printrelayawardsoptionsdialogwidget.h"
 #include "partwidget.h"
+
+#include <awarddesigner/awarddesign.h>
+#include <awarddesigner/awardtypstrenderer.h>
+#include <awarddesigner/awardreportviewwidget.h>
 #include "relaystableitemdelegate.h"
 
 #include <plugins/Event/src/eventplugin.h>
@@ -189,6 +194,11 @@ void RelaysWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		auto *a = new qfw::Action("nlegs", tr("Overall condensed"));
 		a_print_results->addActionInto(a);
 		connect(a, &qfw::Action::triggered, this, &RelaysWidget::print_results_overal_condensed);
+	}
+	{
+		auto *a = new qfw::Action("awards", tr("A&wards"));
+		a_print_results->addActionInto(a);
+		connect(a, &qfw::Action::triggered, this, &RelaysWidget::print_results_awards);
 	}
 
 	auto *a_export = part_widget->menuBar()->actionForPath("export");
@@ -580,6 +590,56 @@ void RelaysWidget::print_results_overal_condensed()
 														  );
 }
 
+
+void RelaysWidget::print_results_awards()
+{
+	qfLogFuncFrame();
+	static QVariantMap s_opts;
+	auto *w = new PrintRelayAwardsOptionsDialogWidget();
+	w->setWindowTitle(tr("Print Relay Awards"));
+	w->setPrintOptions(s_opts);
+	qfd::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+	dlg.setCentralWidget(w);
+	if(!dlg.exec())
+		return;
+	s_opts = w->printOptions();
+	QString rep_path = s_opts.value("reportPath").toString();
+	if(rep_path.isEmpty())
+		return;
+
+	int num_places = s_opts.value("numPlaces", 3).toInt();
+	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(s_opts.value("classFilter").toString(), 999, num_places, true);
+
+	static const QLatin1String DB_PREFIX("db:");
+
+	if(rep_path.startsWith(DB_PREFIX)) {
+		QString design_name = rep_path.mid(DB_PREFIX.size());
+		AwardDesigner::Design design = AwardDesigner::Design::loadFromDb(design_name);
+		if(!design.isValid()) {
+			qfWarning() << "Award design not found in DB:" << design_name;
+			return;
+		}
+		QString typ = design.toTypst();
+		QStringList images = design.imageFiles();
+		AwardTypstRenderer renderer(typ, images);
+		auto pages = renderer.collectPages(td, getPlugin<EventPlugin>()->eventConfig());
+		AwardReportViewWidget::showReport(typ, images, pages, this);
+		return;
+	}
+	if(rep_path.endsWith(QStringLiteral(".typ"))) {
+		QString typ;
+		QStringList images;
+		if(!AwardDesigner::loadTypstTemplate(getPlugin<RelaysPlugin>()->findReportFile(rep_path), typ, images)) {
+			qfWarning() << "Cannot load Typst award template:" << rep_path;
+			return;
+		}
+		AwardTypstRenderer renderer(typ, images);
+		auto pages = renderer.collectPages(td, getPlugin<EventPlugin>()->eventConfig());
+		AwardReportViewWidget::showReport(typ, images, pages, this);
+		return;
+	}
+	qfWarning() << "Unsupported award template:" << rep_path;
+}
 
 void RelaysWidget::save_xml_file(QString str, QString fn) {
 	qfLogFuncFrame();
