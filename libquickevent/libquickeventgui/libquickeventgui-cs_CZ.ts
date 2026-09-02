@@ -257,12 +257,12 @@
         <translation>Uložit jako výchozí</translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.cpp" line="384"/>
+        <location filename="src/reportoptionsdialog.cpp" line="386"/>
         <source>All</source>
         <translation>Všechny</translation>
     </message>
     <message>
-        <location filename="src/reportoptionsdialog.cpp" line="399"/>
+        <location filename="src/reportoptionsdialog.cpp" line="401"/>
         <source>Start %1</source>
         <translation>Start %1</translation>
     </message>
