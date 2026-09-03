@@ -41,6 +41,7 @@ SICard SICard::fromVariantMap(const QVariantMap &m)
 		card.punches << SIPunch::fromVariantMap(v.toMap());
 	if (m.contains(QStringLiteral("batteryStatus")))
 		card.batteryStatus = SiCardBatteryStatus::fromVariantMap(m.value(QStringLiteral("batteryStatus")).toMap());
+	card.generatedTestDataNote = m.value(QStringLiteral("generatedTestDataNote")).toString();
 	return card;
 }
 
@@ -59,6 +60,8 @@ QVariantMap SICard::toVariantMap() const
 	m[QStringLiteral("punches")] = punchList;
 	if (batteryStatus.has_value())
 		m[QStringLiteral("batteryStatus")] = batteryStatus->toVariantMap();
+	if (!generatedTestDataNote.isEmpty())
+		m[QStringLiteral("generatedTestDataNote")] = generatedTestDataNote;
 	return m;
 }
 

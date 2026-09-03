@@ -77,7 +77,8 @@ void PunchingTestService::onTimerTick()
 	// have no start punch in the card.
 	if (!q.exec(QStringLiteral(
 			"SELECT runs.id, runs.siId, runs.startTimeMs,"
-			" COALESCE(classdefs.startIntervalMin, 0)=0 AS isFreeStart"
+			" COALESCE(classdefs.startIntervalMin, 0)=0 AS isFreeStart,"
+			" COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName"
 			" FROM runs"
 			" LEFT JOIN competitors ON competitors.id=runs.competitorId"
 			" LEFT JOIN relays ON relays.id=runs.relayId"
@@ -93,7 +94,7 @@ void PunchingTestService::onTimerTick()
 
 	QList<QVariantList> candidates;
 	while (q.next())
-		candidates << QVariantList{q.value(0), q.value(1), q.value(2), q.value(3)};
+		candidates << QVariantList{q.value(0), q.value(1), q.value(2), q.value(3), q.value(4)};
 
 	if (candidates.isEmpty()) {
 		setStatusMessage(tr("No eligible runners left"));
@@ -106,6 +107,7 @@ void PunchingTestService::onTimerTick()
 	int si_id = cand[1].toInt();
 	int start_time_ms = cand[2].toInt(); // ms relative to stage start
 	bool is_free_start = cand[3].toBool();
+	QString competitor_name = cand[4].toString().trimmed();
 
 	auto *runs_plugin = getPlugin<Runs::RunsPlugin>();
 	quickevent::core::CourseDef course = runs_plugin->courseCodesForRunId(run_id);
@@ -138,8 +140,13 @@ void PunchingTestService::onTimerTick()
 	auto &rng = *QRandomGenerator::global();
 	const PunchingTestServiceSettings ss = settings();
 
-	if (rng.bounded(static_cast<quint32>(ss.unknownCardRate())) == 0)
+	// Original SI and name are read before the swap below, they tell the operator whom the
+	// punches belong to on a manual assign.
+	QString generated_test_data_note = tr("TEST");
+	if (rng.bounded(static_cast<quint32>(ss.unknownCardRate())) == 0) {
+		generated_test_data_note = tr("TEST, data for: %1, SI %2").arg(competitor_name).arg(si_id);
 		si_id = 1000000 + static_cast<int>(rng.bounded(8000000U));
+	}
 
 	if (rng.bounded(static_cast<quint32>(ss.missingStartRate())) == 0)
 		si_start_sec = siut::SICard::INVALID_SI_TIME;
@@ -251,6 +258,7 @@ void PunchingTestService::onTimerTick()
 	card.startTime  = si_start_sec;
 	card.finishTime = si_finish_sec;
 	card.punches    = punches;
+	card.generatedTestDataNote = generated_test_data_note;
 
 	setStatusMessage(tr("Card SI %1, %2 controls").arg(si_id).arg(punches.size()));
 

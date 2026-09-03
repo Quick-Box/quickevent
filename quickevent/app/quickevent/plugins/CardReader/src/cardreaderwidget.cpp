@@ -1,5 +1,5 @@
 #include "cardreaderwidget.h"
-#include "necrolog/necrologlevel.h"
+#include "necrologlevel.h"
 #include "ui_cardreaderwidget.h"
 #include "cardreadersettings.h"
 
@@ -769,12 +769,16 @@ void CardReaderWidget::processSICard(const siut::SICard &card)
 	}
 	quickevent::core::si::ReadCard read_card(card.toVariantMap());
 	read_card.setRunId(run_id);
-	read_card.setRunIdAssignError(err_msg);
-	if (card.batteryStatus.has_value()) {
-		auto data = read_card.data();
-		data["batteryStatus"] = card.batteryStatus->toVariantMap();
-		read_card.setData(data);
+	auto data = read_card.data();
+	if (!card.generatedTestDataNote.isEmpty()) {
+		err_msg = err_msg.isEmpty()? card.generatedTestDataNote
+									: card.generatedTestDataNote + QStringLiteral("; ") + err_msg;
+		data["generatedTestDataNote"] = card.generatedTestDataNote;
 	}
+	if (card.batteryStatus.has_value())
+		data["batteryStatus"] = card.batteryStatus->toVariantMap();
+	read_card.setData(data);
+	read_card.setRunIdAssignError(err_msg);
 	processReadCardInTransaction(read_card);
 }
 
