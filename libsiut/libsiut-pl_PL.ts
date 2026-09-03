@@ -4,32 +4,32 @@
 <context>
     <name>SICard</name>
     <message>
-        <location filename="src/sicard.cpp" line="79"/>
+        <location filename="src/sicard.cpp" line="82"/>
         <source>stationNumber: %1</source>
         <translation>kod punktu kontrolnego:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="80"/>
+        <location filename="src/sicard.cpp" line="83"/>
         <source>cardNumber: %1</source>
         <translation>numer chipa:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="81"/>
+        <location filename="src/sicard.cpp" line="84"/>
         <source>check: %1</source>
         <translation>kontrola czipa:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="82"/>
+        <location filename="src/sicard.cpp" line="85"/>
         <source>start: %1</source>
         <translation>start: %1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="83"/>
+        <location filename="src/sicard.cpp" line="86"/>
         <source>finish: %1</source>
         <translation>meta:%1</translation>
     </message>
     <message>
-        <location filename="src/sicard.cpp" line="85"/>
+        <location filename="src/sicard.cpp" line="88"/>
         <source>batteryStatus: %1</source>
         <translation type="unfinished"></translation>
     </message>

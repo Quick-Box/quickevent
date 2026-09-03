@@ -502,7 +502,7 @@
         <translation>Nenalezen závodník s SI: %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="426"/>
+        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="427"/>
         <source>Missing codes: %1</source>
         <translation>Chybějící kontroly: %1</translation>
     </message>
@@ -922,7 +922,7 @@
         <translation>Vytisknout data čipu</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="862"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="866"/>
         <source>Assign card to runner</source>
         <translation>Přiřadit čip závodníkovi</translation>
     </message>
@@ -1039,17 +1039,17 @@ Please set it in Settings Card reader.</source>
         <translation>čip: %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="822"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="826"/>
         <source>Saved punch: %1 %2</source>
         <translation>Uložený čip: %1 %2</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="889"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="893"/>
         <source>Competitor off-race</source>
         <translation>Nestartující závodník</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="890"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="894"/>
         <source>Runner to which you are assinging SI card
 is currently flagged &quot;not running&quot; for this stage (race).
 If you continue, this flag will be removed</source>
@@ -1058,52 +1058,52 @@ If you continue, this flag will be removed</source>
 Pokud budete pokračovat, toto označení bude odebráno</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1211"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1215"/>
         <source>Import TXT</source>
         <translation>Importovat TXT</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1300"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1304"/>
         <source>Downloading station backup ...</source>
         <translation>Načítám paměť kontroly...</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1302"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1306"/>
         <source>Cancelled by user</source>
         <translation>Zrušeno uživatelem</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>No.</source>
         <translation>Čís.</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>SI</source>
         <translation>SI</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>DateTime</source>
         <translation>Datum/čas</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>Card error</source>
         <translation>Chyba čipu</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1335"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1339"/>
         <source>Station %1 backup memory</source>
         <translation>Paměť SI kontroly %1</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1337"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1341"/>
         <source>Station backup memory</source>
         <translation>Paměť SI kontroly</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="815"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="819"/>
         <source>Cannot find run for punch record SI: %1</source>
         <translation>Nelze najít běh pro záznam ražení SI: %1</translation>
     </message>
@@ -1124,39 +1124,39 @@ Pokud budete pokračovat, toto označení bude odebráno</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1021"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1025"/>
         <source>&lt;p&gt;CSV record must have format:&lt;/p&gt;&lt;p&gt;7203463,&quot;2,28&quot;,&quot;3,34&quot;,&quot;2,42&quot;,&quot;3,29&quot;,&quot;3,12&quot;,&quot;1,38&quot;,&quot;1,13&quot;,&quot;3,18&quot;,&quot;1,17&quot;,&quot;0,15&quot;&lt;/p&gt;&lt;p&gt;Any row can be commented by leading #&lt;/p&gt;&lt;p&gt;Decimal point is also supported, the quotes can be omited than.&lt;/p&gt;</source>
         <translation>&lt;p&gt;CSV záznam musí mít formát:&lt;/p&gt;&lt;p&gt;7203463,&quot;2,28&quot;,&quot;3,34&quot;,&quot;2,42&quot;,&quot;3,29&quot;,&quot;3,12&quot;,&quot;1,38&quot;,&quot;1,13&quot;,&quot;3,18&quot;,&quot;1,17&quot;,&quot;0,15&quot;&lt;/p&gt;&lt;p&gt;Jakýkoliv řádek může být zakomentován pomocí #&lt;/p&gt;&lt;p&gt;Desetinná tečka je také podporována, uvozovky mohou být v tom případě vynechány.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1025"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1029"/>
         <source>Import CSV</source>
         <translation>Importovat CSV</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1030"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1216"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1034"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1220"/>
         <source>Cannot open file &apos;%1&apos; for reading.</source>
         <translation>Soubor &apos;%1&apos; nelze otevřít pro čtení.</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1049"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1220"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1053"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1224"/>
         <source>Bad stage!</source>
         <translation>Špatná etapa!</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1071"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1075"/>
         <source>Cannot find runs record for SI %1!</source>
         <translation>Nelze najít závodníka s SI: %1!</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1072"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1076"/>
         <source>Cannot find class for SI %1!</source>
         <translation>Nelze najít kategorii pro SI: %1!</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1085"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1089"/>
         <source>SI: %1 class %2 - Number of punches (%3) and number of codes including finish (%4) should be the same! Remove or comment invalid line by #.</source>
         <translation>SI: %1 Kategorie %2 – Počet ražení (%3) a počet kontrol i s cílem (%4) musí být stejný! Odeberte nebo zakomentujte neplatné řádky pomocí #.</translation>
     </message>
@@ -4127,27 +4127,47 @@ V případě chyb neváhejte napsat na support@oresults.eu</translation>
 <context>
     <name>Event::services::PunchingTestService</name>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="39"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="40"/>
         <source>Punching Test</source>
         <translation type="unfinished">Generátor ražení</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="54"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="49"/>
+        <source>Do you really want to start the %1 service?</source>
+        <translation type="unfinished">Chceš službu %1 opravdu spustit?</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="52"/>
+        <source>The service generates test readout data into the currently open event. It is dedicated for testing and development purposes only and must not be started for a real event.</source>
+        <translation type="unfinished">Tahle služba generuje testovací readout data do právě otevřeného závodu. Je určená jen pro testování a vývoj – pro reálný závod ji nespouštěj.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="71"/>
         <source>Running, interval: %1 s</source>
         <translation type="unfinished">Běží, interval: %1 s</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="69"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="86"/>
         <source>No event open</source>
         <translation type="unfinished">Není otevřený závod</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="99"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="117"/>
         <source>No eligible runners left</source>
         <translation type="unfinished">Žádní vhodní závodníci</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="255"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="162"/>
+        <source>TEST</source>
+        <translation type="unfinished">TEST</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="164"/>
+        <source>TEST, data for: %1, SI %2</source>
+        <translation type="unfinished">TEST, data pro: %1, SI %2</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="280"/>
         <source>Card SI %1, %2 controls</source>
         <translation type="unfinished">Čip SI %1, %2 kontrol</translation>
     </message>

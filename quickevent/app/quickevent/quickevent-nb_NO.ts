@@ -502,7 +502,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="426"/>
+        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="427"/>
         <source>Missing codes: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -878,7 +878,7 @@
         <translation>Skriv ut kartdata</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="862"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="866"/>
         <source>Assign card to runner</source>
         <translation type="unfinished"></translation>
     </message>
@@ -995,106 +995,106 @@ Please set it in Settings Card reader.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="815"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="819"/>
         <source>Cannot find run for punch record SI: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="822"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="826"/>
         <source>Saved punch: %1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="889"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="893"/>
         <source>Competitor off-race</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="890"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="894"/>
         <source>Runner to which you are assinging SI card
 is currently flagged &quot;not running&quot; for this stage (race).
 If you continue, this flag will be removed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1021"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1025"/>
         <source>&lt;p&gt;CSV record must have format:&lt;/p&gt;&lt;p&gt;7203463,&quot;2,28&quot;,&quot;3,34&quot;,&quot;2,42&quot;,&quot;3,29&quot;,&quot;3,12&quot;,&quot;1,38&quot;,&quot;1,13&quot;,&quot;3,18&quot;,&quot;1,17&quot;,&quot;0,15&quot;&lt;/p&gt;&lt;p&gt;Any row can be commented by leading #&lt;/p&gt;&lt;p&gt;Decimal point is also supported, the quotes can be omited than.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1025"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1029"/>
         <source>Import CSV</source>
         <translation>Importer CSV</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1030"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1216"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1034"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1220"/>
         <source>Cannot open file &apos;%1&apos; for reading.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1049"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1220"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1053"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1224"/>
         <source>Bad stage!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1071"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1075"/>
         <source>Cannot find runs record for SI %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1072"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1076"/>
         <source>Cannot find class for SI %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1085"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1089"/>
         <source>SI: %1 class %2 - Number of punches (%3) and number of codes including finish (%4) should be the same! Remove or comment invalid line by #.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1211"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1215"/>
         <source>Import TXT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1300"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1304"/>
         <source>Downloading station backup ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1302"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1306"/>
         <source>Cancelled by user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>No.</source>
         <translation>Nei.</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>SI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>DateTime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1332"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1336"/>
         <source>Card error</source>
         <translation>Kortfeil</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1335"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1339"/>
         <source>Station %1 backup memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1337"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1341"/>
         <source>Station backup memory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3805,27 +3805,47 @@ In case of unexpected errors, contact support@oresults.eu</source>
 <context>
     <name>Event::services::PunchingTestService</name>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="39"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="40"/>
         <source>Punching Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="54"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="49"/>
+        <source>Do you really want to start the %1 service?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="52"/>
+        <source>The service generates test readout data into the currently open event. It is dedicated for testing and development purposes only and must not be started for a real event.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="71"/>
         <source>Running, interval: %1 s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="69"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="86"/>
         <source>No event open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="99"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="117"/>
         <source>No eligible runners left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="255"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="162"/>
+        <source>TEST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="164"/>
+        <source>TEST, data for: %1, SI %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="280"/>
         <source>Card SI %1, %2 controls</source>
         <translation type="unfinished"></translation>
     </message>

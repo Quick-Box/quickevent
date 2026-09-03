@@ -17,6 +17,7 @@
 #include <qf/core/sql/query.h>
 #include <qf/core/log.h>
 
+#include <QMessageBox>
 #include <QTimer>
 #include <QRandomGenerator>
 
@@ -41,6 +42,22 @@ QString PunchingTestService::serviceDisplayName() const
 
 void PunchingTestService::run()
 {
+	// Asked also on auto start, the service must never resume silently on a real event.
+	if (!isRunning()) {
+		QMessageBox mbx(QMessageBox::Warning,
+						serviceDisplayName(),
+						tr("Do you really want to start the %1 service?").arg(serviceDisplayName()),
+						QMessageBox::Yes | QMessageBox::No,
+						qf::gui::framework::MainWindow::frameWork());
+		mbx.setInformativeText(tr("The service generates test readout data into the currently open event."
+								  " It is dedicated for testing and development purposes only"
+								  " and must not be started for a real event."));
+		mbx.setDefaultButton(QMessageBox::No);
+		if (mbx.exec() != QMessageBox::Yes) {
+			return;
+		}
+	}
+
 	PunchingTestServiceSettings ss = settings();
 	int interval_sec = ss.punchInterval();
 	if (interval_sec <= 0)
