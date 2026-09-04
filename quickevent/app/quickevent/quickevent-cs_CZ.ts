@@ -4157,6 +4157,11 @@ V případě chyb neváhejte napsat na support@oresults.eu</translation>
         <translation type="unfinished">Žádní vhodní závodníci</translation>
     </message>
     <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="203"/>
+        <source>Waiting for handover, %1 legs</source>
+        <translation type="unfinished">Čeká se na předávku, %1 úseků</translation>
+    </message>
+    <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="162"/>
         <source>TEST</source>
         <translation type="unfinished">TEST</translation>
@@ -4235,6 +4240,36 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="200"/>
         <source>Mispunch / missed control (1 in)</source>
         <translation type="unfinished">Chybné/chybějící ražení</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="226"/>
+        <source>Relays</source>
+        <translation type="unfinished">Štafety</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="232"/>
+        <source>Shame start of the legs waiting for a handover</source>
+        <translation type="unfinished">Start hanby pro úseky čekající na předávku</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="235"/>
+        <source>Announced for the whole event once the top 3 positions are decided in every class</source>
+        <translation type="unfinished">Vyhlásí se pro celý závod, jakmile je ve všech kategoriích rozhodnuto o prvních třech místech</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="242"/>
+        <source>Shame start offset against the decided top 3</source>
+        <translation type="unfinished">Posun startu hanby oproti rozhodnutým prvním třem místům</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="249"/>
+        <source>Shifts the shame start against the moment the top 3 positions are decided: 0 announces it right at that moment, a positive value later, a negative value earlier.</source>
+        <translation type="unfinished">Posune start hanby oproti okamžiku, kdy je rozhodnuto o prvních třech místech ve všech kategoriích: 0 znamená přesně v tom okamžiku, kladná hodnota později, záporná dříve.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="252"/>
+        <source> min</source>
+        <translation type="unfinished"> min</translation>
     </message>
 </context>
 <context>

@@ -23,6 +23,10 @@ class PunchingTestServiceSettings : public ServiceSettings
 	// Per-control imperfection: probability = 1/N
 	QF_VARIANTMAP_FIELD2(int, m, setM, ispunchRate, 930) // missed control
 
+	// Relays: shame start of the legs still waiting for a handover
+	QF_VARIANTMAP_FIELD2(bool, s, setS, hameStartEnabled, true)
+	QF_VARIANTMAP_FIELD2(int, s, setS, hameStartOffsetMin, 0) // minutes after the top 3 are decided
+
 public:
 	PunchingTestServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
 };
@@ -43,6 +47,7 @@ public:
 
 private:
 	void onTimerTick();
+	int shameStartTimeMs(int stage_id);
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 
 private:
