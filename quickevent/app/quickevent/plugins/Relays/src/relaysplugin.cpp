@@ -921,17 +921,37 @@ QString RelaysPlugin::startListIofXml30()
 		);
 		start_list.insert(start_list.count(), event_lst);
 	}
+	// max number of teams per class is given by the range of assigned relay start numbers
+	QMap<int, int> class_capacity;
+	{
+		qfs::Query q;
+		q.execThrow("SELECT classId, relayStartNumber FROM classdefs"
+					" WHERE stageId=1 AND relayStartNumber > 0 ORDER BY relayStartNumber");
+		int prev_class_id = 0;
+		int prev_start_number = 0;
+		while(q.next()) {
+			int start_number = q.value(1).toInt();
+			if(prev_class_id > 0 && start_number > prev_start_number)
+				class_capacity[prev_class_id] = start_number - prev_start_number;
+			prev_class_id = q.value(0).toInt();
+			prev_start_number = start_number;
+		}
+		// the last class has no upper bound, falls back to the number of teams
+	}
 	for(int i=0; i<tt_classes.rowCount(); i++) {
 		QVariantList class_start{"ClassStart"};
 		const qf::core::utils::TreeTableRow tt_classes_row = tt_classes.row(i);
 		QF_TIME_SCOPE("exporting class: " + tt_classes_row.value(QStringLiteral("classes.name")).toString());
+		qf::core::utils::TreeTable tt_teams = tt_classes_row.table();
+		int max_competitors = class_capacity.value(tt_classes_row.value(QStringLiteral("classes.id")).toInt(), tt_teams.rowCount());
 		append_list(class_start,
 			QVariantList{"Class",
+				(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},
 				QVariantList{"Id", tt_classes_row.value(QStringLiteral("classes.id"))},
 				QVariantList{"Name", tt_classes_row.value(QStringLiteral("classes.name")) },
+				QVariantList{"Extensions", QVariantList{"StartMode", "WaveStart"}},
 			}
 		);
-		qf::core::utils::TreeTable tt_teams = tt_classes_row.table();
 		for(int j=0; j<tt_teams.rowCount(); j++) {
 			QVariantList team_start{"TeamStart"};
 			const qf::core::utils::TreeTableRow tt_teams_row = tt_teams.row(j);

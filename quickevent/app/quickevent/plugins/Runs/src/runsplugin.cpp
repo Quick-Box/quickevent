@@ -3148,8 +3148,20 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 	for(int i=0; i<tt1.rowCount(); i++) {
 		qf::core::utils::TreeTableRow tt1_row = tt1.row(i);
 		QVariantList class_start{"ClassStart"};
+		qf::core::utils::TreeTable tt2 = tt1_row.table();
+		if (tt2.rowCount() == 0 && is_iof_race)
+			continue; // not save empty class
 		bool is_free_start = tt1_row.value(QStringLiteral("startIntervalMin")).toInt() == 0;
+		int max_competitors = tt1_row.value(QStringLiteral("mapCount")).toInt();
+		if (max_competitors == 0) {
+			// map count not entered, fall back to number of runners
+			for(int j=0; j<tt2.rowCount(); j++) {
+				if (tt2.row(j).value(QStringLiteral("competitorName")).toString() != vacant_name_sentinel)
+					max_competitors++;
+			}
+		}
 		append_list(class_start, QVariantList{"Class",
+								(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},
 								QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))},
 								QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name"))},
 								QVariantList{"Extensions", QVariantList{"StartMode", is_free_start ? "FreeStart" : "StartList"}}});
@@ -3161,9 +3173,6 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 			append_list(class_start, QVariantList{"StartName", QVariantMap{{"raceNumber", iof_xml_race_number}}, QStringLiteral("Start%1").arg(course_start_number)});
 		else
 			append_list(class_start, QVariantList{"StartName", QStringLiteral("Start%1").arg(course_start_number)});
-		qf::core::utils::TreeTable tt2 = tt1_row.table();
-		if (tt2.rowCount() == 0 && is_iof_race)
-			continue; // not save empty class
 		for(int j=0; j<tt2.rowCount(); j++) {
 			auto tt2_row = tt2.row(j);
 			QVariantList xml_person{"PersonStart"};
