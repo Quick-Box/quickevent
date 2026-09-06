@@ -128,7 +128,7 @@ bool DrawingGanttWidget::acceptDialogDone(int result)
 		auto answer = QMessageBox::question(this, tr("Unsaved changes"),
 											tr("The start times layout has unsaved changes.\n"
 											   "Do you want to save them before closing?"),
-											QMessageBox::Discard | QMessageBox::Cancel,
+											QMessageBox::Discard | QMessageBox::Cancel | QMessageBox::Save,
 											QMessageBox::Save);
 		if(answer == QMessageBox::Cancel)
 			return false;
