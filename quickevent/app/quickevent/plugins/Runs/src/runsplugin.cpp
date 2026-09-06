@@ -3148,7 +3148,11 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 	for(int i=0; i<tt1.rowCount(); i++) {
 		qf::core::utils::TreeTableRow tt1_row = tt1.row(i);
 		QVariantList class_start{"ClassStart"};
-		append_list(class_start, QVariantList{"Class", QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))}, QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name"))}});
+		bool is_free_start = tt1_row.value(QStringLiteral("startIntervalMin")).toInt() == 0;
+		append_list(class_start, QVariantList{"Class",
+								QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))},
+								QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name"))},
+								QVariantList{"Extensions", QVariantList{"StartMode", is_free_start ? "FreeStart" : "StartList"}}});
 		append_list(class_start, QVariantList{"Course", QVariantList{"Length", tt1_row.value(QStringLiteral("courses.length"))},
 								QVariantList{"Climb", tt1_row.value(QStringLiteral("courses.climb"))},
 								QVariantList{"NumberOfControls", tt1_row.value(QStringLiteral("courses.numberOfControls"))}});
