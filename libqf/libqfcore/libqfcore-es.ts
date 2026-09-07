@@ -15,7 +15,7 @@
     <message>
         <location filename="src/utils/clioptions.cpp" line="98"/>
         <source>Abort application on exception</source>
-        <translation type="unfinished"></translation>
+        <translation>Cerrar el programa si se produce un error</translation>
     </message>
     <message>
         <location filename="src/utils/clioptions.cpp" line="99"/>
