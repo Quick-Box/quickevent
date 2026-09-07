@@ -51,7 +51,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="300"/>
         <source>Wild card</source>
-        <translation type="unfinished"></translation>
+        <translation>Carácter comodín</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="290"/>
@@ -72,7 +72,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="368"/>
         <source>Use only class from selected start</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar solo las categorías de la salida seleccionada</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="407"/>
@@ -82,12 +82,12 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="413"/>
         <source>(class name, start time, runner name)</source>
-        <translation type="unfinished"></translation>
+        <translation>(categoría, hora de salida, nombre del corredor)</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="423"/>
         <source>(start time, class name, runner name)</source>
-        <translation type="unfinished"></translation>
+        <translation>(hora de salida, categoría, nombre del corredor)</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="426"/>
@@ -97,12 +97,12 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="433"/>
         <source>(runner name, class name, start time)</source>
-        <translation type="unfinished"></translation>
+        <translation>(Nombre del corredor, categoría, hora de salida)</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="436"/>
         <source>Runner names</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de corredores</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="487"/>
@@ -112,7 +112,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="493"/>
         <source>Number of places in each class</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de plazas en cada categoría</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="516"/>
@@ -157,7 +157,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="361"/>
         <source>Print start numbers</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprimir dorsales</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="381"/>
@@ -167,7 +167,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="387"/>
         <source>start at 0 (mmm.ss)  </source>
-        <translation type="unfinished"></translation>
+        <translation>Empezar en 0 (mmm.ss)  </translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="397"/>
@@ -177,7 +177,7 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="79"/>
         <source>Page layout</source>
-        <translation type="unfinished"></translation>
+        <translation>Diseño de página</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="41"/>
@@ -220,12 +220,12 @@
     <message>
         <location filename="src/reportoptionsdialog.ui" line="218"/>
         <source>Break type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de salto de página</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="226"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Ninguno</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="231"/>
