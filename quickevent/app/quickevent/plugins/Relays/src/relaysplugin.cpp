@@ -949,7 +949,10 @@ QString RelaysPlugin::startListIofXml30()
 				(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},
 				QVariantList{"Id", tt_classes_row.value(QStringLiteral("classes.id"))},
 				QVariantList{"Name", tt_classes_row.value(QStringLiteral("classes.name")) },
-				QVariantList{"Extensions", QVariantList{"StartMode", "WaveStart"}},
+				QVariantList{"Extensions", QVariantList{"StartMode",
+					// IOF XSD requires Extensions children in a non-IOF namespace
+					QVariantMap{{"xmlns", "http://quickevent.cz/datastandard/extensions"}},
+					"WaveStart"}},
 			}
 		);
 		for(int j=0; j<tt_teams.rowCount(); j++) {

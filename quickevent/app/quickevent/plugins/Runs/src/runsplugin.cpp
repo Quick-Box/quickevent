@@ -3164,7 +3164,10 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 								(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},
 								QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))},
 								QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name"))},
-								QVariantList{"Extensions", QVariantList{"StartMode", is_free_start ? "FreeStart" : "StartList"}}});
+								QVariantList{"Extensions", QVariantList{"StartMode",
+									// IOF XSD requires Extensions children in a non-IOF namespace
+									QVariantMap{{"xmlns", "http://quickevent.cz/datastandard/extensions"}},
+									is_free_start ? "FreeStart" : "StartList"}}});
 		append_list(class_start, QVariantList{"Course", QVariantList{"Length", tt1_row.value(QStringLiteral("courses.length"))},
 								QVariantList{"Climb", tt1_row.value(QStringLiteral("courses.climb"))},
 								QVariantList{"NumberOfControls", tt1_row.value(QStringLiteral("courses.numberOfControls"))}});
