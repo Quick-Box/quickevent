@@ -882,6 +882,8 @@ QString RelaysPlugin::startListIofXml30()
 		"StartList",
 		QVariantMap{
 			{"xmlns", "http://www.orienteering.org/datastandard/3.0"},
+			// IOF XSD requires Extensions children in a non-IOF namespace
+			{"xmlns:qe", "http://quickevent.cz/datastandard/extensions"},
 			{"iofVersion", "3.0"},
 			{"creator", QStringLiteral("QuickEvent %1").arg(QCoreApplication::applicationVersion())},
 			{"createTime", datetime_to_string(QDateTime::currentDateTime())},
@@ -949,10 +951,7 @@ QString RelaysPlugin::startListIofXml30()
 				(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},
 				QVariantList{"Id", tt_classes_row.value(QStringLiteral("classes.id"))},
 				QVariantList{"Name", tt_classes_row.value(QStringLiteral("classes.name")) },
-				QVariantList{"Extensions", QVariantList{"StartMode",
-					// IOF XSD requires Extensions children in a non-IOF namespace
-					QVariantMap{{"xmlns", "http://quickevent.cz/datastandard/extensions"}},
-					"WaveStart"}},
+				QVariantList{"Extensions", QVariantList{"qe:StartMode", "WaveStart"}},
 			}
 		);
 		for(int j=0; j<tt_teams.rowCount(); j++) {

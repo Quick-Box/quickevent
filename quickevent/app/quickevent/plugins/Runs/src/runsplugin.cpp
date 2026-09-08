@@ -3096,6 +3096,8 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 	QVariantList xml_root{"StartList" ,
 		QVariantMap {
 			{"xmlns", "http://www.orienteering.org/datastandard/3.0"},
+			// IOF XSD requires Extensions children in a non-IOF namespace
+			{"xmlns:qe", "http://quickevent.cz/datastandard/extensions"},
 			{"iofVersion", "3.0"},
 			{"creator", QStringLiteral("QuickEvent %1").arg(QCoreApplication::applicationVersion())},
 			{"createTime", datetime_to_string(QDateTime::currentDateTime())}
@@ -3164,10 +3166,7 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 								(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},
 								QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))},
 								QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name"))},
-								QVariantList{"Extensions", QVariantList{"StartMode",
-									// IOF XSD requires Extensions children in a non-IOF namespace
-									QVariantMap{{"xmlns", "http://quickevent.cz/datastandard/extensions"}},
-									is_free_start ? "FreeStart" : "StartList"}}});
+								QVariantList{"Extensions", QVariantList{"qe:StartMode", is_free_start ? "FreeStart" : "StartList"}}});
 		append_list(class_start, QVariantList{"Course", QVariantList{"Length", tt1_row.value(QStringLiteral("courses.length"))},
 								QVariantList{"Climb", tt1_row.value(QStringLiteral("courses.climb"))},
 								QVariantList{"NumberOfControls", tt1_row.value(QStringLiteral("courses.numberOfControls"))}});
