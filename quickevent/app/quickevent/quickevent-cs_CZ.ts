@@ -6044,17 +6044,17 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="124"/>
         <source>Clipboard does not contain OFeed setup link.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ve schránce není odkaz pro nastavení OFeedu.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="150"/>
         <source>Unsupported auth type &apos;%1&apos; in setup link.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodporovaný typ ověření &apos;%1&apos; v odkazu pro nastavení.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="155"/>
         <source>Setup link must contain id and pwd (or password) query parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Odkaz pro nastavení musí obsahovat parametry id a pwd (nebo password).</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="33"/>
