@@ -1,5 +1,5 @@
 #include "cardreaderwidget.h"
-#include "necrologlevel.h"
+#include "necrolog/necrologlevel.h"
 #include "ui_cardreaderwidget.h"
 #include "cardreadersettings.h"
 
