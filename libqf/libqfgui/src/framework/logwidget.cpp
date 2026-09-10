@@ -108,10 +108,11 @@ LogWidget::LogWidget(QWidget *parent)
 	ui->btClearLog->setIcon(qf::gui::Style::icon("clear"));
 	ui->btCopyToClipboard->setIcon(qf::gui::Style::icon("copy"));
 	ui->btResizeColumns->setIcon(qf::gui::Style::icon("zoom_fitwidth"));
-	ui->btTableMenu->setIcon(qf::gui::Style::icon("menu"));
+	//ui->btTableMenu->setIcon(qf::gui::Style::icon("menu"));
 	//setPersistentSettingsId();
 	ui->btCopyToClipboard->setDefaultAction(ui->tableView->copySelectionToClipboardAction());
 
+	/*
 	{
 		auto *a = new QAction(tr("Maximal log length"), this);
 		connect(a, &QAction::triggered, this, [this]() {
@@ -129,6 +130,7 @@ LogWidget::LogWidget(QWidget *parent)
 		a->setSeparator(true);
 		tableMenuButton()->addAction(a);
 	}
+	*/
 
 	//ui->tableView->horizontalHeader()->setSectionHidden(0, true);
 	ui->tableView->horizontalHeader()->setSectionsMovable(true);
