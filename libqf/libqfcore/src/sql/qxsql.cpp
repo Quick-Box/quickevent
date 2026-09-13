@@ -135,7 +135,11 @@ QueryResult QxSql::query(const QString &query, const QVariantMap &params)
 	while (q.next()) {
 		QList<QVariant> row;
 		for (int i = 0; i < q.record().count(); ++i) {
-			row.append(q.value(i));
+			auto v = q.value(i);
+			if (v.isNull()) {
+				v = {};
+			}
+			row.append(v);
 		}
 		result.rows.insert(result.rows.size(), row);
 	}
