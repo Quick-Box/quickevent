@@ -81,7 +81,7 @@ void PunchingTestService::stop()
 	Super::stop();
 }
 
-int PunchingTestService::shameStartTimeMs(int stage_id)
+int PunchingTestService::shameStartTimeMs(int stage_id) const
 {
 	// The shame start is announced for the whole event once the top 3 positions are decided
 	// in every relay class. Legs with no SI assigned are left out of the counting, such a

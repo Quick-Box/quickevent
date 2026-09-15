@@ -47,7 +47,7 @@ public:
 
 private:
 	void onTimerTick();
-	int shameStartTimeMs(int stage_id);
+	int shameStartTimeMs(int stage_id) const;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 
 private:
