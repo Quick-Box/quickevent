@@ -504,7 +504,7 @@
     <message>
         <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="427"/>
         <source>Missing codes: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Balizas cantantes: %1</translation>
     </message>
     <message>
         <source>Save card ERROR: %1</source>
@@ -898,7 +898,7 @@
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="115"/>
         <source>Test</source>
         <oldsource>Test punch</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>Test</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="340"/>
@@ -1435,7 +1435,7 @@ Si continúas, se eliminará esta distinción</translation>
     <message>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="121"/>
         <source>Id</source>
-        <translation type="unfinished"></translation>
+        <translation>Id</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="137"/>
@@ -1529,12 +1529,12 @@ Si continúas, se eliminará esta distinción</translation>
     <message>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="243"/>
         <source>Edit Courses</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar recorridos</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="253"/>
         <source>Edit Codes</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar controles</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="268"/>
@@ -1557,13 +1557,13 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
         <location filename="plugins/Classes/src/classeswidget.cpp" line="414"/>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="597"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Advertencia</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="414"/>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="597"/>
         <source>Import does not yet support relays.</source>
-        <translation type="unfinished"></translation>
+        <translation>La importación aún no soporta relevos.</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/classeswidget.cpp" line="418"/>
@@ -1635,7 +1635,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="423"/>
         <source>Siac battery: </source>
-        <translation type="unfinished"></translation>
+        <translation>Batería SIAC: </translation>
     </message>
 </context>
 <context>
@@ -1758,7 +1758,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="138"/>
         <source>Id</source>
         <comment>runs.id</comment>
-        <translation type="unfinished"></translation>
+        <translation>Id</translation>
     </message>
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="138"/>
@@ -1774,7 +1774,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="139"/>
         <source>Is running</source>
-        <translation type="unfinished"></translation>
+        <translation>Está corriendo</translation>
     </message>
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="140"/>
@@ -1789,7 +1789,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="142"/>
         <source>Class</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoría</translation>
     </message>
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="143"/>
@@ -1863,7 +1863,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.ui" line="265"/>
         <source>ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.ui" line="308"/>
@@ -1926,12 +1926,12 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="226"/>
         <source>Select competitor&apos;s start time</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar la hora de salida del competidor</translation>
     </message>
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="227"/>
         <source>New start time:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nueva hora de salida:</translation>
     </message>
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="523"/>
@@ -1951,7 +1951,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Competitors/src/competitorwidget.cpp" line="543"/>
         <source>Class must be set.</source>
-        <translation type="unfinished"></translation>
+        <translation>La categoría debe estar configurada.</translation>
     </message>
 </context>
 <context>
@@ -2103,7 +2103,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Event/src/connectdbdialogwidget.ui" line="94"/>
         <source>&amp;SQL server</source>
-        <translation type="unfinished"></translation>
+        <translation>Servidor &amp;SQL</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/connectdbdialogwidget.ui" line="127"/>
@@ -2171,7 +2171,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Core/src/widgets/appstatusbar.cpp" line="21"/>
         <source>Set current stage</source>
-        <translation type="unfinished"></translation>
+        <translation>Establecer etapa actual</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/appstatusbar.cpp" line="51"/>
@@ -2357,12 +2357,12 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="46"/>
         <source>Set default reports directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Establecer la carpeta por defecto para informes personalizados</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="62"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reports directory is an directory, where QuickEvent is looking for reports definition QML files. It is populated during installation. Default reports directory is &lt;a href=&quot;file:///%1&quot;&gt;%1&lt;/a&gt; in QuickEvent install directory. If you want to have own reports, then you can copy default reports dir to new location, modify QML files and redirect reports dir there.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;La carpeta para informes personalizados es una carpeta donde QuickEvent busca las plantillas de los informes (archivos QML). Las plantillas se crean durante la instalación del programa. Las plantillas por defecto están en &lt;a href=&quot;file:///%1&quot;&gt;%1&lt;/a&gt; dentro de la carpeta donde instaló QuickEvent. Si desea tener sus propias plantillas de informes, puedes copiar los archivos en una nueva carpeta, modificarlo y indicar a QuickEvent que los busque allí.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Create</source>
@@ -2550,7 +2550,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="210"/>
         <source>SI:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pinza:</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="225"/>
@@ -2736,7 +2736,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Classes/src/editcourseswidget.ui" line="63"/>
         <source>Show runners count</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar número de corredores</translation>
     </message>
     <message>
         <source>Name</source>
@@ -3080,42 +3080,42 @@ Utilice: Archivo --&gt; Importar --&gt; Evento (*.qbe) para convertir el evento 
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="165"/>
         <source>Action</source>
-        <translation type="unfinished"></translation>
+        <translation>Acción</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="245"/>
         <source>Resize section to contents</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar al contenido</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="249"/>
         <source>Resize all sections to contents</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar todas al contenido</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="186"/>
         <source>?</source>
-        <translation type="unfinished"></translation>
+        <translation>?</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="264"/>
         <source>Compatible</source>
-        <translation type="unfinished"></translation>
+        <translation>Compatible</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="265"/>
         <source>Older version (convert required)</source>
-        <translation type="unfinished"></translation>
+        <translation>Versión antigua (necesita conversión)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="289"/>
         <source>Convert event</source>
-        <translation type="unfinished"></translation>
+        <translation>Convertir evento</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="294"/>
         <source>Convert event &lt;b&gt;%1&lt;/b&gt; to the current version.&lt;br&gt;A new event will be created with the ID below.</source>
-        <translation type="unfinished"></translation>
+        <translation>Convertir el evento &lt;b&gt;%1&lt;/b&gt; a la versión actual. &lt;br&gt;Un nuevo evento se va a crear con el siguiente ID.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="299"/>
@@ -3130,7 +3130,7 @@ Utilice: Archivo --&gt; Importar --&gt; Evento (*.qbe) para convertir el evento 
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="330"/>
         <source>Permanently delete event &lt;b&gt;%1&lt;/b&gt;?&lt;br&gt;This action cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrar el evento &lt;b&gt;%1&lt;/b&gt; permanentemente. Está acción no puede deshacerse.</translation>
     </message>
 </context>
 <context>
@@ -3315,33 +3315,33 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="270"/>
         <source>results upload</source>
-        <translation type="unfinished"></translation>
+        <translation>subida de resultados</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="290"/>
         <source>start list upload</source>
-        <translation type="unfinished"></translation>
+        <translation>subida de horas de salida</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="725"/>
         <source>Missing OFeed event credentials.</source>
-        <translation type="unfinished"></translation>
+        <translation>Faltan las credenciales del evento de OFeed.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="732"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="922"/>
         <source>Invalid OFeed URL.</source>
-        <translation type="unfinished"></translation>
+        <translation>URL de OFeed inválida.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="755"/>
         <source>No event image is available in OFeed.</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay una imagen del evento disponible en OFeed.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="757"/>
         <source>Event image download failed: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>La descarga de la imagen del evento ha fallado: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="762"/>
@@ -3351,17 +3351,17 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="772"/>
         <source>Event image cached as SVG.</source>
-        <translation type="unfinished"></translation>
+        <translation>La imagen del evento se ha almacenado en la caché como SVG.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="791"/>
         <source>Unsupported image format received from OFeed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato de imagen recibida de OFeed no soportada.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="803"/>
         <source>Cannot encode cached event image.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede codificar la imagen del evento en caché.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="809"/>
@@ -3371,64 +3371,66 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="814"/>
         <source>Event image cached (%1x%2).</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagen del evento almacenada en caché (%1x%2).</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="916"/>
         <source>Please fill URL, event id, and password.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor, rellene la URL, id del evento y contraseña.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="956"/>
         <source>Unexpected HTTP response</source>
-        <translation type="unfinished"></translation>
+        <translation>Respuesta HTTP no esperada</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="964"/>
         <source>Invalid JSON response.</source>
-        <translation type="unfinished"></translation>
+        <translation>Respuesta JSON invalida.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="976"/>
         <source>Password has expired.</source>
-        <translation type="unfinished"></translation>
+        <translation>La contraseña ha expirado.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="978"/>
         <source>Event ID mismatch.</source>
-        <translation type="unfinished"></translation>
+        <translation>La id del evento no coincide.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="980"/>
         <source>Authentication required.</source>
-        <translation type="unfinished"></translation>
+        <translation>Autenticación requerida.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="982"/>
         <source>Invalid credentials.</source>
-        <translation type="unfinished"></translation>
+        <translation>Credenciales inválidas.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="990"/>
         <source>Event not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Evento no encontrado.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1074"/>
         <source>OFeed — Invalid Credentials</source>
-        <translation type="unfinished"></translation>
+        <translation>OFeed — Credenciales inválidas</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1075"/>
         <source>OFeed password is invalid or has expired.
 
 Please open OFeed service settings and update your credentials.</source>
-        <translation type="unfinished"></translation>
+        <translation>La contraseña de OFeed es inválida o ha expirado.
+
+Por favor, abre la configuración de OFeed y actualice sus credenciales.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1465"/>
         <source>Exception occurred while getting changes by origin: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ha ocurrido un error mientras se obtenían cambios del servidor: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1581"/>
@@ -3436,7 +3438,7 @@ Please open OFeed service settings and update your credentials.</source>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1631"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1657"/>
         <source>Database query failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ha fallado la consulta a la base de datos: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1586"/>
@@ -3444,7 +3446,7 @@ Please open OFeed service settings and update your credentials.</source>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1636"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1661"/>
         <source>Exception occurred while executing query: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ha ocurrido un error mientras se ejecutaba la consulta: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1590"/>
@@ -3452,12 +3454,12 @@ Please open OFeed service settings and update your credentials.</source>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1640"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1665"/>
         <source>Unknown exception occurred while executing query.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ha ocurrido un error desconocido mientras se ejecutaba la consulta.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1732"/>
         <source>No data received or an error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se recibieron datos o ha ocurrido un error.</translation>
     </message>
 </context>
 <context>
@@ -3465,17 +3467,22 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="14"/>
         <source>Synchronize data with the OFeed platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Sincronizar datos con la plataforma de OFeed</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="40"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="28"/>
+        <source>Documentation &amp; support</source>
+        <translation>Documentación y soporte</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="61"/>
         <source>Credentials</source>
-        <translation type="unfinished"></translation>
+        <translation>Credenciales</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="46"/>
         <source>⚠ OFeed password is invalid or has expired. Please update your credentials.</source>
-        <translation type="unfinished"></translation>
+        <translation>⚠ La contraseña de OFeed es inválida o ha expirado. Por favor, actualiza tus credenciales.</translation>
     </message>
     <message>
         <source>Export interval</source>
@@ -3490,7 +3497,7 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="73"/>
         <source>Url</source>
-        <translation type="unfinished"></translation>
+        <translation>Url</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="34"/>
@@ -3500,19 +3507,19 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="80"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OFeed instance url&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;URL de OFeed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="83"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="86"/>
         <source>https://orienteerfeed.com</source>
         <oldsource>https://api.orienteerfeed.com</oldsource>
-        <translation type="unfinished"></translation>
+        <translation>https://orienteerfeed.com</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="93"/>
         <source>Event id</source>
-        <translation type="unfinished"></translation>
+        <translation>Id del evento</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="102"/>
@@ -3534,7 +3541,7 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="127"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Contraseña</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="139"/>
@@ -3749,7 +3756,7 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="839"/>
         <source>Additional settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración adicional</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="850"/>
@@ -3824,12 +3831,12 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="274"/>
         <source>Hide password value</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocultar la contraseña</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="274"/>
         <source>Show password value</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar la contraseña</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="392"/>
@@ -3839,27 +3846,27 @@ Please open OFeed service settings and update your credentials.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="417"/>
         <source>Setup link parsed. Credentials were filled in.</source>
-        <translation type="unfinished"></translation>
+        <translation>Enlace de configuración procesado. Se han introducido las credenciales.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="429"/>
         <source>Testing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprobando...</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="431"/>
         <source>Testing connection...</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprobando conexión...</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="460"/>
         <source>Refreshing image cache...</source>
-        <translation type="unfinished"></translation>
+        <translation>Refrescando el cache de imagen...</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="514"/>
         <source>Open event page in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir la página del evento en el navegador</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="522"/>
@@ -4208,7 +4215,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/servicewidget.ui" line="88"/>
         <source>neco neco</source>
-        <translation type="unfinished"></translation>
+        <translation>algo</translation>
     </message>
 </context>
 <context>
@@ -4268,7 +4275,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/qxclientservicewidget.ui" line="103"/>
         <source>OCheckList Url</source>
-        <translation type="unfinished"></translation>
+        <translation>URL de OCkeckList</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxclientservicewidget.ui" line="120"/>
@@ -4278,7 +4285,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/qxclientservicewidget.ui" line="151"/>
         <source>Export event info</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar información del evento</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxclientservicewidget.ui" line="158"/>
@@ -4303,12 +4310,12 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/qxclientservicewidget.cpp" line="125"/>
         <source>Connected OK</source>
-        <translation type="unfinished"></translation>
+        <translation>Conectado OK</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxclientservicewidget.cpp" line="128"/>
         <source>Connection error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de conexión: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxclientservicewidget.cpp" line="145"/>
@@ -4357,7 +4364,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="35"/>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>Todas</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="42"/>
@@ -4368,12 +4375,12 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="52"/>
         <source>Pending</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargando</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="83"/>
         <source>Locked</source>
-        <translation type="unfinished"></translation>
+        <translation>Bloqueado</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="90"/>
@@ -4388,17 +4395,17 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="107"/>
         <source>Null</source>
-        <translation type="unfinished"></translation>
+        <translation>Null</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="68"/>
         <source>Status</source>
-        <translation type="unfinished"></translation>
+        <translation>Estado</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="70"/>
         <source>Data ID</source>
-        <translation type="unfinished"></translation>
+        <translation>ID de datos</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="71"/>
@@ -4408,22 +4415,22 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="72"/>
         <source>User</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuario</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="73"/>
         <source>Status message</source>
-        <translation type="unfinished"></translation>
+        <translation>Mensaje de estado</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="74"/>
         <source>Created</source>
-        <translation type="unfinished"></translation>
+        <translation>Creado</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="75"/>
         <source>Change ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar ID</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="76"/>
@@ -4451,12 +4458,12 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="22"/>
         <source>Class</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoría</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="49"/>
@@ -4514,12 +4521,12 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="250"/>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="286"/>
         <source>Rent</source>
-        <translation type="unfinished"></translation>
+        <translation>Alquiler</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="298"/>
         <source>Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Nota</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="329"/>
@@ -4529,7 +4536,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="343"/>
         <source>Force</source>
-        <translation type="unfinished"></translation>
+        <translation>Forzar</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="363"/>
@@ -4539,23 +4546,24 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="370"/>
         <source>Reject</source>
-        <translation type="unfinished"></translation>
+        <translation>Rechazar</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.ui" line="377"/>
         <source>Accept</source>
-        <translation type="unfinished"></translation>
+        <translation>Aceptar</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.cpp" line="232"/>
         <source>Update change error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error actualizando: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/runchangedialog.cpp" line="291"/>
         <source>Http error: %1
 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Error HTTP: %1
+%2</translation>
     </message>
 </context>
 <context>
@@ -4868,7 +4876,6 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventdialogwidget.ui" line="546"/>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="568"/>
         <source>Maximum points for the winner (1000-points formula: max_points * best_time / runner_time)</source>
         <translation type="unfinished"></translation>
@@ -4882,6 +4889,11 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="344"/>
         <source>Used to select race number in XML format (for XML import/export)</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/eventdialogwidget.ui" line="307"/>
+        <source>Is ORIS Race (data from ORIS - oris.orientacnisporty.cz)</source>
+        <translation>Es un evento de ORIS (datos desde ORIS - oris.orientacnisporty.cz)</translation>
     </message>
     <message>
         <source>Race data</source>
@@ -4920,12 +4932,12 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.cpp" line="198"/>
         <source>Knock-out sprint</source>
-        <translation type="unfinished"></translation>
+        <translation>Sprint knock-out</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.cpp" line="199"/>
         <source>TempO</source>
-        <translation type="unfinished"></translation>
+        <translation>TempO</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.cpp" line="200"/>
@@ -5487,7 +5499,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Oris/src/orisplugin.cpp" line="53"/>
         <source>&amp;Clubs and registrations</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Clubes e inscripciones</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisplugin.cpp" line="65"/>
@@ -5517,7 +5529,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Oris/src/orisplugin.cpp" line="93"/>
         <source>Import CSV (key is CZE registration)</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar CSV (clave id CZE)</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisplugin.cpp" line="97"/>
@@ -5565,22 +5577,22 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="705"/>
         <source>Save without drops</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar sin eliminar registros</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="712"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="714"/>
         <source>Export as ...</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar como ...</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="714"/>
         <source>HTML files *.html (*.html)</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivos HTML *.html (*.html)</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="721"/>
@@ -5590,7 +5602,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="791"/>
         <source>Importing registrations</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar inscripciones</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="848"/>
@@ -5620,7 +5632,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="960"/>
         <source>Importing one-time clubs</source>
-        <translation type="unfinished"></translation>
+        <translation>Importando clubs de un solo uso</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="973"/>
@@ -5642,12 +5654,12 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="780"/>
         <source>Import ORIS Registrations</source>
-        <translation type="unfinished"></translation>
+        <translation>Importar inscripciones ORIS</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="780"/>
         <source>Year of registration:</source>
-        <translation type="unfinished"></translation>
+        <translation>Año de registro:</translation>
     </message>
 </context>
 <context>
@@ -5811,32 +5823,32 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="269"/>
         <source>Test Runner</source>
-        <translation type="unfinished"></translation>
+        <translation>Comprobar corredor</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="275"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="289"/>
         <source>Cannot open image file &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede abrir la imagen &quot;%1&quot;.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="295"/>
         <source>Selected image file is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>El archivo de imagen seleccionado está vacío.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="313"/>
         <source>Selected file is not a supported image.</source>
-        <translation type="unfinished"></translation>
+        <translation>El archivo seleccionado no es una imagen soportada.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="320"/>
         <source>Cannot prepare selected image for printing.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede preparar la imagen seleccionada para imprimir.</translation>
     </message>
 </context>
 <context>
@@ -5860,14 +5872,15 @@ Imported: %1 of %2 clubs.</source>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="776"/>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="800"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Advertencia</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="776"/>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="800"/>
         <source>Receipt report type is not defined.
 Please go to Settings-&gt;Receipts and set receipt type.</source>
-        <translation type="unfinished"></translation>
+        <translation>El tipo de ticker no está definido.
+Por favor, vaya a Configuración -&gt; Tickets y seleccione uno.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="780"/>
@@ -5905,7 +5918,7 @@ Please go to Settings-&gt;Receipts and set receipt type.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="45"/>
         <source>Receipt setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración de tickets</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="55"/>
@@ -5915,93 +5928,93 @@ Please go to Settings-&gt;Receipts and set receipt type.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="65"/>
         <source>Template</source>
-        <translation type="unfinished"></translation>
+        <translation>Plantilla</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="80"/>
         <source>Printer setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración de la impresora</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="104"/>
         <source>Print a QR code with a link at the bottom of receipts.</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprimir un código QR con un enlace al final de los tickets.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="107"/>
         <source>QR code with a link at the bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Código QR con un enlace al final</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="114"/>
         <source>Base URL encoded into the printed QR code.</source>
-        <translation type="unfinished"></translation>
+        <translation>URL base codificada en el código QR.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="117"/>
         <source>https://example.com/events/&lt;eventId&gt;?tab=results</source>
-        <translation type="unfinished"></translation>
+        <translation>https://example.com/events/&lt;eventId&gt;?tab=results</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="124"/>
         <source>QR code caption</source>
-        <translation type="unfinished"></translation>
+        <translation>Título del código QR</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="131"/>
         <source>Caption printed under the QR code.</source>
-        <translation type="unfinished"></translation>
+        <translation>Título imprimido debajo del código QR.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="134"/>
         <source>Live Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultados en directo</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="141"/>
         <source>Print an image at the top of receipts.</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprimir una imagen en la parte de arriba del ticket.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="144"/>
         <source>Image at top</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagen arriba</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="156"/>
         <source>No image selected</source>
-        <translation type="unfinished"></translation>
+        <translation>No se ha seleccionado ninguna imagen</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="163"/>
         <source>Select image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccione una imagen...</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="170"/>
         <source>Clear</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="179"/>
         <source>Image height (max 60 mm)</source>
-        <translation type="unfinished"></translation>
+        <translation>Altura de la imagen (máximo 60 mm)</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="186"/>
         <source>Maximum printed height of the receipt image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Altura máxima de la imagen impresa en el ticket.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="189"/>
         <source> mm</source>
-        <translation type="unfinished"></translation>
+        <translation> mm</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.ui" line="220"/>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="453"/>
         <source>Test print</source>
-        <translation type="unfinished"></translation>
+        <translation>Impresión de prueba</translation>
     </message>
     <message>
         <source>Receipt</source>
@@ -6025,7 +6038,7 @@ Please go to Settings-&gt;Receipts and set receipt type.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="338"/>
         <source>Error info with picture</source>
-        <translation type="unfinished"></translation>
+        <translation>Error con la imagen</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="339"/>
@@ -6035,35 +6048,36 @@ Please go to Settings-&gt;Receipts and set receipt type.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="409"/>
         <source>Image payload is stored in the event configuration.</source>
-        <translation type="unfinished"></translation>
+        <translation>Los datos de la imagen se almacenan en la configuración del evento.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="655"/>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="659"/>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="677"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Advertencia</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="655"/>
         <source>Receipt report type is not defined.
 Please choose a receipt template first.</source>
-        <translation type="unfinished"></translation>
+        <translation>La plantilla del ticket no está definida.
+Por favor, elija una plantilla primero.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="659"/>
         <source>Test print failed. Check the printer setup.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ha fallado la impresión de prueba. Por favor, compruebe la configuración de la impresora.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="667"/>
         <source>Select receipt image</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar imagen del ticket</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="669"/>
         <source>Images (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.svg);;All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagenes (*.png *.jpg *.jpeg *.bmp *.gif *.webp *.svg);;Cualquier archivo (*)</translation>
     </message>
 </context>
 <context>
@@ -6084,7 +6098,7 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="25"/>
@@ -6134,7 +6148,7 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="118"/>
         <source>Generate printer control codes (escape sequences)</source>
-        <translation type="unfinished"></translation>
+        <translation>Generar caracteres de control (secuencias de escape)</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="125"/>
@@ -6144,27 +6158,27 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="132"/>
         <source>/dev/usb/lp1</source>
-        <translation type="unfinished"></translation>
+        <translation>/dev/usb/lp1</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="137"/>
         <source>/dev/usb/lp2</source>
-        <translation type="unfinished"></translation>
+        <translation>/dev/usb/lp2</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="142"/>
         <source>/dev/usb/lp3</source>
-        <translation type="unfinished"></translation>
+        <translation>/dev/usb/lp3</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="147"/>
         <source>/dev/usb/lp4</source>
-        <translation type="unfinished"></translation>
+        <translation>/dev/usb/lp4</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="152"/>
         <source>\\.\LPT1</source>
-        <translation type="unfinished"></translation>
+        <translation>\\.\LPT1</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsprinteroptionsdialog.ui" line="161"/>
@@ -6339,7 +6353,7 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Relays/src/relaywidget.ui" line="186"/>
         <source>Ctrl+Ins</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Ins</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relaywidget.ui" line="193"/>
@@ -6361,7 +6375,7 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Relays/src/relaywidget.ui" line="214"/>
         <source>Ctrl+D</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+D</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relaywidget.ui" line="221"/>
@@ -6372,7 +6386,7 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Relays/src/relaywidget.ui" line="228"/>
         <source>Ctrl+U</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+U</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relaywidget.ui" line="235"/>
@@ -6543,7 +6557,7 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="813"/>
         <source>Vacants count for class %1 :</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de vacantes en la categoria %1:</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="838"/>
@@ -6559,12 +6573,12 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="95"/>
         <source>Id</source>
-        <translation type="unfinished"></translation>
+        <translation>Id</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="101"/>
         <source>Is Running</source>
-        <translation type="unfinished"></translation>
+        <translation>Está corriendo</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="102"/>
@@ -6577,7 +6591,10 @@ Please choose a receipt template first.</source>
  * red - relay has no leg
  * magenta - one or more legs are missing
  * yellow - too many legs</source>
-        <translation type="unfinished"></translation>
+        <translation>Colores:
+ * rojo - El relevo no tiene relevistas
+ * magenta - falta uno o más relevistas
+ * amarillo - demasiados relevistas</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="166"/>
@@ -6852,7 +6869,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runflagsdialog.cpp" line="58"/>
         <source>Disqualified</source>
-        <translation type="unfinished"></translation>
+        <translation>Descalificado</translation>
     </message>
 </context>
 <context>
@@ -6860,7 +6877,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="127"/>
         <source>&amp;Runs</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Carreras</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="144"/>
@@ -6870,7 +6887,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="162"/>
         <source>Late registrations</source>
-        <translation type="unfinished"></translation>
+        <translation>Inscripciones tardías</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="1317"/>
@@ -6968,7 +6985,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2742"/>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2866"/>
         <source>Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Arriba</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2548"/>
@@ -7600,7 +7617,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runstablewidget.cpp" line="68"/>
         <source>Implicit</source>
-        <translation type="unfinished"></translation>
+        <translation>Implícito</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runstablewidget.cpp" line="281"/>
@@ -7611,7 +7628,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runstablewidget.cpp" line="282"/>
         <source>Load times from card in selected rows</source>
-        <translation type="unfinished"></translation>
+        <translation>Cargar los tiempos desde la pinza en las filas seleccionadas</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runstablewidget.cpp" line="283"/>
@@ -7807,12 +7824,12 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="175"/>
         <source>Classes n stages</source>
-        <translation type="unfinished"></translation>
+        <translation>Categorías n etapas</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="180"/>
         <source>Clubs n stages</source>
-        <translation type="unfinished"></translation>
+        <translation>Clubs n etapas</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="187"/>
@@ -7966,7 +7983,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="1221"/>
         <source>Ok and &amp;next</source>
-        <translation type="unfinished"></translation>
+        <translation>Ok y &amp;continuar</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="329"/>
@@ -8021,7 +8038,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="426"/>
         <source>Show o&amp;ff-race</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar los que no corren en esta epata</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="427"/>
@@ -8356,7 +8373,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
     <message>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="277"/>
         <source>class: &lt;b&gt;%1&lt;/b&gt;, %2 runners + %3 vacants = %4&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>categoría: &lt;b&gt;%1&lt;/b&gt;, %2 corredores + %3 vacantes = %4&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="282"/>
@@ -8912,7 +8929,7 @@ editing is disabled.</source>
     <message>
         <location filename="plugins/Relays/qml/reports/startList_classes_condensed.qml" line="8"/>
         <source>Start list by classes</source>
-        <translation type="unfinished"></translation>
+        <translation>Horas de salida por categorías</translation>
     </message>
 </context>
 <context>

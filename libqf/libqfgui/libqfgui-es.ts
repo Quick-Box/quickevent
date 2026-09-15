@@ -6,7 +6,7 @@
     <message>
         <location filename="src/dialogs/previewdialog.ui" line="53"/>
         <source>Word wrap</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajuste de línea</translation>
     </message>
     <message>
         <location filename="src/dialogs/previewdialog.ui" line="56"/>
@@ -19,7 +19,7 @@
     <message>
         <location filename="src/exporttableviewwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="30"/>
@@ -69,32 +69,32 @@
     <message>
         <location filename="src/exporttableviewwidget.ui" line="224"/>
         <source>Tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabulación</translation>
     </message>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="237"/>
         <source>quotes</source>
-        <translation type="unfinished"></translation>
+        <translation>comillas</translation>
     </message>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="243"/>
         <source>alwa&amp;ys</source>
-        <translation type="unfinished"></translation>
+        <translation>siem&amp;pre</translation>
     </message>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="250"/>
         <source>when necessary</source>
-        <translation type="unfinished"></translation>
+        <translation>cuando sea necesario</translation>
     </message>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="260"/>
         <source>ne&amp;ver</source>
-        <translation type="unfinished"></translation>
+        <translation>nun&amp;ca</translation>
     </message>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="269"/>
         <source>quote char</source>
-        <translation type="unfinished"></translation>
+        <translation>comilla</translation>
     </message>
     <message>
         <location filename="src/exporttableviewwidget.ui" line="282"/>
@@ -135,7 +135,7 @@
     <message>
         <location filename="src/htmlviewwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
 </context>
 <context>
@@ -143,7 +143,7 @@
     <message>
         <location filename="src/saveoptionswidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/saveoptionswidget.ui" line="78"/>
@@ -187,12 +187,12 @@
     <message>
         <location filename="src/tableview.cpp" line="963"/>
         <source>Cannot open file &apos;%1&apos; for writing.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede abrir el archivo &quot;%1&quot; en modo lectura.</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1533"/>
         <source>Resize columns to contents</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajusta las columnas a los contenidos</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1543"/>
@@ -207,7 +207,7 @@
     <message>
         <location filename="src/tableview.cpp" line="1553"/>
         <source>Reload</source>
-        <translation type="unfinished"></translation>
+        <translation>Recargar</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1555"/>
@@ -267,7 +267,7 @@
     <message>
         <location filename="src/tableview.cpp" line="1612"/>
         <source>Post row edits</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar cambios</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1614"/>
@@ -278,7 +278,7 @@
     <message>
         <location filename="src/tableview.cpp" line="1622"/>
         <source>Revert row edits</source>
-        <translation type="unfinished"></translation>
+        <translation>Deshacer cambios</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1624"/>
@@ -300,22 +300,22 @@
     <message>
         <location filename="src/tableview.cpp" line="1651"/>
         <source>Zobrazit ve formulari</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar en el formulario</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1653"/>
         <source>Zobrazit radek v formulari pro cteni</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar la fila en el formulario de solo lectura</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1660"/>
         <source>Upravit ve formulari</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar en el formulario</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1662"/>
         <source>Upravit radek ve formulari</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar la fila en el formulario</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1691"/>
@@ -487,22 +487,22 @@
     <message>
         <location filename="src/texteditwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="70"/>
         <source>textove soubory (*.txt)</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo de texto (*.txt)</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="79"/>
         <source>Uložit jako ...</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar como...</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="92"/>
         <source>Cannot open file %1 for writing.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede abrir el archivo &quot;%1&quot; en modo escritura.</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="103"/>
@@ -528,27 +528,27 @@
     <message>
         <location filename="src/texteditwidget.cpp" line="146"/>
         <source>Wrap lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar líneas</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="159"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Archivo</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="166"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Vista</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="215"/>
         <source>Soubor %1 nelze otevrit pro cteni.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede abrir el archivo &quot;%1&quot; para su lectura.</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="220"/>
         <source>Nelze nahrát kodek pro kódování %1.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede cargar el códec necesario para guardar %1.</translation>
     </message>
 </context>
 <context>
@@ -574,7 +574,7 @@
     <message>
         <location filename="src/dialogs/messagebox.cpp" line="44"/>
         <source>Exception</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="src/dialogs/messagebox.cpp" line="54"/>
@@ -584,7 +584,7 @@
     <message>
         <location filename="src/dialogs/messagebox.cpp" line="59"/>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Alerta</translation>
     </message>
     <message>
         <location filename="src/dialogs/messagebox.cpp" line="64"/>
@@ -594,7 +594,7 @@
     <message>
         <location filename="src/dialogs/messagebox.cpp" line="70"/>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Pregunta</translation>
     </message>
 </context>
 <context>
@@ -608,7 +608,7 @@
     <message>
         <location filename="src/dialogs/previewdialog.cpp" line="63"/>
         <source>Cannot open file &apos;%1&apos; for reading.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede abrir el archivo &quot;%1&quot; en modo lectura.</translation>
     </message>
 </context>
 <context>
@@ -629,7 +629,7 @@
     <message>
         <location filename="src/framework/dialogwidget.cpp" line="50"/>
         <source>Cannot find action name &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>La acción &quot;%1&quot; no se ha encontrado</translation>
     </message>
 </context>
 <context>
@@ -637,7 +637,7 @@
     <message>
         <location filename="src/framework/logwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/framework/logwidget.ui" line="37"/>
@@ -657,17 +657,17 @@
     <message>
         <location filename="src/framework/logwidget.ui" line="88"/>
         <source>Copy to clipboard.</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar al portapapeles.</translation>
     </message>
     <message>
         <location filename="src/framework/logwidget.ui" line="102"/>
         <source>Resize columns to fit content</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar las columnas al contenido</translation>
     </message>
     <message>
         <location filename="src/framework/logwidget.ui" line="116"/>
         <source>Event log options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opciones del registro (logs) de eventos</translation>
     </message>
     <message>
         <location filename="src/framework/logwidget.ui" line="119"/>
@@ -677,17 +677,17 @@
     <message>
         <location filename="src/framework/logwidget.cpp" line="116"/>
         <source>Maximal log length</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño máximo del registro</translation>
     </message>
     <message>
         <location filename="src/framework/logwidget.cpp" line="121"/>
         <source>Get number</source>
-        <translation type="unfinished"></translation>
+        <translation>Conseguir número</translation>
     </message>
     <message>
         <location filename="src/framework/logwidget.cpp" line="121"/>
         <source>Maximal log row count:</source>
-        <translation type="unfinished"></translation>
+        <translation>Número máximo de filas en el registro:</translation>
     </message>
 </context>
 <context>
@@ -709,7 +709,7 @@
     <message>
         <location filename="src/framework/mainwindow.cpp" line="301"/>
         <source>Plugin for feature id: &apos;%1&apos; is not installed!</source>
-        <translation type="unfinished"></translation>
+        <translation>¡El plugin para la función con id &quot;%1&quot; no está instalado!</translation>
     </message>
 </context>
 <context>
@@ -725,7 +725,7 @@
     <message>
         <location filename="src/internal/dlgtableviewcopyspecial.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/internal/dlgtableviewcopyspecial.ui" line="22"/>
@@ -760,12 +760,12 @@
     <message>
         <location filename="src/internal/dlgtableviewcopyspecial.ui" line="64"/>
         <source>replace escapes</source>
-        <translation type="unfinished"></translation>
+        <translation>Sustituir carácteres de escape</translation>
     </message>
     <message>
         <location filename="src/internal/dlgtableviewcopyspecial.cpp" line="12"/>
         <source>Quote field if needed</source>
-        <translation type="unfinished"></translation>
+        <translation>Poner comillas en el campo si es necesario</translation>
     </message>
     <message>
         <location filename="src/internal/dlgtableviewcopyspecial.cpp" line="13"/>
@@ -783,7 +783,7 @@
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="32"/>
@@ -793,7 +793,7 @@
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="40"/>
         <source>shift selected column up</source>
-        <translation type="unfinished"></translation>
+        <translation>desplazar la columna seleccionada hacia arriba</translation>
     </message>
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="43"/>
@@ -809,7 +809,7 @@
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="50"/>
         <source>shift selected column down</source>
-        <translation type="unfinished"></translation>
+        <translation>desplazar la columna seleccionada hacia abajo</translation>
     </message>
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="60"/>
@@ -829,7 +829,7 @@
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="121"/>
         <source>select none</source>
-        <translation type="unfinished"></translation>
+        <translation>No seleccionar ninguna</translation>
     </message>
     <message>
         <location filename="src/internal/tableviewchoosecolumnswidget.ui" line="135"/>
@@ -863,7 +863,7 @@
     <message>
         <location filename="src/internal/tableviewcopytodialogwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/internal/tableviewcopytodialogwidget.ui" line="30"/>
@@ -876,12 +876,12 @@
     <message>
         <location filename="src/model/logtablemodel.cpp" line="49"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoría</translation>
     </message>
     <message>
         <location filename="src/model/logtablemodel.cpp" line="51"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo</translation>
     </message>
     <message>
         <location filename="src/model/logtablemodel.cpp" line="53"/>
@@ -891,12 +891,12 @@
     <message>
         <location filename="src/model/logtablemodel.cpp" line="55"/>
         <source>Severity</source>
-        <translation type="unfinished"></translation>
+        <translation>Severidad</translation>
     </message>
     <message>
         <location filename="src/model/logtablemodel.cpp" line="57"/>
         <source>Time stamp</source>
-        <translation type="unfinished"></translation>
+        <translation>Marca de tiempo</translation>
     </message>
     <message>
         <location filename="src/model/logtablemodel.cpp" line="59"/>
@@ -911,7 +911,7 @@
     <message>
         <location filename="src/model/logtablemodel.cpp" line="63"/>
         <source>Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Datos</translation>
     </message>
 </context>
 <context>
@@ -920,13 +920,15 @@
         <location filename="src/model/sqltablemodel.cpp" line="231"/>
         <source>numRowsAffected() = %1, should be 1
 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>numRowsAffected() = %1, debería ser 1
+%2</translation>
     </message>
     <message>
         <location filename="src/model/sqltablemodel.cpp" line="257"/>
         <source>Error executing query: %1
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Error ejecutando la consulta: %1
+ %2</translation>
     </message>
 </context>
 <context>
@@ -937,21 +939,21 @@
         <location filename="src/model/tablemodel.cpp" line="476"/>
         <location filename="src/model/tablemodel.cpp" line="580"/>
         <source>Cannot find table field index for column index: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontró el índice de la tabla para el índice de columna: %1</translation>
     </message>
     <message>
         <location filename="src/model/tablemodel.cpp" line="441"/>
         <location filename="src/model/tablemodel.cpp" line="472"/>
         <location filename="src/model/tablemodel.cpp" line="576"/>
         <source>Invalid table row: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Fila invalida: %1</translation>
     </message>
     <message>
         <location filename="src/model/tablemodel.cpp" line="448"/>
         <location filename="src/model/tablemodel.cpp" line="479"/>
         <location filename="src/model/tablemodel.cpp" line="583"/>
         <source>Invalid table field index: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice de la tabla invalido: %1</translation>
     </message>
     <message>
         <location filename="src/model/tablemodel.cpp" line="464"/>
@@ -960,7 +962,7 @@
         <location filename="src/model/tablemodel.cpp" line="568"/>
         <location filename="src/model/tablemodel.cpp" line="594"/>
         <source>Cannot find column index for name: &apos;%1&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontró el índice de columna con el nombre: &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="src/model/tablemodel.cpp" line="495"/>
@@ -1000,12 +1002,12 @@
     <message>
         <location filename="src/reports/widgets/itemvalueeditorwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/itemvalueeditorwidget.ui" line="20"/>
         <source>Nová hodnota textu</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuevo valor de texto</translation>
     </message>
 </context>
 <context>
@@ -1013,7 +1015,7 @@
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Formulario</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.ui" line="23"/>
@@ -1023,7 +1025,7 @@
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.ui" line="32"/>
         <source>file</source>
-        <translation type="unfinished"></translation>
+        <translation>archivo</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.ui" line="56"/>
@@ -1053,7 +1055,7 @@
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.ui" line="125"/>
         <source>data</source>
-        <translation type="unfinished"></translation>
+        <translation>datos</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.ui" line="131"/>
@@ -1063,17 +1065,17 @@
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="23"/>
         <source>portrait</source>
-        <translation type="unfinished"></translation>
+        <translation>vertical</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="24"/>
         <source>landscape</source>
-        <translation type="unfinished"></translation>
+        <translation>apaisado</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="58"/>
         <source>Open report file</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir el archivo del informe</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="58"/>
@@ -1094,12 +1096,12 @@
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="520"/>
         <source>&amp;File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Archivo</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="528"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Vista</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="561"/>
@@ -1124,37 +1126,37 @@
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="589"/>
         <source>Zoom in</source>
-        <translation type="unfinished"></translation>
+        <translation>Acercar</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="596"/>
         <source>Zoom out</source>
-        <translation type="unfinished"></translation>
+        <translation>Alejar</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="603"/>
         <source>Zoom to fit width</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar al ancho</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="610"/>
         <source>Zoom to fit height</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustar al alto</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="617"/>
         <source>&amp;Print</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Imprimir</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="625"/>
         <source>Print pre&amp;view</source>
-        <translation type="unfinished"></translation>
+        <translation>Imprimir pre&amp;visualización</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="632"/>
         <source>Export PD&amp;F</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportar PD&amp;F</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="634"/>
@@ -1174,7 +1176,7 @@
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="1043"/>
         <source>empty file name</source>
-        <translation type="unfinished"></translation>
+        <translation>nombre de archivo vacío</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="1105"/>
@@ -1189,7 +1191,7 @@
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="1125"/>
         <source>Cannot open &apos;%1&apos; for write.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede abrir &quot;%1&quot; en modo escritura.</translation>
     </message>
 </context>
 <context>
@@ -1197,12 +1199,12 @@
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="295"/>
         <source>Item menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Elemento del menú</translation>
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="296"/>
         <source>Editovat text</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar texto</translation>
     </message>
 </context>
 </TS>
