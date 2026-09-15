@@ -146,7 +146,8 @@ void QxLateRegistrationsWidget::updateEnabled()
 {
 	auto *ofeed = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
 	bool is_ofeed_running = ofeed && ofeed->isRunning();
-	bool is_enabled = service()->isRunning() || is_ofeed_running;
+	bool is_qx_running = service()->isRunning() ;
+	bool is_enabled = is_qx_running || is_ofeed_running;
 	setEnabled(is_enabled);
 	if (is_enabled) {
 		reload();
