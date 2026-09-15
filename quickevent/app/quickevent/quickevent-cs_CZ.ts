@@ -4532,8 +4532,9 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="35"/>
+        <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.cpp" line="169"/>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>Vše</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateregistrationswidget.ui" line="42"/>

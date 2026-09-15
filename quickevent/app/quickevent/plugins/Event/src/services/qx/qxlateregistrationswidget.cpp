@@ -167,7 +167,7 @@ void QxLateRegistrationsWidget::loadTypes(int stage_id)
 	QSignalBlocker sb(lst);
 	auto current_type = lst->currentText();
 	lst->clear();
-	lst->addItem("All");
+	lst->addItem(tr("All"));
 	qfs::Query q;
 	q.execThrow("SELECT DISTINCT data_type FROM qxchanges WHERE stage_id=" + QString::number(stage_id)
 				+ " AND data_type IS NOT NULL ORDER BY data_type");
@@ -253,9 +253,12 @@ void QxLateRegistrationsWidget::addQxChangeRow(int sql_id)
 		return;
 	}
 
+	// the type of the arrived change may be still missing in the filter combo
+	loadTypes(getPlugin<EventPlugin>()->currentStageId());
+
 	auto qb = m_model->queryBuilder();
 	qb.where(QStringLiteral("id=%1").arg(sql_id));
-	qf::core::sql::Query q;
+	qfs::Query q;
 	q.execThrow(qb.toString());
 	if (!q.next()) {
 		// inserted row is filtered out
