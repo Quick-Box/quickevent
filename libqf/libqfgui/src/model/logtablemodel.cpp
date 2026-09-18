@@ -42,6 +42,33 @@ LogTableModel::LogTableModel(QObject *parent)
 {
 }
 
+bool LogTableModel::setMaximumRowCount(int maximum_row_count)
+{
+	maximum_row_count = qMax(0, maximum_row_count);
+	if(m_maximumRowCount == maximum_row_count)
+		return false;
+	m_maximumRowCount = maximum_row_count;
+
+	const int remove_count = qMax(0, rowCount() - maximumRowCount());
+	if(remove_count == 0)
+		return true;
+
+	if(direction() == Direction::AppendToBottom) {
+		beginRemoveRows(QModelIndex(), 0, remove_count - 1);
+		m_rows.remove(0, remove_count);
+		endRemoveRows();
+	}
+	else {
+		const int first_row = rowCount() - remove_count;
+		beginRemoveRows(QModelIndex(), first_row, rowCount() - 1);
+		m_rows.remove(first_row, remove_count);
+		endRemoveRows();
+	}
+
+	emit maximumRowCountChanged(m_maximumRowCount);
+	return true;
+}
+
 QVariant LogTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
 	if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
