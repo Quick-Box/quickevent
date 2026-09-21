@@ -42,6 +42,20 @@ LogTableModel::LogTableModel(QObject *parent)
 {
 }
 
+void LogTableModel::removeRows(int remove_count)
+{
+	if(direction() == Direction::AppendToBottom) {
+		beginRemoveRows(QModelIndex(), 0, remove_count - 1);
+		m_rows = m_rows.mid(remove_count);
+		endRemoveRows();
+	}
+	else {
+		beginRemoveRows(QModelIndex(), rowCount() - remove_count, rowCount() - 1);
+		m_rows = m_rows.mid(0, rowCount() - remove_count);
+		endRemoveRows();
+	}
+}
+
 bool LogTableModel::setMaximumRowCount(int maximum_row_count)
 {
 	maximum_row_count = qMax(0, maximum_row_count);
@@ -53,18 +67,7 @@ bool LogTableModel::setMaximumRowCount(int maximum_row_count)
 	if(remove_count == 0)
 		return true;
 
-	if(direction() == Direction::AppendToBottom) {
-		beginRemoveRows(QModelIndex(), 0, remove_count - 1);
-		m_rows.remove(0, remove_count);
-		endRemoveRows();
-	}
-	else {
-		const int first_row = rowCount() - remove_count;
-		beginRemoveRows(QModelIndex(), first_row, rowCount() - 1);
-		m_rows.remove(first_row, remove_count);
-		endRemoveRows();
-	}
-
+	removeRows(remove_count);
 	emit maximumRowCountChanged(m_maximumRowCount);
 	return true;
 }
@@ -189,16 +192,7 @@ void LogTableModel::addRow(const LogTableModel::Row &row)
 	//qfInfo() << "add row:" << row.value(Cols::Message);
 	static constexpr int ROWS_OVERLAP = 100;
 	if(rowCount() >= maximumRowCount() + ROWS_OVERLAP) {
-		if(direction() == Direction::AppendToBottom) {
-			beginRemoveRows(QModelIndex(), 0, ROWS_OVERLAP - 1);
-			m_rows = m_rows.mid(ROWS_OVERLAP);
-			endRemoveRows();
-		}
-		else {
-			beginRemoveRows(QModelIndex(), rowCount() - ROWS_OVERLAP, rowCount() - 1);
-			m_rows = m_rows.mid(0, rowCount() - ROWS_OVERLAP);
-			endRemoveRows();
-		}
+		removeRows(ROWS_OVERLAP);
 	}
 	if(direction() == Direction::AppendToBottom) {
 		beginInsertRows(QModelIndex(), rowCount(), rowCount());
