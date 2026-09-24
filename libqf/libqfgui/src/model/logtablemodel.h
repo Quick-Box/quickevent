@@ -42,7 +42,7 @@ public:
 	int maximumRowCount() const { return m_maximumRowCount; }
 	Q_SLOT bool setMaximumRowCount(int maximum_row_count);
 	Q_SIGNAL void maximumRowCountChanged(const int &maximum_row_count);
-	void removeRows(int remove_count);
+	void trimToMaxRowCount();
 
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 	int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
