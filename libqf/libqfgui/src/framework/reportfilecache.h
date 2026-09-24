@@ -13,18 +13,15 @@ class QFGUI_DECL_EXPORT ReportFileCache : public QObject
 {
 	Q_OBJECT
 public:
-
-	void setReportsDir(const QString &dir) { m_reportsDir = dir; }
 	QString effectiveReportsDir() const;
-	QString defaultReportsDir() const;
 	QString reportCacheDir() const;
-	void initialize() const;
 	void applyDatabaseOverrides() const;
-
+private:
+	void initIfNotExists() const;
+	QString defaultReportsDir() const;
 private:
 	friend class Plugin;
 	ReportFileCache();
-	QString m_reportsDir;
 };
 
 }}}

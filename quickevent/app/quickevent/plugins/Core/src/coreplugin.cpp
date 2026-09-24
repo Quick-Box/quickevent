@@ -68,7 +68,6 @@ void CorePlugin::onInstalled()
 	{
 		auto *page = new ReportsSettingsPage();
 		settingsDialog()->addPage(page);
-		qff::Plugin::reportFileCache()->setReportsDir(page->reportsDirectoryFromSettings());
 		qfInfo() << "Reports dir set to:" << qff::Plugin::reportFileCache()->effectiveReportsDir();
 	}
 

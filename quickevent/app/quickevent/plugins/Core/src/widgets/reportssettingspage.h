@@ -17,15 +17,9 @@ class ReportsSettingsPage : public Core::SettingsPage
 public:
 	explicit ReportsSettingsPage(QWidget *parent = nullptr);
 	~ReportsSettingsPage();
-
-	QString reportsDirectoryFromSettings() const;
-private slots:
-	void onSelectCustomReportsDirectoryClicked();
 private:
 	void load() override;
 	void save() override;
-
-	void setReportsDirectory(const QString dir);
 private:
 	Ui::ReportsSettingsPage *ui;
 	//QString m_exportReportDefinitionsDir;

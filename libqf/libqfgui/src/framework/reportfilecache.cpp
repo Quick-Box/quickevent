@@ -17,14 +17,13 @@ using namespace qf::gui::framework;
 ReportFileCache::ReportFileCache()
 	: QObject(nullptr)
 {
+	initIfNotExists();
 }
 
 
 QString ReportFileCache::effectiveReportsDir() const
 {
-	if(m_reportsDir.isEmpty())
-		return reportCacheDir();
-	return m_reportsDir;
+	return reportCacheDir();
 }
 
 QString ReportFileCache::defaultReportsDir() const
@@ -51,13 +50,14 @@ bool isSafeReportPath(const QString &path)
 
 }
 
-void ReportFileCache::initialize() const
+void ReportFileCache::initIfNotExists() const
 {
 	const QString cache_dir_path = reportCacheDir();
 	QFileInfo cache_info(cache_dir_path);
 	if(cache_info.exists())
 		return;
 
+	qfInfo() << "Initializing report cache dir:" << cache_dir_path;
 	QDir cache_dir;
 	if(!cache_dir.mkpath(cache_dir_path)) {
 		qfError() << "Cannot create report cache directory:" << cache_dir_path;
