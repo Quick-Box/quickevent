@@ -52,6 +52,7 @@ if(Qt_FOUND)
 	# variable instead of hard-coding a path back to the application.
 	set(QE_TRANSLATIONS_OUTPUT_DIR "${CMAKE_BINARY_DIR}/quickevent/app/quickevent/translations"
 		CACHE INTERNAL "Build-tree output directory for .qm translation files")
+	file(MAKE_DIRECTORY "${QE_TRANSLATIONS_OUTPUT_DIR}")
 
 	add_subdirectory(libqf)
 	if(QF_LIB_ONLY)

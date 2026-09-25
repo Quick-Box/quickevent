@@ -16,8 +16,7 @@ public:
 	void applyDatabaseOverrides() const;
 	void clearLocalChanges();
 private:
-	void initIfNotExists();
-	QString defaultReportsDir() const;
+	void initIfNotExists() const;
 private:
 	friend class Plugin;
 	ReportFileCache();

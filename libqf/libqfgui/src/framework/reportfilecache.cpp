@@ -2,7 +2,7 @@
 
 #include <qf/core/log.h>
 
-#include <QCoreApplication>
+
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
@@ -26,12 +26,6 @@ QString ReportFileCache::effectiveReportsDir() const
 	return reportCacheDir();
 }
 
-QString ReportFileCache::defaultReportsDir() const
-{
-	static const auto dir = QCoreApplication::applicationDirPath() + "/reports";
-	return dir;
-}
-
 QString ReportFileCache::reportCacheDir() const
 {
 	static const auto dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/reports";
@@ -50,7 +44,7 @@ bool isSafeReportPath(const QString &path)
 
 }
 
-void ReportFileCache::initIfNotExists()
+void ReportFileCache::initIfNotExists() const
 {
 	const QString cache_dir_path = reportCacheDir();
 	QFileInfo cache_info(cache_dir_path);
@@ -64,7 +58,7 @@ void ReportFileCache::initIfNotExists()
 		return;
 	}
 
-	const QString source_dir_path = defaultReportsDir();
+	static const auto source_dir_path = QStringLiteral(":/reports");
 	QDir source_dir(source_dir_path);
 	if(!source_dir.exists()) {
 		qfWarning() << "Default reports directory does not exist:" << source_dir_path;

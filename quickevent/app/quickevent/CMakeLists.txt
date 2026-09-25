@@ -15,8 +15,7 @@ add_executable(quickevent
 	plugins/CardReader/src/cardreadersettingspage.ui
 	plugins/CardReader/src/cardreadersettings.cpp
 	plugins/CardReader/src/services/qropunch.cpp
-	plugins/CardReader/src/services/qropunchwidget.cpp
-	plugins/CardReader/src/services/qropunchwidget.ui
+	plugins/CardReader/src/services/qropunchwidget.cpp plugins/CardReader/src/services/qropunchwidget.h plugins/CardReader/src/services/qropunchwidget.ui
 	plugins/CardReader/src/testcardreader.h plugins/CardReader/src/testcardreader.cpp
 
 	plugins/Classes/src/classdefdocument.cpp
@@ -294,6 +293,22 @@ qt6_add_translation(QM_FILES ${TS_FILES})
 qt6_add_lupdate(quickevent TS_FILES ${TS_FILES})
 
 target_sources(quickevent PRIVATE ${QM_FILES})
+
+# Embed the default report templates. ReportFileCache extracts these resources to
+# the user's writable report cache on its first use.
+file(GLOB_RECURSE REPORT_RESOURCE_FILES CONFIGURE_DEPENDS
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Classes/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Runs/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Receipts/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/qml/reports/*"
+)
+qt_add_resources(quickevent reports_resources
+	PREFIX "/reports"
+	BASE "${CMAKE_CURRENT_SOURCE_DIR}/plugins"
+	FILES ${REPORT_RESOURCE_FILES}
+)
+
 target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(quickevent PUBLIC libquickeventcore libquickeventgui libqfgui libsiut)
 
@@ -338,11 +353,6 @@ if(APPLE)
 	install(FILES ${ICON_OUTPUT} DESTINATION quickevent.app/Contents/Resources)
 	install(FILES ${QM_FILES} DESTINATION quickevent.app/Contents/MacOS/translations)
 
-	foreach(plugin IN ITEMS Classes Runs Relays Receipts shared)
-		install(DIRECTORY plugins/${plugin}/qml/reports
-			DESTINATION quickevent.app/Contents/MacOS/reports/${plugin}/qml)
-	endforeach()
-
 	# Post-install: copy libraries, QML plugins, translations into bundle MacOS directory
 	install(CODE "
 		# Copy libraries to Frameworks
@@ -356,8 +366,4 @@ if(APPLE)
 else()
 	install(TARGETS quickevent)
 	install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_BINDIR}/translations)
-	foreach(plugin IN ITEMS Classes Runs Relays Receipts shared)
-		install(DIRECTORY plugins/${plugin}/qml/reports
-			DESTINATION ${CMAKE_INSTALL_BINDIR}/reports/${plugin}/qml)
-	endforeach()
 endif()
