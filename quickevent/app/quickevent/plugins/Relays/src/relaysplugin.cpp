@@ -775,6 +775,7 @@ QString RelaysPlugin::resultsIofXml30()
 			);
 
 			qf::core::utils::TreeTable tt_legs = tt_teams_row.table();
+			int prev_leg_ftime = 0;
 			for (int k = 0; k < tt_legs.rowCount(); ++k) {
 				int leg = k + 1;
 				QF_TIME_SCOPE("exporting leg: " + QString::number(leg));
@@ -799,16 +800,14 @@ QString RelaysPlugin::resultsIofXml30()
 					append_list(person_result, overall_result);
 					append_list(member_result, person_result);
 					append_list(team_result, member_result);
+					prev_leg_ftime = 0;
 					continue;
 				}
 				// Active - runner is on course, Inactive - runner is waiting for start or handover
 				const LegStatus leg_status = legStatusFromString(tt_leg_row.value(QStringLiteral("status")).toString());
 				const LegStatus overall_status = legStatusFromString(tt_leg_row.value(QStringLiteral("sstatus")).toString());
 				const bool is_inactive = leg_status == LegStatus::Inactive;
-				const bool is_finished = !(is_inactive
-										   || leg_status == LegStatus::Active
-										   || leg_status == LegStatus::DidNotStart
-										   || leg_status == LegStatus::DidNotFinish);
+				const bool is_dns = leg_status == LegStatus::DidNotStart;
 				const bool is_ok = leg_status == LegStatus::OK;
 				QVariantList member_result{"TeamMemberResult"};
 				QVariantList person{"Person"};
@@ -857,6 +856,7 @@ QString RelaysPlugin::resultsIofXml30()
 				append_list(person_result, QVariantList{"BibNumber", QString::number(relay_number) + '.' + QString::number(k+1)});
 				int run_id = tt_leg_row.value(QStringLiteral("runId")).toInt();
 				int stime = 0, ftime = 0, time_msec = 0, siId = 0;
+				bool is_stime_null = true;
 				if(run_id > 0) {
 					qfs::QueryBuilder qb;
 					qb.select2("runs", "startTimeMs, finishTimeMs, timeMs, siId")
@@ -864,6 +864,7 @@ QString RelaysPlugin::resultsIofXml30()
 					qfs::Query q;
 					q.execThrow(qb.toString());
 					if(q.next()) {
+						is_stime_null = q.value(0).isNull();
 						stime = q.value(0).toInt();
 						ftime = q.value(1).toInt();
 						time_msec = q.value(2).toInt();
@@ -874,7 +875,16 @@ QString RelaysPlugin::resultsIofXml30()
 					}
 				}
 
-				if (!is_inactive)
+				// not read out runner can be still on course even with not OK status (NotCompeting, Disqualified, ...)
+				const bool is_finished = time_msec > 0 && leg_status != LegStatus::DidNotFinish;
+				// start time of leg > 1 is set on card readout, until then take handover time from previous leg
+				bool has_stime = true;
+				if (is_stime_null && leg > 1) {
+					stime = prev_leg_ftime;
+					has_stime = prev_leg_ftime > 0;
+				}
+				prev_leg_ftime = ftime;
+				if (has_stime && !is_inactive && !is_dns)
 					append_list(person_result, QVariantList{"StartTime", datetime_to_string(quantize_datetime(start00.addMSecs(stime)))});
 				if (is_finished) {
 					append_list(person_result, QVariantList{"FinishTime", datetime_to_string(quantize_datetime(start00.addMSecs(ftime)))});
