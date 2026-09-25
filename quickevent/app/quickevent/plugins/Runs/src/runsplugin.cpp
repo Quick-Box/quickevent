@@ -3160,6 +3160,8 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 		qf::core::utils::TreeTable tt2 = tt1_row.table();
 		if (tt2.rowCount() == 0 && is_iof_race)
 			continue; // not save empty class
+		bool has_fixed_start_time = tt1_row.value(QStringLiteral("classdefs.startIntervalMin")).toInt() > 0
+				|| event_config.disciplineId == static_cast<int>(Event::EventConfig::Discipline::MassStart);
 		for(int j=0; j<tt2.rowCount(); j++) {
 			auto tt2_row = tt2.row(j);
 			QVariantList xml_person{"PersonStart"};
@@ -3190,10 +3192,10 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 			auto bib_number = tt2_row.value(QStringLiteral("competitors.startNumber"));
 			if(!is_vacant && !bib_number.isNull())
 				append_list(xml_start, QVariantList{"BibNumber", bib_number});
-
-			int stime_msec = tt2_row.value(QStringLiteral("startTimeMs")).toInt();
-			append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
-
+			if (has_fixed_start_time) {
+				int stime_msec = tt2_row.value(QStringLiteral("startTimeMs")).toInt();
+				append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
+			}
 			QVariant siId = tt2_row.value(QStringLiteral("runs.siId"));
 			if (siId.toBool()) {
 				append_list(xml_start, QVariantList{"ControlCard", siId.toInt()});
