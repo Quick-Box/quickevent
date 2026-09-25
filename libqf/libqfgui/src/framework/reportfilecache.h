@@ -5,9 +5,7 @@
 
 #include <QObject>
 
-namespace qf {
-namespace gui {
-namespace framework {
+namespace qf::gui::framework {
 
 class QFGUI_DECL_EXPORT ReportFileCache : public QObject
 {
@@ -15,15 +13,16 @@ class QFGUI_DECL_EXPORT ReportFileCache : public QObject
 public:
 	QString effectiveReportsDir() const;
 	QString reportCacheDir() const;
-	void applyDatabaseOverrides() const;
+	void applyDatabaseOverrides();
+	void clearLocalChanges();
 private:
-	void initIfNotExists() const;
+	void initIfNotExists();
 	QString defaultReportsDir() const;
 private:
 	friend class Plugin;
 	ReportFileCache();
 };
 
-}}}
+}
 
 #endif // QF_GUI_FRAMEWORK_REPORTFILECACHE_H

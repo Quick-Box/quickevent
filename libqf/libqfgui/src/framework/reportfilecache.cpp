@@ -12,7 +12,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-using namespace qf::gui::framework;
+namespace qf::gui::framework {
 
 ReportFileCache::ReportFileCache()
 	: QObject(nullptr)
@@ -50,7 +50,7 @@ bool isSafeReportPath(const QString &path)
 
 }
 
-void ReportFileCache::initIfNotExists() const
+void ReportFileCache::initIfNotExists()
 {
 	const QString cache_dir_path = reportCacheDir();
 	QFileInfo cache_info(cache_dir_path);
@@ -58,7 +58,7 @@ void ReportFileCache::initIfNotExists() const
 		return;
 
 	qfInfo() << "Initializing report cache dir:" << cache_dir_path;
-	QDir cache_dir;
+	QDir cache_dir(cache_dir_path);
 	if(!cache_dir.mkpath(cache_dir_path)) {
 		qfError() << "Cannot create report cache directory:" << cache_dir_path;
 		return;
@@ -82,7 +82,7 @@ void ReportFileCache::initIfNotExists() const
 	}
 }
 
-void ReportFileCache::applyDatabaseOverrides() const
+void ReportFileCache::applyDatabaseOverrides()
 {
 	QSqlDatabase db = QSqlDatabase::database();
 	if(!db.isValid() || !db.isOpen())
@@ -114,4 +114,15 @@ void ReportFileCache::applyDatabaseOverrides() const
 		if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate) || file.write(query.value(1).toByteArray()) < 0)
 			qfWarning() << "Cannot write report override:" << file_path;
 	}
+}
+
+void ReportFileCache::clearLocalChanges()
+{
+	QDir cache_dir(reportCacheDir());
+	if(cache_dir.exists()) {
+		cache_dir.removeRecursively();
+	}
+	initIfNotExists();
+}
+
 }

@@ -35,6 +35,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="btClearLocalChanges">
+     <property name="text">
+      <string>Clear local changes</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="lblHelp">
      <property name="text">
       <string>Reports directory is an directory, where QuickEvent is looking for reports definition QML files. It is populated during application start if not exists.</string>

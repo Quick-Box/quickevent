@@ -1,6 +1,6 @@
 #include "reportssettingspage.h"
 #include "ui_reportssettingspage.h"
-#include "../reportssettings.h"
+// #include "../reportssettings.h"
 
 #include <qf/core/log.h>
 #include <qf/gui/framework/plugin.h>
@@ -20,6 +20,10 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 {
 	m_caption = tr("Reports");
 	ui->setupUi(this);
+
+	connect(ui->btClearLocalChanges, &QPushButton::clicked, this, []() {
+		qf::gui::framework::Plugin::reportFileCache()->clearLocalChanges();
+	});
 }
 
 ReportsSettingsPage::~ReportsSettingsPage()
@@ -40,4 +44,3 @@ void ReportsSettingsPage::save()
 }
 
 }
-
