@@ -542,16 +542,23 @@ bool CardReaderPlugin::processCardToRunAssignment(int card_id, int run_id)
 		int relay_id = q.value(0).toInt();
 		int leg = q.value(1).toInt();
 		QVariant start_time = q.value(2);
-		if(start_time.isNull() && leg > 1) {
+		/// start time 0 is not a valid handover time for leg > 1, consider it as not set
+		if(start_time.toInt() <= 0 && leg > 1) {
 			/// if start time not set, take start time from previous leg
+			int prev_finish_time = 0;
 			q.execThrow("SELECT finishTimeMs FROM runs"
 					 " WHERE relayId=" + QString::number(relay_id)
 				   + " AND leg=" + QString::number(leg-1));
 			if(q.next()) {
-				int prev_finish_time = q.value(0).toInt();
-				if(prev_finish_time > 0) {
-					setStartTime(relay_id, leg, prev_finish_time);
-				}
+				prev_finish_time = q.value(0).toInt();
+			}
+			if(prev_finish_time > 0) {
+				setStartTime(relay_id, leg, prev_finish_time);
+			}
+			else if(!start_time.isNull()) {
+				/// handover time is unknown, clear invalid start time 0 to not count the leg time from 00:00
+				auto *app = qf::gui::framework::Application::instance();
+				app->updateDbRecord("runs", run_id, QVariantMap{{"startTimeMs", QVariant()}}, this);
 			}
 		}
 		const auto [read_card, checked_card] = checkCard(card_id, run_id);
@@ -566,17 +573,22 @@ bool CardReaderPlugin::processCardToRunAssignment(int card_id, int run_id)
 			int next_leg_run_id = q.value(0).toInt();
 			QVariant next_leg_start_time = q.value(1);
 			int next_leg_finish_time = q.value(2).toInt();
-			if (next_leg_start_time.isNull()) {
+			if (next_leg_start_time.toInt() <= 0) {
+				int new_next_leg_start_time = checked_card.finishTimeMs();
+				int next_leg_card_id = (next_leg_finish_time > 0)? getPlugin<RunsPlugin>()->cardForRun(next_leg_run_id): 0;
 				// if next leg is finished and has not start time set, proces it too
 				// This covers cases when next leg is read-out before this one
-				if (next_leg_finish_time > 0) {
-					int next_leg_card_id = getPlugin<RunsPlugin>()->cardForRun(next_leg_run_id);
+				if (next_leg_card_id > 0) {
 					processCardToRunAssignment(next_leg_card_id, next_leg_run_id);
 				}
 				// set start time for next leg, and publish the change
-				else {
-					int new_next_leg_start_time = checked_card.finishTimeMs();
+				// no finish time (missing finish punch) means unknown handover time, keep next leg start time not set
+				else if (new_next_leg_start_time > 0) {
 					setStartTime(relay_id, leg + 1, new_next_leg_start_time);
+					if (next_leg_finish_time > 0) {
+						// next leg finish time entered without card
+						getPlugin<RunsPlugin>()->computeStageTime(next_leg_run_id);
+					}
 					int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(next_leg_run_id);
 					getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_EDITED, competitor_id);
 					QVariantList param {
