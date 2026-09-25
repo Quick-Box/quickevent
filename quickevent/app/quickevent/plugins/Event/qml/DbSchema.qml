@@ -523,6 +523,8 @@ Schema {
 			fields: [
 				Field { name: 'id'; type: Serial { primaryKey: true } },
 				Field { name: 'path'; type: String { } },
+				Field { name: 'size'; type: Int { } },
+				Field { name: 'hash'; type: String { } },
 				Field { name: 'data'; type: Blob { } }
 			]
 			indexes: [

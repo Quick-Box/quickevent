@@ -16,7 +16,7 @@ class ReportsSettingsPage : public Core::SettingsPage
 	using Super = Core::SettingsPage;
 public:
 	explicit ReportsSettingsPage(QWidget *parent = nullptr);
-	~ReportsSettingsPage();
+	~ReportsSettingsPage() override;
 private:
 	void load() override;
 	void save() override;
