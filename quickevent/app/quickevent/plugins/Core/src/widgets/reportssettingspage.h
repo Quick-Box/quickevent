@@ -20,6 +20,8 @@ public:
 private:
 	void load() override;
 	void save() override;
+
+	void resizeTableColumnsToFit();
 private:
 	Ui::ReportsSettingsPage *ui;
 	//QString m_exportReportDefinitionsDir;
