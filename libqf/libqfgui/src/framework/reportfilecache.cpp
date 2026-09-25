@@ -77,12 +77,13 @@ void ReportFileCache::initIfNotExists()
 		const QString relative_path = source_dir.relativeFilePath(source_file_path);
 		const QString destination_file_path = cache_dir.filePath(relative_path);
 		QDir().mkpath(QFileInfo(destination_file_path).path());
-		if(!QFile::copy(source_file_path, destination_file_path))
+		if(!QFile::copy(source_file_path, destination_file_path)) {
 			qfWarning() << "Cannot copy report file to cache:" << source_file_path << destination_file_path;
+		}
 	}
 }
 
-void ReportFileCache::applyDatabaseOverrides()
+void ReportFileCache::applyDatabaseOverrides() const
 {
 	QSqlDatabase db = QSqlDatabase::database();
 	if(!db.isValid() || !db.isOpen())
