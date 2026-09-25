@@ -176,17 +176,38 @@ struct Relay
 		}
 		return (legs.count() < leg_cnt) ? 0 : ret;
 	}
+	QString legStatus(int legno) const
+	{	// IOF XML status of single leg
+		const Leg &leg = legs[legno];
+		if(leg.runId == 0)
+			return QStringLiteral("DidNotStart");	// no runner assigned to the leg
+		if(!leg.runStatus.isOk())
+			return leg.runStatus.toXmlExportString();
+		if(leg.time > 0)
+			return QStringLiteral("OK");
+		// leg is not finished yet, runner is on course (Active) or waiting for handover (Inactive)
+		bool is_started = (legno == 0)? isStarted: legs[legno - 1].time > 0;
+		return is_started? QStringLiteral("Active"): QStringLiteral("Inactive");
+	}
 	QString status(int leg_cnt) const
 	{	// status after N legs (summary status)
 		for (int i = 0; i < qMin(legs.count(), leg_cnt); ++i) {
 			const Leg &leg = legs[i];
+			if(leg.runId == 0)
+				return QStringLiteral("DidNotStart");	// no runner assigned to the leg
 			if(!leg.runStatus.isOk())
 				return leg.runStatus.toXmlExportString();
 		}
 		if (legs.count() < leg_cnt)
 			return QStringLiteral("DidNotStart");	// relay leg not found
+		for (int i = 0; i < leg_cnt; ++i) {
+			if(legs[i].time <= 0)
+				return legStatus(i);
+		}
 		return QStringLiteral("OK");
 	}
+
+	bool isStarted = true;
 };
 }
 
@@ -258,6 +279,8 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 
 	QList<Relay> relays;
 	//QStringList relay_ids;
+	const QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(1);
+	const bool is_race_started = !start00.isValid() || QDateTime::currentDateTime() >= start00;
 	{
 		qfs::QueryBuilder qb;
 		qb.select2("relays", "id, club, name, number")
@@ -273,6 +296,7 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 			r.relayId = q.value("relays.id").toInt();
 			r.relayNumber = q.value("relays.number").toInt();
 			r.name = q.value("relayName").toString();
+			r.isStarted = is_race_started;
 			r.org = {
 				.id = q.value("clubs.importId").toInt(),
 				.name = q.value("clubs.name").toString(),
@@ -480,7 +504,7 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 			tt2_row.setValue("pos", leg.pos);
 			tt2_row.setValue("loss", leg.loss);
 			tt2_row.setValue("lossOverall", leg.lossOverall);
-			tt2_row.setValue("status", leg.runStatus.toXmlExportString());
+			tt2_row.setValue("status", relay.legStatus(j));
 			tt2_row.setValue("stime", leg.stime);
 			tt2_row.setValue("spos", leg.spos);
 			tt2_row.setValue("runId", leg.runId);
@@ -693,8 +717,6 @@ QString RelaysPlugin::resultsIofXml30()
 				int leg = k + 1;
 				QF_TIME_SCOPE("exporting leg: " + QString::number(leg));
 				const qf::core::utils::TreeTableRow tt_leg_row = tt_legs.row(k);
-				auto time = quickevent::core::og::TimeMs::fromVariant(tt_leg_row.value("time"));
-				// omit from export if leg does not exist (rundId == 0) or runner with OK status did not finish yet
 				if (tt_leg_row.value("runId").toInt() == 0) {
 					// empty TeamMemberResult if leg does not exists - defined in IOF XML v3
 					// https://github.com/international-orienteering-federation/datastandard-v3/blob/24eb108e4c6b5e2904e5f8f0e49142e45e2c5230/IOF.xsd#L2580
@@ -717,9 +739,15 @@ QString RelaysPlugin::resultsIofXml30()
 					append_list(team_result, member_result);
 					continue;
 				}
-				if (time.isValid() && time.msec() == 0) {
-					continue;
-				}
+				// Active - runner is on course, Inactive - runner is waiting for start or handover
+				const QString leg_status = tt_leg_row.value(QStringLiteral("status")).toString();
+				const QString overall_status = tt_leg_row.value(QStringLiteral("sstatus")).toString();
+				const bool is_inactive = leg_status == QLatin1String("Inactive");
+				const bool is_finished = !(is_inactive
+										   || leg_status == QLatin1String("Active")
+										   || leg_status == QLatin1String("DidNotStart")
+										   || leg_status == QLatin1String("DidNotFinish"));
+				const bool is_ok = leg_status == QLatin1String("OK");
 				QVariantList member_result{"TeamMemberResult"};
 				QVariantList person{"Person"};
 				if (!is_iof_race) {
@@ -784,19 +812,27 @@ QString RelaysPlugin::resultsIofXml30()
 					}
 				}
 
-				append_list(person_result, QVariantList{"StartTime", datetime_to_string(quantize_datetime(start00.addMSecs(stime)))});
-				append_list(person_result, QVariantList{"FinishTime", datetime_to_string(quantize_datetime(start00.addMSecs(ftime)))});
-				append_list(person_result, QVariantList{"Time", static_cast<double>(quantize_time(time_msec)) / 1000});
-				append_list(person_result, QVariantList{"TimeBehind", QVariantMap{{"type", "Leg"}}, static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("loss")).toInt())) / 1000});
-				append_list(person_result, QVariantList{"Position", QVariantMap{{"type", "Leg"}}, tt_leg_row.value(QStringLiteral("pos"))});
+				if (!is_inactive)
+					append_list(person_result, QVariantList{"StartTime", datetime_to_string(quantize_datetime(start00.addMSecs(stime)))});
+				if (is_finished) {
+					append_list(person_result, QVariantList{"FinishTime", datetime_to_string(quantize_datetime(start00.addMSecs(ftime)))});
+					append_list(person_result, QVariantList{"Time", static_cast<double>(quantize_time(time_msec)) / 1000});
+				}
+				if (is_ok) {
+					// Position should only be present when the Status element is set to OK
+					append_list(person_result, QVariantList{"TimeBehind", QVariantMap{{"type", "Leg"}}, static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("loss")).toInt())) / 1000});
+					append_list(person_result, QVariantList{"Position", QVariantMap{{"type", "Leg"}}, tt_leg_row.value(QStringLiteral("pos"))});
+				}
 				// MISSING position course append_list(person_result, QVariantList{"Position", QVariantMap{{"type", "course"}}, tt_laps_row.value(QStringLiteral("pos"))});
-				append_list(person_result, QVariantList{"Status", tt_leg_row.value(QStringLiteral("status"))});
+				append_list(person_result, QVariantList{"Status", leg_status});
 				QVariantList overall_result{"OverallResult"};
 				{
-					append_list(overall_result, QVariantList{"Time", static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("stime")).toInt())) / 1000});
-					append_list(overall_result, QVariantList{"TimeBehind", static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("lossOverall")).toInt())) / 1000});
-					append_list(overall_result, QVariantList{"Position", tt_leg_row.value(QStringLiteral("spos"))});
-					append_list(overall_result, QVariantList{"Status", tt_leg_row.value(QStringLiteral("sstatus"))});
+					if (overall_status == QLatin1String("OK")) {
+						append_list(overall_result, QVariantList{"Time", static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("stime")).toInt())) / 1000});
+						append_list(overall_result, QVariantList{"TimeBehind", static_cast<double>(quantize_time(tt_leg_row.value(QStringLiteral("lossOverall")).toInt())) / 1000});
+						append_list(overall_result, QVariantList{"Position", tt_leg_row.value(QStringLiteral("spos"))});
+					}
+					append_list(overall_result, QVariantList{"Status", overall_status});
 				}
 				append_list(person_result, overall_result);
 				int course_id = getPlugin<RunsPlugin>()->courseForRelay(relay_number, leg);
@@ -823,7 +859,8 @@ QString RelaysPlugin::resultsIofXml30()
 					}
 					append_list(person_result, course);
 				}
-				{
+				if (is_finished || leg_status == QLatin1String("DidNotFinish")) {
+					// no split times for runners who did not start or finish yet
 					QF_TIME_SCOPE("exporting laps");
 					qf::core::sql::QueryBuilder qb;
 					qb.select2("runlaps", "position, stpTimeMs")
