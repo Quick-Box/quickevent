@@ -12,6 +12,7 @@
 #include <quickevent/core/exporters/stageresultscsvexporter.h>
 
 #include <qf/gui/dialogs/dialog.h>
+#include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/gui/dialogs/filedialog.h>
@@ -1086,27 +1087,35 @@ void RunsWidget::editCompetitors(int mode)
 			return;
 		if(qfd::MessageBox::askYesNo(this, tr("Really delete all the selected competitors? This action cannot be reverted."), false)) {
 			qfs::Transaction transaction;
+			int current_stage = getPlugin<EventPlugin>()->currentStageId();
 			QList<int> deleted_ids;
+			QList<int> deleted_run_ids;
 			for(int ix : sel_rows) {
 				int id = tv->tableRow(ix).value("competitors.id").toInt();
 				if(id > 0) {
-					// Get runs_id instead of competitor_id
-					int current_stage = getPlugin<EventPlugin>()->currentStageId();
-					int run_id = getPlugin<RunsPlugin>()->runForCompetitorStage(id, current_stage);
-
 					Competitors::CompetitorDocument doc;
 					doc.load(id, qfm::DataDocument::ModeDelete);
+					// WARNING: db events must not be emitted from the document, the deletion
+					// can still be rolled back, they are emitted after the commit below
+					doc.setEmitDbEventsOnSave(false);
+					deleted_run_ids.append(doc.runsIds());
+					// Get runs_id instead of competitor_id
+					deleted_ids.append(doc.runsIds().value(current_stage - 1));
 					doc.drop();
-
-					deleted_ids.append(run_id);
 				}
 			}
 			if(!deleted_ids.isEmpty()) {
 				if(qfd::MessageBox::askYesNo(this, tr("Confirm deletion of %1 competitors.").arg(deleted_ids.count()), false)) {
 					transaction.commit();
 
-					// Invoke db delete event for selected rows
+					// Invoke db delete events for selected rows
 					auto *plugin = getPlugin<EventPlugin>();
+					auto *app = qf::gui::framework::Application::instance();
+					plugin->emitDbEvent(Event::EventPlugin::DBEVENT_COMPETITOR_COUNTS_CHANGED);
+					for (int run_id : deleted_run_ids) {
+						plugin->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, {}});
+						app->emitDbRecDeleted(QStringLiteral("runs"), run_id, this);
+					}
 					for (int run_id : deleted_ids) {
 						if (run_id > 0)
 						{

@@ -23,6 +23,8 @@ QSize CircularTimerWidget::sizeHint() const
 
 void CircularTimerWidget::setProgress(int remaining_ms, int total_ms)
 {
+	// an inactive timer reports remaining time -1, don't show an idle empty ring at all
+	setVisible(m_just_fired || (total_ms > 0 && remaining_ms >= 0));
 	if(m_just_fired)
 		return;
 	m_remaining_ms = remaining_ms;

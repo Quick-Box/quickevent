@@ -422,8 +422,11 @@ void CardReaderPlugin::updateCheckedCardValuesSql(int card_id,
 				auto vll = vl.toList();
 				missing_str << QStringLiteral("%1-%2").arg(vll.value(0).toInt()).arg(vll.value(1).toInt());
 			}
+			// rebuilt from cards.data, never accumulated over repeated checks
+			auto note = read_card.data().value(QStringLiteral("generatedTestDataNote")).toString();
+			auto missing = tr("Missing codes: %1").arg(missing_str.join(','));
 			QVariantMap rec {
-				{"runIdAssignError", tr("Missing codes: %1").arg(missing_str.join(','))},
+				{"runIdAssignError", note.isEmpty()? missing : note + QStringLiteral("; ") + missing},
 			};
 			app->updateDbRecord("cards", card_id, rec, this);
 		}

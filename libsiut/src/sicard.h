@@ -38,6 +38,7 @@ public:
 	int finishTimeMs = 0;
 	PunchList punches;
 	std::optional<SiCardBatteryStatus> batteryStatus;
+	QString generatedTestDataNote;
 
 	SICard() = default;
 	SICard(int card_number) : cardNumber(card_number) {}

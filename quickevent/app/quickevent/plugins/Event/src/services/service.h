@@ -54,7 +54,7 @@ public:
 	Status status() const {return m_status;}
 	Q_SIGNAL void statusChanged(Status new_status);
 
-	void setRunning(bool on);
+	virtual void setRunning(bool on);
 	bool isRunning() const { return status() == Status::Running; }
 
 	static void addService(Service *service);

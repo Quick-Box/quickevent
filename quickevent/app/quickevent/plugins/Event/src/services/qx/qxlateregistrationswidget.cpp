@@ -4,6 +4,7 @@
 #include "qxclientservice.h"
 #include "runchangedialog.h"
 #include "runchange.h"
+#include "../ofeed/ofeedclient.h"
 
 #include <plugins/Event/src/eventplugin.h>
 
@@ -12,6 +13,7 @@
 #include <qf/core/log.h>
 #include <qf/core/sql/query.h>
 
+#include <QDockWidget>
 #include <QMenu>
 #include <QJsonDocument>
 
@@ -79,33 +81,14 @@ QxLateRegistrationsWidget::QxLateRegistrationsWidget(QWidget *parent) :
 	showMessage({});
 	setEnabled(false);
 
-	auto *svc = service();
-	connect(svc, &Service::statusChanged, this, [this](Service::Status new_status){
-		switch (new_status) {
-		case Service::Status::Unknown:
-		case Service::Status::Stopped:
-			setEnabled(false);
-			break;
-			case Service::Status::Running:
-			setEnabled(true);
-			reload();
-			break;
-		}
-	});
+	connect(service(), &Service::statusChanged, this, &QxLateRegistrationsWidget::updateEnabled);
+	if (auto *svc = Service::serviceByName(OFeedClient::serviceName())) {
+		connect(svc, &Service::statusChanged, this, &QxLateRegistrationsWidget::updateEnabled);
+	}
 
 	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &QxLateRegistrationsWidget::onDbEventNotify, Qt::QueuedConnection);
 
-	{
-		auto *lst = ui->lstType;
-		lst->addItem("All");
-		lst->addItem("RunUpdateRequest");
-		lst->addItem("RunUpdated");
-		lst->addItem("OcChange");
-		lst->addItem("RadioPunch");
-		lst->addItem("CardReadout");
-		lst->setCurrentIndex(0);
-		connect(lst, &QComboBox::currentIndexChanged, this, &QxLateRegistrationsWidget::reload);
-	}
+	connect(ui->lstType, &QComboBox::currentIndexChanged, this, &QxLateRegistrationsWidget::reload);
 	connect(ui->chkNull, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
 	connect(ui->chkPending, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
 	connect(ui->chkLocked, &QCheckBox::checkStateChanged, this, &QxLateRegistrationsWidget::reload);
@@ -159,6 +142,43 @@ QxClientService *QxLateRegistrationsWidget::service()
 	return svc;
 }
 
+void QxLateRegistrationsWidget::updateEnabled()
+{
+	auto *ofeed = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
+	bool is_ofeed_running = ofeed && ofeed->isRunning();
+	bool is_qx_running = service()->isRunning() ;
+	bool is_enabled = is_qx_running || is_ofeed_running;
+	setEnabled(is_enabled);
+	if (is_enabled) {
+		reload();
+	}
+	// the changes are stored into this table only when the processing is switched on,
+	// the dock is revealed then, so that the records are not hidden from the user
+	if (is_ofeed_running && (ofeed->runStartChangesProcessing() || ofeed->runOfficeChangesProcessing())) {
+		if (auto *dock = qobject_cast<QDockWidget*>(parentWidget())) {
+			dock->show();
+		}
+	}
+}
+
+void QxLateRegistrationsWidget::loadTypes(int stage_id)
+{
+	auto *lst = ui->lstType;
+	QSignalBlocker sb(lst);
+	auto current_type = lst->currentText();
+	lst->clear();
+	lst->addItem(tr("All"));
+	qfs::Query q;
+	q.execThrow("SELECT DISTINCT data_type FROM qxchanges WHERE stage_id=" + QString::number(stage_id)
+				+ " AND data_type IS NOT NULL ORDER BY data_type");
+	while (q.next()) {
+		lst->addItem(q.value(0).toString());
+	}
+	if (auto ix = lst->findText(current_type); ix > 0) {
+		lst->setCurrentIndex(ix);
+	}
+}
+
 void QxLateRegistrationsWidget::resizeColumns()
 {
 	auto *tv = ui->tableView;
@@ -192,6 +212,7 @@ void QxLateRegistrationsWidget::reload()
 		return;
 	}
 	int stage_id = event_plugin->currentStageId();
+	loadTypes(stage_id);
 	qfs::QueryBuilder qb;
 	qb.select2("qxchanges", "*")
 			.from("qxchanges")
@@ -232,9 +253,12 @@ void QxLateRegistrationsWidget::addQxChangeRow(int sql_id)
 		return;
 	}
 
+	// the type of the arrived change may be still missing in the filter combo
+	loadTypes(getPlugin<EventPlugin>()->currentStageId());
+
 	auto qb = m_model->queryBuilder();
 	qb.where(QStringLiteral("id=%1").arg(sql_id));
-	qf::core::sql::Query q;
+	qfs::Query q;
 	q.execThrow(qb.toString());
 	if (!q.next()) {
 		// inserted row is filtered out

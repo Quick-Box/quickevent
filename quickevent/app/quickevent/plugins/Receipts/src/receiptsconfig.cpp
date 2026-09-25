@@ -1,5 +1,7 @@
 #include "receiptsconfig.h"
 
+#include <QBuffer>
+#include <QImageReader>
 #include <QVariantMap>
 
 namespace Receipts {
@@ -21,6 +23,21 @@ ReceiptsConfig ReceiptsConfig::fromVariantMap(const QVariantMap &map)
 	config.imageBase64 = map.value("imageBase64", config.imageBase64).toString();
 	config.imageFormat = map.value("imageFormat", config.imageFormat).toString();
 	return config;
+}
+
+int ReceiptsConfig::imageHeightMmForImage(const QByteArray &image_data, int fallback_mm)
+{
+	// receipt column is 65 mm wide (210/3-5) minus 4 mm frame insets on both sides,
+	// the report scales the image KeepAspectRatio into (usable width, height)
+	static constexpr double USABLE_RECEIPT_WIDTH = 55;
+	QBuffer buffer;
+	buffer.setData(image_data);
+	buffer.open(QIODevice::ReadOnly);
+	const QSize image_size = QImageReader(&buffer).size();
+	if(image_size.width() <= 0 || image_size.height() <= 0) {
+		return fallback_mm;
+	}
+	return qBound(10, qRound(USABLE_RECEIPT_WIDTH * image_size.height() / image_size.width()), 60);
 }
 
 QVariantMap ReceiptsConfig::toVariantMap() const

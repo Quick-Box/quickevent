@@ -3,10 +3,14 @@
 #include "punchingtestservice.h"
 
 #include "../service.h"
+#include "../../eventplugin.h"
 
+#include <qf/gui/framework/mainwindow.h>
 #include <qf/core/assert.h>
 
 #include <QDialog>
+
+using qf::gui::framework::getPlugin;
 
 namespace Event::services {
 
@@ -16,6 +20,7 @@ PunchingTestServiceWidget::PunchingTestServiceWidget(QWidget *parent)
 {
 	setPersistentSettingsId("PunchingTestServiceWidget");
 	ui->setupUi(this);
+	ui->grpRelays->setVisible(getPlugin<EventPlugin>()->eventConfig().isRelays());
 
 	PunchingTestService *svc = service();
 	if (svc) {
@@ -27,6 +32,8 @@ PunchingTestServiceWidget::PunchingTestServiceWidget(QWidget *parent)
 		ui->edExtraPunchRate->setValue(ss.extraPunchRate());
 		ui->edBadCheckRate->setValue(ss.badCheckRate());
 		ui->edMispunchRate->setValue(ss.mispunchRate());
+		ui->cbxShameStartEnabled->setChecked(ss.shameStartEnabled());
+		ui->edShameStartOffsetMin->setValue(ss.shameStartOffsetMin());
 	}
 }
 
@@ -62,6 +69,8 @@ void PunchingTestServiceWidget::saveSettings()
 		ss.setExtraPunchRate(ui->edExtraPunchRate->value());
 		ss.setBadCheckRate(ui->edBadCheckRate->value());
 		ss.setMispunchRate(ui->edMispunchRate->value());
+		ss.setShameStartEnabled(ui->cbxShameStartEnabled->isChecked());
+		ss.setShameStartOffsetMin(ui->edShameStartOffsetMin->value());
 		svc->setSettings(ss);
 	}
 }

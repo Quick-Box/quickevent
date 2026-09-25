@@ -36,6 +36,7 @@ private:
 	void onBtOpenEventWebsiteClicked();
 	void updateTestConnectionState();
 	void updateCredentialStatus(bool valid);
+	void updateEventImagePreview();
 	void syncReceiptEventLinkWithDefaults();
 	QString defaultReceiptEventLink() const;
 	OFeedClient* service();
@@ -48,6 +49,7 @@ private:
 	QString m_lastAutoReceiptEventLink;
 	QTimer *m_uiTickTimer = nullptr;
 	CircularTimerWidget *m_exportTimerIndicator = nullptr;
+	CircularTimerWidget *m_changesTimerIndicator = nullptr;
 	CircularTimerWidget *m_credentialTimerIndicator = nullptr;
 };
 

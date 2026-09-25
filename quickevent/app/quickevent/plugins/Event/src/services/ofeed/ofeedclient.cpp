@@ -3,20 +3,22 @@
 
 #include "../../eventplugin.h"
 
+#include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/dialog.h>
+#include <qf/gui/dialogs/messagebox.h>
 #include <qf/core/log.h>
 #include <qf/core/utils/htmlutils.h>
 
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxrecchng.h>
 #include <qf/core/sql/transaction.h>
 
 #include <plugins/Runs/src/runsplugin.h>
 #include <plugins/Relays/src/relaysplugin.h>
 #include <plugins/Competitors/src/competitordocument.h>
 
-#include <quickevent/core/si/checkedcard.h>
 #include <quickevent/core/utils.h>
 
 #include <QCoreApplication>
@@ -54,6 +56,10 @@ namespace Event::services {
 	{
 		const QString k_default_host_url = QStringLiteral("https://api.orienteerfeed.com");
 		const QString k_event_config_prefix = QStringLiteral("event");
+		const QString k_start_changelog_origin = QStringLiteral("START");
+		const QString k_office_changelog_origin = QStringLiteral("OFFICE");
+		/// window in which the record changes are collected before they are sent to OFeed
+		const int k_run_change_flush_msec = 100;
 
 		QString normalized_base_host_url(QString host_url)
 		{
@@ -117,10 +123,16 @@ OFeedClient::OFeedClient(QObject *parent)
 	m_networkManager = new QNetworkAccessManager(this);
 	m_exportTimer = new QTimer(this);
 	connect(m_exportTimer, &QTimer::timeout, this, &OFeedClient::onExportTimerTimeOut);
+	m_changesTimer = new QTimer(this);
+	connect(m_changesTimer, &QTimer::timeout, this, &OFeedClient::onChangesTimerTimeOut);
 	m_credentialCheckTimer = new QTimer(this);
 	connect(m_credentialCheckTimer, &QTimer::timeout, this, &OFeedClient::checkCredentials);
+	m_runChangeFlushTimer = new QTimer(this);
+	m_runChangeFlushTimer->setSingleShot(true);
+	connect(m_runChangeFlushTimer, &QTimer::timeout, this, &OFeedClient::flushRunChanges);
 	connect(this, &OFeedClient::settingsChanged, this, &OFeedClient::init, Qt::QueuedConnection);
-	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &OFeedClient::onDbEventNotify, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng,
+			this, &OFeedClient::onQxRecChng, Qt::QueuedConnection);
 }
 
 QString OFeedClient::serviceName()
@@ -130,25 +142,114 @@ QString OFeedClient::serviceName()
 
 void OFeedClient::run()
 {
+	if (m_startupCheckInProgress)
+		return;
+
+	const QString event_id = eventId().trimmed();
+	const QString event_password = eventPassword().trimmed();
+	if (event_id.isEmpty() || event_password.isEmpty()) {
+		setCredentialsInvalid();
+		showStartupCredentialError(tr("OFeed event ID or password is not set."));
+		return;
+	}
+
+	m_startupCheckInProgress = true;
+	testConnection(hostUrl(), event_id, event_password, [this](bool success, const QString &message) {
+		m_startupCheckInProgress = false;
+		if (!success) {
+			setCredentialsInvalid();
+			showStartupCredentialError(message);
+			return;
+		}
+		m_credentialsValid = 1;
+		m_credentialWarningShown = false;
+		emit credentialsStatusChanged(true);
+		startService();
+	});
+}
+
+void OFeedClient::startService()
+{
 	Super::run();
 	ensureEventImageCachedAtStartup();
-	exportStartListIofXml3([this]() { exportResultsIofXml3(); });
+	exportStartListAndResults();
 	m_exportTimer->start();
-	QTimer::singleShot(3000, this, &OFeedClient::checkCredentials);
+	m_changesTimer->start();
 	m_credentialCheckTimer->start();
+}
+
+void OFeedClient::setCredentialsInvalid()
+{
+	m_credentialsValid = 0;
+	emit credentialsStatusChanged(false);
+}
+
+void OFeedClient::showStartupCredentialError(const QString &message)
+{
+	QMessageBox::warning(
+		qf::gui::framework::MainWindow::frameWork(),
+		serviceDisplayName(),
+		tr("The service cannot be started, OFeed credentials check has not passed.\n\n%1\n\nPlease open OFeed service settings and update your credentials.").arg(message)
+	);
+}
+
+void OFeedClient::setRunning(bool on)
+{
+	const bool start_changes_off = !runStartChangesProcessing();
+	const bool office_changes_off = !runOfficeChangesProcessing();
+	if (on && !isRunning() && (start_changes_off || office_changes_off)) {
+		QString text;
+		QString informative_text;
+		if (start_changes_off && office_changes_off) {
+			text = tr("Do you really want to start the service without processing any changes from OFeed?");
+			informative_text = tr("Neither start changes from O Checklist nor late entries and changes from the office will be processed."
+								  " Choose No to switch both of them on before the service starts.");
+		}
+		else if (start_changes_off) {
+			text = tr("Do you really want to start the service without processing start changes from O Checklist?");
+			informative_text = tr("Late entries and changes from the office will be processed."
+								  " Choose No to switch the start changes processing on as well.");
+		}
+		else {
+			text = tr("Do you really want to start the service without processing late entries and changes from the office?");
+			informative_text = tr("Start changes from O Checklist will be processed."
+								  " Choose No to switch the office changes processing on as well.");
+		}
+		qf::gui::dialogs::MessageBox mbx(qf::gui::framework::MainWindow::frameWork());
+		mbx.setIcon(QMessageBox::Question);
+		mbx.setWindowTitle(serviceDisplayName());
+		mbx.setText(text);
+		mbx.setInformativeText(informative_text);
+		mbx.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		mbx.setDefaultButton(QMessageBox::No);
+		mbx.setDoNotShowAgainPersistentKey(QStringLiteral("ofeed/startWithoutChangesProcessing"));
+		if (mbx.exec() == QMessageBox::No) {
+			if (start_changes_off) {
+				setRunStartChangesProcessing(true);
+			}
+			if (office_changes_off) {
+				setRunOfficeChangesProcessing(true);
+			}
+		}
+	}
+	Super::setRunning(on);
 }
 
 void OFeedClient::stop()
 {
 	Super::stop();
 	m_exportTimer->stop();
+	m_changesTimer->stop();
 	m_credentialCheckTimer->stop();
+	m_exportDeferred = false;
 	m_credentialsValid = -1;
 	m_credentialWarningShown = false;
 	m_resultsExportInProgress = false;
 	m_startListExportInProgress = false;
 	m_changesProcessingInProgress = false;
 	m_processingOFeedChanges = false;
+	m_runChangeFlushTimer->stop();
+	m_pendingRunChanges.clear();
 }
 
 void OFeedClient::exportResultsIofXml3()
@@ -184,16 +285,29 @@ void OFeedClient::exportStartListIofXml3(std::function<void()> on_success)
 
 	QString str = is_relays
 					  ? getPlugin<RelaysPlugin>()->startListIofXml30()
-					  : getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners);
+					  : getPlugin<RunsPlugin>()->startListStageIofXml30(current_stage, quickevent::gui::ReportOptionsDialog::VacantsOption::AllVacants);
 
 	sendFile(tr("start list upload"), "/rest/v1/upload/iof", str, on_success, [this]() {
 		m_startListExportInProgress = false;
 	});
 }
 
-void OFeedClient::triggerChangesProcessing()
+void OFeedClient::processChanges(std::function<void()> on_done)
 {
-	getChangesByOrigin();
+	auto process_office = [this, on_done]() {
+		if (runOfficeChangesProcessing()) {
+			getChangesByOrigin(k_office_changelog_origin, on_done);
+		}
+		else if (on_done) {
+			on_done();
+		}
+	};
+	if (runStartChangesProcessing()) {
+		getChangesByOrigin(k_start_changelog_origin, process_office);
+	}
+	else {
+		process_office();
+	}
 }
 
 int OFeedClient::credentialCheckRemainingMs() const
@@ -216,6 +330,16 @@ int OFeedClient::exportTimerIntervalMs() const
 	return m_exportTimer->interval();
 }
 
+int OFeedClient::changesTimerRemainingMs() const
+{
+	return m_changesTimer->remainingTime();
+}
+
+int OFeedClient::changesTimerIntervalMs() const
+{
+	return m_changesTimer->interval();
+}
+
 qf::gui::framework::DialogWidget *OFeedClient::createDetailWidget()
 {
 	auto *w = new OFeedClientWidget();
@@ -226,26 +350,45 @@ void OFeedClient::init()
 {
 	OFeedClientSettings ss = settings();
 	m_exportTimer->setInterval(ss.exportIntervalSec() * 1000);
+	m_changesTimer->setInterval(ss.changesIntervalSec() * 1000);
 	m_credentialCheckTimer->setInterval(ss.credentialCheckIntervalMin() * 60 * 1000);
 	ensureEventImageCachedAtStartup();
+}
+
+void OFeedClient::exportStartListAndResults()
+{
+	exportStartListIofXml3([this]() { exportResultsIofXml3(); });
 }
 
 void OFeedClient::onExportTimerTimeOut()
 {
 	emit exportTimerFired();
-	if (runChangesProcessing() && m_changesProcessingInProgress) {
-		// Skip - ongoing cycle will export start list + results after processing completes.
-		// Exporting now would send stale data and overwrite OFeed changes.
+	if (m_changesProcessingInProgress) {
+		// Exporting now would send stale data and overwrite OFeed changes, the running
+		// changes cycle triggers the deferred export as soon as it is done.
+		m_exportDeferred = true;
 		return;
 	}
-	if (runChangesProcessing()) {
-		getChangesByOrigin([this]() {
-			exportStartListIofXml3([this]() { exportResultsIofXml3(); });
-		});
+	exportStartListAndResults();
+}
+
+void OFeedClient::onChangesTimerTimeOut()
+{
+	emit changesTimerFired();
+	if (!runStartChangesProcessing() && !runOfficeChangesProcessing()) {
+		runDeferredExport();
+		return;
 	}
-	else {
-		exportStartListIofXml3([this]() { exportResultsIofXml3(); });
+	processChanges([this]() { runDeferredExport(); });
+}
+
+void OFeedClient::runDeferredExport()
+{
+	if (!m_exportDeferred) {
+		return;
 	}
+	m_exportDeferred = false;
+	exportStartListAndResults();
 }
 
 void OFeedClient::loadSettings()
@@ -254,82 +397,84 @@ void OFeedClient::loadSettings()
 	init();
 }
 
-void OFeedClient::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
+void OFeedClient::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
 	if (status() != Status::Running)
 		return;
-	Q_UNUSED(connection_id)
-
-	// Handle read-out
-	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_CARD_PROCESSED_AND_ASSIGNED))
-	{
-		auto checked_card = quickevent::core::si::CheckedCard(data.toMap());
-		int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(checked_card.runId());
-		qfInfo() << serviceName().toStdString() + " DB event competitor READ-OUT, competitor id: " << competitor_id << ", runs.id: " << checked_card.runId();
-		onCompetitorReadOut(competitor_id);
+	if (source == this) {
+		// own change, do not send it back to OFeed
+		return;
 	}
 
-	// Handle add competitor
-	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_COMPETITOR_ADDED))
-	{
-		if (isInsertFromOFeed)
-		{
-			qfWarning() << serviceName().toStdString() + " [new competitor]: added from OFeed, no need to send back as a new competitor from QE (already exists in OFeed)";
-			// Set back default value
-			isInsertFromOFeed = false;
-		}
-		else
-		{
-			int competitor_id = data.toInt();
-			qfInfo() << serviceName().toStdString() + "DB event competitor ADDED, competitor id: " << competitor_id;
+	int stage_id = getPlugin<EventPlugin>()->currentStageId();
+
+	if (recchng.table == QLatin1String("runs")) {
+		int run_id = static_cast<int>(recchng.id);
+		switch (recchng.op) {
+		case qf::core::sql::RecOp::Insert: {
+			// runs record is inserted for every stage, the new competitor is sent just once
+			if (getPlugin<EventPlugin>()->stageIdForRun(run_id) != stage_id) {
+				return;
+			}
+			if (isInsertFromOFeed) {
+				qfWarning() << serviceName().toStdString() + " [new competitor]: added from OFeed, no need to send back as a new competitor from QE (already exists in OFeed)";
+				// Set back default value
+				isInsertFromOFeed = false;
+				return;
+			}
+			int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(run_id);
+			qfInfo() << serviceName().toStdString() + " rec chng competitor ADDED, competitor id: " << competitor_id;
 			onCompetitorAdded(competitor_id);
+			return;
+		}
+		case qf::core::sql::RecOp::Delete: {
+			// WARNING: the record is already gone, so its stage cannot be checked here. In a multi stage
+			// event this sends a delete request for the run of every stage, while OFeed knows the
+			// current stage run id only and answers with an error for the rest of them.
+			m_pendingRunChanges.remove(run_id);
+			qfInfo() << serviceName().toStdString() + " rec chng competitor DELETED, run id: " << run_id;
+			sendCompetitorDeleted(run_id);
+			return;
+		}
+		case qf::core::sql::RecOp::Update:
+			queueRunChange(run_id, recchng.table, recchng.record);
+			return;
 		}
 	}
-
-	// Handle delete competitor
-	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_COMPETITOR_DELETED))
-	{
-		int run_id = data.toInt();
-		qfInfo() << serviceName().toStdString() + " DB event competitor DELETED, run id: " << run_id;
-		sendCompetitorDeleted(run_id);
-	}
-
-	// Handle direct run table edits (Runs UI, RunFlagsDialog, start time assignment, etc.)
-	if (domain == QLatin1String(Event::EventPlugin::DBEVENT_RUN_CHANGED))
-	{
-		auto lst = data.toList();
-		int run_id = lst.value(0).toInt();
-		auto dirty_vals = lst.value(1).toMap();
-		// qfInfo() << serviceName().toStdString() << "DB event RUN CHANGED received, run_id: " << run_id << ", dirty keys: " << dirty_vals.keys().join(", ");
-		if (!dirty_vals.isEmpty()) {
-			static const QSet<QString> relevant_fields = {
-				// Run fields (finishTimeMs and timeMs are covered by DBEVENT_CARD_PROCESSED_AND_ASSIGNED)
-				QStringLiteral("starttimems"),
-				QStringLiteral("siid"), QStringLiteral("disqualified"), QStringLiteral("disqualifiedbyorganizer"),
-				QStringLiteral("mispunch"), QStringLiteral("badcheck"),
-				QStringLiteral("notstart"), QStringLiteral("notfinish"), QStringLiteral("notcompeting"),
-				QStringLiteral("leg"), QStringLiteral("relayid"),
-				// Competitor fields visible in runsRecord JOIN
-				QStringLiteral("competitorname"), QStringLiteral("registration"), QStringLiteral("note"),
-				QStringLiteral("licence"), QStringLiteral("competitors__startnumber"),
-				QStringLiteral("classid"),
-			};
-			bool has_relevant = false;
-			for (const auto &[key, _] : dirty_vals.asKeyValueRange()) {
-				if (relevant_fields.contains(key.section('.', -1).toLower())) {
-					has_relevant = true;
-					break;
-				}
-			}
-			if (has_relevant) {
-				if (m_processingOFeedChanges) {
-					qfDebug() << serviceName() << "skipping RUN_CHANGED back-send to OFeed (change originated from OFeed)";
-				} else {
-					qfInfo() << serviceName().toStdString() + " DB event RUN CHANGED, run id: " << run_id;
-					onRunChanged(run_id, dirty_vals);
-				}
-			}
+	else if (recchng.table == QLatin1String("competitors") && recchng.op == qf::core::sql::RecOp::Update) {
+		int run_id = getPlugin<RunsPlugin>()->runForCompetitorStage(static_cast<int>(recchng.id), stage_id);
+		if (run_id > 0) {
+			queueRunChange(run_id, recchng.table, recchng.record);
 		}
+	}
+}
+
+void OFeedClient::queueRunChange(int run_id, const QString &table, const QVariantMap &fields)
+{
+	if (m_processingOFeedChanges) {
+		qfDebug() << serviceName() << "skipping run change back-send to OFeed (change originated from OFeed)";
+		return;
+	}
+	auto &pending = m_pendingRunChanges[run_id];
+	auto &dest = (table == QLatin1String("runs"))? pending.runFields: pending.competitorFields;
+	// field names are normalized here, so that the rest of the code can rely on lowercase
+	// names without the table prefix, the record changes come in both flavors
+	for (const auto &[key, val] : fields.asKeyValueRange()) {
+		dest[key.section('.', -1).toLower()] = val;
+	}
+	// collect the changes of one record into a single request, a card read-out updates the run
+	// record twice - the checked card values first, the computed running time after that
+	if (!m_runChangeFlushTimer->isActive()) {
+		m_runChangeFlushTimer->start(k_run_change_flush_msec);
+	}
+}
+
+void OFeedClient::flushRunChanges()
+{
+	const auto pending = m_pendingRunChanges;
+	m_pendingRunChanges.clear();
+	for (const auto &[run_id, chng] : pending.asKeyValueRange()) {
+		onRunChanged(run_id, chng.runFields, chng.competitorFields);
 	}
 }
 
@@ -354,29 +499,23 @@ QString OFeedClient::eventPassword() const
 	return cfg.eventPassword;
 }
 
-QString OFeedClient::changelogOrigin() const
-{
-	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
-	return cfg.changelogOrigin;
-}
-
 bool OFeedClient::isInsertFromOFeed = false;
 
-QDateTime OFeedClient::lastChangelogCall() {
+QDateTime OFeedClient::lastChangelogCall(const QString &origin) {
     int current_stage = getPlugin<EventPlugin>()->currentStageId();
     auto config = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
-    // Retrieve the stored value from the configuration
-    auto last_call = config.lastChangelogCall;
+    const bool is_office = origin == k_office_changelog_origin;
+    // Retrieve the stored value from the configuration, each origin is tracked separately
+    auto &last_call = is_office ? config.lastOfficeChangelogCall : config.lastStartChangelogCall;
 
     // Check if the value exists
     if (!last_call.isValid() || last_call.toString().isEmpty()) {
         // No valid value exists, set the initial value
-        config.lastChangelogCall = QDateTime::fromSecsSinceEpoch(0); // Default to Unix epoch (1970-01-01T00:00:00Z)
+        last_call = QDateTime::fromSecsSinceEpoch(0); // Default to Unix epoch (1970-01-01T00:00:00Z)
         getPlugin<EventPlugin>()->appDbConfig().setOfeedConfig(current_stage, config);
-        // qDebug() << "No lastChangelogCall found. Setting initial value to:" << config.lastChangelogCall.toString(Qt::ISODate);
+        // qDebug() << "No lastChangelogCall found. Setting initial value to:" << last_call.toString(Qt::ISODate);
     }
-    return config.lastChangelogCall;
+    return last_call;
 }
 
 bool OFeedClient::runXmlValidation()
@@ -386,11 +525,18 @@ bool OFeedClient::runXmlValidation()
     return config.ofeedConfig(current_stage).runXmlValidation;
 }
 
-bool OFeedClient::runChangesProcessing ()
+bool OFeedClient::runStartChangesProcessing ()
 {
     auto &config = getPlugin<EventPlugin>()->appDbConfig();
     auto current_stage = config.eventConfig().currentStageId;
-    return config.ofeedConfig(current_stage).runChangesProcessing;
+    return config.ofeedConfig(current_stage).runStartChangesProcessing;
+}
+
+bool OFeedClient::runOfficeChangesProcessing ()
+{
+    auto &config = getPlugin<EventPlugin>()->appDbConfig();
+    auto current_stage = config.eventConfig().currentStageId;
+    return config.ofeedConfig(current_stage).runOfficeChangesProcessing;
 }
 
 // QString OFeedClient::receiptConfigKey(const QString &suffix) const
@@ -544,6 +690,7 @@ void OFeedClient::setCachedEventImage(const QByteArray &raw_data, const QString 
 	auto rc = config.receiptsConfig(current_stage);
 	rc.imageBase64 = QString::fromLatin1(raw_data.toBase64());
 	rc.imageFormat = format.toLower();
+	rc.imageHeightMm = Receipts::ReceiptsConfig::imageHeightMmForImage(raw_data, rc.imageHeightMm);
 	config.setReceiptsConfig(current_stage, rc);
 }
 
@@ -699,21 +846,17 @@ void OFeedClient::setEventPassword(QString eventPassword)
 	m_eventImageStartupAttempted = false;
 }
 
-void OFeedClient::setChangelogOrigin(QString changelogOrigin)
+void OFeedClient::setLastChangelogCall(const QString &origin, QDateTime lastChangelogCall)
 {
 	auto &config = getPlugin<EventPlugin>()->appDbConfig();
 	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	auto cfg = config.ofeedConfig(current_stage);
-	cfg.changelogOrigin = changelogOrigin;
-	config.setOfeedConfig(current_stage, cfg);
-}
-
-void OFeedClient::setLastChangelogCall(QDateTime lastChangelogCall)
-{
-	auto &config = getPlugin<EventPlugin>()->appDbConfig();
-	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	auto cfg = config.ofeedConfig(current_stage);
-	cfg.lastChangelogCall = lastChangelogCall;
+	if (origin == k_office_changelog_origin) {
+		cfg.lastOfficeChangelogCall = lastChangelogCall;
+	}
+	else {
+		cfg.lastStartChangelogCall = lastChangelogCall;
+	}
 	config.setOfeedConfig(current_stage, cfg);
 }
 
@@ -726,12 +869,21 @@ void OFeedClient::setRunXmlValidation(bool runXmlValidation)
 	config.setOfeedConfig(current_stage, cfg);
 }
 
-void OFeedClient::setRunChangesProcessing(bool runChangesProcessing)
+void OFeedClient::setRunStartChangesProcessing(bool runStartChangesProcessing)
 {
 	auto &config = getPlugin<EventPlugin>()->appDbConfig();
 	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
 	auto cfg = config.ofeedConfig(current_stage);
-	cfg.runChangesProcessing = runChangesProcessing;
+	cfg.runStartChangesProcessing = runStartChangesProcessing;
+	config.setOfeedConfig(current_stage, cfg);
+}
+
+void OFeedClient::setRunOfficeChangesProcessing(bool runOfficeChangesProcessing)
+{
+	auto &config = getPlugin<EventPlugin>()->appDbConfig();
+	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	auto cfg = config.ofeedConfig(current_stage);
+	cfg.runOfficeChangesProcessing = runOfficeChangesProcessing;
 	config.setOfeedConfig(current_stage, cfg);
 }
 
@@ -1031,7 +1183,9 @@ void OFeedClient::sendCompetitorUpdate(QString json_body, int competitor_or_exte
 	connect(reply, &QNetworkReply::finished, this, [=]()
 			{
 				if(reply->error()) {
-					qfError() << serviceName().toStdString() + " [competitor update]: " << reply->errorString();
+					qfError() << serviceName().toStdString() + " [competitor update]: " << reply->errorString()
+							  << "HTTP status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+							  << "response:" << QString::fromUtf8(reply->readAll());
 				}
 				else {
 					QByteArray response = reply->readAll();
@@ -1077,7 +1231,9 @@ void OFeedClient::sendCompetitorAdded(QString json_body)
 	connect(reply, &QNetworkReply::finished, this, [=]()
 			{
 				if(reply->error()) {
-					qfError() << serviceName().toStdString() + " [new competitor]: " << reply->errorString();
+					qfError() << serviceName().toStdString() + " [new competitor]: " << reply->errorString()
+							  << "HTTP status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+							  << "response:" << QString::fromUtf8(reply->readAll());
 				}
 				else {
 					QByteArray response = reply->readAll();
@@ -1123,7 +1279,9 @@ void OFeedClient::sendCompetitorDeleted(int run_id)
 	connect(reply, &QNetworkReply::finished, this, [=]()
 			{
 				if(reply->error()) {
-					qfError() << serviceName().toStdString() + " [deleted competitor]: " << reply->errorString();
+					qfError() << serviceName().toStdString() + " [deleted competitor]: " << reply->errorString()
+							  << "HTTP status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+							  << "response:" << QString::fromUtf8(reply->readAll());
 				}
 				else {
 					QByteArray response = reply->readAll();
@@ -1213,7 +1371,7 @@ void OFeedClient::sendGraphQLRequest(const QString &query,
 	});
 }
 
-void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
+void OFeedClient::getChangesByOrigin(const QString &origin, std::function<void()> on_done)
 {
 	if (m_changesProcessingInProgress) {
 		qfDebug() << serviceName() << "changes processing already in progress, skipping";
@@ -1225,7 +1383,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 
 	try
 	{
-		QDateTime last_changelog_call_value = lastChangelogCall();
+		QDateTime last_changelog_call_value = lastChangelogCall(origin);
 		QDateTime initial_value = QDateTime::fromSecsSinceEpoch(0); // Unix epoch
 
 		QString graphQLquery = R"(
@@ -1249,7 +1407,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 
 		QJsonObject variables;
 		variables["eventId"] = eventId();
-		variables["origin"] = changelogOrigin();
+		variables["origin"] = origin;
 
 		// Check if last_changelog_call_value is valid/not default
 		if (last_changelog_call_value != initial_value)
@@ -1276,7 +1434,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 			variables["since"] = last_changelog_call_value.toString(Qt::ISODate);
 		}
 
-		sendGraphQLRequest(graphQLquery, variables, [this, on_done](QJsonObject data)
+		sendGraphQLRequest(graphQLquery, variables, [this, origin, on_done](QJsonObject data)
 						   {
 			if (!data.isEmpty())
 			{
@@ -1285,7 +1443,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 					QJsonArray changelog_array = data["changelogByEvent"].toArray();
 
 					if (changelog_array.isEmpty()) {
-						qfInfo() << "No changes from origin: " << changelogOrigin();
+						qfInfo() << "No changes from origin: " << origin;
 					}
 					else {
 						// Process the data
@@ -1293,7 +1451,7 @@ void OFeedClient::getChangesByOrigin(std::function<void()> on_done)
 
 						// Update last changelog call with the adjusted execution time
 						QDateTime request_execution_time = QDateTime::currentDateTimeUtc();
-						setLastChangelogCall(request_execution_time);
+						setLastChangelogCall(origin, request_execution_time);
 					}
 				}
 			}
@@ -1348,7 +1506,7 @@ void OFeedClient::processCompetitorsChanges(QJsonArray data_array)
 		qfInfo() << "Processing change for competitorId (OFeed externalId):" << runs_id << ", type:" << type << ", " << previous_value << " -> " << new_value;
 
 		bool is_dns = type == QLatin1String("status_change") && new_value == QLatin1String("DidNotStart");
-		if (origin == QLatin1String("START") && created_at.isValid() && !is_dns)
+		if (origin == k_start_changelog_origin && created_at.isValid() && !is_dns)
 			processCorridorTimeUpdate(runs_id, created_at);
 
 		// Handle each type of change
@@ -1600,10 +1758,12 @@ void OFeedClient::storeChange(const QJsonObject &change)
 	qf::core::sql::Query q;
 	try
 	{
-		q.prepare("INSERT INTO qxchanges (data_type, data, orig_data, source, user_id, stage_id, change_id, created, status, status_message)"
-				  " VALUES (:dataType, :data, :origData, :source, :userId, :stageId, :changeId, :created, :status, :statusMessage)");
+		q.prepare("INSERT INTO qxchanges (data_type, data, data_id, orig_data, source, user_id, stage_id, change_id, created, status, status_message)"
+				  " VALUES (:dataType, :data, :dataId, :origData, :source, :userId, :stageId, :changeId, :created, :status, :statusMessage)"
+				  " RETURNING id");
 		q.bindValue(":dataType", change["type"].toString());
 		q.bindValue(":data", new_value);
+		q.bindValue(":dataId", runs_id);
 		q.bindValue(":origData", previous_value);
 		q.bindValue(":source", "OFeed");
 		q.bindValue(":userId", competitor_id);
@@ -1615,6 +1775,10 @@ void OFeedClient::storeChange(const QJsonObject &change)
 		if (!q.exec(qf::core::Exception::Throw))
 		{
 			qfError() << "Database query failed:" << q.lastError().text();
+		}
+		else if (q.next())
+		{
+			getPlugin<EventPlugin>()->emitDbEvent(EventPlugin::DBEVENT_QX_CHANGE_RECEIVED, q.value(0).toInt(), true);
 		}
 	}
 	catch (const std::exception &e)
@@ -1839,20 +2003,16 @@ void OFeedClient::onCompetitorAdded(int competitor_id)
 	}
 }
 
-void OFeedClient::onRunChanged(int run_id, const QVariantMap &dirty_vals)
+void OFeedClient::onRunChanged(int run_id, const QVariantMap &run_fields, const QVariantMap &competitor_fields)
 {
 	int stage_id = getPlugin<EventPlugin>()->currentStageId();
 	QDateTime stage_start_date_time = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
 
-	// Strip optional "runs." table prefix and normalise to lowercase
-	auto field_value = [&](const QString &field_lower) -> QVariant {
-		for (auto it = dirty_vals.constBegin(); it != dirty_vals.constEnd(); ++it) {
-			if (it.key().section('.', -1).toLower() == field_lower)
-				return it.value();
-		}
-		return QVariant();
+	// field names are normalized in queueRunChange()
+	auto field_value = [&run_fields](const QString &field_lower) -> QVariant {
+		return run_fields.value(field_lower);
 	};
-	auto has_field = [&](const QString &field_lower) -> bool {
+	auto has_field = [&field_value](const QString &field_lower) -> bool {
 		return field_value(field_lower).isValid();
 	};
 
@@ -1873,10 +2033,32 @@ void OFeedClient::onRunChanged(int run_id, const QVariantMap &dirty_vals)
 	}
 
 	// Start time
-	if (has_field("starttimems")) {
-		int ms = field_value("starttimems").toInt();
+	// WARNING: OFeed takes startTime as a request for a start slot and answers 409 when the slot
+	// is not free, which would drop the whole request including the result. A card read-out of a
+	// class with drawn start times brings the punched start time along with the finish time and
+	// OFeed knows such start time already, so it is not sent with the result. Classes without
+	// drawn start times are handled after the result is sent, see below.
+	bool is_result = run_fields.contains(QStringLiteral("finishtimems")) || run_fields.contains(QStringLiteral("timems"));
+	int start_time_ms = has_field("starttimems")? field_value("starttimems").toInt(): 0;
+	if (start_time_ms > 0 && !is_result) {
+		json_payload << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(start_time_ms)).toStdString() << R"(",)";
+		has_fields = true;
+	}
+
+	// Finish time
+	if (has_field("finishtimems")) {
+		int ms = field_value("finishtimems").toInt();
 		if (ms > 0) {
-			json_payload << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(ms)).toStdString() << R"(",)";
+			json_payload << R"("finishTime":")" << datetime_to_string(stage_start_date_time.addMSecs(ms)).toStdString() << R"(",)";
+			has_fields = true;
+		}
+	}
+
+	// Running time
+	if (has_field("timems")) {
+		int ms = field_value("timems").toInt();
+		if (ms > 0) {
+			json_payload << R"("time":)" << ms / 1000 << ",";
 			has_fields = true;
 		}
 	}
@@ -1899,14 +2081,14 @@ void OFeedClient::onRunChanged(int run_id, const QVariantMap &dirty_vals)
 		}
 	}
 
-	// Status — any flag change requires a DB read to compute the final value
-	static const QSet<QString> status_flag_fields = {
+	// Status — any flag or time change requires a DB read to compute the final value
+	static const QSet<QString> status_source_fields = {
 		"disqualified", "disqualifiedbyorganizer", "mispunch", "badcheck",
-		"notstart", "notfinish", "notcompeting"
+		"notstart", "notfinish", "notcompeting", "finishtimems", "timems"
 	};
 	bool has_status_change = false;
-	for (auto it = dirty_vals.constBegin(); it != dirty_vals.constEnd(); ++it) {
-		if (status_flag_fields.contains(it.key().section('.', -1).toLower())) {
+	for (const auto &[key, _] : run_fields.asKeyValueRange()) {
+		if (status_source_fields.contains(key)) {
 			has_status_change = true;
 			break;
 		}
@@ -1940,24 +2122,37 @@ void OFeedClient::onRunChanged(int run_id, const QVariantMap &dirty_vals)
 		sendCompetitorUpdate(QString::fromStdString(json_str), run_id);
 	}
 
-	// Competitor fields visible in runsRecord JOIN
-	static const QSet<QString> competitor_dirty_fields = {
-		"competitorname", "registration", "note", "licence", "competitors__startnumber", "classid"
-	};
-	bool has_competitor_change = false;
-	for (auto it = dirty_vals.constBegin(); it != dirty_vals.constEnd(); ++it) {
-		if (competitor_dirty_fields.contains(it.key().section('.', -1).toLower())) {
-			has_competitor_change = true;
-			break;
+	// Start time punched by a competitor of a class without drawn start times (start by punching
+	// the start unit or a mass start). OFeed knows such start time from the punch only and it is
+	// needed to compute the result, it is sent in a separate request, so that a rejected start
+	// slot cannot drop the result sent above.
+	if (start_time_ms > 0 && is_result) {
+		qf::core::sql::Query dq;
+		dq.exec("SELECT COALESCE(classdefs.startIntervalMin, 0) AS startIntervalMin "
+				"FROM runs "
+				"INNER JOIN competitors ON competitors.id = runs.competitorId "
+				"LEFT JOIN relays ON relays.id = runs.relayId "
+				"INNER JOIN classdefs ON (classdefs.classId = competitors.classId OR classdefs.classId = relays.classId) "
+				"AND classdefs.stageId = runs.stageId "
+				"WHERE runs.id=" QF_IARG(run_id), qf::core::Exception::Throw);
+		if (dq.next() && dq.value("startIntervalMin").toInt() == 0) {
+			std::stringstream spayload;
+			spayload << R"({"origin":"IT","useExternalId":true,)"
+					 << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(start_time_ms)).toStdString() << R"(")"
+					 << "}";
+			qfInfo() << serviceName().toStdString() + " [onRunChanged/startTime] run_id:" << run_id;
+			sendCompetitorUpdate(QString::fromStdString(spayload.str()), run_id);
 		}
 	}
-	if (has_competitor_change) {
-		bool name_changed = has_field("competitorname");
-		bool registration_changed = has_field("registration");
-		bool note_changed = has_field("note");
-		bool licence_changed = has_field("licence");
-		bool bib_changed = has_field("competitors__startnumber");
 
+	// Competitor fields
+	bool name_changed = competitor_fields.contains("firstname") || competitor_fields.contains("lastname");
+	bool registration_changed = competitor_fields.contains("registration");
+	bool note_changed = competitor_fields.contains("note");
+	bool licence_changed = competitor_fields.contains("licence");
+	bool bib_changed = competitor_fields.contains("startnumber");
+	bool class_changed = competitor_fields.contains("classid");
+	if (name_changed || registration_changed || note_changed || licence_changed || bib_changed || class_changed) {
 		qf::core::sql::Query cq;
 		cq.exec("SELECT competitors.firstName, competitors.lastName, competitors.registration, competitors.note, "
 				"competitors.licence, competitors.startNumber, "
@@ -2022,72 +2217,6 @@ void OFeedClient::onRunChanged(int run_id, const QVariantMap &dirty_vals)
 				sendCompetitorUpdate(QString::fromStdString(cs), run_id);
 			}
 		}
-	}
-}
-
-void OFeedClient::onCompetitorReadOut(int competitor_id)
-{
-	if (competitor_id == 0)
-		return;
-
-	int stage_id = getPlugin<EventPlugin>()->currentStageId();
-	QDateTime stage_start_date_time = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
-	qf::core::sql::Query q;
-	q.exec("SELECT runs.id AS runId, "
-		   "runs.disqualified, "
-		   "runs.disqualifiedByOrganizer, "
-		   "runs.misPunch, "
-		   "runs.badCheck, "
-		   "runs.notStart, "
-		   "runs.notFinish, "
-		   "runs.notCompeting, "
-		   "runs.startTimeMs, "
-		   "runs.finishTimeMs, "
-		   "runs.timeMs, "
-		   "competitors.note "
-		   "FROM runs "
-		   "INNER JOIN competitors ON competitors.id = runs.competitorId "
-		   "LEFT JOIN relays ON relays.id = runs.relayId  "
-		   "INNER JOIN classes ON classes.id = competitors.classId OR classes.id = relays.classId  "
-		   "WHERE competitors.id=" QF_IARG(competitor_id) " AND runs.stageId=" QF_IARG(stage_id),
-		   qf::core::Exception::Throw);
-	if (q.next())
-	{
-		int run_id = q.value("runId").toInt();
-		bool is_disq = q.value(QStringLiteral("disqualified")).toBool();
-		bool is_disq_by_organizer = q.value(QStringLiteral("disqualifiedByOrganizer")).toBool();
-		bool is_miss_punch = q.value(QStringLiteral("misPunch")).toBool();
-		bool is_bad_check = q.value(QStringLiteral("badCheck")).toBool();
-		bool is_did_not_start = q.value(QStringLiteral("notStart")).toBool();
-		bool is_did_not_finish = q.value(QStringLiteral("notFinish")).toBool();
-		bool is_not_competing = q.value(QStringLiteral("notCompeting")).toBool();
-		int start_time = q.value(QStringLiteral("startTimeMs")).toInt();
-		int finish_time = q.value(QStringLiteral("finishTimeMs")).toInt();
-		int running_time = q.value(QStringLiteral("timeMs")).toInt();
-		QString status = getIofResultStatus(running_time, is_disq, is_disq_by_organizer, is_miss_punch, is_bad_check, is_did_not_start, is_did_not_finish, is_not_competing);
-		QString origin = "IT";
-		QString note = "QE read-out, " + q.value(QStringLiteral("note")).toString();
-
-		// Use std::stringstream to build the JSON string
-		std::stringstream json_payload;
-		json_payload << "{"
-					 << R"("useExternalId":true,)"
-					 << R"("origin":")" << origin.toStdString() << R"(",)"
-					 << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(start_time)).toStdString() << R"(",)"
-					 << R"("finishTime":")" << datetime_to_string(stage_start_date_time.addMSecs(finish_time)).toStdString() << R"(",)"
-					 << R"("time":)" << running_time / 1000 << ","
-					 << R"("status":")" << status.toStdString() << R"(",)"
-					 << R"("note":")" << note.toStdString() << R"(")"
-					 << "}";
-
-		// Get the final JSON string
-		std::string json_str = json_payload.str();
-
-		// Convert std::string to QString
-		QString json_qstr = QString::fromStdString(json_str);
-
-		qfInfo() << serviceName().toStdString() + " [onCompetitorReadOut] run_id:" << run_id;
-		sendCompetitorUpdate(json_qstr, run_id);
 	}
 }
 
