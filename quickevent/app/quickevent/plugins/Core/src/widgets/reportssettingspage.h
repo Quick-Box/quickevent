@@ -26,6 +26,7 @@ private:
 	void save() override;
 
 	void resizeTableColumnsToFit();
+	void showReportContextMenu(const QPoint &position);
 	void loadModel();
 
 private:

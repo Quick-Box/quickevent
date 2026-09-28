@@ -13,52 +13,12 @@
 #include <QHeaderView>
 #include <QSettings>
 #include <QMessageBox>
-#include <QPainter>
 #include <QPushButton>
 #include <QSortFilterProxyModel>
-#include <QMouseEvent>
-#include <QStyle>
-#include <QStyledItemDelegate>
-
-#include <functional>
-#include <utility>
+#include <QMenu>
 
 namespace Core {
 
-namespace {
-
-class SaveButtonDelegate : public QStyledItemDelegate
-{
-public:
-	explicit SaveButtonDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
-
-	using ClickHandler = std::function<void(const QModelIndex &)>;
-	void setClickHandler(ClickHandler handler) { m_clickHandler = std::move(handler); }
-
-	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
-	{
-		QStyleOptionButton button;
-		button.rect = option.rect.adjusted(2, 2, -2, -2);
-		button.state = QStyle::State_Enabled;
-		button.text = index.data().toString();
-		option.widget->style()->drawControl(QStyle::CE_PushButton, &button, painter, option.widget);
-	}
-
-	bool editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option, const QModelIndex &index) override
-	{
-		if (event->type() == QEvent::MouseButtonRelease) {
-			auto *mouse_event = static_cast<QMouseEvent *>(event);
-			if (option.rect.contains(mouse_event->position().toPoint()) && m_clickHandler)
-				m_clickHandler(index);
-		}
-		return true;
-	}
-
-private:
-	ClickHandler m_clickHandler;
-};
-
-}
 
 ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	Super(parent),
@@ -76,23 +36,11 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	m_reportProxyModel->setSourceModel(m_reportModel);
 	m_reportProxyModel->setSortRole(Qt::DisplayRole);
 	ui->tblReportFiles->setModel(m_reportProxyModel);
-	auto *save_delegate = new SaveButtonDelegate(ui->tblReportFiles);
-	save_delegate->setClickHandler([this](const QModelIndex &index) {
-		if (!index.isValid())
-			return;
-		const QModelIndex source_index = m_reportProxyModel->mapToSource(index);
-		const auto &report = m_reportModel->reportAt(source_index.row());
-		QString error_text;
-		if (!m_reportModel->saveReportToDb(source_index, &error_text)) {
-			QMessageBox::warning(this, tr("Save report"), tr("Failed to save report '%1' to the database:\n%2").arg(report.relativePath, error_text));
-			return;
-		}
-		QMessageBox::information(this, tr("Save report"), tr("Report '%1' was saved to the database.").arg(report.relativePath));
-	});
-	ui->tblReportFiles->setItemDelegateForColumn(ReportsTableModel::SaveToDbColumn, save_delegate);
 	ui->tblReportFiles->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tblReportFiles->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->tblReportFiles->setSelectionMode(QAbstractItemView::SingleSelection);
+	ui->tblReportFiles->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(ui->tblReportFiles, &QTableView::customContextMenuRequested, this, &ReportsSettingsPage::showReportContextMenu);
 
 	ui->tblReportFiles->setSortingEnabled(true);
 	ui->tblReportFiles->horizontalHeader()->setStretchLastSection(true);
@@ -106,6 +54,53 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 ReportsSettingsPage::~ReportsSettingsPage()
 {
 	delete ui;
+}
+
+void ReportsSettingsPage::showReportContextMenu(const QPoint &position)
+{
+	const QModelIndex proxy_index = ui->tblReportFiles->indexAt(position);
+	if (!proxy_index.isValid())
+		return;
+	ui->tblReportFiles->setCurrentIndex(proxy_index);
+	const QModelIndex source_index = m_reportProxyModel->mapToSource(proxy_index);
+	const auto report_path = m_reportModel->reportAt(source_index.row()).relativePath;
+
+	QMenu menu(this);
+	auto *save_action = menu.addAction(tr("Save to DB"));
+	auto *clear_db_action = menu.addAction(tr("Clear DB entry"));
+	auto *restore_db_action = menu.addAction(tr("Restore from DB"));
+	auto *restore_resources_action = menu.addAction(tr("Restore from resources"));
+
+	connect(save_action, &QAction::triggered, this, [this, source_index, report_path]() {
+		QString error_text;
+		if (!m_reportModel->saveReportToDb(source_index, &error_text)) {
+			QMessageBox::warning(this, tr("Save report"), tr("Failed to save report '%1' to the database:\\n%2").arg(report_path, error_text));
+			return;
+		}
+	});
+	connect(clear_db_action, &QAction::triggered, this, [this, source_index, report_path]() {
+		QString error_text;
+		if (!m_reportModel->clearReportFromDb(source_index, &error_text)) {
+			QMessageBox::warning(this, tr("Clear report database entry"), tr("Failed to clear database entry for report '%1':\\n%2").arg(report_path, error_text));
+			return;
+		}
+	});
+	connect(restore_db_action, &QAction::triggered, this, [this, source_index, report_path]() {
+		QString error_text;
+		if (!m_reportModel->restoreReportFromDb(source_index, &error_text)) {
+			QMessageBox::warning(this, tr("Restore report"), tr("Failed to restore report '%1' from the database:\\n%2").arg(report_path, error_text));
+			return;
+		}
+	});
+	connect(restore_resources_action, &QAction::triggered, this, [this, source_index, report_path]() {
+		QString error_text;
+		if (!m_reportModel->restoreReportFromResources(source_index, &error_text)) {
+			QMessageBox::warning(this, tr("Restore report"), tr("Failed to restore report '%1' from resources:\\n%2").arg(report_path, error_text));
+			return;
+		}
+		loadModel();
+	});
+	menu.exec(ui->tblReportFiles->viewport()->mapToGlobal(position));
 }
 
 void ReportsSettingsPage::resizeTableColumnsToFit()

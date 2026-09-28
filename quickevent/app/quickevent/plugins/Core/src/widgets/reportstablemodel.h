@@ -18,7 +18,6 @@ public:
 		OriginalHashColumn,
 		CachedHashColumn,
 		DatabaseHashColumn,
-		SaveToDbColumn,
 		ColumnCount
 	};
 
@@ -41,9 +40,14 @@ public:
 
 	void load();
 	bool saveReportToDb(const QModelIndex &report_index, QString *error_text = nullptr);
+	bool clearReportFromDb(const QModelIndex &report_index, QString *error_text = nullptr);
+	bool restoreReportFromDb(const QModelIndex &report_index, QString *error_text = nullptr);
+	bool restoreReportFromResources(const QModelIndex &report_index, QString *error_text = nullptr);
 	void setReports(QList<Report> reports);
 	const Report &reportAt(int row) const;
 
+private:
+	void emitReportHashChanged(const QModelIndex &report_index);
 private:
 	QList<Report> m_reports;
 };
