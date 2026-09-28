@@ -48,7 +48,7 @@ QString Plugin::pluginDataDir()
 QString Plugin::findReportFile(const QString &report_file_path) const
 {
 	QStringList search_paths;
-	search_paths << Plugin::reportFileCache()->effectiveReportsDir() + '/' + m_featureId + "/qml/reports";
+	search_paths << Plugin::reportFileCache()->localReportsDir() + '/' + m_featureId + "/qml/reports";
 	//search_paths << qmlReportsDir();
 	for(const QString &dir : search_paths) {
 		qfMessage() << "search_path:" << dir;
@@ -68,7 +68,7 @@ QList<Plugin::ReportFileInfo> Plugin::listReportFiles(const QString &report_dir,
 {
 	QList<ReportFileInfo> report_files;
 	QStringList search_paths;
-	search_paths << Plugin::reportFileCache()->effectiveReportsDir() + '/' + m_featureId + "/qml/reports";
+	search_paths << Plugin::reportFileCache()->localReportsDir() + '/' + m_featureId + "/qml/reports";
 	for(const QString &dir : search_paths) {
 		QDirIterator it(dir + '/' + report_dir, QDirIterator::NoIteratorFlags);
 		while (it.hasNext()) {

@@ -21,8 +21,12 @@ ReportFileCache::ReportFileCache()
 	initIfNotExists();
 }
 
+QString ReportFileCache::localReportFile(const QString &relative_path) const
+{
+	return localReportsDir() + "/" + relative_path;
+}
 
-QString ReportFileCache::effectiveReportsDir() const
+QString ReportFileCache::localReportsDir() const
 {
 	return reportCacheDir();
 }
@@ -150,7 +154,7 @@ bool ReportFileCache::saveRemoteFileContent(const QString &relative_path, const 
 	if (relative_path.isEmpty())
 		return false;
 
-	QDir local_dir(effectiveReportsDir());
+	QDir local_dir(localReportsDir());
 	QFile file(local_dir.filePath(relative_path));
 	if (update_local_copy) {
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {

@@ -20,6 +20,9 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	, m_availableFields(available_fields)
 	, m_designType(default_design.type)
 {
+
+	Q_ASSERT(m_designType == "Relays" || m_designType == "Runs");
+
 	ui->setupUi(this);
 
 	m_scene = new AwardDesignerScene(this);
@@ -207,7 +210,7 @@ void AwardDesignerDialog::onSaveDesignClicked()
 
 void AwardDesignerDialog::onLoadDesignClicked()
 {
-	QStringList designs = AwardDesigner::Design::listFromDb(m_designType);
+	auto designs = AwardDesigner::Design::listAwards(m_designType);
 	if (designs.isEmpty()) {
 		QMessageBox::information(this, tr("Load design"),
 			tr("No award designs are saved in the database."));
@@ -215,11 +218,11 @@ void AwardDesignerDialog::onLoadDesignClicked()
 	}
 	bool ok;
 	QString name = QInputDialog::getItem(this,
-		tr("Load design"), tr("Select a design:"), designs, 0, false, &ok);
+		tr("Load design"), tr("Select a design:"), designs.keys(), 0, false, &ok);
 	if (!ok || name.isEmpty()) {
 		return;
 	}
-	AwardDesigner::Design d = AwardDesigner::Design::loadFromDb(name);
+	AwardDesigner::Design d = AwardDesigner::Design::loadFile(designs.value(name));
 	if (d.isValid()) {
 		loadDesign(d);
 	}

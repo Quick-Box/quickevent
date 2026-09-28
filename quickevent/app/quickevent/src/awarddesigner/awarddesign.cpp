@@ -1,5 +1,8 @@
 #include "awarddesign.h"
 
+#include <qf/gui/framework/reportfilecache.h>
+#include <qf/gui/framework/plugin.h>
+
 #include <qf/core/sql/query.h>
 #include <qf/core/log.h>
 
@@ -70,7 +73,7 @@ Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qreal h,
 Design Design::defaultRelayDesign()
 {
 	Design d;
-	d.type = QStringLiteral("relay");
+	d.type = QStringLiteral("Relays");
 	d.pageW = 210; d.pageH = 297;
 
 	// Event name — large bold
@@ -117,7 +120,7 @@ Design Design::defaultRelayDesign()
 Design Design::defaultRunsDesign()
 {
 	Design d;
-	d.type = QStringLiteral("runs");
+	d.type = QStringLiteral("Runs");
 	d.pageW = 210; d.pageH = 297;
 
 	d.items << makeFieldItem(QStringLiteral("eventName"),
@@ -292,7 +295,7 @@ QString Design::toTypst() const
 		[](const Item &a, const Item &b) { return a.zOrder < b.zOrder; });
 
 	QString src;
-	src += QStringLiteral("// @design type=") + enc(type.isEmpty() ? QStringLiteral("relay") : type)
+	src += QStringLiteral("// @design type=") + enc(type)
 		+ QStringLiteral(" pageW=") + QString::number(pageW, 'f', 3)
 		+ QStringLiteral(" pageH=") + QString::number(pageH, 'f', 3) + QLatin1Char('\n');
 	src += QStringLiteral("#set page(width: ") + QString::number(pageW, 'f', 3)
@@ -325,7 +328,7 @@ Design Design::fromTypst(const QString &src)
 		}
 	}
 	if (d.type.isEmpty())
-		d.type = QStringLiteral("relay");
+		d.type = QStringLiteral("Relays");
 
 	static const QRegularExpression re_item(QStringLiteral("^\\s*// @item (.+)$"),
 		QRegularExpression::MultilineOption);
@@ -415,7 +418,7 @@ bool Design::saveToDb() const
 	return true;
 }
 
-Design Design::loadFromDb(const QString &name)
+Design Design::loadFile(const QString &name)
 {
 	qf::core::sql::Query q;
 	q.prepare(QStringLiteral("SELECT data FROM reports WHERE path=:path"));
@@ -429,21 +432,21 @@ Design Design::loadFromDb(const QString &name)
 	return Design{};
 }
 
-QStringList Design::listFromDb(const QString &type)
+QMap<QString, QString> Design::listAwards(const QString &type)
 {
-	qf::core::sql::Query q;
-	q.prepare(QStringLiteral("SELECT path, data FROM reports WHERE path LIKE 'awards.design.%' ORDER BY path"));
-	q.exec();
-	QStringList names;
-	const int prefix_len = QStringLiteral("awards.design.").length();
-	while (q.next()) {
-		if (!type.isEmpty()) {
-			// default "relay" when no header (backward compat / hand-written)
-			QString t = fromTypst(QString::fromUtf8(q.value(1).toByteArray())).type;
-			if (t != type)
-				continue;
+	const auto prefix = QStringLiteral("%1/qml/reports/awards").arg(type);
+	// list all files under report cache starting with prefix
+	QMap<QString, QString> names;
+	auto local_dir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
+	QDir dir(local_dir + "/" + prefix);
+	if (dir.exists()) {
+		const auto entries = dir.entryInfoList(QDir::Files, QDir::Name);
+		for (const auto &entry : entries) {
+			static const auto ext = "typ";
+			if (entry.suffix() == ext) {
+				names[entry.fileName()] = entry.filePath().mid(local_dir.size() + 1);
+			}
 		}
-		names << q.value(0).toString().mid(prefix_len);
 	}
 	return names;
 }

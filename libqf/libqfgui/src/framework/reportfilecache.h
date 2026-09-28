@@ -11,7 +11,8 @@ class QFGUI_DECL_EXPORT ReportFileCache : public QObject
 {
 	Q_OBJECT
 public:
-	QString effectiveReportsDir() const;
+	QString localReportFile(const QString &relative_path) const;
+	QString localReportsDir() const;
 	QString reportCacheDir() const;
 	void applyDatabaseOverrides() const;
 	void clearLocalChanges();

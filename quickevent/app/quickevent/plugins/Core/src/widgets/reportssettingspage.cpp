@@ -19,7 +19,6 @@
 
 namespace Core {
 
-
 ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	Super(parent),
 	ui(new Ui::ReportsSettingsPage),
@@ -37,7 +36,6 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	m_reportProxyModel->setSortRole(Qt::DisplayRole);
 	ui->tblReportFiles->setModel(m_reportProxyModel);
 	ui->tblReportFiles->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	ui->tblReportFiles->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->tblReportFiles->setSelectionMode(QAbstractItemView::SingleSelection);
 	ui->tblReportFiles->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(ui->tblReportFiles, &QTableView::customContextMenuRequested, this, &ReportsSettingsPage::showReportContextMenu);
@@ -115,7 +113,7 @@ void ReportsSettingsPage::resizeTableColumnsToFit()
 
 void ReportsSettingsPage::load()
 {
-	const auto dir = qf::gui::framework::Plugin::reportFileCache()->effectiveReportsDir();
+	const auto dir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
 	ui->edReportsDirectory->setText(dir);
 	loadModel();
 	ui->tblReportFiles->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);

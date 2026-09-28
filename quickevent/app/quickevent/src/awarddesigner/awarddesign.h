@@ -76,9 +76,9 @@ struct Design {
 	static QSizeF pageSizeFromTypst(const QString &src);
 
 	bool saveToDb() const;
-	static Design loadFromDb(const QString &name);
+	static Design loadFile(const QString &name);
 	// type filter: "relay", "runs", or QString() for all
-	static QStringList listFromDb(const QString &type = QString());
+	static QMap<QString, QString> listAwards(const QString &type);
 	static bool deleteFromDb(const QString &name);
 
 	static QString dbKey(const QString &name)

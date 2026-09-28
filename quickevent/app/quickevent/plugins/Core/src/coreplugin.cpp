@@ -68,7 +68,7 @@ void CorePlugin::onInstalled()
 	{
 		auto *page = new ReportsSettingsPage();
 		settingsDialog()->addPage(page);
-		qfInfo() << "Reports dir set to:" << qff::Plugin::reportFileCache()->effectiveReportsDir();
+		qfInfo() << "Reports dir set to:" << qff::Plugin::reportFileCache()->localReportsDir();
 	}
 
 	auto *a_file = fwk->menuBar()->actionForPath("file", true);

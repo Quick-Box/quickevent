@@ -114,7 +114,7 @@ Qt::ItemFlags ReportsTableModel::flags(const QModelIndex &index) const
 
 void ReportsTableModel::load()
 {
-	m_reportsDir = qf::gui::framework::Plugin::reportFileCache()->effectiveReportsDir();
+	m_reportsDir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
 	QList<Report> reports;
 	QHash<QString, QString> database_hashes;
 	qf::core::sql::Query database_query;
