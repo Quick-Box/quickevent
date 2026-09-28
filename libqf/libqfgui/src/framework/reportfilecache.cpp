@@ -2,7 +2,6 @@
 
 #include <qf/core/log.h>
 
-
 #include <QCryptographicHash>
 #include <QDir>
 #include <QDirIterator>
@@ -12,6 +11,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <qsqlquery.h>
 
 namespace qf::gui::framework {
 
@@ -41,14 +41,6 @@ bool isSafeReportPath(const QString &path)
 		return false;
 	const auto parts = QDir::fromNativeSeparators(path).split('/', Qt::SkipEmptyParts);
 	return !parts.contains(QStringLiteral(".")) && !parts.contains(QStringLiteral(".."));
-}
-
-QString fileHash(const QString &file_path)
-{
-	QFile file(file_path);
-	if(!file.open(QIODevice::ReadOnly))
-		return {};
-	return QString::fromLatin1(QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha1).toHex());
 }
 
 }
@@ -138,6 +130,62 @@ void ReportFileCache::clearLocalChanges()
 		cache_dir.removeRecursively();
 	}
 	initIfNotExists();
+}
+
+QString ReportFileCache::dataHash(const QByteArray &data)
+{
+	return QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
+}
+
+QString ReportFileCache::fileHash(const QString &file_path)
+{
+	QFile file(file_path);
+	if (!file.open(QIODevice::ReadOnly))
+		return {};
+	return dataHash(file.readAll());
+}
+
+bool ReportFileCache::saveRemoteFileContent(const QString &relative_path, const QByteArray &data, bool update_local_copy) const
+{
+	if (relative_path.isEmpty())
+		return false;
+
+	QDir local_dir(effectiveReportsDir());
+	QFile file(local_dir.filePath(relative_path));
+	if (update_local_copy) {
+		if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+			qfError() << "Failed to open local report file:" << file.fileName() << "for writing" << file.errorString();
+			return false;
+		}
+		if (!file.write(data)) {
+			qfError() << "Failed to write local report file:" << file.fileName() << file.errorString();
+			return false;
+		}
+	}
+
+	const QString hash = dataHash(data);
+
+	QSqlQuery update_query;
+	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash WHERE path=:path"));
+	update_query.bindValue(QStringLiteral(":path"), relative_path);
+	update_query.bindValue(QStringLiteral(":data"), data);
+	update_query.bindValue(QStringLiteral(":hash"), hash);
+	if (!update_query.exec()) {
+		qfError() << "Failed to update report in database:" << update_query.lastError().text();
+		return false;
+	}
+	if (update_query.numRowsAffected() < 1) {
+		QSqlQuery insert_query;
+		insert_query.prepare(QStringLiteral("INSERT INTO reports(path, data, hash) VALUES(:path, :data, :hash)"));
+		insert_query.bindValue(QStringLiteral(":path"), relative_path);
+		insert_query.bindValue(QStringLiteral(":data"), data);
+		insert_query.bindValue(QStringLiteral(":hash"), hash);
+		if (!insert_query.exec()) {
+			qfError() << "Failed to insert report into database:" << insert_query.lastError().text();
+			return false;
+		}
+	}
+	return true;
 }
 
 }

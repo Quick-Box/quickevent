@@ -17,23 +17,6 @@
 
 namespace Core {
 
-namespace {
-
-QString dataHash(const QByteArray &data)
-{
-	return QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
-}
-
-QString fileHash(const QString &file_path)
-{
-	QFile file(file_path);
-	if (!file.open(QIODevice::ReadOnly))
-		return {};
-	return dataHash(file.readAll());
-}
-
-}
-
 ReportsTableModel::ReportsTableModel(QObject *parent) :
 	QAbstractTableModel(parent)
 {
@@ -153,8 +136,8 @@ void ReportsTableModel::load()
 			Report{
 				.relativePath = relative_path,
 				.size = file_info.size(),
-				.resourcesHash = fileHash(QStringLiteral(":/reports/") + relative_path),
-				.localHash = fileHash(file_info.filePath()),
+				.resourcesHash = qf::gui::framework::ReportFileCache::fileHash(QStringLiteral(":/reports/") + relative_path),
+				.localHash = qf::gui::framework::ReportFileCache::fileHash(file_info.filePath()),
 				.databaseHash = database_hashes.value(relative_path)});
 	}
 	setReports(std::move(reports));
@@ -173,15 +156,13 @@ bool ReportsTableModel::saveReportToDb(const QModelIndex &report_index, QString 
 		return false;
 	}
 	const QByteArray data = file.readAll();
-	const qint64 size = file.size();
-	const QString hash = dataHash(data);
+	const QString hash = qf::gui::framework::ReportFileCache::dataHash(data);
 
 	qf::core::sql::Query update_query;
-	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash, size=:size WHERE path=:path"));
+	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash WHERE path=:path"));
 	update_query.bindValue(QStringLiteral(":path"), report.relativePath);
 	update_query.bindValue(QStringLiteral(":data"), data);
 	update_query.bindValue(QStringLiteral(":hash"), hash);
-	update_query.bindValue(QStringLiteral(":size"), size);
 	if (!update_query.exec()) {
 		if (error_text) {
 			*error_text = update_query.lastErrorText();
@@ -190,11 +171,10 @@ bool ReportsTableModel::saveReportToDb(const QModelIndex &report_index, QString 
 	}
 	if (update_query.numRowsAffected() < 1) {
 		qf::core::sql::Query insert_query;
-		insert_query.prepare(QStringLiteral("INSERT INTO reports(path, data, hash, size) VALUES(:path, :data, :hash, :size)"));
+		insert_query.prepare(QStringLiteral("INSERT INTO reports(path, data, hash) VALUES(:path, :data, :hash)"));
 		insert_query.bindValue(QStringLiteral(":path"), report.relativePath);
 		insert_query.bindValue(QStringLiteral(":data"), data);
 		insert_query.bindValue(QStringLiteral(":hash"), hash);
-		insert_query.bindValue(QStringLiteral(":size"), size);
 		if (!insert_query.exec()) {
 			if (error_text) {
 				*error_text = insert_query.lastErrorText();
@@ -292,7 +272,7 @@ bool ReportsTableModel::restoreReportFromResources(const QModelIndex &report_ind
 			*error_text = file.errorString();
 		return false;
 	}
-	report.databaseHash = dataHash(data);
+	report.databaseHash = qf::gui::framework::ReportFileCache::dataHash(data);
 	emitReportHashChanged(report_index);
 	return true;
 }

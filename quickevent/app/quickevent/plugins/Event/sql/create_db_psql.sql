@@ -314,7 +314,6 @@ CREATE TABLE {{eventId}}.reports (
 	id serial PRIMARY KEY,
 	path character varying,
 	data BYTEA,
-	size integer,
 	hash character varying,
 	CONSTRAINT reports_unique0 UNIQUE (path)
 );

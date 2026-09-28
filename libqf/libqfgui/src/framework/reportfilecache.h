@@ -14,8 +14,10 @@ public:
 	QString effectiveReportsDir() const;
 	QString reportCacheDir() const;
 	void applyDatabaseOverrides() const;
-	// void databaseOverridesInfo() const;
 	void clearLocalChanges();
+	bool saveRemoteFileContent(const QString &relative_path, const QByteArray &data, bool update_local_copy = true) const;
+	static QString dataHash(const QByteArray &data);
+	static QString fileHash(const QString &file_path);
 private:
 	void initIfNotExists() const;
 private:

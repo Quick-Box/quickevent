@@ -344,7 +344,6 @@ CREATE TABLE reports (
 	id integer PRIMARY KEY,
 	path character varying,
 	data BLOB,
-	size integer,
 	hash character varying,
 	CONSTRAINT reports_unique0 UNIQUE (path)
 );
