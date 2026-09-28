@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QFileDialog>
+#include <QHash>
 #include <QHeaderView>
 #include <QSettings>
 #include <QMessageBox>
@@ -26,23 +27,21 @@ namespace {
 enum ReportFileColumn {
 	FileNameColumn,
 	FileSizeColumn,
-	FileCreatedColumn,
-	FileModifiedColumn,
-	FileSameAsOriginalColumn,
+	OriginalHashColumn,
+	CachedHashColumn,
+	DatabaseHashColumn,
 	SaveToDbColumn,
 	ReportFileColumnCount
 };
 
-bool isSameAsOriginal(const QString &file_path, const QString &relative_path)
+QString fileHash(const QString &file_path)
 {
-	QFile local_file(file_path);
-	QFile original_file(QStringLiteral(":/reports/") + relative_path);
-	if (!local_file.open(QIODevice::ReadOnly) || !original_file.open(QIODevice::ReadOnly))
-		return false;
-	if (local_file.size() != original_file.size())
-		return false;
-	return local_file.readAll() == original_file.readAll();
+	QFile file(file_path);
+	if (!file.open(QIODevice::ReadOnly))
+		return {};
+	return QString::fromLatin1(QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha1).toHex());
 }
+
 
 bool saveReportToDb(const QString &file_path, const QString &relative_path, QString *error_text)
 {
@@ -98,7 +97,7 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	connect(ui->btResizeColumnsToFit, &QPushButton::clicked, this, &ReportsSettingsPage::resizeTableColumnsToFit);
 
 	ui->tblReportFiles->setColumnCount(ReportFileColumnCount);
-	ui->tblReportFiles->setHorizontalHeaderLabels({tr("Name"), tr("Size"), tr("Created"), tr("Modified"), tr("Same as original"), tr("Save to DB")});
+	ui->tblReportFiles->setHorizontalHeaderLabels({tr("Name"), tr("Size"), tr("Original hash"), tr("Cached hash"), tr("Database hash"), tr("Save to DB")});
 	ui->tblReportFiles->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tblReportFiles->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->tblReportFiles->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -129,6 +128,17 @@ void ReportsSettingsPage::load()
 
 	ui->tblReportFiles->setSortingEnabled(false);
 	ui->tblReportFiles->setRowCount(0);
+	QHash<QString, QString> database_hashes;
+	qf::core::sql::Query database_query;
+	database_query.prepare(QStringLiteral("SELECT path, hash FROM reports"));
+	if (!database_query.exec()) {
+		qfWarning() << "Cannot read report hashes from database:" << database_query.lastErrorText();
+	}
+	else {
+		while (database_query.next())
+			database_hashes.insert(database_query.value(0).toString(), database_query.value(1).toString());
+	}
+
 	const QDir reports_dir(dir);
 	QDirIterator iterator(dir, QDir::Files | QDir::Hidden | QDir::System, QDirIterator::Subdirectories);
 	while (iterator.hasNext()) {
@@ -138,11 +148,9 @@ void ReportsSettingsPage::load()
 		ui->tblReportFiles->insertRow(row);
 		ui->tblReportFiles->setItem(row, FileNameColumn, new QTableWidgetItem(relative_path));
 		ui->tblReportFiles->setItem(row, FileSizeColumn, new QTableWidgetItem(QString::number(file_info.size())));
-		ui->tblReportFiles->setItem(row, FileCreatedColumn, new QTableWidgetItem(file_info.birthTime().toString(Qt::ISODate)));
-		ui->tblReportFiles->setItem(row, FileModifiedColumn, new QTableWidgetItem(file_info.lastModified().toString(Qt::ISODate)));
-		auto *same_as_original_item = new QTableWidgetItem;
-		same_as_original_item->setCheckState(isSameAsOriginal(file_info.filePath(), relative_path) ? Qt::Checked : Qt::Unchecked);
-		ui->tblReportFiles->setItem(row, FileSameAsOriginalColumn, same_as_original_item);
+		ui->tblReportFiles->setItem(row, OriginalHashColumn, new QTableWidgetItem(fileHash(QStringLiteral(":/reports/") + relative_path)));
+		ui->tblReportFiles->setItem(row, CachedHashColumn, new QTableWidgetItem(fileHash(file_info.filePath())));
+		ui->tblReportFiles->setItem(row, DatabaseHashColumn, new QTableWidgetItem(database_hashes.value(relative_path)));
 
 		auto *save_button = new QPushButton(tr("Save"), ui->tblReportFiles);
 		connect(save_button, &QPushButton::clicked, this, [this, file_path = file_info.filePath(), relative_path]() {
