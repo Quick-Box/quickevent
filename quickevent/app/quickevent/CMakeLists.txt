@@ -53,6 +53,8 @@ add_executable(quickevent
 	plugins/Core/src/reportssettings.cpp
 	plugins/Core/src/settings.cpp
 	plugins/Core/src/widgets/reportssettingspage.cpp
+	plugins/Core/src/widgets/reportstablemodel.cpp
+	plugins/Core/src/widgets/reportstablemodel.h
 	plugins/Core/src/widgets/reportssettingspage.ui
 	plugins/Core/src/widgets/appstatusbar.cpp
 	plugins/Core/src/widgets/settingspage.cpp

@@ -3,11 +3,15 @@
 
 #include "settingspage.h"
 
+class QSortFilterProxyModel;
+
 namespace Core {
 
 namespace Ui {
 class ReportsSettingsPage;
 }
+
+class ReportsTableModel;
 
 class ReportsSettingsPage : public Core::SettingsPage
 {
@@ -22,9 +26,12 @@ private:
 	void save() override;
 
 	void resizeTableColumnsToFit();
+	void loadModel();
+
 private:
 	Ui::ReportsSettingsPage *ui;
-	//QString m_exportReportDefinitionsDir;
+	ReportsTableModel *m_reportModel;
+	QSortFilterProxyModel *m_reportProxyModel;
 };
 
 }

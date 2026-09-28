@@ -74,6 +74,9 @@ void ReportFileCache::initIfNotExists() const
 		if(!QFile::copy(source_file_path, destination_file_path)) {
 			qfWarning() << "Cannot copy report file to cache:" << source_file_path << destination_file_path;
 		}
+		else if(!QFile::setPermissions(destination_file_path, QFile::permissions(destination_file_path) | QFile::WriteOwner)) {
+			qfWarning() << "Cannot set report file write permission:" << destination_file_path;
+		}
 	}
 }
 

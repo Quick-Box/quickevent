@@ -66,7 +66,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableWidget" name="tblReportFiles"/>
+    <widget class="QTableView" name="tblReportFiles"/>
    </item>
   </layout>
  </widget>

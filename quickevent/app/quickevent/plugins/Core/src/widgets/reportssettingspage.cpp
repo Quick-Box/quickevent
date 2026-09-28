@@ -1,4 +1,5 @@
 #include "reportssettingspage.h"
+#include "reportstablemodel.h"
 #include "ui_reportssettingspage.h"
 // #include "../reportssettings.h"
 
@@ -10,38 +11,29 @@
 #include <qf/gui/style.h>
 
 #include <QCryptographicHash>
-#include <QDirIterator>
 #include <QFile>
-#include <QFileInfo>
 #include <QFileDialog>
-#include <QHash>
 #include <QHeaderView>
 #include <QSettings>
 #include <QMessageBox>
+#include <QPainter>
 #include <QPushButton>
-#include <QTableWidget>
+#include <QSortFilterProxyModel>
+#include <QMouseEvent>
+#include <QStyle>
+#include <QStyledItemDelegate>
+
+#include <functional>
+#include <utility>
 
 namespace Core {
 
 namespace {
-enum ReportFileColumn {
-	FileNameColumn,
-	FileSizeColumn,
-	OriginalHashColumn,
-	CachedHashColumn,
-	DatabaseHashColumn,
-	SaveToDbColumn,
-	ReportFileColumnCount
-};
 
-QString fileHash(const QString &file_path)
+QString dataHash(const QByteArray &data)
 {
-	QFile file(file_path);
-	if (!file.open(QIODevice::ReadOnly))
-		return {};
-	return QString::fromLatin1(QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha1).toHex());
+	return QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
 }
-
 
 bool saveReportToDb(const QString &file_path, const QString &relative_path, QString *error_text)
 {
@@ -53,7 +45,7 @@ bool saveReportToDb(const QString &file_path, const QString &relative_path, QStr
 	}
 	const QByteArray data = file.readAll();
 	const qint64 size = file.size();
-	const QString hash = QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
+	const QString hash = dataHash(data);
 
 	qf::core::sql::Query update_query;
 	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash, size=:size WHERE path=:path"));
@@ -83,11 +75,44 @@ bool saveReportToDb(const QString &file_path, const QString &relative_path, QStr
 	return true;
 }
 
+class SaveButtonDelegate : public QStyledItemDelegate
+{
+public:
+	explicit SaveButtonDelegate(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
+
+	using ClickHandler = std::function<void(const QModelIndex &)>;
+	void setClickHandler(ClickHandler handler) { m_clickHandler = std::move(handler); }
+
+	void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
+	{
+		QStyleOptionButton button;
+		button.rect = option.rect.adjusted(2, 2, -2, -2);
+		button.state = QStyle::State_Enabled;
+		button.text = index.data().toString();
+		option.widget->style()->drawControl(QStyle::CE_PushButton, &button, painter, option.widget);
+	}
+
+	bool editorEvent(QEvent *event, QAbstractItemModel *, const QStyleOptionViewItem &option, const QModelIndex &index) override
+	{
+		if (event->type() == QEvent::MouseButtonRelease) {
+			auto *mouse_event = static_cast<QMouseEvent *>(event);
+			if (option.rect.contains(mouse_event->position().toPoint()) && m_clickHandler)
+				m_clickHandler(index);
+		}
+		return true;
+	}
+
+private:
+	ClickHandler m_clickHandler;
+};
+
 }
 
 ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	Super(parent),
-	ui(new Ui::ReportsSettingsPage)
+	ui(new Ui::ReportsSettingsPage),
+	m_reportModel(new ReportsTableModel(this)),
+	m_reportProxyModel(new ::QSortFilterProxyModel(this))
 {
 	m_caption = tr("Reports");
 	ui->setupUi(this);
@@ -96,8 +121,23 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 
 	connect(ui->btResizeColumnsToFit, &QPushButton::clicked, this, &ReportsSettingsPage::resizeTableColumnsToFit);
 
-	ui->tblReportFiles->setColumnCount(ReportFileColumnCount);
-	ui->tblReportFiles->setHorizontalHeaderLabels({tr("Name"), tr("Size"), tr("Original hash"), tr("Cached hash"), tr("Database hash"), tr("Save to DB")});
+	m_reportProxyModel->setSourceModel(m_reportModel);
+	m_reportProxyModel->setSortRole(Qt::DisplayRole);
+	ui->tblReportFiles->setModel(m_reportProxyModel);
+	auto *save_delegate = new SaveButtonDelegate(ui->tblReportFiles);
+	save_delegate->setClickHandler([this](const QModelIndex &index) {
+		if (!index.isValid())
+			return;
+		const QModelIndex source_index = m_reportProxyModel->mapToSource(index);
+		const auto &report = m_reportModel->reportAt(source_index.row());
+		QString error_text;
+		if (!saveReportToDb(report.filePath, report.relativePath, &error_text)) {
+			QMessageBox::warning(this, tr("Save report"), tr("Failed to save report '%1' to the database:\n%2").arg(report.relativePath, error_text));
+			return;
+		}
+		QMessageBox::information(this, tr("Save report"), tr("Report '%1' was saved to the database.").arg(report.relativePath));
+	});
+	ui->tblReportFiles->setItemDelegateForColumn(ReportsTableModel::SaveToDbColumn, save_delegate);
 	ui->tblReportFiles->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tblReportFiles->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->tblReportFiles->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -107,7 +147,7 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 
 	connect(ui->btClearLocalChanges, &QPushButton::clicked, this, [this]() {
 		qf::gui::framework::Plugin::reportFileCache()->clearLocalChanges();
-		load();
+		loadModel();
 	});
 }
 
@@ -125,51 +165,20 @@ void ReportsSettingsPage::load()
 {
 	const auto dir = qf::gui::framework::Plugin::reportFileCache()->effectiveReportsDir();
 	ui->edReportsDirectory->setText(dir);
-
-	ui->tblReportFiles->setSortingEnabled(false);
-	ui->tblReportFiles->setRowCount(0);
-	QHash<QString, QString> database_hashes;
-	qf::core::sql::Query database_query;
-	database_query.prepare(QStringLiteral("SELECT path, hash FROM reports"));
-	if (!database_query.exec()) {
-		qfWarning() << "Cannot read report hashes from database:" << database_query.lastErrorText();
-	}
-	else {
-		while (database_query.next())
-			database_hashes.insert(database_query.value(0).toString(), database_query.value(1).toString());
-	}
-
-	const QDir reports_dir(dir);
-	QDirIterator iterator(dir, QDir::Files | QDir::Hidden | QDir::System, QDirIterator::Subdirectories);
-	while (iterator.hasNext()) {
-		const QFileInfo file_info(iterator.next());
-		const QString relative_path = reports_dir.relativeFilePath(file_info.filePath());
-		const int row = ui->tblReportFiles->rowCount();
-		ui->tblReportFiles->insertRow(row);
-		ui->tblReportFiles->setItem(row, FileNameColumn, new QTableWidgetItem(relative_path));
-		ui->tblReportFiles->setItem(row, FileSizeColumn, new QTableWidgetItem(QString::number(file_info.size())));
-		ui->tblReportFiles->setItem(row, OriginalHashColumn, new QTableWidgetItem(fileHash(QStringLiteral(":/reports/") + relative_path)));
-		ui->tblReportFiles->setItem(row, CachedHashColumn, new QTableWidgetItem(fileHash(file_info.filePath())));
-		ui->tblReportFiles->setItem(row, DatabaseHashColumn, new QTableWidgetItem(database_hashes.value(relative_path)));
-
-		auto *save_button = new QPushButton(tr("Save"), ui->tblReportFiles);
-		connect(save_button, &QPushButton::clicked, this, [this, file_path = file_info.filePath(), relative_path]() {
-			QString error_text;
-			if (!saveReportToDb(file_path, relative_path, &error_text)) {
-				QMessageBox::warning(this, tr("Save report"), tr("Failed to save report '%1' to the database:\n%2").arg(relative_path, error_text));
-				return;
-			}
-			QMessageBox::information(this, tr("Save report"), tr("Report '%1' was saved to the database.").arg(relative_path));
-		});
-		ui->tblReportFiles->setCellWidget(row, SaveToDbColumn, save_button);
-	}
-	ui->tblReportFiles->setSortingEnabled(true);
+	loadModel();
 }
 
 void ReportsSettingsPage::save()
 {
 	//ReportsSettings settings;
 	// nothing to save for now
+}
+
+void ReportsSettingsPage::loadModel()
+{
+	ui->tblReportFiles->setSortingEnabled(false);
+	m_reportModel->load();
+	ui->tblReportFiles->setSortingEnabled(true);
 }
 
 }
