@@ -3,6 +3,7 @@
 #include <qf/core/log.h>
 
 
+#include <QCryptographicHash>
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
@@ -40,6 +41,14 @@ bool isSafeReportPath(const QString &path)
 		return false;
 	const auto parts = QDir::fromNativeSeparators(path).split('/', Qt::SkipEmptyParts);
 	return !parts.contains(QStringLiteral(".")) && !parts.contains(QStringLiteral(".."));
+}
+
+QString fileHash(const QString &file_path)
+{
+	QFile file(file_path);
+	if(!file.open(QIODevice::ReadOnly))
+		return {};
+	return QString::fromLatin1(QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha1).toHex());
 }
 
 }
@@ -104,13 +113,21 @@ void ReportFileCache::applyDatabaseOverrides() const
 			continue;
 		}
 		const QString file_path = cache_dir.filePath(relative_path);
-		if(!QDir().mkpath(QFileInfo(file_path).path())) {
-			qfWarning() << "Cannot create report directory:" << QFileInfo(file_path).path();
-			continue;
+		const QString local_hash = fileHash(file_path);
+		const QString resources_hash = fileHash(QStringLiteral(":/reports/") + relative_path);
+		if(resources_hash.isEmpty() || local_hash == resources_hash) {
+			// file does not exist in resource or it is the same as the local copy
+			if(!QDir().mkpath(QFileInfo(file_path).path())) {
+				qfWarning() << "Cannot create report directory:" << QFileInfo(file_path).path();
+				continue;
+			}
+			QFile file(file_path);
+			if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate) || file.write(query.value(1).toByteArray()) < 0) {
+				qfWarning() << "Cannot write report override:" << file_path;
+			}
+		} else {
+			qfInfo() << "Skipping report override because the local report was changed:" << relative_path;
 		}
-		QFile file(file_path);
-		if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate) || file.write(query.value(1).toByteArray()) < 0)
-			qfWarning() << "Cannot write report override:" << file_path;
 	}
 }
 

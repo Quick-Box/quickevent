@@ -263,9 +263,6 @@ bool ReportsTableModel::restoreReportFromDb(const QModelIndex &report_index, QSt
 			*error_text = file.errorString();
 		return false;
 	}
-	if(!QFile::setPermissions(file_path, QFile::permissions(file_path) | QFile::WriteOwner)) {
-		qfWarning() << "Cannot set report file write permission:" << file_path;
-	}
 	report.databaseHash = query.value("hash").toString();
 	emitReportHashChanged(report_index);
 	return true;
