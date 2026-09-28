@@ -11,9 +11,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QHash>
+#include <QColor>
 
-#include <qstringview.h>
-#include <qtmetamacros.h>
 #include <utility>
 
 namespace Core {
@@ -80,6 +79,24 @@ QVariant ReportsTableModel::data(const QModelIndex &index, int role) const
 		default: return data(index, Qt::EditRole);
 		}
 	}
+	if (role == Qt::BackgroundRole) {
+		static QColor edited_background("salmon");
+		switch (index.column()) {
+		case CachedHashColumn: {
+			if (report.cachedHash != report.originalHash) {
+				return edited_background;
+			}
+			return {};
+		}
+		case DatabaseHashColumn: {
+			if (!report.databaseHash.isEmpty() && report.cachedHash != report.databaseHash) {
+				return edited_background;
+			}
+			return {};
+		}
+		default: return {};
+		}
+	}
 	if (role == Qt::ToolTipRole) {
 		switch (index.column()) {
 		case OriginalHashColumn:
@@ -97,9 +114,9 @@ QVariant ReportsTableModel::headerData(int section, Qt::Orientation orientation,
 		switch (section) {
 		case FileNameColumn: return tr("Name");
 		case FileSizeColumn: return tr("Size");
-		case OriginalHashColumn: return tr("Original hash");
-		case CachedHashColumn: return tr("Cached hash");
-		case DatabaseHashColumn: return tr("Database hash");
+		case OriginalHashColumn: return tr("Original");
+		case CachedHashColumn: return tr("Cached");
+		case DatabaseHashColumn: return tr("Database");
 		case SaveToDbColumn: return tr("Save to DB");
 		default: return {};
 		}
