@@ -14,6 +14,7 @@ public:
 	QString effectiveReportsDir() const;
 	QString reportCacheDir() const;
 	void applyDatabaseOverrides() const;
+	// void databaseOverridesInfo() const;
 	void clearLocalChanges();
 private:
 	void initIfNotExists() const;

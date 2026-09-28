@@ -344,6 +344,8 @@ CREATE TABLE reports (
 	id integer PRIMARY KEY,
 	path character varying,
 	data BLOB,
+	size integer,
+	hash character varying,
 	CONSTRAINT reports_unique0 UNIQUE (path)
 );
 ;
@@ -352,5 +354,5 @@ CREATE TABLE reports (
 ------------------------------------;
 ;
 -- insert into table: config;
-INSERT INTO config (ckey, cname, cvalue, ctype) VALUES 
+INSERT INTO config (ckey, cname, cvalue, ctype) VALUES
 ('db.version', 'Data version', '30700', 'int');

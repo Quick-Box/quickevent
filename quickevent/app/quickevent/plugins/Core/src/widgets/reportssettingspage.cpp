@@ -3,11 +3,13 @@
 // #include "../reportssettings.h"
 
 #include <qf/core/log.h>
+#include <qf/core/sql/query.h>
 #include <qf/gui/framework/plugin.h>
 #include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/style.h>
 
+#include <QCryptographicHash>
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
@@ -15,6 +17,7 @@
 #include <QHeaderView>
 #include <QSettings>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QTableWidget>
 
 namespace Core {
@@ -26,6 +29,7 @@ enum ReportFileColumn {
 	FileCreatedColumn,
 	FileModifiedColumn,
 	FileSameAsOriginalColumn,
+	SaveToDbColumn,
 	ReportFileColumnCount
 };
 
@@ -38,6 +42,46 @@ bool isSameAsOriginal(const QString &file_path, const QString &relative_path)
 	if (local_file.size() != original_file.size())
 		return false;
 	return local_file.readAll() == original_file.readAll();
+}
+
+bool saveReportToDb(const QString &file_path, const QString &relative_path, QString *error_text)
+{
+	QFile file(file_path);
+	if (!file.open(QIODevice::ReadOnly)) {
+		if (error_text)
+			*error_text = file.errorString();
+		return false;
+	}
+	const QByteArray data = file.readAll();
+	const qint64 size = file.size();
+	const QString hash = QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
+
+	qf::core::sql::Query update_query;
+	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash, size=:size WHERE path=:path"));
+	update_query.bindValue(QStringLiteral(":path"), relative_path);
+	update_query.bindValue(QStringLiteral(":data"), data);
+	update_query.bindValue(QStringLiteral(":hash"), hash);
+	update_query.bindValue(QStringLiteral(":size"), size);
+	if (!update_query.exec()) {
+		if (error_text)
+			*error_text = update_query.lastErrorText();
+		return false;
+	}
+	if (update_query.numRowsAffected() > 0)
+		return true;
+
+	qf::core::sql::Query insert_query;
+	insert_query.prepare(QStringLiteral("INSERT INTO reports(path, data, hash, size) VALUES(:path, :data, :hash, :size)"));
+	insert_query.bindValue(QStringLiteral(":path"), relative_path);
+	insert_query.bindValue(QStringLiteral(":data"), data);
+	insert_query.bindValue(QStringLiteral(":hash"), hash);
+	insert_query.bindValue(QStringLiteral(":size"), size);
+	if (!insert_query.exec()) {
+		if (error_text)
+			*error_text = insert_query.lastErrorText();
+		return false;
+	}
+	return true;
 }
 
 }
@@ -54,7 +98,7 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	connect(ui->btResizeColumnsToFit, &QPushButton::clicked, this, &ReportsSettingsPage::resizeTableColumnsToFit);
 
 	ui->tblReportFiles->setColumnCount(ReportFileColumnCount);
-	ui->tblReportFiles->setHorizontalHeaderLabels({tr("Name"), tr("Size"), tr("Created"), tr("Modified"), tr("Same as original")});
+	ui->tblReportFiles->setHorizontalHeaderLabels({tr("Name"), tr("Size"), tr("Created"), tr("Modified"), tr("Same as original"), tr("Save to DB")});
 	ui->tblReportFiles->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tblReportFiles->setSelectionBehavior(QAbstractItemView::SelectRows);
 	ui->tblReportFiles->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -99,6 +143,17 @@ void ReportsSettingsPage::load()
 		auto *same_as_original_item = new QTableWidgetItem;
 		same_as_original_item->setCheckState(isSameAsOriginal(file_info.filePath(), relative_path) ? Qt::Checked : Qt::Unchecked);
 		ui->tblReportFiles->setItem(row, FileSameAsOriginalColumn, same_as_original_item);
+
+		auto *save_button = new QPushButton(tr("Save"), ui->tblReportFiles);
+		connect(save_button, &QPushButton::clicked, this, [this, file_path = file_info.filePath(), relative_path]() {
+			QString error_text;
+			if (!saveReportToDb(file_path, relative_path, &error_text)) {
+				QMessageBox::warning(this, tr("Save report"), tr("Failed to save report '%1' to the database:\n%2").arg(relative_path, error_text));
+				return;
+			}
+			QMessageBox::information(this, tr("Save report"), tr("Report '%1' was saved to the database.").arg(relative_path));
+		});
+		ui->tblReportFiles->setCellWidget(row, SaveToDbColumn, save_button);
 	}
 	ui->tblReportFiles->setSortingEnabled(true);
 }
