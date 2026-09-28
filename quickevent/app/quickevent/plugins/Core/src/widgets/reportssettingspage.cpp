@@ -65,13 +65,16 @@ void ReportsSettingsPage::showReportContextMenu(const QPoint &position)
 	const QModelIndex source_index = m_reportProxyModel->mapToSource(proxy_index);
 	const auto report_path = m_reportModel->reportAt(source_index.row()).relativePath;
 
+	const auto &report = m_reportModel->reportAt(source_index.row());
 	QMenu menu(this);
 	auto *save_to_db_action = menu.addAction(tr("Save to DB"));
+	save_to_db_action->setEnabled(report.databaseHash != report.localHash);
 	auto *clear_db_action = menu.addAction(tr("Clear DB entry"));
-	clear_db_action->setEnabled(!m_reportModel->reportAt(source_index.row()).databaseHash.isEmpty());
+	clear_db_action->setEnabled(!report.databaseHash.isEmpty());
 	auto *restore_db_action = menu.addAction(tr("Restore from DB"));
-	clear_db_action->setEnabled(!m_reportModel->reportAt(source_index.row()).databaseHash.isEmpty());
+	restore_db_action->setEnabled(!report.databaseHash.isEmpty() && report.databaseHash != report.localHash);
 	auto *restore_resources_action = menu.addAction(tr("Restore from resources"));
+	restore_resources_action->setEnabled(report.resourcesHash != report.localHash);
 
 	connect(save_to_db_action, &QAction::triggered, this, [this, source_index, report_path]() {
 		QString error_text;

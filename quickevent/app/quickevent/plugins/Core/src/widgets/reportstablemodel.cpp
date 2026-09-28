@@ -19,7 +19,6 @@ namespace Core {
 
 namespace {
 
-
 QString dataHash(const QByteArray &data)
 {
 	return QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
@@ -63,8 +62,8 @@ QVariant ReportsTableModel::data(const QModelIndex &index, int role) const
 		switch (index.column()) {
 		case FileNameColumn: return report.relativePath;
 		case FileSizeColumn: return report.size;
-		case OriginalHashColumn: return report.originalHash;
-		case CachedHashColumn: return report.cachedHash;
+		case ResourcesHashColumn: return report.resourcesHash;
+		case LocalHashColumn: return report.localHash;
 		case DatabaseHashColumn: return report.databaseHash;
 		default: break;
 		}
@@ -72,8 +71,8 @@ QVariant ReportsTableModel::data(const QModelIndex &index, int role) const
 	}
 	if (role == Qt::DisplayRole) {
 		switch (index.column()) {
-		case OriginalHashColumn: return report.originalHash.mid(0, 8);
-		case CachedHashColumn: return report.cachedHash.mid(0, 8);
+		case ResourcesHashColumn: return report.resourcesHash.mid(0, 8);
+		case LocalHashColumn: return report.localHash.mid(0, 8);
 		case DatabaseHashColumn: return report.databaseHash.mid(0, 8);
 		default: return data(index, Qt::EditRole);
 		}
@@ -81,14 +80,14 @@ QVariant ReportsTableModel::data(const QModelIndex &index, int role) const
 	if (role == Qt::BackgroundRole) {
 		static QColor edited_background("salmon");
 		switch (index.column()) {
-		case CachedHashColumn: {
-			if (report.cachedHash != report.originalHash) {
+		case LocalHashColumn: {
+			if (report.localHash != report.resourcesHash) {
 				return edited_background;
 			}
 			return {};
 		}
 		case DatabaseHashColumn: {
-			if (!report.databaseHash.isEmpty() && report.cachedHash != report.databaseHash) {
+			if (!report.databaseHash.isEmpty() && report.localHash != report.databaseHash) {
 				return edited_background;
 			}
 			return {};
@@ -98,8 +97,8 @@ QVariant ReportsTableModel::data(const QModelIndex &index, int role) const
 	}
 	if (role == Qt::ToolTipRole) {
 		switch (index.column()) {
-		case OriginalHashColumn:
-		case CachedHashColumn:
+		case ResourcesHashColumn:
+		case LocalHashColumn:
 		case DatabaseHashColumn: return data(index, Qt::EditRole);
 		default: return data(index, Qt::DisplayRole);
 		}
@@ -113,8 +112,8 @@ QVariant ReportsTableModel::headerData(int section, Qt::Orientation orientation,
 		switch (section) {
 		case FileNameColumn: return tr("Name");
 		case FileSizeColumn: return tr("Size");
-		case OriginalHashColumn: return tr("Original hash");
-		case CachedHashColumn: return tr("Cached hash");
+		case ResourcesHashColumn: return tr("Resources hash");
+		case LocalHashColumn: return tr("Local hash");
 		case DatabaseHashColumn: return tr("Database hash");
 		default: return {};
 		}
@@ -132,7 +131,7 @@ Qt::ItemFlags ReportsTableModel::flags(const QModelIndex &index) const
 
 void ReportsTableModel::load()
 {
-	const auto dir = qf::gui::framework::Plugin::reportFileCache()->effectiveReportsDir();
+	m_reportsDir = qf::gui::framework::Plugin::reportFileCache()->effectiveReportsDir();
 	QList<Report> reports;
 	QHash<QString, QString> database_hashes;
 	qf::core::sql::Query database_query;
@@ -145,18 +144,17 @@ void ReportsTableModel::load()
 			database_hashes.insert(database_query.value(0).toString(), database_query.value(1).toString());
 	}
 
-	const QDir reports_dir(dir);
-	QDirIterator iterator(dir, QDir::Files | QDir::Hidden | QDir::System, QDirIterator::Subdirectories);
+	const QDir reports_dir(m_reportsDir);
+	QDirIterator iterator(m_reportsDir, QDir::Files | QDir::Hidden | QDir::System, QDirIterator::Subdirectories);
 	while (iterator.hasNext()) {
 		const QFileInfo file_info(iterator.next());
 		const QString relative_path = reports_dir.relativeFilePath(file_info.filePath());
 		reports.append(
 			Report{
-				.filePath = file_info.filePath(),
 				.relativePath = relative_path,
 				.size = file_info.size(),
-				.originalHash = fileHash(QStringLiteral(":/reports/") + relative_path),
-				.cachedHash = fileHash(file_info.filePath()),
+				.resourcesHash = fileHash(QStringLiteral(":/reports/") + relative_path),
+				.localHash = fileHash(file_info.filePath()),
 				.databaseHash = database_hashes.value(relative_path)});
 	}
 	setReports(std::move(reports));
@@ -168,7 +166,7 @@ bool ReportsTableModel::saveReportToDb(const QModelIndex &report_index, QString 
 		return false;
 	auto &report = m_reports[report_index.row()];
 
-	QFile file(report.filePath);
+	QFile file(QDir(m_reportsDir).filePath(report.relativePath));
 	if (!file.open(QIODevice::ReadOnly)) {
 		if (error_text)
 			*error_text = file.errorString();
@@ -253,7 +251,8 @@ bool ReportsTableModel::restoreReportFromDb(const QModelIndex &report_index, QSt
 		return false;
 	}
 
-	QFile file(report.filePath);
+	const QString file_path = QDir(m_reportsDir).filePath(report.relativePath);
+	QFile file(file_path);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
 		if (error_text)
 			*error_text = file.errorString();
@@ -264,8 +263,8 @@ bool ReportsTableModel::restoreReportFromDb(const QModelIndex &report_index, QSt
 			*error_text = file.errorString();
 		return false;
 	}
-	if(!QFile::setPermissions(report.filePath, QFile::permissions(report.filePath) | QFile::WriteOwner)) {
-		qfWarning() << "Cannot set report file write permission:" << report.filePath;
+	if(!QFile::setPermissions(file_path, QFile::permissions(file_path) | QFile::WriteOwner)) {
+		qfWarning() << "Cannot set report file write permission:" << file_path;
 	}
 	report.databaseHash = query.value("hash").toString();
 	emitReportHashChanged(report_index);
@@ -284,7 +283,7 @@ bool ReportsTableModel::restoreReportFromResources(const QModelIndex &report_ind
 			*error_text = resource_file.errorString();
 		return false;
 	}
-	QFile file(report.filePath);
+	QFile file(QDir(m_reportsDir).filePath(report.relativePath));
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
 		if (error_text)
 			*error_text = file.errorString();
@@ -303,7 +302,7 @@ bool ReportsTableModel::restoreReportFromResources(const QModelIndex &report_ind
 
 void ReportsTableModel::emitReportHashChanged(const QModelIndex &report_index)
 {
-	auto index1 = report_index.sibling(report_index.row(), OriginalHashColumn);
+	auto index1 = report_index.sibling(report_index.row(), ResourcesHashColumn);
 	auto index3 = report_index.sibling(report_index.row(), DatabaseHashColumn);
 	emit dataChanged(index1, index3);
 }

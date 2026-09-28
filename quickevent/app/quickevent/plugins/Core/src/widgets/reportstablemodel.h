@@ -15,18 +15,17 @@ public:
 	enum Column {
 		FileNameColumn,
 		FileSizeColumn,
-		OriginalHashColumn,
-		CachedHashColumn,
+		ResourcesHashColumn,
+		LocalHashColumn,
 		DatabaseHashColumn,
 		ColumnCount
 	};
 
 	struct Report {
-		QString filePath;
 		QString relativePath;
 		qint64 size = 0;
-		QString originalHash;
-		QString cachedHash;
+		QString resourcesHash;
+		QString localHash;
 		QString databaseHash;
 	};
 
@@ -48,7 +47,8 @@ public:
 
 private:
 	void emitReportHashChanged(const QModelIndex &report_index);
-private:
+
+	QString m_reportsDir;
 	QList<Report> m_reports;
 };
 

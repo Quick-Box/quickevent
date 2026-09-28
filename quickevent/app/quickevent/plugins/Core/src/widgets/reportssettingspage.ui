@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>&amp;Reports cache directory</string>
+      <string>&amp;Local reports directory</string>
      </property>
      <property name="buddy">
       <cstring>edReportsDirectory</cstring>
@@ -59,7 +59,7 @@
      <item>
       <widget class="QPushButton" name="btClearLocalChanges">
        <property name="text">
-        <string>Clear cached changes</string>
+        <string>Clear local changes</string>
        </property>
       </widget>
      </item>
