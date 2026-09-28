@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QHash>
 
+#include <qstringview.h>
 #include <qtmetamacros.h>
 #include <utility>
 
@@ -19,12 +20,18 @@ namespace Core {
 
 namespace {
 
+
+QString dataHash(const QByteArray &data)
+{
+	return QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
+}
+
 QString fileHash(const QString &file_path)
 {
 	QFile file(file_path);
 	if (!file.open(QIODevice::ReadOnly))
 		return {};
-	return QString::fromLatin1(QCryptographicHash::hash(file.readAll(), QCryptographicHash::Sha1).toHex());
+	return dataHash(file.readAll());
 }
 
 }
@@ -154,7 +161,7 @@ bool ReportsTableModel::saveReportToDb(const QModelIndex &report_index, QString 
 	}
 	const QByteArray data = file.readAll();
 	const qint64 size = file.size();
-	const QString hash = QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
+	const QString hash = dataHash(data);
 
 	qf::core::sql::Query update_query;
 	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash, size=:size WHERE path=:path"));
