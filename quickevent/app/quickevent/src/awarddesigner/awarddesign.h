@@ -81,11 +81,6 @@ struct Design {
 	static QMap<QString, QString> listAwards(const QString &type);
 	static bool deleteFromDb(const QString &name);
 
-	static QString dbKey(const QString &name)
-	{
-		return QLatin1String("awards.design.") + name;
-	}
-
 	bool isValid() const { return !name.isEmpty(); }
 
 	static Design defaultRelayDesign();

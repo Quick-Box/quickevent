@@ -3,7 +3,6 @@
 #include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/framework/plugin.h>
 
-#include <qf/core/sql/query.h>
 #include <qf/core/log.h>
 
 #include <QCoreApplication>
@@ -23,18 +22,19 @@ namespace AwardDesigner {
 QList<FieldDef> relayFields()
 {
 	return {
-		{QStringLiteral("eventName"), TR("Název závodu")},
-		{QStringLiteral("date"), TR("Datum")},
-		{QStringLiteral("place"), TR("Místo konání")},
-		{QStringLiteral("positionCategory"), TR("Pořadí v kategorii")},
-		{QStringLiteral("position"), TR("Pořadí")},
-		{QStringLiteral("category"), TR("Kategorie")},
-		{QStringLiteral("clubName"), TR("Název štafety/klubu")},
-		{QStringLiteral("runners"), TR("Závodníci (seznam)")},
-		{QStringLiteral("mainReferee"), TR("Hlavní rozhodčí")},
-		{QStringLiteral("director"), TR("Ředitel závodu")},
-		{QStringLiteral("customText"), TR("Vlastní text")},
+		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
+		{.id = QStringLiteral("date"), .label = TR("Datum")},
+		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
+		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
+		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
+		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
+		{.id = QStringLiteral("clubName"), .label = TR("Název štafety/klubu")},
+		{.id = QStringLiteral("runners"), .label = TR("Závodníci (seznam)")},
+		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
+		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("customText"), .label = TR("Vlastní text")},
 	};
+
 }
 
 QList<FieldDef> runsFields()
@@ -386,6 +386,15 @@ QSizeF Design::pageSizeFromTypst(const QString &src)
 
 	return QSizeF(210, 297); // A4
 }
+namespace {
+const auto AWARDS_DIR = "qml/reports/awards";
+QString awards_path_fom_name(const QString &type, const QString award_name)
+{
+	QString file_name = award_name;
+	file_name.replace(' ', '-');
+	return QStringLiteral("%1/%2/%3.typ").arg(type).arg(AWARDS_DIR).arg(file_name);
+}
+}
 
 bool Design::saveToDb() const
 {
@@ -393,43 +402,25 @@ bool Design::saveToDb() const
 		qfWarning() << "Design name is empty, cannot save to DB";
 		return false;
 	}
-	QString key = dbKey(name);
-	Design self = *this;
-	self.embedImages();
-	QString typ = self.toTypst();
-	qf::core::sql::Query q_up;
-	q_up.prepare(QStringLiteral("UPDATE reports SET data=:data WHERE path=:path"));
-	q_up.bindValue(QStringLiteral(":path"), key);
-	q_up.bindValue(QStringLiteral(":data"), typ.toUtf8());
-	if (!q_up.exec()) {
-		qfWarning() << "Failed to update award design in DB:" << q_up.lastErrorText();
-		return false;
-	}
-	if (q_up.numRowsAffected() < 1) {
-		qf::core::sql::Query q_ins;
-		q_ins.prepare(QStringLiteral("INSERT INTO reports(path, data) VALUES(:path, :data)"));
-		q_ins.bindValue(QStringLiteral(":path"), key);
-		q_ins.bindValue(QStringLiteral(":data"), typ.toUtf8());
-		if (!q_ins.exec()) {
-			qfWarning() << "Failed to insert award design into DB:" << q_ins.lastErrorText();
-			return false;
-		}
-	}
+	QString relative_name = awards_path_fom_name(this->type, name);
+	Design design_copy = *this;
+	design_copy.embedImages();
+	auto typst = design_copy.toTypst();
+	auto *cache = qf::gui::framework::Plugin::reportFileCache();
+	cache->saveRemoteFileContent(relative_name, typst.toUtf8());
 	return true;
 }
 
-Design Design::loadFile(const QString &name)
+Design Design::loadFile(const QString &relative_file_name)
 {
-	qf::core::sql::Query q;
-	q.prepare(QStringLiteral("SELECT data FROM reports WHERE path=:path"));
-	q.bindValue(QStringLiteral(":path"), dbKey(name));
-	q.exec();
-	if (q.next()) {
-		Design d = fromTypst(QString::fromUtf8(q.value(0).toByteArray()));
-		d.name = name;
-		return d;
+	auto *cache = qf::gui::framework::Plugin::reportFileCache();
+	auto data = cache->loadReportFile(relative_file_name);
+	if (data.isEmpty()) {
+		return Design{};
 	}
-	return Design{};
+	Design d = fromTypst(QString::fromUtf8(data));
+	d.name = relative_file_name;
+	return d;
 }
 
 QMap<QString, QString> Design::listAwards(const QString &type)

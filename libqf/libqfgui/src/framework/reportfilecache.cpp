@@ -149,6 +149,14 @@ QString ReportFileCache::fileHash(const QString &file_path)
 	return dataHash(file.readAll());
 }
 
+QByteArray ReportFileCache::loadReportFile(const QString &relative_path) const
+{
+	QFile file(localReportFile(relative_path));
+	if (!file.open(QIODevice::ReadOnly))
+		return {};
+	return file.readAll();
+}
+
 bool ReportFileCache::saveRemoteFileContent(const QString &relative_path, const QByteArray &data, bool update_local_copy) const
 {
 	if (relative_path.isEmpty())
