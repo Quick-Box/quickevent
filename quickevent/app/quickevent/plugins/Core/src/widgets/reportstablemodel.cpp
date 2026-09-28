@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QHash>
 
+#include <qtmetamacros.h>
 #include <utility>
 
 namespace Core {
@@ -137,6 +138,54 @@ void ReportsTableModel::load()
 				.databaseHash = database_hashes.value(relative_path)});
 	}
 	setReports(std::move(reports));
+}
+
+bool ReportsTableModel::saveReportToDb(const QModelIndex &report_index, QString *error_text)
+{
+	if (!report_index.isValid() || report_index.model() != this || report_index.row() < 0 || report_index.row() >= m_reports.size())
+		return false;
+	auto &report = m_reports[report_index.row()];
+
+	QFile file(report.filePath);
+	if (!file.open(QIODevice::ReadOnly)) {
+		if (error_text)
+			*error_text = file.errorString();
+		return false;
+	}
+	const QByteArray data = file.readAll();
+	const qint64 size = file.size();
+	const QString hash = QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
+
+	qf::core::sql::Query update_query;
+	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash, size=:size WHERE path=:path"));
+	update_query.bindValue(QStringLiteral(":path"), report.relativePath);
+	update_query.bindValue(QStringLiteral(":data"), data);
+	update_query.bindValue(QStringLiteral(":hash"), hash);
+	update_query.bindValue(QStringLiteral(":size"), size);
+	if (!update_query.exec()) {
+		if (error_text) {
+			*error_text = update_query.lastErrorText();
+		}
+		return false;
+	}
+	if (update_query.numRowsAffected() < 1) {
+		qf::core::sql::Query insert_query;
+		insert_query.prepare(QStringLiteral("INSERT INTO reports(path, data, hash, size) VALUES(:path, :data, :hash, :size)"));
+		insert_query.bindValue(QStringLiteral(":path"), report.relativePath);
+		insert_query.bindValue(QStringLiteral(":data"), data);
+		insert_query.bindValue(QStringLiteral(":hash"), hash);
+		insert_query.bindValue(QStringLiteral(":size"), size);
+		if (!insert_query.exec()) {
+			if (error_text) {
+				*error_text = insert_query.lastErrorText();
+			}
+			return false;
+		}
+	}
+	report.databaseHash = hash;
+	auto index = report_index.sibling(report_index.row(), DatabaseHashColumn);
+	emit dataChanged(index, index);
+	return true;
 }
 
 void ReportsTableModel::setReports(QList<Report> reports)

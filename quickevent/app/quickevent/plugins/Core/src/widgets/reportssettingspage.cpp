@@ -4,14 +4,11 @@
 // #include "../reportssettings.h"
 
 #include <qf/core/log.h>
-#include <qf/core/sql/query.h>
 #include <qf/gui/framework/plugin.h>
 #include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/style.h>
 
-#include <QCryptographicHash>
-#include <QFile>
 #include <QFileDialog>
 #include <QHeaderView>
 #include <QSettings>
@@ -29,51 +26,6 @@
 namespace Core {
 
 namespace {
-
-QString dataHash(const QByteArray &data)
-{
-	return QString::fromLatin1(QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex());
-}
-
-bool saveReportToDb(const QString &file_path, const QString &relative_path, QString *error_text)
-{
-	QFile file(file_path);
-	if (!file.open(QIODevice::ReadOnly)) {
-		if (error_text)
-			*error_text = file.errorString();
-		return false;
-	}
-	const QByteArray data = file.readAll();
-	const qint64 size = file.size();
-	const QString hash = dataHash(data);
-
-	qf::core::sql::Query update_query;
-	update_query.prepare(QStringLiteral("UPDATE reports SET data=:data, hash=:hash, size=:size WHERE path=:path"));
-	update_query.bindValue(QStringLiteral(":path"), relative_path);
-	update_query.bindValue(QStringLiteral(":data"), data);
-	update_query.bindValue(QStringLiteral(":hash"), hash);
-	update_query.bindValue(QStringLiteral(":size"), size);
-	if (!update_query.exec()) {
-		if (error_text)
-			*error_text = update_query.lastErrorText();
-		return false;
-	}
-	if (update_query.numRowsAffected() > 0)
-		return true;
-
-	qf::core::sql::Query insert_query;
-	insert_query.prepare(QStringLiteral("INSERT INTO reports(path, data, hash, size) VALUES(:path, :data, :hash, :size)"));
-	insert_query.bindValue(QStringLiteral(":path"), relative_path);
-	insert_query.bindValue(QStringLiteral(":data"), data);
-	insert_query.bindValue(QStringLiteral(":hash"), hash);
-	insert_query.bindValue(QStringLiteral(":size"), size);
-	if (!insert_query.exec()) {
-		if (error_text)
-			*error_text = insert_query.lastErrorText();
-		return false;
-	}
-	return true;
-}
 
 class SaveButtonDelegate : public QStyledItemDelegate
 {
@@ -131,7 +83,7 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 		const QModelIndex source_index = m_reportProxyModel->mapToSource(index);
 		const auto &report = m_reportModel->reportAt(source_index.row());
 		QString error_text;
-		if (!saveReportToDb(report.filePath, report.relativePath, &error_text)) {
+		if (!m_reportModel->saveReportToDb(source_index, &error_text)) {
 			QMessageBox::warning(this, tr("Save report"), tr("Failed to save report '%1' to the database:\n%2").arg(report.relativePath, error_text));
 			return;
 		}
@@ -166,6 +118,7 @@ void ReportsSettingsPage::load()
 	const auto dir = qf::gui::framework::Plugin::reportFileCache()->effectiveReportsDir();
 	ui->edReportsDirectory->setText(dir);
 	loadModel();
+	ui->tblReportFiles->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }
 
 void ReportsSettingsPage::save()

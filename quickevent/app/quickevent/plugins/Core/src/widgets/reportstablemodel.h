@@ -40,6 +40,7 @@ public:
 	Qt::ItemFlags flags(const QModelIndex &index) const override;
 
 	void load();
+	bool saveReportToDb(const QModelIndex &report_index, QString *error_text = nullptr);
 	void setReports(QList<Report> reports);
 	const Report &reportAt(int row) const;
 
