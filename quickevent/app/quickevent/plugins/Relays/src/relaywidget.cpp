@@ -300,7 +300,7 @@ void RelayWidget::moveLegDown()
 	int run_next_id = 0;
 	QVariant run_next_stime;
 	qf::core::sql::Query q;
-	q.exec("SELECT id FROM runs WHERE"
+	q.exec("SELECT id, startTimeMs FROM runs WHERE"
 		   " relayId=" + QString::number(relay_id)
 		   + " AND leg=" + QString::number(leg + 1)
 		   , qf::core::Exception::Throw);
@@ -311,14 +311,14 @@ void RelayWidget::moveLegDown()
 	if(run_next_id > 0) {
 		q.exec("UPDATE runs SET"
 			    " leg=" + QString::number(leg)
-			   + ", startTimeMs=" + (run_stime.isValid()? run_stime.toString(): QStringLiteral("NULL"))
+			   + ", startTimeMs=" + (run_stime.isNull()? QStringLiteral("NULL"): run_stime.toString())
 			   + " WHERE "
 			   + " id=" + QString::number(run_next_id)
 			   , qf::core::Exception::Throw);
 	}
 	q.exec("UPDATE runs SET"
 		    " leg=" + QString::number(leg + 1)
-		   + ", startTimeMs=" + (run_next_stime.isValid()? run_next_stime.toString(): QStringLiteral("NULL"))
+		   + ", startTimeMs=" + (run_next_stime.isNull()? QStringLiteral("NULL"): run_next_stime.toString())
 		   + " WHERE "
 		   + " id=" + QString::number(run_id)
 		   , qf::core::Exception::Throw);

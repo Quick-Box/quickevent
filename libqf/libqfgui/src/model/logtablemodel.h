@@ -38,7 +38,11 @@ public:
 	enum class Direction {AppendToTop, AppendToBottom};
 
 	QF_PROPERTY_IMPL2(Direction, d, D, irection, Direction::AppendToBottom)
-	QF_PROPERTY_IMPL2(int, m, M, aximumRowCount, 1000)
+
+	int maximumRowCount() const { return m_maximumRowCount; }
+	Q_SLOT bool setMaximumRowCount(int maximum_row_count);
+	Q_SIGNAL void maximumRowCountChanged(const int &maximum_row_count);
+	void trimToMaxRowCount();
 
 	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 	int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
@@ -53,9 +57,10 @@ public:
 	Q_SIGNAL void logEntryInserted(int row_no);
 protected:
 	virtual QString prettyFileName(const QString &file_name);
+private:
+	int m_maximumRowCount = 10000;
 protected:
 	QList<Row> m_rows;
 };
 
 }}}
-

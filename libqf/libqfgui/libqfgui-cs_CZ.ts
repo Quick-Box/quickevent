@@ -1092,7 +1092,7 @@
 <context>
     <name>qf::gui::reports::ReportProcessor</name>
     <message>
-        <location filename="src/reports/processor/reportprocessor.cpp" line="70"/>
+        <location filename="src/reports/processor/reportprocessor.cpp" line="77"/>
         <source>QML component</source>
         <translation>Komponenta QML</translation>
     </message>
@@ -1180,22 +1180,22 @@
         <translation>Exportovat data v HTML</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1045"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1048"/>
         <source>empty file name</source>
         <translation>prázdný název souboru</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1107"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1110"/>
         <source>Save as PDF</source>
         <translation>Uložit jako PDF</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1122"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1125"/>
         <source>Save as HTML</source>
         <translation>Uložit jako HTML</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1127"/>
+        <location filename="src/reports/widgets/reportviewwidget.cpp" line="1130"/>
         <source>Cannot open &apos;%1&apos; for write.</source>
         <translation>Nelze otevřít &apos;%1&apos; pro zápis.</translation>
     </message>
