@@ -66,12 +66,14 @@ void ReportsSettingsPage::showReportContextMenu(const QPoint &position)
 	const auto report_path = m_reportModel->reportAt(source_index.row()).relativePath;
 
 	QMenu menu(this);
-	auto *save_action = menu.addAction(tr("Save to DB"));
+	auto *save_to_db_action = menu.addAction(tr("Save to DB"));
 	auto *clear_db_action = menu.addAction(tr("Clear DB entry"));
+	clear_db_action->setEnabled(!m_reportModel->reportAt(source_index.row()).databaseHash.isEmpty());
 	auto *restore_db_action = menu.addAction(tr("Restore from DB"));
+	clear_db_action->setEnabled(!m_reportModel->reportAt(source_index.row()).databaseHash.isEmpty());
 	auto *restore_resources_action = menu.addAction(tr("Restore from resources"));
 
-	connect(save_action, &QAction::triggered, this, [this, source_index, report_path]() {
+	connect(save_to_db_action, &QAction::triggered, this, [this, source_index, report_path]() {
 		QString error_text;
 		if (!m_reportModel->saveReportToDb(source_index, &error_text)) {
 			QMessageBox::warning(this, tr("Save report"), tr("Failed to save report '%1' to the database:\\n%2").arg(report_path, error_text));

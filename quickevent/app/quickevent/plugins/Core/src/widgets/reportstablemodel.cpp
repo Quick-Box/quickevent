@@ -223,6 +223,11 @@ bool ReportsTableModel::clearReportFromDb(const QModelIndex &report_index, QStri
 			*error_text = query.lastErrorText();
 		return false;
 	}
+	if (query.numRowsAffected() < 1) {
+		if (error_text)
+			*error_text = tr("The report is not stored in the database.");
+		return false;
+	}
 	m_reports[report_index.row()].databaseHash.clear();
 	emitReportHashChanged(report_index);
 	return true;
@@ -258,6 +263,9 @@ bool ReportsTableModel::restoreReportFromDb(const QModelIndex &report_index, QSt
 		if (error_text)
 			*error_text = file.errorString();
 		return false;
+	}
+	if(!QFile::setPermissions(report.filePath, QFile::permissions(report.filePath) | QFile::WriteOwner)) {
+		qfWarning() << "Cannot set report file write permission:" << report.filePath;
 	}
 	report.databaseHash = query.value("hash").toString();
 	emitReportHashChanged(report_index);
@@ -309,6 +317,10 @@ void ReportsTableModel::setReports(QList<Report> reports)
 
 const ReportsTableModel::Report &ReportsTableModel::reportAt(int row) const
 {
+	static const Report default_report;
+	if (row < 0 || row >= m_reports.size()) {
+		return default_report;
+	}
 	return m_reports.at(row);
 }
 
