@@ -12,17 +12,12 @@
 #include <QTimer>
 #include <QWheelEvent>
 
-AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &available_fields,
-	const AwardDesigner::Design &default_design,
-	QWidget *parent)
+AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &available_fields, const AwardDesigner::Design &default_design, const QString &design_relative_root, QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::AwardDesignerDialog)
+	, m_relativeDesignFilesRoot(design_relative_root)
 	, m_availableFields(available_fields)
-	, m_designType(default_design.type)
 {
-
-	Q_ASSERT(m_designType == "Relays" || m_designType == "Runs");
-
 	ui->setupUi(this);
 
 	m_scene = new AwardDesignerScene(this);
@@ -84,7 +79,7 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	setPropsEnabled(false);
 
 	// Load default design on first open
-	loadDesign(default_design);
+	setDesign(default_design);
 }
 
 AwardDesignerDialog::~AwardDesignerDialog()
@@ -92,9 +87,22 @@ AwardDesignerDialog::~AwardDesignerDialog()
 	delete ui;
 }
 
-void AwardDesignerDialog::loadDesign(const AwardDesigner::Design &design)
+QString AwardDesignerDialog::relativeDesignFilePath(const QString &file_name) const
 {
-	ui->edDesignName->setText(design.name);
+	if (file_name.trimmed().isEmpty())
+		return QString();
+	return m_relativeDesignFilesRoot + '/' + file_name.trimmed();
+}
+
+void AwardDesignerDialog::loadDesign(const QString &file_name)
+{
+	auto design = AwardDesigner::Design::loadFile(relativeDesignFilePath(file_name));
+	setDesign(design);
+	ui->edDesignName->setText(file_name);
+}
+
+void AwardDesignerDialog::setDesign(const AwardDesigner::Design &design)
+{
 	m_scene->loadDesign(design);
 	QTimer::singleShot(0, this, [this]() {
 		ui->graphicsView->fitInView(m_scene->sceneRect(), Qt::KeepAspectRatio);
@@ -103,12 +111,17 @@ void AwardDesignerDialog::loadDesign(const AwardDesigner::Design &design)
 
 AwardDesigner::Design AwardDesignerDialog::currentDesign() const
 {
-	return m_scene->collectDesign(ui->edDesignName->text().trimmed());
+	return m_scene->collectDesign();
 }
 
 QString AwardDesignerDialog::designName() const
 {
-	return ui->edDesignName->text().trimmed();
+	auto name = ui->edDesignName->text().trimmed();
+	if (name.isEmpty())
+		return QString();
+	if (!name.endsWith(".typ"))
+		name += ".typ";
+	return name;
 }
 
 void AwardDesignerDialog::onSelectedItemChanged(AwardSceneItem *item)
@@ -191,15 +204,14 @@ void AwardDesignerDialog::onItemPropertyChanged()
 
 void AwardDesignerDialog::onSaveDesignClicked()
 {
-	QString name = ui->edDesignName->text().trimmed();
+	QString name = relativeDesignFilePath(designName());
 	if (name.isEmpty()) {
 		QMessageBox::warning(this, tr("Save design"), tr("Please enter a design name."));
 		ui->edDesignName->setFocus();
 		return;
 	}
-	AwardDesigner::Design d = m_scene->collectDesign(name);
-	d.type = m_designType;
-	if (d.saveToDb()) {
+	AwardDesigner::Design d = m_scene->collectDesign();
+	if (d.saveToDb(name)) {
 		QMessageBox::information(this, tr("Save design"),
 			tr("Design '%1' was saved to the database.").arg(name));
 	} else {
@@ -210,7 +222,7 @@ void AwardDesignerDialog::onSaveDesignClicked()
 
 void AwardDesignerDialog::onLoadDesignClicked()
 {
-	auto designs = AwardDesigner::Design::listAwards(m_designType);
+	auto designs = AwardDesigner::Design::listAwards(m_relativeDesignFilesRoot);
 	if (designs.isEmpty()) {
 		QMessageBox::information(this, tr("Load design"),
 			tr("No award designs are saved in the database."));
@@ -224,7 +236,7 @@ void AwardDesignerDialog::onLoadDesignClicked()
 	}
 	AwardDesigner::Design d = AwardDesigner::Design::loadFile(designs.value(name));
 	if (d.isValid()) {
-		loadDesign(d);
+		setDesign(d);
 	}
 }
 
@@ -237,11 +249,10 @@ void AwardDesignerDialog::onNewDesignClicked()
 
 void AwardDesignerDialog::accept()
 {
-	QString name = ui->edDesignName->text().trimmed();
+	QString name = relativeDesignFilePath(designName());
 	if (!name.isEmpty()) {
-		AwardDesigner::Design d = m_scene->collectDesign(name);
-		d.type = m_designType;
-		if (!d.saveToDb()) {
+		AwardDesigner::Design d = m_scene->collectDesign();
+		if (!d.saveToDb(name)) {
 			QMessageBox::critical(this, tr("Save design"),
 				tr("Could not save design '%1' to the database.").arg(name));
 			return;

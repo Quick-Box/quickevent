@@ -16,12 +16,15 @@ class AwardDesignerDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &available_fields,
+	explicit AwardDesignerDialog(
+		const QList<AwardDesigner::FieldDef> &available_fields,
 		const AwardDesigner::Design &default_design,
+		const QString &design_relative_root,
 		QWidget *parent = nullptr);
 	~AwardDesignerDialog() override;
 
-	void loadDesign(const AwardDesigner::Design &design);
+	void loadDesign(const QString &file_name);
+	void setDesign(const AwardDesigner::Design &design);
 	AwardDesigner::Design currentDesign() const;
 	QString designName() const;
 
@@ -49,11 +52,13 @@ private:
 	void setPropsEnabled(bool enabled);
 	void updateItemKindVisibility(AwardDesigner::Item::Kind kind);
 
+	QString relativeDesignFilePath(const QString &file_name) const;
 private:
 	Ui::AwardDesignerDialog *ui;
 	AwardDesignerScene *m_scene;
+	QString m_relativeDesignFilesRoot;
+
 	QList<AwardDesigner::FieldDef> m_availableFields;
-	QString m_designType;
 	AwardSceneItem *m_selectedItem = nullptr;
 	bool m_updatingProps = false;
 	QString m_colorHex = QStringLiteral("#000000");

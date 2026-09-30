@@ -9,6 +9,10 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/core/log.h>
 
+namespace {
+auto constexpr AWARDS_PATH = "Runs/reports/awards";
+}
+
 PrintAwardsOptionsDialogWidget::PrintAwardsOptionsDialogWidget(QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::PrintAwardsOptionsDialogWidget)
@@ -32,7 +36,7 @@ void PrintAwardsOptionsDialogWidget::refreshTemplateList()
 	QString currentData = ui->edReportPath->currentData().toString();
 	ui->edReportPath->clear();
 
-	for (const auto &[name, path] : AwardDesigner::Design::listAwards(QStringLiteral("Runs")).asKeyValueRange()) {
+	for (const auto &[name, path] : AwardDesigner::Design::listAwards(AWARDS_PATH).asKeyValueRange()) {
 		ui->edReportPath->addItem(name, path);
 	}
 
@@ -91,20 +95,16 @@ void PrintAwardsOptionsDialogWidget::setPrintOptions(const QVariantMap &opts)
 
 void PrintAwardsOptionsDialogWidget::onDesignerClicked()
 {
-	AwardDesigner::Design design;
-	QString name = ui->edReportPath->currentData().toString();
-	design = AwardDesigner::Design::loadFile(name);
-
-	AwardDesignerDialog dlg(AwardDesigner::runsFields(), AwardDesigner::Design::defaultRunsDesign(), this);
-	if (design.isValid())
-		dlg.loadDesign(design);
+	AwardDesignerDialog dlg(AwardDesigner::relayFields(), AwardDesigner::Design::defaultRelayDesign(), AWARDS_PATH, this);
+	QString file_name = ui->edReportPath->currentText();
+	dlg.loadDesign(file_name);
 	dlg.exec();
 
 	refreshTemplateList();
 
 	QString savedName = dlg.designName();
 	if (!savedName.isEmpty()) {
-		int ix = ui->edReportPath->findData(savedName);
+		int ix = ui->edReportPath->findText(savedName);
 		if (ix >= 0)
 			ui->edReportPath->setCurrentIndex(ix);
 	}

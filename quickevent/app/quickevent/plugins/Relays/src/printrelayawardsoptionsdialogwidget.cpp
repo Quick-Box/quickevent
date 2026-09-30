@@ -9,6 +9,10 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/core/log.h>
 
+namespace {
+auto constexpr AWARDS_PATH = "Runs/reports/awards";
+}
+
 PrintRelayAwardsOptionsDialogWidget::PrintRelayAwardsOptionsDialogWidget(QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::PrintRelayAwardsOptionsDialogWidget)
@@ -32,7 +36,7 @@ void PrintRelayAwardsOptionsDialogWidget::refreshTemplateList()
 	ui->edReportPath->clear();
 
 	// DB-stored designer templates (user-defined) are listed first
-	for (const auto &[name, path] : AwardDesigner::Design::listAwards(QStringLiteral("Relays")).asKeyValueRange()) {
+	for (const auto &[name, path] : AwardDesigner::Design::listAwards(AWARDS_PATH).asKeyValueRange()) {
 		ui->edReportPath->addItem(name, path);
 	}
 
@@ -90,15 +94,9 @@ void PrintRelayAwardsOptionsDialogWidget::setPrintOptions(const QVariantMap &opt
 
 void PrintRelayAwardsOptionsDialogWidget::onDesignerClicked()
 {
-	// Load currently selected design if it is a DB design
-	AwardDesigner::Design design;
-	QString name = ui->edReportPath->currentData().toString();
-	design = AwardDesigner::Design::loadFile(name);
-
-	AwardDesignerDialog dlg(AwardDesigner::relayFields(), AwardDesigner::Design::defaultRelayDesign(), this);
-	if (design.isValid()) {
-		dlg.loadDesign(design);
-	}
+	AwardDesignerDialog dlg(AwardDesigner::relayFields(), AwardDesigner::Design::defaultRelayDesign(), AWARDS_PATH, this);
+	QString file_name = ui->edReportPath->currentText();
+	dlg.loadDesign(file_name);
 	dlg.exec();
 
 	// Refresh dropdown so any newly saved designs appear
@@ -107,7 +105,7 @@ void PrintRelayAwardsOptionsDialogWidget::onDesignerClicked()
 	// Try to select the design that was just edited/created
 	QString savedName = dlg.designName();
 	if (!savedName.isEmpty()) {
-		int ix = ui->edReportPath->findData(savedName);
+		int ix = ui->edReportPath->findText(savedName);
 		if (ix >= 0) {
 			ui->edReportPath->setCurrentIndex(ix);
 		}

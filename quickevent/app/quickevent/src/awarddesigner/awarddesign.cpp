@@ -73,7 +73,6 @@ Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qreal h,
 Design Design::defaultRelayDesign()
 {
 	Design d;
-	d.type = QStringLiteral("Relays");
 	d.pageW = 210; d.pageH = 297;
 
 	// Event name — large bold
@@ -120,7 +119,6 @@ Design Design::defaultRelayDesign()
 Design Design::defaultRunsDesign()
 {
 	Design d;
-	d.type = QStringLiteral("Runs");
 	d.pageW = 210; d.pageH = 297;
 
 	d.items << makeFieldItem(QStringLiteral("eventName"),
@@ -295,7 +293,7 @@ QString Design::toTypst() const
 		[](const Item &a, const Item &b) { return a.zOrder < b.zOrder; });
 
 	QString src;
-	src += QStringLiteral("// @design type=") + enc(type)
+	src += QStringLiteral("// @design")
 		+ QStringLiteral(" pageW=") + QString::number(pageW, 'f', 3)
 		+ QStringLiteral(" pageH=") + QString::number(pageH, 'f', 3) + QLatin1Char('\n');
 	src += QStringLiteral("#set page(width: ") + QString::number(pageW, 'f', 3)
@@ -316,19 +314,6 @@ Design Design::fromTypst(const QString &src)
 	QSizeF sz = pageSizeFromTypst(src);
 	d.pageW = sz.width();
 	d.pageH = sz.height();
-
-	static const QRegularExpression re_design(QStringLiteral("^// @design (.+)$"),
-		QRegularExpression::MultilineOption);
-	auto dm = re_design.match(src);
-	if (dm.hasMatch()) {
-		for (const auto &p : dm.captured(1).split(QLatin1Char(' '), Qt::SkipEmptyParts)) {
-			int eq = p.indexOf(QLatin1Char('='));
-			if (eq > 0 && p.left(eq) == QLatin1String("type"))
-				d.type = dec(p.mid(eq + 1));
-		}
-	}
-	if (d.type.isEmpty())
-		d.type = QStringLiteral("Relays");
 
 	static const QRegularExpression re_item(QStringLiteral("^\\s*// @item (.+)$"),
 		QRegularExpression::MultilineOption);
@@ -386,28 +371,27 @@ QSizeF Design::pageSizeFromTypst(const QString &src)
 
 	return QSizeF(210, 297); // A4
 }
-namespace {
-const auto AWARDS_DIR = "qml/reports/awards";
-QString awards_path_fom_name(const QString &type, const QString award_name)
-{
-	QString file_name = award_name;
-	file_name.replace(' ', '-');
-	return QStringLiteral("%1/%2/%3.typ").arg(type).arg(AWARDS_DIR).arg(file_name);
-}
-}
+// namespace {
+// const auto AWARDS_DIR = "reports/awards";
+// QString awards_path_fom_name(const QString &type, const QString award_name)
+// {
+// 	QString file_name = award_name;
+// 	file_name.replace(' ', '-');
+// 	return QStringLiteral("%1/%2/%3.typ").arg(type).arg(AWARDS_DIR).arg(file_name);
+// }
+// }
 
-bool Design::saveToDb() const
+bool Design::saveToDb(const QString &relative_file_name) const
 {
-	if (name.isEmpty()) {
+	if (relative_file_name.isEmpty()) {
 		qfWarning() << "Design name is empty, cannot save to DB";
 		return false;
 	}
-	QString relative_name = awards_path_fom_name(this->type, name);
 	Design design_copy = *this;
 	design_copy.embedImages();
 	auto typst = design_copy.toTypst();
 	auto *cache = qf::gui::framework::Plugin::reportFileCache();
-	cache->saveRemoteFileContent(relative_name, typst.toUtf8());
+	cache->saveRemoteFileContent(relative_file_name, typst.toUtf8());
 	return true;
 }
 
@@ -419,17 +403,15 @@ Design Design::loadFile(const QString &relative_file_name)
 		return Design{};
 	}
 	Design d = fromTypst(QString::fromUtf8(data));
-	d.name = relative_file_name;
 	return d;
 }
 
-QMap<QString, QString> Design::listAwards(const QString &type)
+QMap<QString, QString> Design::listAwards(const QString &relative_reports_root)
 {
-	const auto prefix = QStringLiteral("%1/qml/reports/awards").arg(type);
 	// list all files under report cache starting with prefix
 	QMap<QString, QString> names;
 	auto local_dir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
-	QDir dir(local_dir + "/" + prefix);
+	QDir dir(local_dir + "/" + relative_reports_root);
 	if (dir.exists()) {
 		const auto entries = dir.entryInfoList(QDir::Files, QDir::Name);
 		for (const auto &entry : entries) {

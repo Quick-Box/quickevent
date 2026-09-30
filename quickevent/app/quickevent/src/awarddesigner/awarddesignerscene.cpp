@@ -372,10 +372,9 @@ void AwardDesignerScene::loadDesign(const AwardDesigner::Design &design)
 	}
 }
 
-AwardDesigner::Design AwardDesignerScene::collectDesign(const QString &name) const
+AwardDesigner::Design AwardDesignerScene::collectDesign() const
 {
 	AwardDesigner::Design d;
-	d.name = name;
 	d.pageW = m_pageW;
 	d.pageH = m_pageH;
 	for (const auto *si : m_items) {

@@ -258,7 +258,8 @@ add_executable(quickevent
 	plugins/Relays/qml/reports/startList_clubs.qml
 	plugins/Relays/qml/reports/startList_classes_condensed.qml
 	plugins/Relays/qml/reports/startList_clubs_condensed.qml
-	plugins/Relays/qml/reports/awards/relay_awards.typ
+
+	plugins/Relays/reports/awards/relay_awards.typ
 
 	plugins/Runs/qml/reports/competitorsWithCardRent.qml
 	plugins/Runs/qml/reports/results_nstages.qml
@@ -272,8 +273,9 @@ add_executable(quickevent
 	plugins/Runs/qml/reports/startList_clubs.qml
 	plugins/Runs/qml/reports/startList_clubs_nstages.qml
 	plugins/Runs/qml/reports/startList_starters.qml
-	plugins/Runs/qml/reports/awards/results_stage_awards.typ
 	plugins/Runs/qml/reports/competitorsStatistics.qml
+
+	plugins/Runs/reports/awards/results_stage_awards.typ
 
 	plugins/shared/qml/reports/Cell.qml
 	plugins/shared/qml/reports/HeaderCell.qml
@@ -301,7 +303,9 @@ target_sources(quickevent PRIVATE ${QM_FILES})
 file(GLOB_RECURSE REPORT_RESOURCE_FILES CONFIGURE_DEPENDS
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Classes/qml/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Runs/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Runs/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Receipts/qml/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/qml/reports/*"
 )

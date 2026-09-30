@@ -2374,23 +2374,8 @@ void RunsPlugin::report_nStagesAwards()
 	if(rep_path.isEmpty())
 		return;
 
-	static const QLatin1String DB_PREFIX("db:");
 	auto tt = nstagesResultsTable(opts.value("classFilter").toString(), opts.value("stageId").toInt(), opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
 
-	if(rep_path.startsWith(DB_PREFIX)) {
-		QString design_name = rep_path.mid(DB_PREFIX.size());
-		AwardDesigner::Design design = AwardDesigner::Design::loadFile(design_name);
-		if(!design.isValid()) {
-			qfWarning() << "Award design not found in DB:" << design_name;
-			return;
-		}
-		QString typ = design.toTypst();
-		QStringList images = design.imageFiles();
-		AwardTypstRenderer renderer(typ, images);
-		auto pages = renderer.collectRunsPagesData(tt, getPlugin<EventPlugin>()->eventConfig());
-		AwardReportViewWidget::showReport(typ, images, pages, fwk);
-		return;
-	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
 		auto [typ, images] = AwardDesigner::loadTypstTemplate(findReportFile(rep_path));
 		if(typ.isEmpty()) {

@@ -48,9 +48,8 @@ struct Item {
 	bool scaleProportional = true;
 };
 
-struct Design {
-	QString name;
-	QString type; // "relay" or "runs"; empty = treat as "relay" (backward compat)
+struct Design
+{
 	qreal pageW = 210;
 	qreal pageH = 297;
 	QList<Item> items;
@@ -75,12 +74,12 @@ struct Design {
 	// contract), falling back to A4 when it cannot be determined.
 	static QSizeF pageSizeFromTypst(const QString &src);
 
-	bool saveToDb() const;
+	bool saveToDb(const QString &relative_file_name) const;
 	static Design loadFile(const QString &name);
-	// type filter: "relay", "runs", or QString() for all
-	static QMap<QString, QString> listAwards(const QString &type);
+	// relative_reports_root filter: "relay", "runs", or QString() for all
+	static QMap<QString, QString> listAwards(const QString &relative_reports_root);
 
-	bool isValid() const { return !name.isEmpty(); }
+	bool isValid() const { return !items.isEmpty(); }
 
 	static Design defaultRelayDesign();
 	static Design defaultRunsDesign();

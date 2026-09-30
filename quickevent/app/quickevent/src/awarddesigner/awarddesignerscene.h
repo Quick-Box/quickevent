@@ -66,7 +66,7 @@ public:
 	~AwardDesignerScene() override;
 
 	void loadDesign(const AwardDesigner::Design &design);
-	AwardDesigner::Design collectDesign(const QString &name = QString()) const;
+	AwardDesigner::Design collectDesign() const;
 
 	void setAvailableFields(const QList<AwardDesigner::FieldDef> &fields);
 	const QList<AwardDesigner::FieldDef> &availableFields() const { return m_availableFields; }
