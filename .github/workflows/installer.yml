@@ -77,7 +77,7 @@ jobs:
         shell: bash
 
       - name: Run windeployqt
-        run: windeployqt -serialport -multimedia --qmldir '${{ github.workspace }}/install/bin/qml' --qmldir '${{ github.workspace }}/install/bin/reports' '${{ github.workspace }}/install/bin/quickevent.exe'
+        run: windeployqt -serialport -multimedia --qmldir '${{ github.workspace }}/install/bin/qml' '${{ github.workspace }}/install/bin/quickevent.exe'
 
       - name: Copy MinGW runtime libraries
         # windeployqt is unable to copy those, because it looks for them next to where g++.exe is. On the GitHub runner,
