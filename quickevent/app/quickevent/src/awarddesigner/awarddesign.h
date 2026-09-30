@@ -79,7 +79,6 @@ struct Design {
 	static Design loadFile(const QString &name);
 	// type filter: "relay", "runs", or QString() for all
 	static QMap<QString, QString> listAwards(const QString &type);
-	static bool deleteFromDb(const QString &name);
 
 	bool isValid() const { return !name.isEmpty(); }
 

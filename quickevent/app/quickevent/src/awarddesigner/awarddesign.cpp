@@ -40,17 +40,17 @@ QList<FieldDef> relayFields()
 QList<FieldDef> runsFields()
 {
 	return {
-		{QStringLiteral("eventName"), TR("Název závodu")},
-		{QStringLiteral("date"), TR("Datum")},
-		{QStringLiteral("place"), TR("Místo konání")},
-		{QStringLiteral("positionCategory"), TR("Pořadí v kategorii")},
-		{QStringLiteral("position"), TR("Pořadí")},
-		{QStringLiteral("category"), TR("Kategorie")},
-		{QStringLiteral("competitorName"), TR("Jméno závodníka")},
-		{QStringLiteral("clubName"), TR("Klub")},
-		{QStringLiteral("mainReferee"), TR("Hlavní rozhodčí")},
-		{QStringLiteral("director"), TR("Ředitel závodu")},
-		{QStringLiteral("customText"), TR("Vlastní text")},
+		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
+		{.id = QStringLiteral("date"), .label = TR("Datum")},
+		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
+		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
+		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
+		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
+		{.id = QStringLiteral("competitorName"), .label = TR("Jméno závodníka")},
+		{.id = QStringLiteral("clubName"), .label = TR("Klub")},
+		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
+		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("customText"), .label = TR("Vlastní text")},
 	};
 }
 
@@ -440,15 +440,6 @@ QMap<QString, QString> Design::listAwards(const QString &type)
 		}
 	}
 	return names;
-}
-
-bool Design::deleteFromDb(const QString &name)
-{
-	qf::core::sql::Query q;
-	q.prepare(QStringLiteral("DELETE FROM reports WHERE path=:path"));
-	q.bindValue(QStringLiteral(":path"), dbKey(name));
-	q.exec();
-	return q.numRowsAffected() > 0;
 }
 
 std::tuple<QString, QStringList> loadTypstTemplate(const QString &path)

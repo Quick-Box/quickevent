@@ -25,7 +25,10 @@ using namespace qf::gui::reports;
 //===================================================
 // ReportProcessor
 //===================================================
-static QList<ReportProcessor::QmlEngineInitializer> s_engineInitializers;
+
+namespace {
+QList<ReportProcessor::QmlEngineInitializer> s_engineInitializers;
+}
 
 void ReportProcessor::addQmlEngineInitializer(const QmlEngineInitializer &fn)
 {

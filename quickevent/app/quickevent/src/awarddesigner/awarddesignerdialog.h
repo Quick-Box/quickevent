@@ -25,6 +25,12 @@ public:
 	AwardDesigner::Design currentDesign() const;
 	QString designName() const;
 
+	void accept() override;
+
+protected:
+	void showEvent(QShowEvent *event) override;
+	bool eventFilter(QObject *obj, QEvent *event) override;
+
 private:
 	void onSelectedItemChanged(AwardSceneItem *item);
 	void onAddFieldClicked();
@@ -36,11 +42,12 @@ private:
 	void onSaveDesignClicked();
 	void onLoadDesignClicked();
 	void onNewDesignClicked();
-	void accept() override;
 
-protected:
-	void showEvent(QShowEvent *event) override;
-	bool eventFilter(QObject *obj, QEvent *event) override;
+	void populatePropsFromItem(AwardSceneItem *item);
+	void applyPropsToItem();
+	void updateColorButton();
+	void setPropsEnabled(bool enabled);
+	void updateItemKindVisibility(AwardDesigner::Item::Kind kind);
 
 private:
 	Ui::AwardDesignerDialog *ui;
@@ -50,10 +57,4 @@ private:
 	AwardSceneItem *m_selectedItem = nullptr;
 	bool m_updatingProps = false;
 	QString m_colorHex = QStringLiteral("#000000");
-
-	void populatePropsFromItem(AwardSceneItem *item);
-	void applyPropsToItem();
-	void updateColorButton();
-	void setPropsEnabled(bool enabled);
-	void updateItemKindVisibility(AwardDesigner::Item::Kind kind);
 };
