@@ -338,6 +338,14 @@ AwardDesignerScene::AwardDesignerScene(QObject *parent)
 	connect(this, &QGraphicsScene::selectionChanged, this, &AwardDesignerScene::onSelectionChanged);
 }
 
+AwardDesignerScene::~AwardDesignerScene()
+{
+	// QGraphicsScene::~QGraphicsScene() clears its items and may emit
+	// selectionChanged after the derived destructor has started. Avoid dispatching
+	// to a derived-class member while the base destructor is running.
+	disconnect(this, &QGraphicsScene::selectionChanged, this, &AwardDesignerScene::onSelectionChanged);
+}
+
 void AwardDesignerScene::setAvailableFields(const QList<AwardDesigner::FieldDef> &fields)
 {
 	m_availableFields = fields;
@@ -364,10 +372,9 @@ void AwardDesignerScene::loadDesign(const AwardDesigner::Design &design)
 	}
 }
 
-AwardDesigner::Design AwardDesignerScene::collectDesign(const QString &name) const
+AwardDesigner::Design AwardDesignerScene::collectDesign() const
 {
 	AwardDesigner::Design d;
-	d.name = name;
 	d.pageW = m_pageW;
 	d.pageH = m_pageH;
 	for (const auto *si : m_items) {

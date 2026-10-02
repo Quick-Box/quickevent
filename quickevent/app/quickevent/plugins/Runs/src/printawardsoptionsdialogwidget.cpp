@@ -1,6 +1,5 @@
 #include "printawardsoptionsdialogwidget.h"
 #include "ui_printawardsoptionsdialogwidget.h"
-#include "runsplugin.h"
 
 #include <awarddesigner/awarddesign.h>
 #include <awarddesigner/awarddesignerdialog.h>
@@ -10,7 +9,9 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/core/log.h>
 
-static const QLatin1String DB_PREFIX("db:");
+namespace {
+auto constexpr AWARDS_PATH = "Runs/reports/awards";
+}
 
 PrintAwardsOptionsDialogWidget::PrintAwardsOptionsDialogWidget(QWidget *parent)
 	: Super(parent)
@@ -35,16 +36,8 @@ void PrintAwardsOptionsDialogWidget::refreshTemplateList()
 	QString currentData = ui->edReportPath->currentData().toString();
 	ui->edReportPath->clear();
 
-	// DB-stored designer templates (user-defined) are listed first
-	for (const QString &name : AwardDesigner::Design::listFromDb(QStringLiteral("runs"))) {
-		ui->edReportPath->addItem(QStringLiteral("★ ") + name,
-			QString(DB_PREFIX) + name);
-	}
-
-	auto *runs_plugin = qf::gui::framework::getPlugin<Runs::RunsPlugin>();
-	// General (bundled) Typst templates
-	for (const auto &i : runs_plugin->listReportFiles("awards", QStringLiteral("typ"))) {
-		ui->edReportPath->addItem(i.reportName, i.reportFilePath);
+	for (const auto &[name, path] : AwardDesigner::Design::listAwards(AWARDS_PATH).asKeyValueRange()) {
+		ui->edReportPath->addItem(name, path);
 	}
 
 	if (!currentData.isEmpty()) {
@@ -102,23 +95,16 @@ void PrintAwardsOptionsDialogWidget::setPrintOptions(const QVariantMap &opts)
 
 void PrintAwardsOptionsDialogWidget::onDesignerClicked()
 {
-	AwardDesigner::Design design;
-	QString currentData = ui->edReportPath->currentData().toString();
-	if (currentData.startsWith(DB_PREFIX)) {
-		QString name = currentData.mid(DB_PREFIX.size());
-		design = AwardDesigner::Design::loadFromDb(name);
-	}
-
-	AwardDesignerDialog dlg(AwardDesigner::runsFields(), AwardDesigner::Design::defaultRunsDesign(), this);
-	if (design.isValid())
-		dlg.loadDesign(design);
+	AwardDesignerDialog dlg(AwardDesigner::relayFields(), AwardDesigner::Design::defaultRelayDesign(), AWARDS_PATH, this);
+	QString file_name = ui->edReportPath->currentText();
+	dlg.loadDesign(file_name);
 	dlg.exec();
 
 	refreshTemplateList();
 
 	QString savedName = dlg.designName();
 	if (!savedName.isEmpty()) {
-		int ix = ui->edReportPath->findData(QString(DB_PREFIX) + savedName);
+		int ix = ui->edReportPath->findText(savedName);
 		if (ix >= 0)
 			ui->edReportPath->setCurrentIndex(ix);
 	}

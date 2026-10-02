@@ -3,6 +3,7 @@
 #include "reportpainter.h"
 //#include "../../framework/application.h"
 #include "../../framework/plugin.h"
+#include "../../framework/reportfilecache.h"
 
 #include <qf/core/utils/fileutils.h>
 #include <qf/core/log.h>
@@ -24,7 +25,10 @@ using namespace qf::gui::reports;
 //===================================================
 // ReportProcessor
 //===================================================
-static QList<ReportProcessor::QmlEngineInitializer> s_engineInitializers;
+
+namespace {
+QList<ReportProcessor::QmlEngineInitializer> s_engineInitializers;
+}
 
 void ReportProcessor::addQmlEngineInitializer(const QmlEngineInitializer &fn)
 {
@@ -345,7 +349,7 @@ QStringList ReportProcessor::qmlEngineImportPaths()
 	lst << QCoreApplication::applicationDirPath() + "/../lib/qml";
 #endif
 	lst << QCoreApplication::applicationDirPath() + "/qml";
-	lst << framework::Plugin::effectiveReportsDir();
+	lst << framework::Plugin::reportFileCache()->localReportsDir();
 	lst << ":/quickevent";
 	return lst;
 }

@@ -48,9 +48,8 @@ struct Item {
 	bool scaleProportional = true;
 };
 
-struct Design {
-	QString name;
-	QString type; // "relay" or "runs"; empty = treat as "relay" (backward compat)
+struct Design
+{
 	qreal pageW = 210;
 	qreal pageH = 297;
 	QList<Item> items;
@@ -75,27 +74,17 @@ struct Design {
 	// contract), falling back to A4 when it cannot be determined.
 	static QSizeF pageSizeFromTypst(const QString &src);
 
-	bool saveToDb() const;
-	static Design loadFromDb(const QString &name);
-	// type filter: "relay", "runs", or QString() for all
-	static QStringList listFromDb(const QString &type = QString());
-	static bool deleteFromDb(const QString &name);
+	bool saveToDb(const QString &relative_file_name) const;
+	static Design loadFile(const QString &name);
+	// relative_reports_root filter: "relay", "runs", or QString() for all
+	static QMap<QString, QString> listAwards(const QString &relative_reports_root);
 
-	static QString dbKey(const QString &name)
-	{
-		return QLatin1String("awards.design.") + name;
-	}
-
-	bool isValid() const { return !name.isEmpty(); }
+	bool isValid() const { return !items.isEmpty(); }
 
 	static Design defaultRelayDesign();
 	static Design defaultRunsDesign();
 };
 
-// Read a bundled/general .typ template file. out_image_files is filled with the
-// absolute paths of every file in the template's sibling "images" directory, which
-// the renderer copies next to the document (templates reference them by file name).
-// Returns false if the template file cannot be read.
-bool loadTypstTemplate(const QString &path, QString &out_source, QStringList &out_image_files);
+std::tuple<QString, QStringList> loadTypstTemplate(const QString &path);
 
 } // namespace AwardDesigner

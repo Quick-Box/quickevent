@@ -1,6 +1,8 @@
 #include "awarddesign.h"
 
-#include <qf/core/sql/query.h>
+#include <qf/gui/framework/reportfilecache.h>
+#include <qf/gui/framework/plugin.h>
+
 #include <qf/core/log.h>
 
 #include <QCoreApplication>
@@ -20,38 +22,40 @@ namespace AwardDesigner {
 QList<FieldDef> relayFields()
 {
 	return {
-		{QStringLiteral("eventName"), TR("Název závodu")},
-		{QStringLiteral("date"), TR("Datum")},
-		{QStringLiteral("place"), TR("Místo konání")},
-		{QStringLiteral("positionCategory"), TR("Pořadí v kategorii")},
-		{QStringLiteral("position"), TR("Pořadí")},
-		{QStringLiteral("category"), TR("Kategorie")},
-		{QStringLiteral("clubName"), TR("Název štafety/klubu")},
-		{QStringLiteral("runners"), TR("Závodníci (seznam)")},
-		{QStringLiteral("mainReferee"), TR("Hlavní rozhodčí")},
-		{QStringLiteral("director"), TR("Ředitel závodu")},
-		{QStringLiteral("customText"), TR("Vlastní text")},
+		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
+		{.id = QStringLiteral("date"), .label = TR("Datum")},
+		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
+		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
+		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
+		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
+		{.id = QStringLiteral("clubName"), .label = TR("Název štafety/klubu")},
+		{.id = QStringLiteral("runners"), .label = TR("Závodníci (seznam)")},
+		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
+		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("customText"), .label = TR("Vlastní text")},
 	};
+
 }
 
 QList<FieldDef> runsFields()
 {
 	return {
-		{QStringLiteral("eventName"), TR("Název závodu")},
-		{QStringLiteral("date"), TR("Datum")},
-		{QStringLiteral("place"), TR("Místo konání")},
-		{QStringLiteral("positionCategory"), TR("Pořadí v kategorii")},
-		{QStringLiteral("position"), TR("Pořadí")},
-		{QStringLiteral("category"), TR("Kategorie")},
-		{QStringLiteral("competitorName"), TR("Jméno závodníka")},
-		{QStringLiteral("clubName"), TR("Klub")},
-		{QStringLiteral("mainReferee"), TR("Hlavní rozhodčí")},
-		{QStringLiteral("director"), TR("Ředitel závodu")},
-		{QStringLiteral("customText"), TR("Vlastní text")},
+		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
+		{.id = QStringLiteral("date"), .label = TR("Datum")},
+		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
+		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
+		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
+		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
+		{.id = QStringLiteral("competitorName"), .label = TR("Jméno závodníka")},
+		{.id = QStringLiteral("clubName"), .label = TR("Klub")},
+		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
+		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("customText"), .label = TR("Vlastní text")},
 	};
 }
 
-static Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qreal h,
+namespace {
+Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qreal h,
 	const QString &font_family, int font_size, bool bold,
 	const QString &color = QStringLiteral("#000000"),
 	int halign = Qt::AlignHCenter)
@@ -64,11 +68,11 @@ static Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qr
 	it.color = color; it.halign = halign;
 	return it;
 }
+}
 
 Design Design::defaultRelayDesign()
 {
 	Design d;
-	d.type = QStringLiteral("relay");
 	d.pageW = 210; d.pageH = 297;
 
 	// Event name — large bold
@@ -115,7 +119,6 @@ Design Design::defaultRelayDesign()
 Design Design::defaultRunsDesign()
 {
 	Design d;
-	d.type = QStringLiteral("runs");
 	d.pageW = 210; d.pageH = 297;
 
 	d.items << makeFieldItem(QStringLiteral("eventName"),
@@ -152,8 +155,8 @@ Design Design::defaultRunsDesign()
 }
 
 // --- Typst serialization ------------------------------------------------------
-
-static QString escapeTypstString(const QString &s)
+namespace {
+QString escapeTypstString(const QString &s)
 {
 	QString out = s;
 	out.replace(QLatin1Char('\\'), QStringLiteral("\\\\"));
@@ -162,7 +165,7 @@ static QString escapeTypstString(const QString &s)
 	return out;
 }
 
-static QString typstAlignment(int halign)
+QString typstAlignment(int halign)
 {
 	if (halign == Qt::AlignLeft)
 		return QStringLiteral("left");
@@ -174,17 +177,17 @@ static QString typstAlignment(int halign)
 // key=value tag encoding for the `// @item`/`// @design` round-trip comments.
 // Values are percent-encoded so they never contain spaces or '=', keeping parsing
 // a plain split. This is not JSON — the comment is inert Typst the compiler ignores.
-static QString enc(const QString &s)
+QString enc(const QString &s)
 {
 	return QString::fromLatin1(QUrl::toPercentEncoding(s));
 }
 
-static QString dec(const QString &s)
+QString dec(const QString &s)
 {
 	return QString::fromUtf8(QByteArray::fromPercentEncoding(s.toLatin1()));
 }
 
-static QString itemTag(const Item &it)
+QString itemTag(const Item &it)
 {
 	QStringList kv;
 	kv << QStringLiteral("kind=") + QString::number(it.kind);
@@ -208,7 +211,7 @@ static QString itemTag(const Item &it)
 	return QStringLiteral("  // @item ") + kv.join(QLatin1Char(' ')) + QLatin1Char('\n');
 }
 
-static Item itemFromTag(const QString &tag)
+Item itemFromTag(const QString &tag)
 {
 	QHash<QString, QString> m;
 	const auto parts = QStringView(tag).split(QLatin1Char(' '), Qt::SkipEmptyParts);
@@ -239,7 +242,7 @@ static Item itemFromTag(const QString &tag)
 	return it;
 }
 
-static QString itemToTypstSnippet(const Item &item, int index)
+QString itemToTypstSnippet(const Item &item, int index)
 {
 	const QString dx = QString::number(item.x, 'f', 3) + QStringLiteral("mm");
 	const QString dy = QString::number(item.y, 'f', 3) + QStringLiteral("mm");
@@ -282,7 +285,7 @@ static QString itemToTypstSnippet(const Item &item, int index)
 	snippet += QStringLiteral("  ]\n");
 	return snippet;
 }
-
+}
 QString Design::toTypst() const
 {
 	QList<Item> sorted = items;
@@ -290,7 +293,7 @@ QString Design::toTypst() const
 		[](const Item &a, const Item &b) { return a.zOrder < b.zOrder; });
 
 	QString src;
-	src += QStringLiteral("// @design type=") + enc(type.isEmpty() ? QStringLiteral("relay") : type)
+	src += QStringLiteral("// @design")
 		+ QStringLiteral(" pageW=") + QString::number(pageW, 'f', 3)
 		+ QStringLiteral(" pageH=") + QString::number(pageH, 'f', 3) + QLatin1Char('\n');
 	src += QStringLiteral("#set page(width: ") + QString::number(pageW, 'f', 3)
@@ -311,19 +314,6 @@ Design Design::fromTypst(const QString &src)
 	QSizeF sz = pageSizeFromTypst(src);
 	d.pageW = sz.width();
 	d.pageH = sz.height();
-
-	static const QRegularExpression re_design(QStringLiteral("^// @design (.+)$"),
-		QRegularExpression::MultilineOption);
-	auto dm = re_design.match(src);
-	if (dm.hasMatch()) {
-		for (const auto &p : dm.captured(1).split(QLatin1Char(' '), Qt::SkipEmptyParts)) {
-			int eq = p.indexOf(QLatin1Char('='));
-			if (eq > 0 && p.left(eq) == QLatin1String("type"))
-				d.type = dec(p.mid(eq + 1));
-		}
-	}
-	if (d.type.isEmpty())
-		d.type = QStringLiteral("relay");
 
 	static const QRegularExpression re_item(QStringLiteral("^\\s*// @item (.+)$"),
 		QRegularExpression::MultilineOption);
@@ -381,97 +371,76 @@ QSizeF Design::pageSizeFromTypst(const QString &src)
 
 	return QSizeF(210, 297); // A4
 }
+// namespace {
+// const auto AWARDS_DIR = "reports/awards";
+// QString awards_path_fom_name(const QString &type, const QString award_name)
+// {
+// 	QString file_name = award_name;
+// 	file_name.replace(' ', '-');
+// 	return QStringLiteral("%1/%2/%3.typ").arg(type).arg(AWARDS_DIR).arg(file_name);
+// }
+// }
 
-bool Design::saveToDb() const
+bool Design::saveToDb(const QString &relative_file_name) const
 {
-	if (name.isEmpty()) {
+	if (relative_file_name.isEmpty()) {
 		qfWarning() << "Design name is empty, cannot save to DB";
 		return false;
 	}
-	QString key = dbKey(name);
-	Design self = *this;
-	self.embedImages();
-	QString typ = self.toTypst();
-	qf::core::sql::Query q_up;
-	q_up.prepare(QStringLiteral("UPDATE config SET cvalue=:val WHERE ckey=:key"));
-	q_up.bindValue(QStringLiteral(":key"), key);
-	q_up.bindValue(QStringLiteral(":val"), typ);
-	if (!q_up.exec()) {
-		qfWarning() << "Failed to update award design in DB:" << q_up.lastErrorText();
-		return false;
-	}
-	if (q_up.numRowsAffected() < 1) {
-		qf::core::sql::Query q_ins;
-		q_ins.prepare(QStringLiteral("INSERT INTO config(ckey, cname, cvalue, ctype) VALUES(:key, :cname, :val, 'QString')"));
-		q_ins.bindValue(QStringLiteral(":key"), key);
-		q_ins.bindValue(QStringLiteral(":cname"), QStringLiteral("Award design: ") + name);
-		q_ins.bindValue(QStringLiteral(":val"), typ);
-		if (!q_ins.exec()) {
-			qfWarning() << "Failed to insert award design into DB:" << q_ins.lastErrorText();
-			return false;
-		}
-	}
+	Design design_copy = *this;
+	design_copy.embedImages();
+	auto typst = design_copy.toTypst();
+	auto *cache = qf::gui::framework::Plugin::reportFileCache();
+	cache->saveRemoteFileContent(relative_file_name, typst.toUtf8());
 	return true;
 }
 
-Design Design::loadFromDb(const QString &name)
+Design Design::loadFile(const QString &relative_file_name)
 {
-	qf::core::sql::Query q;
-	q.prepare(QStringLiteral("SELECT cvalue FROM config WHERE ckey=:key"));
-	q.bindValue(QStringLiteral(":key"), dbKey(name));
-	q.exec();
-	if (q.next()) {
-		Design d = fromTypst(q.value(0).toString());
-		d.name = name;
-		return d;
+	auto *cache = qf::gui::framework::Plugin::reportFileCache();
+	auto data = cache->loadReportFile(relative_file_name);
+	if (data.isEmpty()) {
+		return Design{};
 	}
-	return Design{};
+	Design d = fromTypst(QString::fromUtf8(data));
+	return d;
 }
 
-QStringList Design::listFromDb(const QString &type)
+QMap<QString, QString> Design::listAwards(const QString &relative_reports_root)
 {
-	qf::core::sql::Query q;
-	q.exec(QStringLiteral("SELECT ckey, cvalue FROM config WHERE ckey LIKE 'awards.design.%' ORDER BY ckey"));
-	QStringList names;
-	const int prefix_len = QStringLiteral("awards.design.").length();
-	while (q.next()) {
-		if (!type.isEmpty()) {
-			// default "relay" when no header (backward compat / hand-written)
-			QString t = fromTypst(q.value(1).toString()).type;
-			if (t != type)
-				continue;
+	// list all files under report cache starting with prefix
+	QMap<QString, QString> names;
+	auto local_dir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
+	QDir dir(local_dir + "/" + relative_reports_root);
+	if (dir.exists()) {
+		const auto entries = dir.entryInfoList(QDir::Files, QDir::Name);
+		for (const auto &entry : entries) {
+			static const auto ext = "typ";
+			if (entry.suffix() == ext) {
+				names[entry.fileName()] = entry.filePath().mid(local_dir.size() + 1);
+			}
 		}
-		names << q.value(0).toString().mid(prefix_len);
 	}
 	return names;
 }
 
-bool Design::deleteFromDb(const QString &name)
-{
-	qf::core::sql::Query q;
-	q.prepare(QStringLiteral("DELETE FROM config WHERE ckey=:key"));
-	q.bindValue(QStringLiteral(":key"), dbKey(name));
-	q.exec();
-	return q.numRowsAffected() > 0;
-}
-
-bool loadTypstTemplate(const QString &path, QString &out_source, QStringList &out_image_files)
+std::tuple<QString, QStringList> loadTypstTemplate(const QString &path)
 {
 	QFile f(path);
 	if (!f.open(QIODevice::ReadOnly)) {
 		qfWarning() << "Cannot open Typst award template:" << path;
-		return false;
+		return {};
 	}
-	out_source = QString::fromUtf8(f.readAll());
+	QString out_source = QString::fromUtf8(f.readAll());
 
-	out_image_files.clear();
+	QStringList out_image_files;
 	QDir images_dir(QFileInfo(path).absolutePath() + QStringLiteral("/images"));
 	if (images_dir.exists()) {
 		const auto entries = images_dir.entryInfoList(QDir::Files, QDir::Name);
 		for (const QFileInfo &fi : entries)
 			out_image_files << fi.absoluteFilePath();
 	}
-	return true;
+	return { out_source, out_image_files };
 }
 
 } // namespace AwardDesigner

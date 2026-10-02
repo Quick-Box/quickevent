@@ -27,6 +27,7 @@
 #include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/dockwidget.h>
+#include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/action.h>
 #include <qf/gui/menubar.h>
 #include <qf/gui/dialogs/dialog.h>
@@ -2295,27 +2296,11 @@ void RunsPlugin::report_resultsAwards()
 	if(rep_path.isEmpty())
 		return;
 
-	static const QLatin1String DB_PREFIX("db:");
 	auto tt = stageResultsTable(opts.value("stageId").toInt(), opts.value("classFilter").toString(), opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
 
-	if(rep_path.startsWith(DB_PREFIX)) {
-		QString design_name = rep_path.mid(DB_PREFIX.size());
-		auto design = AwardDesigner::Design::loadFromDb(design_name);
-		if(!design.isValid()) {
-			qfWarning() << "Award design not found in DB:" << design_name;
-			return;
-		}
-		QString typ = design.toTypst();
-		QStringList images = design.imageFiles();
-		AwardTypstRenderer renderer(typ, images);
-		auto pages = renderer.collectRunsPagesData(tt, getPlugin<EventPlugin>()->eventConfig());
-		AwardReportViewWidget::showReport(typ, images, pages, fwk);
-		return;
-	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
-		QString typ;
-		QStringList images;
-		if(!AwardDesigner::loadTypstTemplate(findReportFile(rep_path), typ, images)) {
+		auto [typ, images] = AwardDesigner::loadTypstTemplate(Plugin::reportFileCache()->localReportFile(rep_path));
+		if(typ.isEmpty()) {
 			qfWarning() << "Cannot load Typst award template:" << rep_path;
 			return;
 		}
@@ -2389,27 +2374,11 @@ void RunsPlugin::report_nStagesAwards()
 	if(rep_path.isEmpty())
 		return;
 
-	static const QLatin1String DB_PREFIX("db:");
 	auto tt = nstagesResultsTable(opts.value("classFilter").toString(), opts.value("stageId").toInt(), opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
 
-	if(rep_path.startsWith(DB_PREFIX)) {
-		QString design_name = rep_path.mid(DB_PREFIX.size());
-		AwardDesigner::Design design = AwardDesigner::Design::loadFromDb(design_name);
-		if(!design.isValid()) {
-			qfWarning() << "Award design not found in DB:" << design_name;
-			return;
-		}
-		QString typ = design.toTypst();
-		QStringList images = design.imageFiles();
-		AwardTypstRenderer renderer(typ, images);
-		auto pages = renderer.collectRunsPagesData(tt, getPlugin<EventPlugin>()->eventConfig());
-		AwardReportViewWidget::showReport(typ, images, pages, fwk);
-		return;
-	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
-		QString typ;
-		QStringList images;
-		if(!AwardDesigner::loadTypstTemplate(findReportFile(rep_path), typ, images)) {
+		auto [typ, images] = AwardDesigner::loadTypstTemplate(findReportFile(rep_path));
+		if(typ.isEmpty()) {
 			qfWarning() << "Cannot load Typst award template:" << rep_path;
 			return;
 		}

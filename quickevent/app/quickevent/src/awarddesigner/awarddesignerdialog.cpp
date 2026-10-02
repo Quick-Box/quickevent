@@ -12,13 +12,11 @@
 #include <QTimer>
 #include <QWheelEvent>
 
-AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &available_fields,
-	const AwardDesigner::Design &default_design,
-	QWidget *parent)
+AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &available_fields, const AwardDesigner::Design &default_design, const QString &design_relative_root, QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::AwardDesignerDialog)
+	, m_relativeDesignFilesRoot(design_relative_root)
 	, m_availableFields(available_fields)
-	, m_designType(default_design.type)
 {
 	ui->setupUi(this);
 
@@ -38,9 +36,9 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	}
 
 	ui->cbxAlign->clear();
-	ui->cbxAlign->addItem(tr("Vlevo"), static_cast<int>(Qt::AlignLeft));
-	ui->cbxAlign->addItem(tr("Na střed"), static_cast<int>(Qt::AlignHCenter));
-	ui->cbxAlign->addItem(tr("Vpravo"), static_cast<int>(Qt::AlignRight));
+	ui->cbxAlign->addItem(tr("Left"), static_cast<int>(Qt::AlignLeft));
+	ui->cbxAlign->addItem(tr("Center"), static_cast<int>(Qt::AlignHCenter));
+	ui->cbxAlign->addItem(tr("Right"), static_cast<int>(Qt::AlignRight));
 
 	connect(m_scene, &AwardDesignerScene::selectedItemChanged,
 		this, &AwardDesignerDialog::onSelectedItemChanged);
@@ -81,7 +79,7 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	setPropsEnabled(false);
 
 	// Load default design on first open
-	loadDesign(default_design);
+	setDesign(default_design);
 }
 
 AwardDesignerDialog::~AwardDesignerDialog()
@@ -89,9 +87,22 @@ AwardDesignerDialog::~AwardDesignerDialog()
 	delete ui;
 }
 
-void AwardDesignerDialog::loadDesign(const AwardDesigner::Design &design)
+QString AwardDesignerDialog::relativeDesignFilePath(const QString &file_name) const
 {
-	ui->edDesignName->setText(design.name);
+	if (file_name.trimmed().isEmpty())
+		return QString();
+	return m_relativeDesignFilesRoot + '/' + file_name.trimmed();
+}
+
+void AwardDesignerDialog::loadDesign(const QString &file_name)
+{
+	auto design = AwardDesigner::Design::loadFile(relativeDesignFilePath(file_name));
+	setDesign(design);
+	ui->edDesignName->setText(file_name);
+}
+
+void AwardDesignerDialog::setDesign(const AwardDesigner::Design &design)
+{
 	m_scene->loadDesign(design);
 	QTimer::singleShot(0, this, [this]() {
 		ui->graphicsView->fitInView(m_scene->sceneRect(), Qt::KeepAspectRatio);
@@ -100,12 +111,17 @@ void AwardDesignerDialog::loadDesign(const AwardDesigner::Design &design)
 
 AwardDesigner::Design AwardDesignerDialog::currentDesign() const
 {
-	return m_scene->collectDesign(ui->edDesignName->text().trimmed());
+	return m_scene->collectDesign();
 }
 
 QString AwardDesignerDialog::designName() const
 {
-	return ui->edDesignName->text().trimmed();
+	auto name = ui->edDesignName->text().trimmed();
+	if (name.isEmpty())
+		return QString();
+	if (!name.endsWith(".typ"))
+		name += ".typ";
+	return name;
 }
 
 void AwardDesignerDialog::onSelectedItemChanged(AwardSceneItem *item)
@@ -133,9 +149,9 @@ void AwardDesignerDialog::onAddFieldClicked()
 void AwardDesignerDialog::onAddImageClicked()
 {
 	QString path = QFileDialog::getOpenFileName(this,
-		tr("Vyberte obrázek"),
+		tr("Select an image"),
 		QString(),
-		tr("Obrázky (*.png *.jpg *.jpeg *.svg *.bmp);;Všechny soubory (*)"));
+		tr("Images (*.png *.jpg *.jpeg *.svg *.bmp);;All files (*)"));
 
 	AwardDesigner::Item item;
 	item.kind = AwardDesigner::Item::Image;
@@ -156,9 +172,9 @@ void AwardDesignerDialog::onDeleteItemClicked()
 void AwardDesignerDialog::onBrowseImageClicked()
 {
 	QString path = QFileDialog::getOpenFileName(this,
-		tr("Vyberte obrázek"),
+		tr("Select an image"),
 		QString(),
-		tr("Obrázky (*.png *.jpg *.jpeg *.svg *.bmp);;Všechny soubory (*)"));
+		tr("Images (*.png *.jpg *.jpeg *.svg *.bmp);;All files (*)"));
 	if (!path.isEmpty()) {
 		ui->edImagePath->setText(path);
 		if (!m_updatingProps) {
@@ -169,7 +185,7 @@ void AwardDesignerDialog::onBrowseImageClicked()
 
 void AwardDesignerDialog::onChooseColorClicked()
 {
-	QColor c = QColorDialog::getColor(QColor(m_colorHex), this, tr("Zvolte barvu textu"));
+	QColor c = QColorDialog::getColor(QColor(m_colorHex), this, tr("Choose text color"));
 	if (c.isValid()) {
 		m_colorHex = c.name();
 		updateColorButton();
@@ -188,40 +204,39 @@ void AwardDesignerDialog::onItemPropertyChanged()
 
 void AwardDesignerDialog::onSaveDesignClicked()
 {
-	QString name = ui->edDesignName->text().trimmed();
+	QString name = relativeDesignFilePath(designName());
 	if (name.isEmpty()) {
-		QMessageBox::warning(this, tr("Uložit návrh"), tr("Zadejte prosím název návrhu."));
+		QMessageBox::warning(this, tr("Save design"), tr("Please enter a design name."));
 		ui->edDesignName->setFocus();
 		return;
 	}
-	AwardDesigner::Design d = m_scene->collectDesign(name);
-	d.type = m_designType;
-	if (d.saveToDb()) {
-		QMessageBox::information(this, tr("Uložit návrh"),
-			tr("Návrh '%1' byl uložen do databáze.").arg(name));
+	AwardDesigner::Design d = m_scene->collectDesign();
+	if (d.saveToDb(name)) {
+		QMessageBox::information(this, tr("Save design"),
+			tr("Design '%1' was saved to the database.").arg(name));
 	} else {
-		QMessageBox::critical(this, tr("Uložit návrh"),
-			tr("Návrh '%1' se nepodařilo uložit do databáze.").arg(name));
+		QMessageBox::critical(this, tr("Save design"),
+			tr("Could not save design '%1' to the database.").arg(name));
 	}
 }
 
 void AwardDesignerDialog::onLoadDesignClicked()
 {
-	QStringList designs = AwardDesigner::Design::listFromDb(m_designType);
+	auto designs = AwardDesigner::Design::listAwards(m_relativeDesignFilesRoot);
 	if (designs.isEmpty()) {
-		QMessageBox::information(this, tr("Načíst návrh"),
-			tr("V databázi nejsou uloženy žádné návrhy diplomů."));
+		QMessageBox::information(this, tr("Load design"),
+			tr("No award designs are saved in the database."));
 		return;
 	}
 	bool ok;
 	QString name = QInputDialog::getItem(this,
-		tr("Načíst návrh"), tr("Vyberte návrh:"), designs, 0, false, &ok);
+		tr("Load design"), tr("Select a design:"), designs.keys(), 0, false, &ok);
 	if (!ok || name.isEmpty()) {
 		return;
 	}
-	AwardDesigner::Design d = AwardDesigner::Design::loadFromDb(name);
+	AwardDesigner::Design d = AwardDesigner::Design::loadFile(designs.value(name));
 	if (d.isValid()) {
-		loadDesign(d);
+		setDesign(d);
 	}
 }
 
@@ -234,13 +249,12 @@ void AwardDesignerDialog::onNewDesignClicked()
 
 void AwardDesignerDialog::accept()
 {
-	QString name = ui->edDesignName->text().trimmed();
+	QString name = relativeDesignFilePath(designName());
 	if (!name.isEmpty()) {
-		AwardDesigner::Design d = m_scene->collectDesign(name);
-		d.type = m_designType;
-		if (!d.saveToDb()) {
-			QMessageBox::critical(this, tr("Uložit návrh"),
-				tr("Návrh '%1' se nepodařilo uložit do databáze.").arg(name));
+		AwardDesigner::Design d = m_scene->collectDesign();
+		if (!d.saveToDb(name)) {
+			QMessageBox::critical(this, tr("Save design"),
+				tr("Could not save design '%1' to the database.").arg(name));
 			return;
 		}
 	}

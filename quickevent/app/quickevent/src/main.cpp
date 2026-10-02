@@ -14,6 +14,8 @@
 #include <qf/core/logentrymap.h>
 #include <qf/core/utils/settings.h>
 #include <qf/gui/model/logtablemodel.h>
+#include <qf/gui/framework/plugin.h>
+#include <qf/gui/framework/reportfilecache.h>
 
 #include <QtQml>
 #include <QLocale>

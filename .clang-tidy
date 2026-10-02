@@ -69,6 +69,7 @@ Checks:
     -modernize-use-trailing-return-type,
     -modernize-use-using,
     -readability-avoid-const-params-in-decls,
+    -readability-avoid-nested-conditional-operator,
     -readability-braces-around-statements,
     -readability-convert-member-functions-to-static,
     -readability-function-cognitive-complexity,

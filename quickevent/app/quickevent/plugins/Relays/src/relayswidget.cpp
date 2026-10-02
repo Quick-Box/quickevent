@@ -6,11 +6,11 @@
 #include "relaysplugin.h"
 #include "printrelayawardsoptionsdialogwidget.h"
 #include "partwidget.h"
+#include "relaystableitemdelegate.h"
 
 #include <awarddesigner/awarddesign.h>
 #include <awarddesigner/awardtypstrenderer.h>
 #include <awarddesigner/awardreportviewwidget.h>
-#include "relaystableitemdelegate.h"
 
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Runs/src/runsplugin.h>
@@ -26,6 +26,7 @@
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
+#include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/toolbar.h>
 #include <qf/gui/combobox.h>
 #include <qf/gui/action.h>
@@ -610,26 +611,9 @@ void RelaysWidget::print_results_awards()
 	int num_places = s_opts.value("numPlaces", 3).toInt();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(s_opts.value("classFilter").toString(), 999, num_places, true);
 
-	static const QLatin1String DB_PREFIX("db:");
-
-	if(rep_path.startsWith(DB_PREFIX)) {
-		QString design_name = rep_path.mid(DB_PREFIX.size());
-		AwardDesigner::Design design = AwardDesigner::Design::loadFromDb(design_name);
-		if(!design.isValid()) {
-			qfWarning() << "Award design not found in DB:" << design_name;
-			return;
-		}
-		QString typ = design.toTypst();
-		QStringList images = design.imageFiles();
-		AwardTypstRenderer renderer(typ, images);
-		auto pages = renderer.collectPages(td, getPlugin<EventPlugin>()->eventConfig());
-		AwardReportViewWidget::showReport(typ, images, pages, this);
-		return;
-	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
-		QString typ;
-		QStringList images;
-		if(!AwardDesigner::loadTypstTemplate(getPlugin<RelaysPlugin>()->findReportFile(rep_path), typ, images)) {
+		auto [typ, images] = AwardDesigner::loadTypstTemplate(qf::gui::framework::Plugin::reportFileCache()->localReportFile(rep_path));
+		if(typ.isEmpty()) {
 			qfWarning() << "Cannot load Typst award template:" << rep_path;
 			return;
 		}

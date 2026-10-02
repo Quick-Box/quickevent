@@ -26,6 +26,8 @@
 #include <qf/gui/framework/dockwidget.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/application.h>
+#include <qf/gui/framework/plugin.h>
+#include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/dialogs/dialog.h>
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/gui/dialogs/filedialog.h>
@@ -1103,6 +1105,7 @@ bool EventPlugin::openEvent(const QString &_event_name)
 	if(ok) {
 		connection_settings.setEventName(event_name);
 		setEventDbName(event_name);
+		qf::gui::framework::Plugin::reportFileCache()->applyDatabaseOverrides();
 		//emit reloadDataRequest();
 	}
 

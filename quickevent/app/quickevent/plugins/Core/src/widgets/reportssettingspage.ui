@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>&amp;Reports directory</string>
+      <string>&amp;Local reports directory</string>
      </property>
      <property name="buddy">
       <cstring>edReportsDirectory</cstring>
@@ -25,67 +25,51 @@
     </widget>
    </item>
    <item>
+    <widget class="QLineEdit" name="edReportsDirectory">
+     <property name="toolTip">
+      <string>Reports directory is an directory, where QuickEvent is looking for reports definition QML files. It is populated during application start if not exists.</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLineEdit" name="edReportsDirectory">
-       <property name="clearButtonEnabled">
+      <widget class="QPushButton" name="btResizeColumnsToFit">
+       <property name="flat">
         <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="btSelectCustomReportsDirectory">
-       <property name="text">
-        <string>...</string>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
-      </widget>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
      <item>
-      <widget class="QToolButton" name="btSetDefaultReportsDir">
-       <property name="toolTip">
-        <string>Set default reports directory</string>
-       </property>
+      <widget class="QPushButton" name="btClearLocalChanges">
        <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
-         <normaloff>:/qf/gui/images/flat/reload.svg</normaloff>:/qf/gui/images/flat/reload.svg</iconset>
+        <string>Clear local changes</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="lblHelp">
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reports directory is an directory, where QuickEvent is looking for reports definition QML files. It is populated during installation. Default reports directory is &lt;a href=&quot;file:///%1&quot;&gt;%1&lt;/a&gt; in QuickEvent install directory. If you want to have own reports, then you can copy default reports dir to new location, modify QML files and redirect reports dir there.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-     <property name="openExternalLinks">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
+    <widget class="QTableView" name="tblReportFiles"/>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

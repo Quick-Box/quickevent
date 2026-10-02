@@ -21,7 +21,7 @@ public:
 	QVariantMap printOptions() const;
 	void setPrintOptions(const QVariantMap &opts);
 
-private Q_SLOTS:
+private:
 	void onDesignerClicked();
 
 private:

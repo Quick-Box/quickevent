@@ -42,6 +42,7 @@ add_library(libqfgui SHARED
     src/framework/partswitch.cpp
     src/framework/partwidget.cpp
     src/framework/plugin.cpp
+    src/framework/reportfilecache.cpp
     src/framework/pluginmanifest.cpp
     src/framework/stackedcentralwidget.cpp
     src/graphics/graphics.cpp
