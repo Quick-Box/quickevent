@@ -22,7 +22,8 @@ public:
 	static QString dataHash(const QByteArray &data);
 	static QString fileHash(const QString &file_path);
 private:
-	void initIfNotExists() const;
+	QString resourceHashesFile() const;
+	void syncWithResources() const;
 private:
 	friend class Plugin;
 	ReportFileCache();

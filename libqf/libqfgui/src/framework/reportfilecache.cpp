@@ -7,6 +7,8 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QStandardPaths>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -18,7 +20,7 @@ namespace qf::gui::framework {
 ReportFileCache::ReportFileCache()
 	: QObject(nullptr)
 {
-	initIfNotExists();
+	syncWithResources();
 }
 
 QString ReportFileCache::localReportFile(const QString &relative_path) const
@@ -49,14 +51,15 @@ bool isSafeReportPath(const QString &path)
 
 }
 
-void ReportFileCache::initIfNotExists() const
+QString ReportFileCache::resourceHashesFile() const
+{
+	// kept outside of the cache dir, so it is not listed as a report file
+	return reportCacheDir() + ".hashes.json";
+}
+
+void ReportFileCache::syncWithResources() const
 {
 	const QString cache_dir_path = reportCacheDir();
-	QFileInfo cache_info(cache_dir_path);
-	if(cache_info.exists())
-		return;
-
-	qfInfo() << "Initializing report cache dir:" << cache_dir_path;
 	QDir cache_dir(cache_dir_path);
 	if(!cache_dir.mkpath(cache_dir_path)) {
 		qfError() << "Cannot create report cache directory:" << cache_dir_path;
@@ -70,18 +73,49 @@ void ReportFileCache::initIfNotExists() const
 		return;
 	}
 
+	// hashes of resource files copied to cache last time,
+	// local file with the same hash was not changed by user and can be updated safely
+	QJsonObject old_hashes;
+	{
+		QFile file(resourceHashesFile());
+		if(file.open(QIODevice::ReadOnly))
+			old_hashes = QJsonDocument::fromJson(file.readAll()).object();
+	}
+	QJsonObject new_hashes;
+
 	QDirIterator it(source_dir_path, QDir::Files, QDirIterator::Subdirectories);
 	while(it.hasNext()) {
 		const QString source_file_path = it.next();
 		const QString relative_path = source_dir.relativeFilePath(source_file_path);
 		const QString destination_file_path = cache_dir.filePath(relative_path);
+		const QString resources_hash = fileHash(source_file_path);
+		const QString local_hash = fileHash(destination_file_path);
+		if(local_hash == resources_hash) {
+			new_hashes[relative_path] = resources_hash;
+			continue;
+		}
+		if(!local_hash.isEmpty() && local_hash != old_hashes.value(relative_path).toString()) {
+			qfInfo() << "Keeping locally changed report file:" << relative_path;
+			if(old_hashes.contains(relative_path))
+				new_hashes[relative_path] = old_hashes.value(relative_path);
+			continue;
+		}
+		qfInfo() << (local_hash.isEmpty()? "Adding": "Updating") << "report file in cache:" << relative_path;
 		QDir().mkpath(QFileInfo(destination_file_path).path());
-		if(!QFile::copy(source_file_path, destination_file_path)) {
+		QFile source_file(source_file_path);
+		QFile destination_file(destination_file_path);
+		if(!source_file.open(QIODevice::ReadOnly)
+				|| !destination_file.open(QIODevice::WriteOnly | QIODevice::Truncate)
+				|| destination_file.write(source_file.readAll()) < 0) {
 			qfWarning() << "Cannot copy report file to cache:" << source_file_path << destination_file_path;
+			continue;
 		}
-		else if(!QFile::setPermissions(destination_file_path, QFile::permissions(destination_file_path) | QFile::WriteOwner)) {
-			qfWarning() << "Cannot set report file write permission:" << destination_file_path;
-		}
+		new_hashes[relative_path] = resources_hash;
+	}
+
+	QFile file(resourceHashesFile());
+	if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate) || file.write(QJsonDocument(new_hashes).toJson()) < 0) {
+		qfWarning() << "Cannot write report resource hashes:" << file.fileName();
 	}
 }
 
@@ -133,7 +167,7 @@ void ReportFileCache::clearLocalChanges()
 	if(cache_dir.exists()) {
 		cache_dir.removeRecursively();
 	}
-	initIfNotExists();
+	syncWithResources();
 }
 
 QString ReportFileCache::dataHash(const QByteArray &data)
