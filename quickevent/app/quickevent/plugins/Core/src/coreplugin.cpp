@@ -6,7 +6,6 @@
 #include <plugins/Event/src/eventplugin.h>
 
 #include <qf/gui/framework/mainwindow.h>
-#include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/action.h>
 #include <qf/gui/menubar.h>
 
@@ -68,7 +67,6 @@ void CorePlugin::onInstalled()
 	{
 		auto *page = new ReportsSettingsPage();
 		settingsDialog()->addPage(page);
-		qfInfo() << "Reports dir set to:" << qff::Plugin::reportFileCache()->localReportsDir();
 	}
 
 	auto *a_file = fwk->menuBar()->actionForPath("file", true);

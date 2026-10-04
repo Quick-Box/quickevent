@@ -411,6 +411,8 @@ QMap<QString, QString> Design::listAwards(const QString &relative_reports_root)
 	// list all files under report cache starting with prefix
 	QMap<QString, QString> names;
 	auto local_dir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
+	if (local_dir.isEmpty())
+		return names;
 	QDir dir(local_dir + "/" + relative_reports_root);
 	if (dir.exists()) {
 		const auto entries = dir.entryInfoList(QDir::Files, QDir::Name);

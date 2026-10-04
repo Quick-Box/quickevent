@@ -65,6 +65,8 @@
 #include <QJsonDocument>
 #include <QTimer>
 #include <QRandomGenerator>
+#include <QCryptographicHash>
+#include <QFileInfo>
 
 #include <regex>
 
@@ -127,6 +129,20 @@ QString eventNameToFileName(const QString &event_name)
 {
 	QString ret = singleFileStorageDir() + '/' + event_name + QBE_EXT;
 	return ret;
+}
+
+QString reportCacheId(const QString &event_name, EventPlugin::ConnectionType connection_type)
+{
+	if(connection_type == EventPlugin::ConnectionType::SingleFile) {
+		// events with the same name can exist in different directories
+		QString path = eventNameToFileName(event_name);
+#ifdef Q_OS_WIN
+		path = path.toLower();
+#endif
+		const auto hash = QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
+		return event_name + '-' + QString::fromLatin1(hash);
+	}
+	return event_name;
 }
 
 QString fileNameToEventName(const QString &file_name)
@@ -978,6 +994,7 @@ bool EventPlugin::closeEvent()
 {
 	qfLogFuncFrame();
 	m_classNameCache.clear();
+	qf::gui::framework::Plugin::reportFileCache()->closeEventCache();
 	setEventDbName(QString());
 	setEventOpen(false);
 	return true;
@@ -1105,7 +1122,7 @@ bool EventPlugin::openEvent(const QString &_event_name)
 	if(ok) {
 		connection_settings.setEventName(event_name);
 		setEventDbName(event_name);
-		qf::gui::framework::Plugin::reportFileCache()->applyDatabaseOverrides();
+		qf::gui::framework::Plugin::reportFileCache()->openEventCache(reportCacheId(event_name, connection_type));
 		//emit reloadDataRequest();
 	}
 

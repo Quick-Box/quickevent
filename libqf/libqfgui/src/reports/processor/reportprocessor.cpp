@@ -349,7 +349,8 @@ QStringList ReportProcessor::qmlEngineImportPaths()
 	lst << QCoreApplication::applicationDirPath() + "/../lib/qml";
 #endif
 	lst << QCoreApplication::applicationDirPath() + "/qml";
-	lst << framework::Plugin::reportFileCache()->localReportsDir();
+	if(const auto reports_dir = framework::Plugin::reportFileCache()->localReportsDir(); !reports_dir.isEmpty())
+		lst << reports_dir;
 	lst << ":/quickevent";
 	return lst;
 }

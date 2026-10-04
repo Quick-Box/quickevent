@@ -116,6 +116,10 @@ void ReportsTableModel::load()
 {
 	m_reportsDir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
 	QList<Report> reports;
+	if (m_reportsDir.isEmpty()) {
+		setReports(std::move(reports));
+		return;
+	}
 	QHash<QString, QString> database_hashes;
 	qf::core::sql::Query database_query;
 	database_query.prepare(QStringLiteral("SELECT path, hash FROM reports"));

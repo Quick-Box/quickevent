@@ -14,6 +14,9 @@ public:
 	QString localReportFile(const QString &relative_path) const;
 	QString localReportsDir() const;
 	QString reportCacheDir() const;
+	QString eventCacheId() const { return m_eventCacheId; }
+	void openEventCache(const QString &event_cache_id);
+	void closeEventCache();
 	void applyDatabaseOverrides() const;
 	void clearLocalChanges();
 	bool saveRemoteFileContent(const QString &relative_path, const QByteArray &data, bool update_local_copy = true) const;
@@ -22,9 +25,11 @@ public:
 	static QString dataHash(const QByteArray &data);
 	static QString fileHash(const QString &file_path);
 private:
+	QString reportCacheRootDir() const;
 	QString resourceHashesFile() const;
 	void syncWithResources() const;
 private:
+	QString m_eventCacheId;
 	friend class Plugin;
 	ReportFileCache();
 };

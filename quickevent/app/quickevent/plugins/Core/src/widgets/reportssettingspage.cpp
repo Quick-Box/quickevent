@@ -115,6 +115,8 @@ void ReportsSettingsPage::load()
 {
 	const auto dir = qf::gui::framework::Plugin::reportFileCache()->localReportsDir();
 	ui->edReportsDirectory->setText(dir);
+	ui->edReportsDirectory->setPlaceholderText(tr("No event open"));
+	ui->btClearLocalChanges->setEnabled(!dir.isEmpty());
 	loadModel();
 	ui->tblReportFiles->horizontalHeader()->resizeSections(QHeaderView::ResizeToContents);
 }

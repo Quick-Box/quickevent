@@ -47,8 +47,13 @@ QString Plugin::pluginDataDir()
 
 QString Plugin::findReportFile(const QString &report_file_path) const
 {
+	const QString reports_dir = Plugin::reportFileCache()->localReportsDir();
+	if(reports_dir.isEmpty()) {
+		qfError() << "Cannot find report file, no event report cache is open:" << report_file_path;
+		return {};
+	}
 	QStringList search_paths;
-	search_paths << Plugin::reportFileCache()->localReportsDir() + '/' + m_featureId + "/qml/reports";
+	search_paths << reports_dir + '/' + m_featureId + "/qml/reports";
 	//search_paths << qmlReportsDir();
 	for(const QString &dir : search_paths) {
 		qfMessage() << "search_path:" << dir;
@@ -67,8 +72,11 @@ QString Plugin::findReportFile(const QString &report_file_path) const
 QList<Plugin::ReportFileInfo> Plugin::listReportFiles(const QString &report_dir, const QString &suffix) const
 {
 	QList<ReportFileInfo> report_files;
+	const QString reports_dir = Plugin::reportFileCache()->localReportsDir();
+	if(reports_dir.isEmpty())
+		return report_files;
 	QStringList search_paths;
-	search_paths << Plugin::reportFileCache()->localReportsDir() + '/' + m_featureId + "/qml/reports";
+	search_paths << reports_dir + '/' + m_featureId + "/qml/reports";
 	for(const QString &dir : search_paths) {
 		QDirIterator it(dir + '/' + report_dir, QDirIterator::NoIteratorFlags);
 		while (it.hasNext()) {

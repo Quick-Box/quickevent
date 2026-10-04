@@ -17,28 +17,6 @@
 
 namespace qf::gui::framework {
 
-ReportFileCache::ReportFileCache()
-	: QObject(nullptr)
-{
-	syncWithResources();
-}
-
-QString ReportFileCache::localReportFile(const QString &relative_path) const
-{
-	return localReportsDir() + "/" + relative_path;
-}
-
-QString ReportFileCache::localReportsDir() const
-{
-	return reportCacheDir();
-}
-
-QString ReportFileCache::reportCacheDir() const
-{
-	static const auto dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/reports";
-	return dir;
-}
-
 namespace {
 
 bool isSafeReportPath(const QString &path)
@@ -49,6 +27,62 @@ bool isSafeReportPath(const QString &path)
 	return !parts.contains(QStringLiteral(".")) && !parts.contains(QStringLiteral(".."));
 }
 
+bool isSafeCacheId(const QString &id)
+{
+	return isSafeReportPath(id) && !id.contains('/') && !id.contains('\\');
+}
+
+}
+
+ReportFileCache::ReportFileCache()
+	: QObject(nullptr)
+{
+}
+
+QString ReportFileCache::localReportFile(const QString &relative_path) const
+{
+	const QString dir = localReportsDir();
+	if(dir.isEmpty())
+		return {};
+	return dir + "/" + relative_path;
+}
+
+QString ReportFileCache::localReportsDir() const
+{
+	return reportCacheDir();
+}
+
+QString ReportFileCache::reportCacheRootDir() const
+{
+	static const auto dir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/cache/report";
+	return dir;
+}
+
+QString ReportFileCache::reportCacheDir() const
+{
+	if(m_eventCacheId.isEmpty()) {
+		qfError() << "Report cache is not open";
+		return {};
+	}
+	return reportCacheRootDir() + "/" + m_eventCacheId;
+}
+
+void ReportFileCache::openEventCache(const QString &event_cache_id)
+{
+	if(!isSafeCacheId(event_cache_id)) {
+		qfError() << "Invalid report cache id:" << event_cache_id;
+		closeEventCache();
+		return;
+	}
+	m_eventCacheId = event_cache_id;
+	qfInfo() << "Reports local cache dir set to:" << reportCacheDir();
+	syncWithResources();
+	applyDatabaseOverrides();
+}
+
+void ReportFileCache::closeEventCache()
+{
+	m_eventCacheId.clear();
 }
 
 QString ReportFileCache::resourceHashesFile() const
@@ -60,6 +94,8 @@ QString ReportFileCache::resourceHashesFile() const
 void ReportFileCache::syncWithResources() const
 {
 	const QString cache_dir_path = reportCacheDir();
+	if(cache_dir_path.isEmpty())
+		return;
 	QDir cache_dir(cache_dir_path);
 	if(!cache_dir.mkpath(cache_dir_path)) {
 		qfError() << "Cannot create report cache directory:" << cache_dir_path;
@@ -121,6 +157,8 @@ void ReportFileCache::syncWithResources() const
 
 void ReportFileCache::applyDatabaseOverrides() const
 {
+	if(reportCacheDir().isEmpty())
+		return;
 	QSqlDatabase db = QSqlDatabase::database();
 	if(!db.isValid() || !db.isOpen())
 		return;
@@ -156,18 +194,23 @@ void ReportFileCache::applyDatabaseOverrides() const
 				qfWarning() << "Cannot write report override:" << file_path;
 			}
 		} else {
-			qfInfo() << "Skipping report override because the local report was changed:" << relative_path;
+			qfInfo() << "Skipping report DB override because the local report was changed:" << relative_path;
 		}
 	}
 }
 
 void ReportFileCache::clearLocalChanges()
 {
+	if(reportCacheDir().isEmpty()) {
+		return;
+	}
 	QDir cache_dir(reportCacheDir());
 	if(cache_dir.exists()) {
 		cache_dir.removeRecursively();
 	}
+	QFile::remove(resourceHashesFile());
 	syncWithResources();
+	applyDatabaseOverrides();
 }
 
 QString ReportFileCache::dataHash(const QByteArray &data)
@@ -185,6 +228,8 @@ QString ReportFileCache::fileHash(const QString &file_path)
 
 QByteArray ReportFileCache::loadReportFile(const QString &relative_path) const
 {
+	if(localReportsDir().isEmpty())
+		return {};
 	QFile file(localReportFile(relative_path));
 	if (!file.open(QIODevice::ReadOnly))
 		return {};
@@ -195,6 +240,10 @@ bool ReportFileCache::saveRemoteFileContent(const QString &relative_path, const 
 {
 	if (relative_path.isEmpty())
 		return false;
+	if (update_local_copy && localReportsDir().isEmpty()) {
+		qfError() << "Cannot save report file, no event report cache is open:" << relative_path;
+		return false;
+	}
 
 	QDir local_dir(localReportsDir());
 	QFile file(local_dir.filePath(relative_path));
