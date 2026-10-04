@@ -41,6 +41,10 @@ ReportFileCache::ReportFileCache()
 
 QString ReportFileCache::localReportFile(const QString &relative_path) const
 {
+	if(!isSafeReportPath(relative_path)) {
+		qfWarning() << "Unsafe report path:" << relative_path;
+		return {};
+	}
 	const QString dir = localReportsDir();
 	if(dir.isEmpty())
 		return {};
@@ -180,7 +184,7 @@ void ReportFileCache::applyDatabaseOverrides() const
 			qfWarning() << "Ignoring unsafe report path from database:" << relative_path;
 			continue;
 		}
-		const QString file_path = cache_dir.filePath(relative_path);
+		const QString file_path = localReportFile(relative_path);
 		const QString local_hash = fileHash(file_path);
 		const QString resources_hash = fileHash(QStringLiteral(":/reports/") + relative_path);
 		if(resources_hash.isEmpty() || local_hash == resources_hash) {
@@ -228,9 +232,10 @@ QString ReportFileCache::fileHash(const QString &file_path)
 
 QByteArray ReportFileCache::loadReportFile(const QString &relative_path) const
 {
-	if(localReportsDir().isEmpty())
+	const QString file_path = localReportFile(relative_path);
+	if(file_path.isEmpty())
 		return {};
-	QFile file(localReportFile(relative_path));
+	QFile file(file_path);
 	if (!file.open(QIODevice::ReadOnly))
 		return {};
 	return file.readAll();
@@ -238,16 +243,17 @@ QByteArray ReportFileCache::loadReportFile(const QString &relative_path) const
 
 bool ReportFileCache::saveRemoteFileContent(const QString &relative_path, const QByteArray &data, bool update_local_copy) const
 {
-	if (relative_path.isEmpty())
-		return false;
-	if (update_local_copy && localReportsDir().isEmpty()) {
-		qfError() << "Cannot save report file, no event report cache is open:" << relative_path;
+	if (!isSafeReportPath(relative_path)) {
+		qfError() << "Cannot save report file, unsafe path:" << relative_path;
 		return false;
 	}
-
-	QDir local_dir(localReportsDir());
-	QFile file(local_dir.filePath(relative_path));
 	if (update_local_copy) {
+		const QString file_path = localReportFile(relative_path);
+		if (file_path.isEmpty()) {
+			qfError() << "Cannot save report file, no event report cache is open:" << relative_path;
+			return false;
+		}
+		QFile file(file_path);
 		if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
 			qfError() << "Failed to open local report file:" << file.fileName() << "for writing" << file.errorString();
 			return false;
