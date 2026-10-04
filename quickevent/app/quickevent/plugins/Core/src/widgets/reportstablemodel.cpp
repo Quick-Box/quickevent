@@ -276,7 +276,7 @@ bool ReportsTableModel::restoreReportFromResources(const QModelIndex &report_ind
 			*error_text = file.errorString();
 		return false;
 	}
-	report.databaseHash = qf::gui::framework::ReportFileCache::dataHash(data);
+	report.localHash = qf::gui::framework::ReportFileCache::dataHash(data);
 	emitReportHashChanged(report_index);
 	return true;
 }
