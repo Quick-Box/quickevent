@@ -391,8 +391,7 @@ bool Design::saveToDb(const QString &relative_file_name) const
 	design_copy.embedImages();
 	auto typst = design_copy.toTypst();
 	auto *cache = qf::gui::framework::Plugin::reportFileCache();
-	cache->saveRemoteFileContent(relative_file_name, typst.toUtf8());
-	return true;
+	return cache->saveRemoteFileContent(relative_file_name, typst.toUtf8());
 }
 
 Design Design::loadFile(const QString &relative_file_name)

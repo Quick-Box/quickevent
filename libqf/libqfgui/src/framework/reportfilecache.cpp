@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSaveFile>
 #include <QStandardPaths>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -247,18 +248,25 @@ bool ReportFileCache::saveRemoteFileContent(const QString &relative_path, const 
 		qfError() << "Cannot save report file, unsafe path:" << relative_path;
 		return false;
 	}
+	// local copy is staged in a temporary file and committed only after the DB is updated,
+	// so a DB failure leaves the original local report untouched
+	QSaveFile file;
 	if (update_local_copy) {
 		const QString file_path = localReportFile(relative_path);
 		if (file_path.isEmpty()) {
 			qfError() << "Cannot save report file, no event report cache is open:" << relative_path;
 			return false;
 		}
-		QFile file(file_path);
-		if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+		if (!QDir().mkpath(QFileInfo(file_path).path())) {
+			qfError() << "Cannot create report directory:" << QFileInfo(file_path).path();
+			return false;
+		}
+		file.setFileName(file_path);
+		if (!file.open(QIODevice::WriteOnly)) {
 			qfError() << "Failed to open local report file:" << file.fileName() << "for writing" << file.errorString();
 			return false;
 		}
-		if (!file.write(data)) {
+		if (file.write(data) != data.size()) {
 			qfError() << "Failed to write local report file:" << file.fileName() << file.errorString();
 			return false;
 		}
@@ -285,6 +293,10 @@ bool ReportFileCache::saveRemoteFileContent(const QString &relative_path, const 
 			qfError() << "Failed to insert report into database:" << insert_query.lastError().text();
 			return false;
 		}
+	}
+	if (update_local_copy && !file.commit()) {
+		qfError() << "Failed to commit local report file:" << file.fileName() << file.errorString();
+		return false;
 	}
 	return true;
 }
