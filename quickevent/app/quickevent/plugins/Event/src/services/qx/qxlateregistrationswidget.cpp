@@ -257,6 +257,9 @@ void QxLateRegistrationsWidget::addQxChangeRow(int sql_id)
 	loadTypes(getPlugin<EventPlugin>()->currentStageId());
 
 	auto qb = m_model->queryBuilder();
+	if (qb.isEmpty()) {
+		return;
+	}
 	qb.where(QStringLiteral("id=%1").arg(sql_id));
 	qfs::Query q;
 	q.execThrow(qb.toString());
