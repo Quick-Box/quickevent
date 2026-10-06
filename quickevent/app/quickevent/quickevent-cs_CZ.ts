@@ -864,6 +864,46 @@
 <context>
     <name>CardReaderWidget</name>
     <message>
+        <source>At start</source>
+        <translation>Na startu</translation>
+    </message>
+    <message>
+        <source>Started</source>
+        <translation>Odstartovali</translation>
+    </message>
+    <message>
+        <source>On track</source>
+        <translation>Na trati</translation>
+    </message>
+    <message>
+        <source>Finished</source>
+        <translation>V cíli</translation>
+    </message>
+    <message>
+        <source>%1, %2, %3</source>
+        <translation>%1, %2, %3</translation>
+    </message>
+    <message>
+        <source>... and %1 more</source>
+        <translation>… a %1 dalších</translation>
+    </message>
+    <message>
+        <source>Runners on the start list (without vacants)</source>
+        <translation>Závodníci na startovce (bez vakantů)</translation>
+    </message>
+    <message>
+        <source>Runners whose start time has already passed</source>
+        <translation>Závodníci, jejichž startovní čas již nastal</translation>
+    </message>
+    <message>
+        <source>Started runners who have not finished yet</source>
+        <translation>Odstartovaní závodníci, kteří ještě nejsou v cíli</translation>
+    </message>
+    <message>
+        <source>Runners with a read card</source>
+        <translation>Závodníci s vyčtenou kartou</translation>
+    </message>
+    <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="14"/>
         <source>Form</source>
         <translation>Formulář</translation>

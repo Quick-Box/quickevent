@@ -65,6 +65,8 @@
 #include <QPushButton>
 #include <QProgressDialog>
 #include <QTimer>
+#include <QDateTime>
+#include <algorithm>
 #include <QSerialPortInfo>
 
 namespace qfc = qf::core;
@@ -271,6 +273,14 @@ CardReaderWidget::CardReaderWidget(QWidget *parent)
 	}, Qt::QueuedConnection);
 
 	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &CardReaderWidget::onQxRecChng, Qt::QueuedConnection);
+
+	auto *statistics_timer = new QTimer(this);
+	connect(statistics_timer, &QTimer::timeout, this, [this]() {
+		if(isVisible()) {
+			updateStatistics();
+		}
+	});
+	statistics_timer->start(5000);
 }
 
 CardReaderWidget::~CardReaderWidget()
@@ -525,6 +535,65 @@ void CardReaderWidget::reload()
 	qfDebug() << qb.toString();
 	m_cardsModel->setQueryBuilder(qb, false);
 	m_cardsModel->reload();
+	updateStatistics();
+}
+
+void CardReaderWidget::updateStatistics()
+{
+	if(!getPlugin<EventPlugin>()->isEventOpen()) {
+		return;
+	}
+	int stage_id = getPlugin<CardReaderPlugin>()->currentStageId();
+	int started_until_ms = QTime::currentTime().msecsSinceStartOfDay() - getPlugin<EventPlugin>()->stageStartMsec(stage_id);
+	// vacants have no competitor, relay legs have only relayId
+	QString cond = "runs.stageId=" QF_IARG(stage_id) " AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)";
+	QString started_cond = "NOT runs.notStart AND ((runs.startTimeMs IS NOT NULL AND runs.startTimeMs<=" + QString::number(started_until_ms) + ") OR (runs.startTimeMs IS NULL AND runs.corridorTime IS NOT NULL))";
+	QString finished_cond = "runs.id IN (SELECT runId FROM cards WHERE stageId=" QF_IARG(stage_id) ")";
+	qfs::Query q;
+	q.execThrow("SELECT COUNT(*)"
+				", COALESCE(SUM(CASE WHEN " + started_cond + " THEN 1 ELSE 0 END), 0)"
+				", COALESCE(SUM(CASE WHEN " + finished_cond + " THEN 1 ELSE 0 END), 0)"
+				" FROM runs WHERE " + cond);
+	if(!q.next()) {
+		return;
+	}
+	int at_start = q.value(0).toInt();
+	int started = q.value(1).toInt();
+	int finished = q.value(2).toInt();
+
+	// started and not finished, the longest running first
+	q.execThrow("SELECT runs.startTimeMs, runs.corridorTime, competitors.lastName, competitors.firstName, classes.name AS className"
+				" FROM runs"
+				" LEFT JOIN competitors ON competitors.id=runs.competitorId"
+				" LEFT JOIN relays ON relays.id=runs.relayId"
+				" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
+				" WHERE " + cond + " AND " + started_cond + " AND NOT " + finished_cond);
+	QList<QPair<int, QString>> on_track;
+	while(q.next()) {
+		int elapsed_ms = q.value(0).isNull()
+				? static_cast<int>(q.value(1).toDateTime().msecsTo(QDateTime::currentDateTime()))
+				: started_until_ms - q.value(0).toInt();
+		QString name = q.value(QStringLiteral("lastName")).toString() + ' ' + q.value(QStringLiteral("firstName")).toString();
+		on_track << qMakePair(qMax(0, elapsed_ms), tr("%1, %2, %3").arg(name.trimmed(), q.value(QStringLiteral("className")).toString(), quickevent::core::og::TimeMs(qMax(0, elapsed_ms)).toString(quickevent::core::og::TimeMeasurementPrecision::Second)));
+	}
+	std::sort(on_track.begin(), on_track.end(), [](const auto &a, const auto &b) { return a.first > b.first; });
+	static constexpr int MAX_TOOLTIP_ROWS = 20;
+	QStringList tooltip_rows;
+	for(int i = 0; i < qMin(MAX_TOOLTIP_ROWS, static_cast<int>(on_track.count())); ++i) {
+		tooltip_rows << on_track[i].second.toHtmlEscaped();
+	}
+	if(on_track.count() > MAX_TOOLTIP_ROWS) {
+		tooltip_rows << tr("... and %1 more").arg(on_track.count() - MAX_TOOLTIP_ROWS);
+	}
+
+	auto set_label = [](QLabel *label, const QString &name, int count) {
+		label->setText(QStringLiteral("<b>%1:</b> %2").arg(name).arg(count));
+	};
+	set_label(ui->lblAtStart, tr("At start"), at_start);
+	set_label(ui->lblStarted, tr("Started"), started);
+	set_label(ui->lblOnTrack, tr("On track"), on_track.count());
+	set_label(ui->lblFinished, tr("Finished"), finished);
+	ui->lblOnTrack->setToolTip(tooltip_rows.isEmpty() ? tr("Started runners who have not finished yet") : tooltip_rows.join(QStringLiteral("<br>")));
 }
 
 void CardReaderWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
@@ -841,6 +910,7 @@ void CardReaderWidget::updateTableView(int card_id)
 		return;
 	}
 	ui->tblCards->updateRow(0);
+	updateStatistics();
 }
 
 void CardReaderWidget::showSelectedReceipt()
