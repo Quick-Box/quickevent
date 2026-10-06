@@ -98,7 +98,7 @@ jobs:
       - name: Bundle Typst binary
         run: |
           curl -L "https://github.com/typst/typst/releases/download/${{ env.TYPST_VERSION }}/typst-x86_64-pc-windows-msvc.zip" -o typst.zip
-          7z e typst.zip -o'${{ github.workspace }}/install/bin' typst.exe
+          7z e typst.zip -r -o'${{ github.workspace }}/install/bin' typst.exe
         shell: bash
         env:
           TYPST_VERSION: v0.15.0
