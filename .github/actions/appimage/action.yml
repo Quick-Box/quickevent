@@ -42,6 +42,15 @@ runs:
         rm ${{ env.QT_ROOT_DIR }}/plugins/sqldrivers/libqsqloci.so
       shell: bash
 
+    - name: Bundle Typst binary
+      run: |
+        curl -L "https://github.com/typst/typst/releases/download/${TYPST_VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" -o typst.tar.xz
+        tar -xf typst.tar.xz
+        install -m755 typst-x86_64-unknown-linux-musl/typst '${{ github.workspace }}/install/usr/bin/typst'
+      shell: bash
+      env:
+        TYPST_VERSION: v0.15.0
+
     - name: Create AppImage
       run: |
         LD_LIBRARY_PATH="${{ github.workspace }}/install/usr/lib:$LD_LIBRARY_PATH" \
