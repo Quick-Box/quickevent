@@ -59,21 +59,29 @@ QVariant FindRunnersModel::data(const QModelIndex &index, int role) const
 		static int col_bib = fields.fieldIndex(QStringLiteral("competitors.startNumber"));
 		static int col_registration = fields.fieldIndex(QStringLiteral("registration"));
 		static auto col_siid = fields.fieldIndex(QStringLiteral("siid"));
+		static auto col_leg = fields.fieldIndex(QStringLiteral("runs.leg"));
 		static auto SI = QStringLiteral("SI:");
 		static auto BIB = QStringLiteral("Bib:");
+		QString bib_str = table_row.value(col_bib).toString();
+		if(col_leg >= 0) {
+			int leg = table_row.value(col_leg).toInt();
+			if(leg > 0) {
+				bib_str += QStringLiteral(" Leg:") + QString::number(leg);
+			}
+		}
 		if(role == Qt::DisplayRole) {
 			return table_row.value(col_class_name).toString() + ' '
 					+ table_row.value(col_name).toString() + ' '
 					+ table_row.value(col_registration).toString() + ' '
 					+ SI + table_row.value(col_siid).toString() + ' '
-					+ BIB + table_row.value(col_bib).toString();
+					+ BIB + bib_str;
 		}
 		if(role == Qt::EditRole) {
 			return table_row.value(col_class_name).toString() + ' '
 					+ table_row.value(col_searchkey).toString() + ' '
 					+ table_row.value(col_registration).toString() + ' '
 					+ SI + table_row.value(col_siid).toString() + ' '
-					+ BIB + table_row.value(col_bib).toString() + ' '
+					+ BIB + bib_str + ' '
 					+ table_row.value(col_name).toString();
 		}
 	}
