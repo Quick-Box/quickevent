@@ -49,7 +49,7 @@ fix_binary() {
                 # Build-time path may not exist here (e.g. Postgres.app on CI);
                 # fall back to searching Homebrew by filename.
                 if [[ ! -f "$src" ]]; then
-                    src=$(find /opt/homebrew /usr/local \( -type f -o -type l \) -name "$lib" 2>/dev/null | head -1)
+                    src=$(find /opt/homebrew /usr/local \( -type f -o -type l \) -name "$lib" 2>/dev/null | head -1 || true)  # find fails if /opt/homebrew is missing (Intel)
                     if [[ -z "$src" ]]; then
                         echo "  WARNING: $lib not found, skipping"
                         continue
