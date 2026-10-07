@@ -79,7 +79,6 @@ QxLateRegistrationsWidget::QxLateRegistrationsWidget(QWidget *parent) :
 	ui->tableView->setTableModel(m_model);
 
 	showMessage({});
-	setEnabled(false);
 
 	connect(service(), &Service::statusChanged, this, &QxLateRegistrationsWidget::updateEnabled);
 	if (auto *svc = Service::serviceByName(OFeedClient::serviceName())) {
@@ -130,7 +129,7 @@ void QxLateRegistrationsWidget::onDbEventNotify(const QString &domain, int conne
 
 void QxLateRegistrationsWidget::onVisibleChanged(bool is_visible)
 {
-	if (is_visible && isEnabled()) {
+	if (is_visible) {
 		reload();
 	}
 }
@@ -146,12 +145,7 @@ void QxLateRegistrationsWidget::updateEnabled()
 {
 	auto *ofeed = qobject_cast<OFeedClient*>(Service::serviceByName(OFeedClient::serviceName()));
 	bool is_ofeed_running = ofeed && ofeed->isRunning();
-	bool is_qx_running = service()->isRunning() ;
-	bool is_enabled = is_qx_running || is_ofeed_running;
-	setEnabled(is_enabled);
-	if (is_enabled) {
-		reload();
-	}
+	reload();
 	// the changes are stored into this table only when the processing is switched on,
 	// the dock is revealed then, so that the records are not hidden from the user
 	if (is_ofeed_running && (ofeed->runStartChangesProcessing() || ofeed->runOfficeChangesProcessing())) {
@@ -204,9 +198,6 @@ void QxLateRegistrationsWidget::showMessage(const QString &msg, bool is_error)
 
 void QxLateRegistrationsWidget::reload()
 {
-	if(!isEnabled()) {
-		return;
-	}
 	auto event_plugin = getPlugin<EventPlugin>();
 	if(!getPlugin<EventPlugin>()->isEventOpen()) {
 		return;
@@ -257,6 +248,9 @@ void QxLateRegistrationsWidget::addQxChangeRow(int sql_id)
 	loadTypes(getPlugin<EventPlugin>()->currentStageId());
 
 	auto qb = m_model->queryBuilder();
+	if (qb.isEmpty()) {
+		return;
+	}
 	qb.where(QStringLiteral("id=%1").arg(sql_id));
 	qfs::Query q;
 	q.execThrow(qb.toString());
