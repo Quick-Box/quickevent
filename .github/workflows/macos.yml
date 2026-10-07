@@ -8,8 +8,14 @@ on:
 
 jobs:
   macos:
-    name: Qt 6.11 / macOS 15
-    runs-on: macos-15
+    name: Qt 6.11 / macOS 15 / ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-15, arch: arm64, typst: aarch64-apple-darwin }
+          - { runner: macos-15-intel, arch: x86_64, typst: x86_64-apple-darwin }
     steps:
       - name: Clone the repository
         uses: actions/checkout@v5
@@ -57,9 +63,9 @@ jobs:
 
       - name: Bundle Typst binary
         run: |
-          curl -L "https://github.com/typst/typst/releases/download/${TYPST_VERSION}/typst-aarch64-apple-darwin.tar.xz" -o typst.tar.xz
+          curl -L "https://github.com/typst/typst/releases/download/${TYPST_VERSION}/typst-${{ matrix.typst }}.tar.xz" -o typst.tar.xz
           tar -xf typst.tar.xz
-          cp "typst-aarch64-apple-darwin/typst" '${{ github.workspace }}/install/quickevent.app/Contents/MacOS/'
+          cp "typst-${{ matrix.typst }}/typst" '${{ github.workspace }}/install/quickevent.app/Contents/MacOS/'
           chmod +x '${{ github.workspace }}/install/quickevent.app/Contents/MacOS/typst'
         env:
           TYPST_VERSION: v0.15.0
@@ -93,11 +99,11 @@ jobs:
             --icon "quickevent.app" 175 190 \
             --hide-extension "quickevent.app" \
             --app-drop-link 425 185 \
-            '${{ github.workspace }}/quickevent-${{ env.VERSION }}.dmg' \
+            '${{ github.workspace }}/quickevent-${{ env.VERSION }}-${{ matrix.arch }}.dmg' \
             '${{ github.workspace }}/install/quickevent.app'
 
       - name: Upload DMG
         uses: actions/upload-artifact@v7
         with:
-          name: quickevent-${{ env.VERSION }}.dmg
+          name: quickevent-${{ env.VERSION }}-${{ matrix.arch }}.dmg
           path: ${{ github.workspace }}/quickevent-*.dmg
