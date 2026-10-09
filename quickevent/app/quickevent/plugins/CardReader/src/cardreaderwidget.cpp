@@ -66,9 +66,10 @@
 #include <QProgressDialog>
 #include <QTimer>
 #include <QDateTime>
+#include <QSerialPortInfo>
+
 #include <algorithm>
 #include <limits>
-#include <QSerialPortInfo>
 
 namespace qfc = qf::core;
 namespace qfs = qf::core::sql;
@@ -539,34 +540,45 @@ void CardReaderWidget::reload()
 	updateStatistics();
 }
 
-void CardReaderWidget::updateStatistics()
+namespace {
+
+using StatisticsRows = QList<QPair<int, QString>>;
+
+struct Statistics
 {
-	if(!getPlugin<EventPlugin>()->isEventOpen()) {
-		return;
-	}
-	int stage_id = getPlugin<CardReaderPlugin>()->currentStageId();
-	int started_until_ms = QTime::currentTime().msecsSinceStartOfDay() - getPlugin<EventPlugin>()->stageStartMsec(stage_id);
+	int started = 0;
+	int finished = 0;
+	StatisticsRows on_track;
+	StatisticsRows not_started;
+};
+
+Statistics loadStatistics(int stage_id)
+{
+	Statistics ret;
+	const QDateTime stage_start = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
+	const QDateTime now = QDateTime::currentDateTime();
+	const qint64 started_until_ms = stage_start.msecsTo(now);
 	// vacants have no competitor, relay legs have only relayId
-	QString cond = "runs.stageId=" QF_IARG(stage_id) " AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)";
+	const QString cond = "runs.stageId=" QF_IARG(stage_id) " AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)";
 	// classes without start interval (start by punching the start unit) have the same start time for everybody, so only the corridor time tells that the runner has started
-	QString is_box_start = "(runs.relayId IS NULL AND COALESCE(classdefs.startIntervalMin, 0)=0)";
-	QString start_ms = "CASE WHEN NOT " + is_box_start + " THEN runs.startTimeMs END";
-	QString started_cond = "runs.notStart OR runs.corridorTime IS NOT NULL OR " + start_ms + "<=" + QString::number(started_until_ms);
-	QString from = " FROM runs"
-				   " LEFT JOIN competitors ON competitors.id=runs.competitorId"
-				   " LEFT JOIN relays ON relays.id=runs.relayId"
-				   " LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
-				   " LEFT JOIN classdefs ON classdefs.classId=classes.id AND classdefs.stageId=runs.stageId";
-	QString finished_cond = "(" + RunsPlugin::finishedSqlCondition() + ")";
+	const QString is_box_start = "(runs.relayId IS NULL AND COALESCE(classdefs.startIntervalMin, 0)=0)";
+	const QString start_ms = "CASE WHEN NOT " + is_box_start + " THEN runs.startTimeMs END";
+	const QString finished_cond = RunsPlugin::finishedSqlCondition();
+	// a finished runner has started, even without a start time or a corridor entry
+	const QString started_cond = finished_cond + " OR runs.notStart OR runs.corridorTime IS NOT NULL OR " + start_ms + "<=" + QString::number(started_until_ms);
+	const QString from = " FROM runs"
+		" LEFT JOIN competitors ON competitors.id=runs.competitorId"
+		" LEFT JOIN relays ON relays.id=runs.relayId"
+		" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
+		" LEFT JOIN classdefs ON classdefs.classId=classes.id AND classdefs.stageId=runs.stageId";
 	qfs::Query q;
 	q.execThrow("SELECT COALESCE(SUM(CASE WHEN " + started_cond + " THEN 1 ELSE 0 END), 0)"
-				", COALESCE(SUM(CASE WHEN " + finished_cond + " THEN 1 ELSE 0 END), 0)"
-				+ from + " WHERE " + cond);
-	if(!q.next()) {
-		return;
+		", COALESCE(SUM(CASE WHEN " + finished_cond + " THEN 1 ELSE 0 END), 0)"
+		+ from + " WHERE " + cond);
+	if(q.next()) {
+		ret.started = q.value(0).toInt();
+		ret.finished = q.value(1).toInt();
 	}
-	int started = q.value(0).toInt();
-	int finished = q.value(1).toInt();
 
 	// conditions can be NULL (e.g. NULL finishTimeMs), so compare them as numbers to make NOT work
 	auto is_true = [](const QString &sql_cond) { return "(CASE WHEN " + sql_cond + " THEN 1 ELSE 0 END)=1"; };
@@ -576,64 +588,74 @@ void CardReaderWidget::updateStatistics()
 		QString name = q.value(QStringLiteral("lastName")).toString() + ' ' + q.value(QStringLiteral("firstName")).toString();
 		return QStringList { name.trimmed(), q.value(QStringLiteral("className")).toString() };
 	};
-	auto set_tooltip = [](QLabel *label, const QStringList &rows, int count, const QString &empty_tooltip) {
-		static constexpr int MAX_TOOLTIP_ROWS = 20;
-		QStringList tooltip_rows;
-		for(int i = 0; i < qMin(MAX_TOOLTIP_ROWS, static_cast<int>(rows.count())); ++i) {
-			tooltip_rows << rows[i].toHtmlEscaped();
-		}
-		if(count > MAX_TOOLTIP_ROWS) {
-			tooltip_rows << tr("... and %1 more").arg(count - MAX_TOOLTIP_ROWS);
-		}
-		label->setToolTip(tooltip_rows.isEmpty() ? empty_tooltip : tooltip_rows.join(QStringLiteral("<br>")));
+	// corridorTime is stored as e.g. "2026-04-30 14:58:06.550 +0200", which is not ISO 8601
+	auto corridor_time = [](const QVariant &value) {
+		QDateTime ret = value.toDateTime();
+		return ret.isValid() ? ret : QDateTime::fromString(value.toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss.zzz t"));
 	};
 
 	// started and not finished, the longest running first
 	q.execThrow("SELECT " + start_ms + select_runner + from + " WHERE " + cond + " AND " + is_true(started_cond) + " AND " + is_false(finished_cond));
-	QList<QPair<int, QString>> on_track;
 	while(q.next()) {
-		int elapsed_ms = q.value(0).isNull()
-				? static_cast<int>(q.value(1).toDateTime().msecsTo(QDateTime::currentDateTime()))
+		qint64 elapsed_ms = q.value(0).isNull()
+				? corridor_time(q.value(1)).msecsTo(now)
 				: started_until_ms - q.value(0).toInt();
-		elapsed_ms = qMax(0, elapsed_ms);
+		elapsed_ms = qMax<qint64>(0, elapsed_ms);
 		QStringList row = runner_name_class();
-		row << quickevent::core::og::TimeMs(elapsed_ms).toString(quickevent::core::og::TimeMeasurementPrecision::Second);
-		on_track << qMakePair(elapsed_ms, row.join(QStringLiteral(", ")));
+		row << quickevent::core::og::TimeMs(static_cast<int>(elapsed_ms)).toString(quickevent::core::og::TimeMeasurementPrecision::Second);
+		ret.on_track << qMakePair(static_cast<int>(elapsed_ms), row.join(QStringLiteral(", ")));
 	}
-	std::sort(on_track.begin(), on_track.end(), [](const auto &a, const auto &b) { return a.first > b.first; });
+	std::sort(ret.on_track.begin(), ret.on_track.end(), [](const auto &a, const auto &b) { return a.first > b.first; });
 
 	// not started, the earliest planned start first, runners without start time last
 	q.execThrow("SELECT " + start_ms + select_runner + from + " WHERE " + cond + " AND " + is_false(started_cond));
-	QList<QPair<int, QString>> not_started;
-	int stage_start_ms = getPlugin<EventPlugin>()->stageStartMsec(stage_id);
 	while(q.next()) {
 		QStringList row = runner_name_class();
 		int planned_start_ms = std::numeric_limits<int>::max();
 		if(!q.value(0).isNull()) {
 			planned_start_ms = q.value(0).toInt();
-			row << QTime::fromMSecsSinceStartOfDay(stage_start_ms + planned_start_ms).toString(QStringLiteral("HH:mm:ss"));
+			row << stage_start.addMSecs(planned_start_ms).time().toString(QStringLiteral("HH:mm:ss"));
 		}
-		not_started << qMakePair(planned_start_ms, row.join(QStringLiteral(", ")));
+		ret.not_started << qMakePair(planned_start_ms, row.join(QStringLiteral(", ")));
 	}
-	std::sort(not_started.begin(), not_started.end(), [](const auto &a, const auto &b) { return a.first < b.first; });
+	std::sort(ret.not_started.begin(), ret.not_started.end(), [](const auto &a, const auto &b) { return a.first < b.first; });
+	return ret;
+}
 
-	auto texts = [](const QList<QPair<int, QString>> &rows) {
-		QStringList ret;
-		for(const auto &r : rows) {
-			ret << r.second;
+}
+
+void CardReaderWidget::updateStatistics()
+{
+	Statistics stats;
+	if(getPlugin<EventPlugin>()->isEventOpen()) {
+		try {
+			stats = loadStatistics(getPlugin<CardReaderPlugin>()->currentStageId());
 		}
-		return ret;
-	};
+		catch(const qfc::Exception &e) {
+			qfError() << e.message();
+		}
+	}
 
 	auto set_label = [](QLabel *label, const QString &name, int count) {
 		label->setText(QStringLiteral("<b>%1:</b> %2").arg(name).arg(count));
 	};
-	set_label(ui->lblAtStart, tr("At start"), not_started.count());
-	set_label(ui->lblStarted, tr("Started"), started);
-	set_label(ui->lblOnTrack, tr("On track"), on_track.count());
-	set_label(ui->lblFinished, tr("Finished"), finished);
-	set_tooltip(ui->lblAtStart, texts(not_started), not_started.count(), tr("Runners on the start list who have not started yet"));
-	set_tooltip(ui->lblOnTrack, texts(on_track), on_track.count(), tr("Started runners who have not finished yet"));
+	auto set_tooltip = [](QLabel *label, const StatisticsRows &rows, const QString &empty_tooltip) {
+		static constexpr int MAX_TOOLTIP_ROWS = 20;
+		QStringList tooltip_rows;
+		for(int i = 0; i < qMin(MAX_TOOLTIP_ROWS, static_cast<int>(rows.count())); ++i) {
+			tooltip_rows << rows[i].second.toHtmlEscaped();
+		}
+		if(rows.count() > MAX_TOOLTIP_ROWS) {
+			tooltip_rows << tr("... and %1 more").arg(rows.count() - MAX_TOOLTIP_ROWS);
+		}
+		label->setToolTip(tooltip_rows.isEmpty() ? empty_tooltip : tooltip_rows.join(QStringLiteral("<br>")));
+	};
+	set_label(ui->lblAtStart, tr("At start"), stats.not_started.count());
+	set_label(ui->lblStarted, tr("Started"), stats.started);
+	set_label(ui->lblOnTrack, tr("On track"), stats.on_track.count());
+	set_label(ui->lblFinished, tr("Finished"), stats.finished);
+	set_tooltip(ui->lblAtStart, stats.not_started, tr("Runners on the start list who have not started yet"));
+	set_tooltip(ui->lblOnTrack, stats.on_track, tr("Started runners who have not finished yet"));
 }
 
 void CardReaderWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
