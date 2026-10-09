@@ -42,6 +42,8 @@ private:
 	typedef qf::gui::framework::Plugin Super;
 public:
 	static constexpr int UNREAL_TIME_MSEC = quickevent::core::og::TimeMs::UNREAL_TIME_MSEC;
+	/// SQL condition (without surrounding parentheses) for runs counted as finished, shared by statistics
+	static QString finishedSqlCondition() { return QStringLiteral("runs.finishTimeMs > 0 OR (runs.disqualified AND NOT runs.notCompeting)"); }
 public:
 	RunsPlugin(QObject *parent = nullptr);
 	~RunsPlugin() Q_DECL_OVERRIDE;

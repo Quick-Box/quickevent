@@ -19,14 +19,14 @@
      <item>
       <widget class="QLabel" name="lblAtStart">
        <property name="toolTip">
-        <string>Runners on the start list (without vacants)</string>
+        <string>Runners on the start list who have not started yet</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QLabel" name="lblStarted">
        <property name="toolTip">
-        <string>Runners whose start time has already passed</string>
+        <string>Runners with a passed start time, a start corridor entry or DNS</string>
        </property>
       </widget>
      </item>
@@ -40,7 +40,7 @@
      <item>
       <widget class="QLabel" name="lblFinished">
        <property name="toolTip">
-        <string>Runners with a read card</string>
+        <string>Runners who finished, are disqualified or did not start</string>
        </property>
       </widget>
      </item>

@@ -888,20 +888,20 @@
         <translation>… a %1 dalších</translation>
     </message>
     <message>
-        <source>Runners on the start list (without vacants)</source>
-        <translation>Závodníci na startovce (bez vakantů)</translation>
+        <source>Runners on the start list who have not started yet</source>
+        <translation>Závodníci na startovce, kteří ještě neodstartovali</translation>
     </message>
     <message>
-        <source>Runners whose start time has already passed</source>
-        <translation>Závodníci, jejichž startovní čas již nastal</translation>
+        <source>Runners with a passed start time, a start corridor entry or DNS</source>
+        <translation>Závodníci s uplynulým startovním časem, vstupem do startovního koridoru nebo DNS</translation>
     </message>
     <message>
         <source>Started runners who have not finished yet</source>
         <translation>Odstartovaní závodníci, kteří ještě nejsou v cíli</translation>
     </message>
     <message>
-        <source>Runners with a read card</source>
-        <translation>Závodníci s vyčtenou kartou</translation>
+        <source>Runners who finished, are disqualified or did not start</source>
+        <translation>Závodníci, kteří doběhli, jsou diskvalifikovaní nebo nestartovali</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="14"/>
