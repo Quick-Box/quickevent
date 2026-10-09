@@ -880,10 +880,6 @@
         <translation>V cíli</translation>
     </message>
     <message>
-        <source>%1, %2, %3</source>
-        <translation>%1, %2, %3</translation>
-    </message>
-    <message>
         <source>... and %1 more</source>
         <translation>… a %1 dalších</translation>
     </message>

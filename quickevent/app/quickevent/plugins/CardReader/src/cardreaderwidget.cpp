@@ -596,7 +596,9 @@ void CardReaderWidget::updateStatistics()
 				? static_cast<int>(q.value(1).toDateTime().msecsTo(QDateTime::currentDateTime()))
 				: started_until_ms - q.value(0).toInt();
 		elapsed_ms = qMax(0, elapsed_ms);
-		on_track << qMakePair(elapsed_ms, tr("%1, %2, %3").arg(runner_name_class().join(QStringLiteral(", ")), quickevent::core::og::TimeMs(elapsed_ms).toString(quickevent::core::og::TimeMeasurementPrecision::Second)));
+		QStringList row = runner_name_class();
+		row << quickevent::core::og::TimeMs(elapsed_ms).toString(quickevent::core::og::TimeMeasurementPrecision::Second);
+		on_track << qMakePair(elapsed_ms, row.join(QStringLiteral(", ")));
 	}
 	std::sort(on_track.begin(), on_track.end(), [](const auto &a, const auto &b) { return a.first > b.first; });
 
