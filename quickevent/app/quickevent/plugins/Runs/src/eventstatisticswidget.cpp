@@ -85,7 +85,9 @@ EventStatisticsModel::EventStatisticsModel(QObject *parent)
 			  .setCastType(qMetaTypeId<quickevent::core::og::TimeMs>())
 			  );
 	{
-		static const auto competiting_cond = QStringLiteral("runs.stageId={{stage_id}} AND runs.isRunning AND competitors.classId=classes.id");
+		// relay legs are counted as runners of the relay class, competitors.classId is not the relay class
+		static const auto competiting_cond = QStringLiteral("runs.stageId={{stage_id}} AND runs.isRunning"
+															" AND COALESCE((SELECT relays.classId FROM relays WHERE relays.id=runs.relayId), competitors.classId)=classes.id");
 		qf::core::sql::QueryBuilder qb_runners_count;
 		qb_runners_count.select("COUNT(runs.id)")
 				.from("runs").joinRestricted("runs.competitorId", "competitors.id", competiting_cond, qf::core::sql::QueryBuilder::INNER_JOIN);
@@ -101,7 +103,8 @@ EventStatisticsModel::EventStatisticsModel(QObject *parent)
 		qb_runners_start_last.select("MAX(runs.startTimeMs)")
 				.from("runs").joinRestricted("runs.competitorId", "competitors.id", competiting_cond, qf::core::sql::QueryBuilder::INNER_JOIN)
 				.where("runs.startTimeMs IS NOT NULL");
-		static const auto in_results_cond = competiting_cond + QStringLiteral(" AND runs.timeMs>0 AND NOT runs.disqualified");
+		// leg times are not relay results, 1st and 3rd time are not computed for relays
+		static const auto in_results_cond = competiting_cond + QStringLiteral(" AND runs.relayId IS NULL AND runs.timeMs>0 AND NOT runs.disqualified");
 		qf::core::sql::QueryBuilder qb_first_time;
 		{
 			qf::core::sql::QueryBuilder qb;
