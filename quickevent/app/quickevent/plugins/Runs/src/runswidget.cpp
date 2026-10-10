@@ -135,7 +135,7 @@ void RunsWidget::reload()
 	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	int stage_id = is_relays? m_cbxLeg->currentData().toInt(): selectedStageId();
 	int class_id = m_cbxClasses->currentData().toInt();
-	ui->wRunsTableWidget->reload(stage_id, class_id, m_chkShowOffRace->isChecked());
+	ui->wRunsTableWidget->reload(stage_id, class_id, m_chkShowOffRace->isChecked(), QString(), 0, m_chkShowOnTrack->isChecked());
 }
 
 void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
@@ -427,6 +427,13 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		m_chkShowOffRace->setToolTip(tr("Include competitors who are not running in this stage"));
 		connect(m_chkShowOffRace, &QCheckBox::toggled, this, &RunsWidget::reload);
 		main_tb->addWidget(m_chkShowOffRace);
+	}
+	{
+		m_chkShowOnTrack = new QCheckBox();
+		m_chkShowOnTrack->setText(tr("Show runners &on track"));
+		m_chkShowOnTrack->setToolTip(tr("Show only runners who have started and are not finished yet. The list is not refreshed automatically, reload it to update."));
+		connect(m_chkShowOnTrack, &QCheckBox::toggled, this, &RunsWidget::reload);
+		main_tb->addWidget(m_chkShowOnTrack);
 	}
 	{
 		auto *bt = new QPushButton(tr("&Draw options"));

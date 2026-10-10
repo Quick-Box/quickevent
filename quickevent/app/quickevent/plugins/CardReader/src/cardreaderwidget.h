@@ -102,6 +102,7 @@ private:
 	void processReadCard(const quickevent::core::si::ReadCard &read_card);
 
 	void updateTableView(int card_id);
+	void updateStatistics();
 
 	void onCustomContextMenuRequest(const QPoint &pos);
 	void showSelectedReceipt();

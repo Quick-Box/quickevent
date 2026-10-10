@@ -42,6 +42,14 @@ private:
 	typedef qf::gui::framework::Plugin Super;
 public:
 	static constexpr int UNREAL_TIME_MSEC = quickevent::core::og::TimeMs::UNREAL_TIME_MSEC;
+	/// SQL condition (in parentheses) for runs counted as finished, shared by statistics
+	static QString finishedSqlCondition() { return QStringLiteral("(runs.finishTimeMs > 0 OR (runs.disqualified AND NOT runs.notCompeting))"); }
+	/// Planned start time of a run (SQL expression, needs joined classdefs). Classes without start interval (start by punching the start unit) have the same start time for everybody, so it is NULL for them.
+	static QString plannedStartMsSqlExpression() { return QStringLiteral("CASE WHEN NOT (runs.relayId IS NULL AND COALESCE(classdefs.startIntervalMin, 0)=0) THEN runs.startTimeMs END"); }
+	/// SQL condition for started runs. A finished runner has started, even without a start time or a corridor entry.
+	static QString startedSqlCondition(qint64 started_until_ms) { return QStringLiteral("(%1 OR runs.notStart OR runs.corridorTime IS NOT NULL OR %2<=%3)").arg(finishedSqlCondition(), plannedStartMsSqlExpression()).arg(started_until_ms); }
+	/// NULL safe SQL condition for runs started and not finished yet
+	static QString onTrackSqlCondition(qint64 started_until_ms) { return QStringLiteral("(CASE WHEN %1 THEN 1 ELSE 0 END)=1 AND (CASE WHEN %2 THEN 1 ELSE 0 END)=0").arg(startedSqlCondition(started_until_ms), finishedSqlCondition()); }
 public:
 	RunsPlugin(QObject *parent = nullptr);
 	~RunsPlugin() Q_DECL_OVERRIDE;
@@ -90,7 +98,7 @@ public:
 	Q_INVOKABLE bool exportResultsCsosStage(int stage_id, const QString &file_name);
 	Q_INVOKABLE bool exportResultsCsosOverall(int stage_count, const QString &file_name);
 
-	qf::core::sql::QueryBuilder runsQuery(int stage_id, int class_id = 0, bool show_offrace = false);
+	qf::core::sql::QueryBuilder runsQuery(int stage_id, int class_id = 0, bool show_offrace = false, bool only_on_track = false);
 	QVariantMap runsRecord(int run_id);
 
 	void computeStageTime(int run_id);
