@@ -16,6 +16,7 @@
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogbuttonbox.h>
+#include <qf/gui/style.h>
 
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/dbenum.h>
@@ -94,6 +95,12 @@ RelayWidget:: RelayWidget(QWidget *parent) :
 	setPersistentSettingsId(objectName());
 
 	setTitle(tr("Relay"));
+
+	ui->btAddLeg->setIcon(qf::gui::Style::icon("insert-row"));
+	ui->btRemoveLeg->setIcon(qf::gui::Style::icon("delete-row"));
+	ui->btMoveLegDown->setIcon(qf::gui::Style::icon("down"));
+	ui->btMoveLegUp->setIcon(qf::gui::Style::icon("up"));
+	ui->btReloadLegsTable->setIcon(qf::gui::Style::icon("reload"));
 
 	{
 		qf::gui::ForeignKeyComboBox *cbx = ui->cbxClass;
