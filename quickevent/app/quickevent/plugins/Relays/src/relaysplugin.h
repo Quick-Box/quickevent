@@ -37,6 +37,9 @@ public:
 	Q_INVOKABLE QObject* createRelayDocument(QObject *parent);
 	Q_INVOKABLE int editRelay(int id, int mode);
 
+	/// assign class start time to the first leg of relay, if the leg has no start time yet
+	void assignFirstLegStartTime(int relay_id);
+
 	Q_SIGNAL void dbEventNotify(const QString &domain, int connection_id, const QVariant &payload);
 	Q_SIGNAL void competitorEdited(); // used to clear caches with competitors
 

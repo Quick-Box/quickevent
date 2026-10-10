@@ -1,6 +1,8 @@
 #include "addlegdialogwidget.h"
 #include "ui_addlegdialogwidget.h"
 
+#include "relaysplugin.h"
+
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/messagebox.h>
 
@@ -18,6 +20,7 @@
 using qf::gui::framework::getPlugin;
 // using Competitors::CompetitorsPlugin;
 using Event::EventPlugin;
+using Relays::RelaysPlugin;
 
 AddLegDialogWidget::AddLegDialogWidget(QWidget *parent)
 	: Super(parent)
@@ -120,6 +123,7 @@ void AddLegDialogWidget::onCompetitorSelected()
 			   + ", isRunning=(1=1)" // TRUE is not accepted by SQLite
 			   + " WHERE id=" + QString::number(curr_run_id), qf::core::Exception::Throw);
 	}
+	getPlugin<RelaysPlugin>()->assignFirstLegStartTime(relayId());
 	updateLegAddedStatus(tr("Runner %1 was assigned to leg %2")
 						 .arg(row.value("competitorName").toString())
 						 .arg(free_leg));
@@ -144,6 +148,7 @@ void AddLegDialogWidget::onRegistrationSelected()
 	qf::core::sql::Query q;
 	q.exec("UPDATE runs SET relayId=" + QString::number(relayId()) + ", leg=" + QString::number(free_leg)
 		   + " WHERE id=" + QString::number(run_id), qf::core::Exception::Throw);
+	getPlugin<RelaysPlugin>()->assignFirstLegStartTime(relayId());
 
 	updateLegAddedStatus(tr("Runner %1 was assigned to leg %2")
 						 .arg(row.value("competitorName").toString())
@@ -203,6 +208,7 @@ void AddLegDialogWidget::onUnregistredRunnerAdded()
 	qf::core::sql::Query q;
 	q.exec("UPDATE runs SET relayId=" + QString::number(relayId()) + ", leg=" + QString::number(free_leg)
 		   + " WHERE id=" + QString::number(run_id), qf::core::Exception::Throw);
+	getPlugin<RelaysPlugin>()->assignFirstLegStartTime(relayId());
 
 	updateLegAddedStatus(tr("Runner %1 was assigned to leg %2")
 						 .arg(name)

@@ -4,6 +4,7 @@
 #include "addlegdialogwidget.h"
 
 #include "relaydocument.h"
+#include "relaysplugin.h"
 
 #include <plugins/Event/src/eventplugin.h>
 
@@ -30,6 +31,8 @@
 #include <QPushButton>
 
 namespace qfd = qf::gui::dialogs;
+using qf::gui::framework::getPlugin;
+using Relays::RelaysPlugin;
 
 namespace {
 
@@ -163,32 +166,12 @@ bool  RelayWidget::saveData()
 	try {
 		ret = Super::saveData();
 		if(ret)
-			checkLegsStartTimes();
+			getPlugin<RelaysPlugin>()->assignFirstLegStartTime(doc->dataId().toInt());
 	}
 	catch (qf::core::Exception &e) {
 		qf::gui::dialogs::MessageBox::showException(this, e);
 	}
 	return ret;
-}
-
-void RelayWidget::checkLegsStartTimes()
-{
-	for (int i = 0; i < m_legsModel->rowCount(); ++i) {
-		int leg = m_legsModel->value(i, LegsModel::col_runs_leg).toInt();
-		if(leg == 1 && m_legsModel->value(i, LegsModel::col_runs_startTimeMs).isNull()) {
-			/// assign class start time
-			int run_id = m_legsModel->tableRow(i).value(QStringLiteral("runs.id")).toInt();
-			auto doc = dataDocument();
-			int class_id = doc->value(QStringLiteral("relays.classId")).toInt();
-			qf::core::sql::Query q;
-			q.execThrow("SELECT startTimeMin FROM classdefs WHERE classId=" QF_IARG(class_id));
-			if(q.next()) {
-				int start_time = q.value(0).toInt() * 60 * 1000;
-				q.execThrow("UPDATE runs SET startTimeMs=" QF_IARG(start_time) " WHERE id=" QF_IARG(run_id));
-			}
-			break;
-		}
-	}
 }
 
 void RelayWidget::addLeg()

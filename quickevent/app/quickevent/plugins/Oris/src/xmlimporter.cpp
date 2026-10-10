@@ -8,6 +8,7 @@
 #include <plugins/Classes/src/classesplugin.h>
 #include <plugins/Classes/src/classdocument.h>
 #include <plugins/Competitors/src/competitordocument.h>
+#include <plugins/Relays/src/relaysplugin.h>
 
 #include <qf/core/log.h>
 #include <qf/core/sql/query.h>
@@ -18,6 +19,7 @@
 namespace qfd = qf::gui::dialogs;
 using qf::gui::framework::getPlugin;
 using Event::EventPlugin;
+using Relays::RelaysPlugin;
 
 XmlImporter::XmlImporter(QObject *parent)
 	: QObject(parent)
@@ -397,6 +399,7 @@ bool XmlImporter::importEntries(QXmlStreamReader &reader, const XmlCreators crea
 				else
 					qfInfo() << '\t' << "not supported" << leg.first << leg.second.nameFamily << leg.second.nameGiven << leg.second.regCz << leg.second.siNumber;
 			}
+			getPlugin<RelaysPlugin>()->assignFirstLegStartTime(relay_id);
 		}
 		else if (reader.name().toString() == "Event") {
 			QMap <QString, int> races;
