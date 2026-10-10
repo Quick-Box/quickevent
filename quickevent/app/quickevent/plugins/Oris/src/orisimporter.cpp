@@ -5,6 +5,7 @@
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Classes/src/classdocument.h>
 #include <plugins/Competitors/src/competitordocument.h>
+#include <plugins/Relays/src/relaysplugin.h>
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/dialog.h>
@@ -38,6 +39,7 @@
 
 using qf::gui::framework::getPlugin;
 using Event::EventPlugin;
+using Relays::RelaysPlugin;
 
 void OrisImporter::saveJsonBackup(const QString &fn, const QJsonDocument &jsd)
 {
@@ -289,6 +291,7 @@ void OrisImporter::syncRelaysEntries(int event_id, std::function<void ()> succes
 									);
 					}
 				}
+				getPlugin<RelaysPlugin>()->assignFirstLegStartTime(relay_id);
 				items_processed++;
 			}
 

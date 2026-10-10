@@ -70,6 +70,22 @@ int RelaysPlugin::editRelay(int id, int mode)
 	return dlg.exec();
 }
 
+void RelaysPlugin::assignFirstLegStartTime(int relay_id)
+{
+	qfLogFuncFrame() << "relay id:" << relay_id;
+	qfs::Query q;
+	q.execThrow("SELECT classdefs.startTimeMin FROM relays"
+				" JOIN classdefs ON classdefs.classId=relays.classId"
+				" WHERE relays.id=" QF_IARG(relay_id));
+	if(q.next()) {
+		int start_time = q.value(0).toInt() * 60 * 1000;
+		q.execThrow("UPDATE runs SET startTimeMs=" QF_IARG(start_time)
+					" WHERE relayId=" QF_IARG(relay_id)
+					" AND leg=1"
+					" AND startTimeMs IS NULL");
+	}
+}
+
 void RelaysPlugin::onInstalled()
 {
 	auto [part_widget, relays_widget] = qff::initPluginWidget<RelaysWidget, PartWidget>(tr("&Relays"), featureId());
