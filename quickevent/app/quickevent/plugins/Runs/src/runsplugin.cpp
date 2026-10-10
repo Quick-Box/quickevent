@@ -1459,7 +1459,7 @@ bool RunsPlugin::exportResultsCsosOverall(int stage_count, const QString &file_n
 	return true;
 }
 
-qf::core::sql::QueryBuilder RunsPlugin::runsQuery(int stage_id, int class_id, bool show_offrace)
+qf::core::sql::QueryBuilder RunsPlugin::runsQuery(int stage_id, int class_id, bool show_offrace, bool only_on_track)
 {
 	bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 	qfs::QueryBuilder qb;
@@ -1499,8 +1499,16 @@ qf::core::sql::QueryBuilder RunsPlugin::runsQuery(int stage_id, int class_id, bo
 		else
 			qb.where("competitors.classId=" + QString::number(class_id));
 	}
-	if(!show_offrace)
+	if(!show_offrace || only_on_track)
 		qb.where("runs.isRunning");
+	if(only_on_track) {
+		auto *event_plugin = getPlugin<EventPlugin>();
+		// stage_id is a leg in relays
+		int time_stage_id = (is_relays || stage_id <= 0)? event_plugin->currentStageId(): stage_id;
+		qint64 started_until_ms = event_plugin->stageStartDateTime(time_stage_id).msecsTo(QDateTime::currentDateTime());
+		qb.joinRestricted("classes.id", "classdefs.classId", "classdefs.stageId=runs.stageId");
+		qb.where(onTrackSqlCondition(started_until_ms));
+	}
 	return qb;
 }
 

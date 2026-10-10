@@ -560,12 +560,9 @@ Statistics loadStatistics(int stage_id)
 	const qint64 started_until_ms = stage_start.msecsTo(now);
 	// vacants have no competitor, relay legs have only relayId
 	const QString cond = "runs.stageId=" QF_IARG(stage_id) " AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)";
-	// classes without start interval (start by punching the start unit) have the same start time for everybody, so only the corridor time tells that the runner has started
-	const QString is_box_start = "(runs.relayId IS NULL AND COALESCE(classdefs.startIntervalMin, 0)=0)";
-	const QString start_ms = "CASE WHEN NOT " + is_box_start + " THEN runs.startTimeMs END";
+	const QString start_ms = RunsPlugin::plannedStartMsSqlExpression();
 	const QString finished_cond = RunsPlugin::finishedSqlCondition();
-	// a finished runner has started, even without a start time or a corridor entry
-	const QString started_cond = finished_cond + " OR runs.notStart OR runs.corridorTime IS NOT NULL OR " + start_ms + "<=" + QString::number(started_until_ms);
+	const QString started_cond = RunsPlugin::startedSqlCondition(started_until_ms);
 	const QString from = " FROM runs"
 		" LEFT JOIN competitors ON competitors.id=runs.competitorId"
 		" LEFT JOIN relays ON relays.id=runs.relayId"
@@ -581,7 +578,6 @@ Statistics loadStatistics(int stage_id)
 	}
 
 	// conditions can be NULL (e.g. NULL finishTimeMs), so compare them as numbers to make NOT work
-	auto is_true = [](const QString &sql_cond) { return "(CASE WHEN " + sql_cond + " THEN 1 ELSE 0 END)=1"; };
 	auto is_false = [](const QString &sql_cond) { return "(CASE WHEN " + sql_cond + " THEN 1 ELSE 0 END)=0"; };
 	const QString select_runner = " AS startMs, runs.corridorTime, competitors.lastName, competitors.firstName, classes.name AS className";
 	auto runner_name_class = [&q]() {
@@ -595,7 +591,7 @@ Statistics loadStatistics(int stage_id)
 	};
 
 	// started and not finished, the longest running first
-	q.execThrow("SELECT " + start_ms + select_runner + from + " WHERE " + cond + " AND " + is_true(started_cond) + " AND " + is_false(finished_cond));
+	q.execThrow("SELECT " + start_ms + select_runner + from + " WHERE " + cond + " AND " + RunsPlugin::onTrackSqlCondition(started_until_ms));
 	while(q.next()) {
 		qint64 elapsed_ms = q.value(0).isNull()
 				? corridor_time(q.value(1)).msecsTo(now)

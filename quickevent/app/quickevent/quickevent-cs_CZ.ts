@@ -8428,6 +8428,14 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <translation>Zobrazit &amp;nestartující závodníky</translation>
     </message>
     <message>
+        <source>Show runners &amp;on track</source>
+        <translation>Zobrazit závodníky na &amp;trati</translation>
+    </message>
+    <message>
+        <source>Show only runners who have started and are not finished yet</source>
+        <translation>Zobrazí jen závodníky, kteří odstartovali a ještě nejsou v cíli</translation>
+    </message>
+    <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="427"/>
         <source>Include competitors who are not running in this stage</source>
         <translation>Zobrazit závodníky, kteří nestartují v této etapě</translation>

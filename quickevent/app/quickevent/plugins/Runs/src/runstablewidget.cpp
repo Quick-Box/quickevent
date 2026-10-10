@@ -161,7 +161,7 @@ void RunsTableWidget::clear()
 	m_runsModel->clearRows();
 }
 
-void RunsTableWidget::reload(int stage_id, int class_id, bool show_offrace, const QString &sort_column, int select_competitor_id)
+void RunsTableWidget::reload(int stage_id, int class_id, bool show_offrace, const QString &sort_column, int select_competitor_id, bool only_on_track)
 {
 	qfLogFuncFrame() << "class id:" << class_id;
 	{
@@ -183,7 +183,7 @@ void RunsTableWidget::reload(int stage_id, int class_id, bool show_offrace, cons
 		m_courseItemDelegate->setCourses(definedCourses());
 	}
 	m_runsTableItemDelegate->setHighlightedClassId(class_id, stage_id);
-	m_runsModel->load(stage_id, class_id, show_offrace);
+	m_runsModel->load(stage_id, class_id, show_offrace, only_on_track);
 	updateStartTimeHighlight();
 
 	QHeaderView *hh = ui->tblRuns->horizontalHeader();

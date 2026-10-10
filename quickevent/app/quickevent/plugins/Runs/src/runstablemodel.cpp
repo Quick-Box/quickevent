@@ -59,10 +59,10 @@ RunsTableModel::RunsTableModel(QObject *parent)
 	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
 }
 
-void RunsTableModel::load(int stage_id, int class_id, bool show_offrace)
+void RunsTableModel::load(int stage_id, int class_id, bool show_offrace, bool only_on_track)
 {
 	m_stageId = stage_id;
-	auto qb = getPlugin<Runs::RunsPlugin>()->runsQuery(stage_id, class_id, show_offrace);
+	auto qb = getPlugin<Runs::RunsPlugin>()->runsQuery(stage_id, class_id, show_offrace, only_on_track);
 	qb.orderBy("runs.id");
 	qfDebug() << qb.toString();
 	setQueryBuilder(qb, false);

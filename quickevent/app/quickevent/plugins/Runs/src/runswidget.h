@@ -97,6 +97,7 @@ private:
 	QAction *m_toolbarActionLabelLeg = nullptr;
 	QAction *m_toolbarActionComboLeg = nullptr;
 	QCheckBox *m_chkShowOffRace = nullptr;
+	QCheckBox *m_chkShowOnTrack = nullptr;
 };
 
 #endif // RUNSWIDGET_H
