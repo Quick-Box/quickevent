@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsRectItem>
+#include <QGraphicsPixmapItem>
 #include <QFileInfo>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
@@ -186,15 +187,8 @@ void AwardSceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 		painter->setFont(font);
 		painter->setPen(QColor(m_item.color));
 
-		QString label;
-		if (m_item.fieldId == QLatin1String("customText")) {
-			label = m_item.customText.isEmpty() ? QStringLiteral("[vlastní text]") : m_item.customText;
-		} else {
-			label = fieldLabel(m_item.fieldId);
-		}
-
 		Qt::Alignment align = static_cast<Qt::Alignment>(m_item.halign) | Qt::AlignVCenter;
-		painter->drawText(r.adjusted(3, 2, -3, -2), align, label);
+		painter->drawText(r.adjusted(3, 2, -3, -2), align, m_item.text);
 	}
 
 	if (option->state & QStyle::State_Selected) {
@@ -310,20 +304,6 @@ void AwardSceneItem::ensurePixmap()
 	}
 }
 
-QString AwardSceneItem::fieldLabel(const QString &field_id) const
-{
-	const auto *s = qobject_cast<const AwardDesignerScene *>(scene());
-	const QList<AwardDesigner::FieldDef> &fields = s
-		? s->availableFields()
-		: AwardDesigner::relayFields();
-	for (const auto &fd : fields) {
-		if (fd.id == field_id) {
-			return QStringLiteral("[") + fd.label + QStringLiteral("]");
-		}
-	}
-	return QStringLiteral("[") + field_id + QStringLiteral("]");
-}
-
 // ─── AwardDesignerScene ───────────────────────────────────────────────────────
 
 AwardDesignerScene::AwardDesignerScene(QObject *parent)
@@ -346,14 +326,6 @@ AwardDesignerScene::~AwardDesignerScene()
 	disconnect(this, &QGraphicsScene::selectionChanged, this, &AwardDesignerScene::onSelectionChanged);
 }
 
-void AwardDesignerScene::setAvailableFields(const QList<AwardDesigner::FieldDef> &fields)
-{
-	m_availableFields = fields;
-	for (auto *item : m_items) {
-		item->update();
-	}
-}
-
 void AwardDesignerScene::loadDesign(const AwardDesigner::Design &design)
 {
 	for (auto *item : m_items) {
@@ -362,14 +334,50 @@ void AwardDesignerScene::loadDesign(const AwardDesigner::Design &design)
 	qDeleteAll(m_items);
 	m_items.clear();
 
-	m_pageW = design.pageW;
-	m_pageH = design.pageH;
-	setSceneRect(0, 0, m_pageW * MM, m_pageH * MM);
-	m_pageRect->setRect(0, 0, m_pageW * MM, m_pageH * MM);
+	m_bgPath = design.bgPath;
+	m_bgData = design.bgData;
+	setPageSize(design.pageW, design.pageH);
 
 	for (const auto &item : design.items) {
 		addDesignItem(item);
 	}
+}
+
+void AwardDesignerScene::setPageSize(qreal w, qreal h)
+{
+	m_pageW = w;
+	m_pageH = h;
+	setSceneRect(0, 0, m_pageW * MM, m_pageH * MM);
+	m_pageRect->setRect(0, 0, m_pageW * MM, m_pageH * MM);
+	updateBackground();
+}
+
+void AwardDesignerScene::setBackground(const QString &path, const QByteArray &data)
+{
+	m_bgPath = path;
+	m_bgData = data;
+	updateBackground();
+}
+
+// Mirrors Typst `fit: "cover"`: fill the page keeping aspect ratio, crop the overflow.
+void AwardDesignerScene::updateBackground()
+{
+	delete m_bgItem;
+	m_bgItem = nullptr;
+	QPixmap pm;
+	if (!m_bgData.isEmpty()) {
+		pm.loadFromData(m_bgData);
+	} else if (!m_bgPath.isEmpty()) {
+		pm.load(m_bgPath);
+	}
+	if (pm.isNull()) {
+		return;
+	}
+	const QSize page(qRound(m_pageW * MM), qRound(m_pageH * MM));
+	pm = pm.scaled(page, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+	pm = pm.copy((pm.width() - page.width()) / 2, (pm.height() - page.height()) / 2, page.width(), page.height());
+	m_bgItem = addPixmap(pm);
+	m_bgItem->setZValue(-0.5);
 }
 
 AwardDesigner::Design AwardDesignerScene::collectDesign() const
@@ -377,6 +385,8 @@ AwardDesigner::Design AwardDesignerScene::collectDesign() const
 	AwardDesigner::Design d;
 	d.pageW = m_pageW;
 	d.pageH = m_pageH;
+	d.bgPath = m_bgPath;
+	d.bgData = m_bgData;
 	for (const auto *si : m_items) {
 		d.items.append(si->designItem());
 	}

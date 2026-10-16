@@ -32,7 +32,6 @@ QList<FieldDef> relayFields()
 		{.id = QStringLiteral("runners"), .label = TR("Závodníci (seznam)")},
 		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
 		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
-		{.id = QStringLiteral("customText"), .label = TR("Vlastní text")},
 	};
 
 }
@@ -50,7 +49,6 @@ QList<FieldDef> runsFields()
 		{.id = QStringLiteral("clubName"), .label = TR("Klub")},
 		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
 		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
-		{.id = QStringLiteral("customText"), .label = TR("Vlastní text")},
 	};
 }
 
@@ -62,7 +60,7 @@ Item makeFieldItem(const QString &field_id, qreal x, qreal y, qreal w, qreal h,
 {
 	Item it;
 	it.kind = Item::Field;
-	it.fieldId = field_id;
+	it.text = QStringLiteral("$(") + field_id + QLatin1Char(')');
 	it.x = x; it.y = y; it.w = w; it.h = h;
 	it.fontFamily = font_family; it.fontSize = font_size; it.bold = bold;
 	it.color = color; it.halign = halign;
@@ -86,8 +84,7 @@ Design Design::defaultRelayDesign()
 	// "Diplom" heading — huge Times Serif maroon
 	Item diplom;
 	diplom.kind = Item::Field;
-	diplom.fieldId = QStringLiteral("customText");
-	diplom.customText = QStringLiteral("Diplom");
+	diplom.text = QStringLiteral("Diplom");
 	diplom.x = 15; diplom.y = 52; diplom.w = 180; diplom.h = 38;
 	diplom.fontFamily = QStringLiteral("Times New Roman"); diplom.fontSize = 72;
 	diplom.color = QStringLiteral("#800000"); diplom.halign = Qt::AlignHCenter;
@@ -129,8 +126,7 @@ Design Design::defaultRunsDesign()
 
 	Item diplom;
 	diplom.kind = Item::Field;
-	diplom.fieldId = QStringLiteral("customText");
-	diplom.customText = QStringLiteral("Diplom");
+	diplom.text = QStringLiteral("Diplom");
 	diplom.x = 15; diplom.y = 52; diplom.w = 180; diplom.h = 38;
 	diplom.fontFamily = QStringLiteral("Times New Roman"); diplom.fontSize = 72;
 	diplom.color = QStringLiteral("#800000"); diplom.halign = Qt::AlignHCenter;
@@ -197,10 +193,7 @@ QString itemTag(const Item &it)
 	kv << QStringLiteral("h=") + QString::number(it.h, 'f', 3);
 	kv << QStringLiteral("zOrder=") + QString::number(it.zOrder);
 	kv << QStringLiteral("imagePath=") + enc(it.imagePath);
-	// base64 is space-free, so it survives the space-delimited tag parsing untouched
-	kv << QStringLiteral("imageData=") + QString::fromLatin1(it.imageData.toBase64());
-	kv << QStringLiteral("fieldId=") + enc(it.fieldId);
-	kv << QStringLiteral("customText=") + enc(it.customText);
+	kv << QStringLiteral("text=") + enc(it.text);
 	kv << QStringLiteral("fontFamily=") + enc(it.fontFamily);
 	kv << QStringLiteral("fontSize=") + QString::number(it.fontSize);
 	kv << QStringLiteral("bold=") + QString::number(it.bold ? 1 : 0);
@@ -229,9 +222,15 @@ Item itemFromTag(const QString &tag)
 	it.h = m.value(QStringLiteral("h"), QStringLiteral("15")).toDouble();
 	it.zOrder = m.value(QStringLiteral("zOrder")).toInt();
 	it.imagePath = dec(m.value(QStringLiteral("imagePath")));
-	it.imageData = QByteArray::fromBase64(m.value(QStringLiteral("imageData")).toLatin1());
-	it.fieldId = dec(m.value(QStringLiteral("fieldId"), QStringLiteral("eventName")));
-	it.customText = dec(m.value(QStringLiteral("customText")));
+	if (m.contains(QStringLiteral("text"))) {
+		it.text = dec(m.value(QStringLiteral("text")));
+	} else {
+		// designs saved before placeholders: a single field or a custom text
+		const QString field_id = dec(m.value(QStringLiteral("fieldId"), QStringLiteral("eventName")));
+		it.text = (field_id == QLatin1String("customText"))
+			? dec(m.value(QStringLiteral("customText")))
+			: QStringLiteral("$(") + field_id + QLatin1Char(')');
+	}
 	it.fontFamily = dec(m.value(QStringLiteral("fontFamily"), QStringLiteral("Arial")));
 	it.fontSize = m.value(QStringLiteral("fontSize"), QStringLiteral("14")).toInt();
 	it.bold = m.value(QStringLiteral("bold")).toInt() != 0;
@@ -240,6 +239,39 @@ Item itemFromTag(const QString &tag)
 	it.halign = m.value(QStringLiteral("halign"), QString::number(Qt::AlignHCenter)).toInt();
 	it.scaleProportional = m.value(QStringLiteral("scaleProportional"), QStringLiteral("1")).toInt() != 0;
 	return it;
+}
+
+// Typst string expression for an item text: literal parts are quoted, `$(key)` becomes the
+// value of that key in the page data (missing key -> empty), `$$(` is a literal `$(`.
+QString textToTypstExpr(const QString &text)
+{
+	static const QRegularExpression re_placeholder(QStringLiteral("\\$\\$\\(|\\$\\((\\w+)\\)"));
+	QStringList parts;
+	QString literal;
+	auto flush_literal = [&]() {
+		if (!literal.isEmpty()) {
+			parts << QLatin1Char('"') + escapeTypstString(literal) + QLatin1Char('"');
+			literal.clear();
+		}
+	};
+	qsizetype pos = 0;
+	auto it = re_placeholder.globalMatch(text);
+	while (it.hasNext()) {
+		const auto m = it.next();
+		literal.append(QStringView(text).mid(pos, m.capturedStart() - pos));
+		pos = m.capturedEnd();
+		if (m.captured(1).isEmpty()) {
+			literal += QStringLiteral("$(");
+		} else {
+			flush_literal();
+			// str() because some values (e.g. pos) are numbers in the page data
+			parts << QStringLiteral("str(page.at(\"") + escapeTypstString(m.captured(1))
+				+ QStringLiteral("\", default: \"\"))");
+		}
+	}
+	literal.append(QStringView(text).mid(pos));
+	flush_literal();
+	return parts.isEmpty() ? QStringLiteral("\"\"") : parts.join(QStringLiteral(" + "));
 }
 
 QString itemToTypstSnippet(const Item &item, int index)
@@ -264,9 +296,7 @@ QString itemToTypstSnippet(const Item &item, int index)
 		return snippet;
 	}
 
-	const QString value_expr = (item.fieldId == QLatin1String("customText"))
-		? QLatin1Char('"') + escapeTypstString(item.customText) + QLatin1Char('"')
-		: QStringLiteral("page.at(\"") + escapeTypstString(item.fieldId) + QStringLiteral("\", default: \"\")");
+	const QString value_expr = textToTypstExpr(item.text);
 
 	const QString var_name = QStringLiteral("val%1").arg(index);
 	const QString align = typstAlignment(item.halign);
@@ -295,10 +325,16 @@ QString Design::toTypst() const
 	QString src;
 	src += QStringLiteral("// @design")
 		+ QStringLiteral(" pageW=") + QString::number(pageW, 'f', 3)
-		+ QStringLiteral(" pageH=") + QString::number(pageH, 'f', 3) + QLatin1Char('\n');
+		+ QStringLiteral(" pageH=") + QString::number(pageH, 'f', 3)
+		+ QStringLiteral(" bgPath=") + enc(QFileInfo(bgPath).fileName()) + QLatin1Char('\n'); // no absolute path in a shareable template
 	src += QStringLiteral("#set page(width: ") + QString::number(pageW, 'f', 3)
 		+ QStringLiteral("mm, height: ") + QString::number(pageH, 'f', 3)
-		+ QStringLiteral("mm, margin: 0mm)\n");
+		+ QStringLiteral("mm, margin: 0mm");
+	if (!bgPath.isEmpty()) {
+		src += QStringLiteral(", background: image(\"") + escapeTypstString(QFileInfo(bgPath).fileName())
+			+ QStringLiteral("\", width: 100%, height: 100%, fit: \"cover\")");
+	}
+	src += QStringLiteral(")\n");
 	src += QStringLiteral("#let pages = json(\"data.json\")\n");
 	src += QStringLiteral("#for (i, page) in pages.enumerate() [\n");
 	for (int idx = 0; idx < sorted.size(); ++idx)
@@ -315,6 +351,13 @@ Design Design::fromTypst(const QString &src)
 	d.pageW = sz.width();
 	d.pageH = sz.height();
 
+	static const QRegularExpression re_bg(QStringLiteral("^// @design .*bgPath=(\\S*)(?: bgData=\\S*)?\\s*$"), // bgData: legacy templates with embedded image, CRLF tolerant
+		QRegularExpression::MultilineOption);
+	auto bg = re_bg.match(src);
+	if (bg.hasMatch()) {
+		d.bgPath = dec(bg.captured(1));
+	}
+
 	static const QRegularExpression re_item(QStringLiteral("^\\s*// @item (.+)$"),
 		QRegularExpression::MultilineOption);
 	auto it = re_item.globalMatch(src);
@@ -326,6 +369,9 @@ Design Design::fromTypst(const QString &src)
 QStringList Design::imageFiles() const
 {
 	QStringList files;
+	if (!bgPath.isEmpty()) {
+		files << bgPath;
+	}
 	for (const auto &item : items) {
 		if (item.kind == Item::Image && !item.imagePath.isEmpty())
 			files << item.imagePath;
@@ -336,6 +382,9 @@ QStringList Design::imageFiles() const
 QList<QPair<QString, QByteArray>> Design::imageBlobs() const
 {
 	QList<QPair<QString, QByteArray>> blobs;
+	if (!bgPath.isEmpty() && !bgData.isEmpty()) {
+		blobs << qMakePair(QFileInfo(bgPath).fileName(), bgData);
+	}
 	for (const auto &item : items) {
 		if (item.kind == Item::Image && !item.imageData.isEmpty())
 			blobs << qMakePair(QFileInfo(item.imagePath).fileName(), item.imageData);
@@ -345,6 +394,12 @@ QList<QPair<QString, QByteArray>> Design::imageBlobs() const
 
 void Design::embedImages()
 {
+	if (bgData.isEmpty() && !bgPath.isEmpty()) {
+		QFile f(bgPath);
+		if (f.open(QIODevice::ReadOnly)) {
+			bgData = f.readAll();
+		}
+	}
 	for (auto &item : items) {
 		if (item.kind != Item::Image || !item.imageData.isEmpty() || item.imagePath.isEmpty())
 			continue;
@@ -381,6 +436,11 @@ QSizeF Design::pageSizeFromTypst(const QString &src)
 // }
 // }
 
+static QString imageReportPath(const QString &relative_file_name, const QString &image_path)
+{
+	return QFileInfo(relative_file_name).path() + QStringLiteral("/images/") + QFileInfo(image_path).fileName();
+}
+
 bool Design::saveToDb(const QString &relative_file_name) const
 {
 	if (relative_file_name.isEmpty()) {
@@ -391,6 +451,12 @@ bool Design::saveToDb(const QString &relative_file_name) const
 	design_copy.embedImages();
 	auto typst = design_copy.toTypst();
 	auto *cache = qf::gui::framework::Plugin::reportFileCache();
+	// images are stored as separate report files next to the template
+	for (const auto &[file_name, data] : design_copy.imageBlobs()) {
+		if (!cache->saveRemoteFileContent(imageReportPath(relative_file_name, file_name), data)) {
+			return false;
+		}
+	}
 	return cache->saveRemoteFileContent(relative_file_name, typst.toUtf8());
 }
 
@@ -402,6 +468,14 @@ Design Design::loadFile(const QString &relative_file_name)
 		return Design{};
 	}
 	Design d = fromTypst(QString::fromUtf8(data));
+	if (!d.bgPath.isEmpty()) {
+		d.bgData = cache->loadReportFile(imageReportPath(relative_file_name, d.bgPath));
+	}
+	for (auto &item : d.items) {
+		if (item.kind == Item::Image && !item.imagePath.isEmpty()) {
+			item.imageData = cache->loadReportFile(imageReportPath(relative_file_name, item.imagePath));
+		}
+	}
 	return d;
 }
 

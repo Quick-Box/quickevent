@@ -43,6 +43,9 @@ private:
 	void onSaveDesignClicked();
 	void onLoadDesignClicked();
 	void onNewDesignClicked();
+	void onPageChanged();
+	void onBrowseBgClicked();
+	void syncPageControls();
 
 	void populatePropsFromItem(AwardSceneItem *item);
 	void applyPropsToItem();

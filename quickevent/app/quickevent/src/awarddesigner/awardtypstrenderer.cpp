@@ -21,6 +21,7 @@
 AwardTypstRenderer::AwardTypstRenderer(QString typ_source, QStringList image_files)
 	: m_typSource(std::move(typ_source))
 	, m_imageFiles(std::move(image_files))
+	, m_imageBlobs(AwardDesigner::Design::fromTypst(m_typSource).imageBlobs())
 {
 }
 
@@ -93,7 +94,7 @@ QList<QVariantMap> AwardTypstRenderer::collectPages(const qf::core::utils::TreeT
 			data[QStringLiteral("eventName")] = event_name;
 			data[QStringLiteral("date")] = date_str;
 			data[QStringLiteral("place")] = event_place;
-			data[QStringLiteral("position")] = pos_str;
+			data[QStringLiteral("position")] = (pos > 0) ? QString::number(pos) : QString();
 			data[QStringLiteral("category")] = class_name;
 			data[QStringLiteral("positionCategory")] = pos_str + QStringLiteral(" v kategorii ") + class_name;
 			data[QStringLiteral("clubName")] = org_name;
@@ -170,7 +171,7 @@ QList<QVariantMap> AwardTypstRenderer::collectRunsPagesData(const qf::core::util
 			data[QStringLiteral("eventName")] = event_name;
 			data[QStringLiteral("date")] = date_str;
 			data[QStringLiteral("place")] = event_place;
-			data[QStringLiteral("position")] = pos_str;
+			data[QStringLiteral("position")] = (pos > 0) ? QString::number(pos) : QString();
 			data[QStringLiteral("category")] = class_name;
 			data[QStringLiteral("positionCategory")] = pos_str.isEmpty()
 				? QStringLiteral("v kategorii ") + class_name
@@ -261,6 +262,10 @@ bool AwardTypstRenderer::compile(const QList<QVariantMap> &pages, const QString 
 		<< QStringLiteral("--format") << format;
 	if (dpi > 0)
 		args << QStringLiteral("--ppi") << QString::number(dpi);
+	const QString fonts_dir = Typst::fontsDir();
+	if (!fonts_dir.isEmpty()) {
+		args << QStringLiteral("--font-path") << fonts_dir;
+	}
 
 	QProcess process;
 	process.setWorkingDirectory(out_dir.path());

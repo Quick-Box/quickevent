@@ -91,6 +91,52 @@
       <layout class="QVBoxLayout" name="propsPanelLayout">
        <property name="margin"><number>4</number></property>
 
+       <!-- Page group -->
+       <item>
+        <widget class="QGroupBox" name="grpPage">
+         <property name="title"><string>Stránka</string></property>
+         <layout class="QFormLayout">
+          <item row="0" column="0">
+           <widget class="QLabel"><property name="text"><string>Velikost:</string></property></widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="cbxPaper"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel"><property name="text"><string>Orientace:</string></property></widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="cbxOrientation"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel"><property name="text"><string>Pozadí:</string></property></widget>
+          </item>
+          <item row="2" column="1">
+           <layout class="QHBoxLayout">
+            <item>
+             <widget class="QLineEdit" name="edBgPath">
+              <property name="readOnly"><bool>true</bool></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnBrowseBg">
+              <property name="text"><string>...</string></property>
+              <property name="maximumWidth"><number>28</number></property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnClearBg">
+              <property name="text"><string>×</string></property>
+              <property name="maximumWidth"><number>28</number></property>
+              <property name="toolTip"><string>Odstranit podkladový obrázek</string></property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+
        <!-- Add item group -->
        <item>
         <widget class="QGroupBox" name="grpAddItem">
@@ -126,20 +172,16 @@
             <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
             <layout class="QFormLayout">
              <item row="0" column="0">
-              <widget class="QLabel"><property name="text"><string>Pole:</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>Text:</string></property></widget>
              </item>
              <item row="0" column="1">
-              <widget class="QComboBox" name="cbxItemField"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="lblCustomText">
-               <property name="text"><string>Text:</string></property>
+              <widget class="QPlainTextEdit" name="edText">
+               <property name="maximumSize"><size><width>16777215</width><height>70</height></size></property>
+               <property name="placeholderText"><string>Text, např. Získává $(competitorName)</string></property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="edCustomText">
-               <property name="placeholderText"><string>Vlastní text</string></property>
-              </widget>
+              <widget class="QComboBox" name="cbxItemField"/>
              </item>
             </layout>
            </widget>

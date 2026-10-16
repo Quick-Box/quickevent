@@ -2305,6 +2305,8 @@ void RunsPlugin::report_resultsAwards()
 		return;
 
 	auto tt = stageResultsTable(opts.value("stageId").toInt(), opts.value("classFilter").toString(), opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
+	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(opts.value("stageId").toInt()));
 
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
 		auto [typ, images] = AwardDesigner::loadTypstTemplate(Plugin::reportFileCache()->localReportFile(rep_path));
@@ -2383,6 +2385,8 @@ void RunsPlugin::report_nStagesAwards()
 		return;
 
 	auto tt = nstagesResultsTable(opts.value("classFilter").toString(), opts.value("stageId").toInt(), opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
+	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
+	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(opts.value("stageId").toInt()));
 
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
 		auto [typ, images] = AwardDesigner::loadTypstTemplate(findReportFile(rep_path));

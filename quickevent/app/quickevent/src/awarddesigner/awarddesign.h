@@ -33,8 +33,8 @@ struct Item {
 	QByteArray imageData;
 
 	// Field
-	QString fieldId = QStringLiteral("eventName");
-	QString customText;
+	// Free text; `$(key)` is replaced by the award data value, `$$(` yields a literal `$(`
+	QString text = QStringLiteral("$(eventName)");
 
 	// Text formatting (used for Field items)
 	QString fontFamily = QStringLiteral("Arial");
@@ -52,6 +52,9 @@ struct Design
 {
 	qreal pageW = 210;
 	qreal pageH = 297;
+	// Full-page background image drawn below all items. Bytes are embedded like Item::imageData.
+	QString bgPath;
+	QByteArray bgData;
 	QList<Item> items;
 
 	// Serialize the design to a self-contained, renderable Typst document. The item

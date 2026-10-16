@@ -276,6 +276,7 @@ add_executable(quickevent
 	plugins/Runs/qml/reports/competitorsStatistics.qml
 
 	plugins/Runs/reports/awards/results_stage_awards.typ
+	plugins/Runs/reports/awards/results_stage_awards_ceskyorientak.typ
 
 	plugins/shared/qml/reports/Cell.qml
 	plugins/shared/qml/reports/HeaderCell.qml
@@ -308,6 +309,7 @@ file(GLOB_RECURSE REPORT_RESOURCE_FILES CONFIGURE_DEPENDS
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Receipts/qml/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/reports/*"
 )
 qt_add_resources(quickevent reports_resources
 	PREFIX "/reports"
