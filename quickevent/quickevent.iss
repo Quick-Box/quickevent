@@ -1,5 +1,8 @@
 #define APP_NAME "QuickEvent"
 #define APP_NAME_LOWER "quickevent"
+#ifndef SUFFIX
+#define SUFFIX ""
+#endif
 #define SSL_DIR "C:\Qt6\Tools\OpenSSL\Win_x64\bin"
 
 [Setup]
@@ -13,7 +16,7 @@ DefaultDirName=C:\{#APP_NAME}
 DefaultGroupName={#APP_NAME}
 OutputDir={#BUILD_DIR}\_inno\{#APP_NAME_LOWER}
 DisableDirPage=no
-OutputBaseFilename={#APP_NAME_LOWER}-{#VERSION}-setup
+OutputBaseFilename={#APP_NAME_LOWER}-{#VERSION}{#SUFFIX}-setup
 Compression=lzma
 SolidCompression=yes
 

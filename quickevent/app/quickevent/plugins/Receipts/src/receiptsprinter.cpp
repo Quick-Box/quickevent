@@ -247,7 +247,7 @@ struct PrintData
 			if(width == 0)
 				ret += data;
 			else
-				ret += "<" + (width < 0? "%:": QByteArray::number(width) + ":") + data + ">";
+				ret += "<" + (width < 0? QByteArray("%:"): QByteArray::number(width) + ":") + data + ">";
 			break;
 		}
 		return ret;

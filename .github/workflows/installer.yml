@@ -8,8 +8,21 @@ on:
 
 jobs:
   windows:
-    name: Qt 6.11 / Windows
+    name: Qt 6.11 / Windows / ${{ matrix.suffix }}
     runs-on: windows-2025
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # MinGW Qt has only a dummy Qt Bluetooth backend (no BLE card readers), MSVC Qt has the real one.
+          - toolchain: mingw
+            suffix: mingw-no-bluetooth
+            qt_arch: win64_mingw
+            windeployqt_args: ''
+          - toolchain: msvc
+            suffix: msvc
+            qt_arch: win64_msvc2022_64
+            windeployqt_args: --no-compiler-runtime
     steps:
       - name: Clone the repository
         uses: actions/checkout@v5
@@ -31,12 +44,14 @@ jobs:
 #         key: ${{ runner.os }}-library-cache
 
       - name: Setup MinGW cache
+        if: matrix.toolchain == 'mingw'
         uses: actions/cache@v5
         with:
           key: x86_64-13.1.0-release-posix-seh-msvcrt-rt_v11-rev1.7z
           path: ${{github.workspace}}/x86_64-13.1.0-release-posix-seh-msvcrt-rt_v11-rev1.7z
 
       - name: Install MinGW
+        if: matrix.toolchain == 'mingw'
         # WinMain apps fail to link with the default MinGW compiler on GH actions. I suspect it is because Qt (since
         # 6.8) uses msvcrt, but GH Actions uses the ucrt version. Furthermore, GH Actions might have an older MinGW
         # version which might make things even less compatible. I don't know the exact reasoning. This works, and that's
@@ -63,7 +78,8 @@ jobs:
         uses: ./.github/actions/cmake
         with:
           qt_version: 6.11.2
-          qt_arch: win64_mingw
+          qt_arch: ${{ matrix.qt_arch }}
+          toolchain: ${{ matrix.toolchain }}
           use_qt6: ON
           modules: qtserialport qtmultimedia qtconnectivity
           additional_cmake_args: -DCMAKE_INSTALL_PREFIX='${{ github.workspace }}/install'
@@ -78,14 +94,21 @@ jobs:
 
       - name: Run windeployqt
         # Report templates are embedded as resources, scan their sources so that QML modules they import (QtQml, ...) are deployed
-        run: windeployqt -serialport -multimedia --qmldir '${{ github.workspace }}/install/bin/qml' --qmldir '${{ github.workspace }}/quickevent/app/quickevent/plugins' '${{ github.workspace }}/install/bin/quickevent.exe'
+        run: windeployqt -serialport -multimedia ${{ matrix.windeployqt_args }} --qmldir '${{ github.workspace }}/install/bin/qml' --qmldir '${{ github.workspace }}/quickevent/app/quickevent/plugins' '${{ github.workspace }}/install/bin/quickevent.exe'
 
       - name: Copy MinGW runtime libraries
+        if: matrix.toolchain == 'mingw'
         # windeployqt is unable to copy those, because it looks for them next to where g++.exe is. On the GitHub runner,
         # they are in a different directory.
         run: |
-          cd "${{github.workspace}}\mingw64\bin"
+          cd "${{github.workspace}}/mingw64/bin"
           cp {libstdc++-6.dll,libgcc_s_seh-1.dll,libwinpthread-1.dll} '${{ github.workspace }}/install/bin'
+        shell: bash
+
+      - name: Copy MSVC runtime libraries
+        if: matrix.toolchain == 'msvc'
+        # App-local deployment, so neither the installer nor the 7zip needs the VC++ redistributable installed.
+        run: cp "$(cygpath -u "$VCToolsRedistDir")"/x64/Microsoft.VC*.CRT/*.dll '${{ github.workspace }}/install/bin'
         shell: bash
 
       - name: Copy PostgreSQL runtime libraries
@@ -109,21 +132,21 @@ jobs:
         shell: bash
 
       - name: Create installer
-        run: iscc "-DBUILD_DIR=${{ github.workspace }}/install" "-DVERSION=${{ env.VERSION }}" quickevent/quickevent.iss
+        run: iscc "-DBUILD_DIR=${{ github.workspace }}/install" "-DVERSION=${{ env.VERSION }}" "-DSUFFIX=-${{ matrix.suffix }}" quickevent/quickevent.iss
 
       - name: Upload installer
         uses: actions/upload-artifact@v7
         with:
-          name: quickevent-${{ env.VERSION }}-setup.exe
+          name: quickevent-${{ env.VERSION }}-${{ matrix.suffix }}-setup.exe
           path: ${{ github.workspace }}/install/_inno/quickevent/quickevent-*-setup.exe
 
       - name: Create 7zip
         shell: pwsh
-        run: 7z a -t7z -mx=9 ${{ github.workspace }}/install/quickevent-${{ env.VERSION }}.7z ${{ github.workspace }}/install/bin/*
+        run: 7z a -t7z -mx=9 ${{ github.workspace }}/install/quickevent-${{ env.VERSION }}-${{ matrix.suffix }}.7z ${{ github.workspace }}/install/bin/*
 
       - name: Upload 7zip
         uses: actions/upload-artifact@v7
         with:
-          name: quickevent-${{ env.VERSION }}.7z
-          path: ${{ github.workspace }}/install/quickevent-${{ env.VERSION }}.7z
+          name: quickevent-${{ env.VERSION }}-${{ matrix.suffix }}.7z
+          path: ${{ github.workspace }}/install/quickevent-${{ env.VERSION }}-${{ matrix.suffix }}.7z
           archive: false

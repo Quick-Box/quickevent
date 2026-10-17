@@ -33,7 +33,7 @@ public:
 	QF_PROPERTY_BOOL_IMPL(i, I, ncludeJoinedTablesIdsToReloadRowQuery)
 
 public:
-	class QFCORE_DECL_EXPORT DbEnumCastProperties : public QVariantMap
+	class QFGUI_DECL_EXPORT DbEnumCastProperties : public QVariantMap
 	{
 		QF_VARIANTMAP_FIELD(QString, g, setG, roupName)
 		QF_VARIANTMAP_FIELD2(QString, c, setC, aptionFormat, QStringLiteral("{{caption}}"))

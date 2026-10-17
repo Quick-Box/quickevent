@@ -13,6 +13,9 @@ inputs:
   modules:
     description: "Specify which modules should be installed"
     required: true
+  toolchain:
+    description: "Windows toolchain: msvc or mingw"
+    default: "msvc"
   additional_cmake_args:
     description: "Additional args to pass to CMake"
     default: ""
@@ -29,8 +32,20 @@ runs:
         version: 1.0
 
     # Windows deps
-    - name: Install windows deps
-      if: runner.os == 'Windows'
+    - name: Setup MSVC environment
+      if: runner.os == 'Windows' && inputs.toolchain == 'msvc'
+      uses: TheMrMilchmann/setup-msvc-dev@v4
+      with:
+        arch: x64
+
+    - name: Select Ninja generator
+      if: runner.os == 'Windows' && inputs.toolchain == 'msvc'
+      run: |
+        echo cmake_extra_args="'-G Ninja'" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Select MinGW generator
+      if: runner.os == 'Windows' && inputs.toolchain == 'mingw'
       run: |
         echo cmake_extra_args="'-DMINGW=ON' '-G MinGW Makefiles'" >> "$GITHUB_ENV"
       shell: bash

@@ -37,6 +37,7 @@ public:
 		QStringList fields;
 
 		IndexInfo() : unique(false), primary(false) {}
+		bool operator==(const IndexInfo &) const = default;
 	};
 	typedef QList<IndexInfo> IndexList;
 private:

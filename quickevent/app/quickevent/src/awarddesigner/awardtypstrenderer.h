@@ -12,7 +12,7 @@
 class QTemporaryDir;
 
 namespace qf::core::utils { class TreeTable; }
-namespace Event { class EventConfig; }
+namespace Event { struct EventConfig; }
 
 class AwardTypstRenderer
 {

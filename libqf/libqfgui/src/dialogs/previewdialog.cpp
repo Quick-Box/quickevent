@@ -38,7 +38,7 @@ void PreviewDialog::setFile(const QString& file_name, const QString &codec_name)
 	if(f.open(QFile::ReadOnly)) {
 		QTextStream ts(&f);
 #if QT_VERSION_MAJOR >= 6
-		auto encoding = QStringConverter::encodingForName(codec_name.isEmpty() ? "utf-8" : codec_name.toLatin1());
+		auto encoding = QStringConverter::encodingForName(codec_name.isEmpty() ? QByteArray("utf-8") : codec_name.toLatin1());
 		if(!encoding) {
 			MessageBox::showError(this, tr("Cannot load text codec '%1'.").arg(codec_name));
 			return;
