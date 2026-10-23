@@ -987,7 +987,9 @@ QString RelaysPlugin::resultsIofXml30()
 						append_list(person_result, split);
 					}
 				}
-				append_list(person_result, QVariantList{"ControlCard", siId});
+				if (siId) {
+					append_list(person_result, QVariantList{"ControlCard", siId});
+				}
 				append_list(member_result, person_result);
 				append_list(team_result, member_result);
 			}

@@ -1308,7 +1308,10 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 					ix += 4;
 				}
 			}
-			result.insert(result.count(), QVariantList{"ControlCard", tt2_row.value(QStringLiteral("runs.siId"))});
+			QVariant siId = tt2_row.value(QStringLiteral("runs.siId"));
+			if (siId.toBool()) {
+				result.insert(result.count(), QVariantList{"ControlCard", siId.toInt()});
+			}
 			person_result.insert(person_result.count(), result);
 			class_result.insert(class_result.count(), person_result);
 		}
