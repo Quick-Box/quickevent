@@ -60,6 +60,7 @@ public:
 
 	const qf::core::utils::Table& runnersTable(int stage_id);
 	Q_SLOT void clearRunnersTableCache();
+	void setCompetitorRunsSiId(int competitor_id, int stage_id, int si_id, bool use_in_next_stages, QObject *source);
 
 	Q_INVOKABLE int courseForRun(int run_id);
 	int courseForRelay(int relay_number, int leg);

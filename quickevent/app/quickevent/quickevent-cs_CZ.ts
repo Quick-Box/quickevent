@@ -1946,6 +1946,16 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <translation>Zaměnit jména</translation>
     </message>
     <message>
+        <location filename="plugins/Competitors/src/competitorwidget.ui" line="119"/>
+        <source>Switch cards</source>
+        <translation>Prohodit čipy</translation>
+    </message>
+    <message>
+        <location filename="plugins/Competitors/src/competitorwidget.cpp" line="568"/>
+        <source>Switch cards with runner</source>
+        <translation>Prohodit čipy se závodníkem</translation>
+    </message>
+    <message>
         <source>Start times</source>
         <translation type="vanished">Startovní časy</translation>
     </message>

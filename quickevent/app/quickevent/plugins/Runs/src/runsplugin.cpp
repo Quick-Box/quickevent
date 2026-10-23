@@ -122,6 +122,22 @@ void RunsPlugin::clearRunnersTableCache()
 	m_runnersTableCacheStageId = 0;
 }
 
+void RunsPlugin::setCompetitorRunsSiId(int competitor_id, int stage_id, int si_id, bool use_in_next_stages, QObject *source)
+{
+	qfs::Query q;
+	q.execThrow("SELECT id FROM runs WHERE competitorId=" QF_IARG(competitor_id)
+				" AND stageId>=" QF_IARG(stage_id)
+				" ORDER BY stageId");
+	auto *app = qf::gui::framework::Application::instance();
+	QVariantMap rec { {"siId", si_id > 0? QVariant(si_id): QVariant()}, };
+	int n = 0;
+	while (q.next()) {
+		if (n++ == 0 || use_in_next_stages) {
+			app->qxSql()->updateRecord("runs", q.value(0).toInt(), rec, source);
+		}
+	}
+}
+
 void RunsPlugin::onInstalled()
 {
 	qfLogFuncFrame();

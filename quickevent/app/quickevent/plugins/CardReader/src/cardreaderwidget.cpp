@@ -1042,19 +1042,8 @@ void CardReaderWidget::assignRunnerToSelectedCard()
 		}
 		{
 			getPlugin<CardReaderPlugin>()->assignCardToRun(card_id, run_id);
-			q.execThrow("SELECT id FROM runs WHERE competitorId=" QF_IARG(competitor_id)
-						" AND stageId>=" QF_IARG(stage_id)
-						" ORDER BY stageId");
-			int n = 0;
-			auto *app = qf::gui::framework::Application::instance();
 			bool use_si_in_next_stages = values.value(Runs::FindRunnerWidget::UseSIInNextStages).toBool();
-			while (q.next()) {
-				QVariantMap rec { {"siId", si_id}, };
-				auto run_id = q.value(0).toInt();
-				if (n++ == 0 || use_si_in_next_stages) {
-					app->qxSql()->updateRecord("runs", run_id, rec, this);
-				}
-			}
+			getPlugin<RunsPlugin>()->setCompetitorRunsSiId(competitor_id, stage_id, si_id, use_si_in_next_stages, this);
 			// QString qs = "UPDATE runs SET siId=" QF_IARG(si_id) " WHERE competitorId=" QF_IARG(competitor_id) " AND stageId=" QF_IARG(stage_id);
 			// if(values.value(Runs::FindRunnerWidget::UseSIInNextStages).toBool()) {
 			// 	qs = "UPDATE runs SET siId=" QF_IARG(si_id) " WHERE competitorId=" QF_IARG(competitor_id) " AND stageId>=" QF_IARG(stage_id);
