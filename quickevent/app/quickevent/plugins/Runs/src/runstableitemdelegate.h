@@ -15,6 +15,7 @@ public:
 	RunsTableItemDelegate(qf::gui::TableView * parent = nullptr);
 
 	QF_PROPERTY_BOOL_IMPL2(s, S, tartTimeHighlightVisible, false)
+	QF_PROPERTY_BOOL_IMPL2(s, S, tartTimeSortDescending, false)
 
 	void setHighlightedClassId(int class_id, int stage_id);
 	void reloadHighlightedClassId();

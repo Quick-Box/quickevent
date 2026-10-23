@@ -151,11 +151,11 @@ void RunsTableWidget::updateStartTimeHighlight() const
 	auto logical_index = ui->tblRuns->horizontalHeader()->sortIndicatorSection();
 	auto order = ui->tblRuns->horizontalHeader()->sortIndicatorOrder();
 	auto cd = m_runsModel->columnDefinition(logical_index);
-	bool is_sort_start_time_asc = (cd.matchesSqlId(QStringLiteral("runs.startTimeMs"))
-								   && order == Qt::AscendingOrder
-								   && ui->tblRuns->filterString().isEmpty());
-	m_runsTableItemDelegate->setStartTimeHighlightVisible(is_sort_start_time_asc);
-	ui->tblRuns->setDragEnabled(is_sort_start_time_asc);
+	bool is_sort_start_time = (cd.matchesSqlId(QStringLiteral("runs.startTimeMs"))
+							   && ui->tblRuns->filterString().isEmpty());
+	m_runsTableItemDelegate->setStartTimeHighlightVisible(is_sort_start_time);
+	m_runsTableItemDelegate->setStartTimeSortDescending(order == Qt::DescendingOrder);
+	ui->tblRuns->setDragEnabled(is_sort_start_time && order == Qt::AscendingOrder);
 }
 
 void RunsTableWidget::clear()
