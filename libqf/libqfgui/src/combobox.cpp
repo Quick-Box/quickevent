@@ -7,7 +7,11 @@
 #include <qf/core/sql/querybuilder.h>
 #include <qf/core/log.h>
 
+#include <QApplication>
 #include <QLineEdit>
+#include <QListView>
+#include <QScreen>
+#include <QScrollBar>
 #include <QSet>
 
 using namespace qf::gui;
@@ -111,6 +115,92 @@ void ComboBox::removeItems()
 void ComboBox::loadItems(bool force)
 {
 	Q_UNUSED(force)
+}
+
+void ComboBox::setMultiColumnPopup(bool b)
+{
+	if(b == m_multiColumnPopup) {
+		return;
+	}
+	m_multiColumnPopup = b;
+	auto *lv = new QListView();
+	if(b) {
+		lv->setFlow(QListView::TopToBottom);
+		lv->setWrapping(true);
+		lv->setResizeMode(QListView::Adjust);
+	}
+	setView(lv);
+	if(b) {
+		// set multi-column geometry before the popup window appears on screen
+		lv->window()->installEventFilter(this);
+	}
+}
+
+void ComboBox::showPopup()
+{
+	if(!m_multiColumnPopup) {
+		Super::showPopup();
+		return;
+	}
+	// no roll-out animation, it would show the popup in its single column size first
+	bool animate = QApplication::isEffectEnabled(Qt::UI_AnimateCombo);
+	QApplication::setEffectEnabled(Qt::UI_AnimateCombo, false);
+	Super::showPopup();
+	QApplication::setEffectEnabled(Qt::UI_AnimateCombo, animate);
+	// Qt can adjust geometry after the popup is shown, apply ours again
+	updateMultiColumnPopupGeometry();
+}
+
+bool ComboBox::eventFilter(QObject *watched, QEvent *event)
+{
+	if(m_multiColumnPopup && event->type() == QEvent::Show && watched == view()->window()) {
+		updateMultiColumnPopupGeometry();
+	}
+	return Super::eventFilter(watched, event);
+}
+
+void ComboBox::updateMultiColumnPopupGeometry()
+{
+	if(count() == 0) {
+		return;
+	}
+	static constexpr int max_rows = 20;
+	QAbstractItemView *v = view();
+	QWidget *popup = v->window();
+	QRect avail = screen()->availableGeometry();
+	int row_h = v->sizeHintForRow(0);
+	int col_w = 0;
+	for(int i = 0; i < count(); i++) {
+		col_w = qMax(col_w, v->sizeHintForIndex(model()->index(i, modelColumn())).width());
+	}
+	if(row_h <= 0 || col_w <= 0) {
+		return;
+	}
+	// popup frame + container margins around the view's viewport, without currently shown scroll bars
+	QScrollBar *hsb = v->horizontalScrollBar();
+	QScrollBar *vsb = v->verticalScrollBar();
+	int extra_w = popup->width() - v->viewport()->width() - (vsb->isVisible() ? vsb->width() : 0);
+	int extra_h = popup->height() - v->viewport()->height() - (hsb->isVisible() ? hsb->height() : 0);
+	int rows = qBound(1, (avail.height() - extra_h) / row_h, max_rows);
+	int cols = (count() + rows - 1) / rows;
+	rows = (count() + cols - 1) / cols;
+	int w = cols * col_w + extra_w;
+	// +1: QListView wraps against QRect::bottom(), which is height - 1
+	int h = rows * row_h + extra_h + 1;
+	if(w > avail.width()) {
+		// does not fit even in columns, horizontal scroll bar will appear
+		w = avail.width();
+		h += hsb->sizeHint().height();
+	}
+	w = qMax(w, width());
+	QPoint pos = mapToGlobal(QPoint(0, height()));
+	if(pos.y() + h > avail.bottom()) {
+		pos.setY(mapToGlobal(QPoint(0, 0)).y() - h);
+	}
+	pos.setX(qBound(avail.left(), pos.x(), avail.right() - w));
+	pos.setY(qBound(avail.top(), pos.y(), avail.bottom() - h));
+	popup->setGeometry(QRect(pos, QSize(w, h)));
+	v->scrollTo(v->currentIndex());
 }
 
 void ComboBox::onCurrentTextChanged(const QString &txt)

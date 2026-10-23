@@ -384,6 +384,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		m_cbxClasses->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
 		m_cbxClasses->setMinimumWidth(fontMetrics().horizontalAdvance('X') * 15);
 		m_cbxClasses->setMaxVisibleItems(100);
+		m_cbxClasses->setMultiColumnPopup(true);
 		m_cbxClasses->setReferencedTable("classes");
 		m_cbxClasses->setReferencedField("id");
 		m_cbxClasses->setReferencedCaptionField("name");
