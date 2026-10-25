@@ -215,6 +215,7 @@ add_executable(quickevent
 
 	src/appclioptions.cpp
 	src/application.cpp
+	src/reportfunctions.cpp
 	src/loggerwidget.cpp
 	src/main.cpp
 	src/mainwindow.cpp
@@ -235,28 +236,7 @@ add_executable(quickevent
 	plugins/Receipts/qml/reports/receipts/Default.qml
 	plugins/Receipts/qml/reports/receipts/private/LotteryTicket.qml
 
-	plugins/Relays/qml/reports/results.qml
-	plugins/Relays/qml/reports/results_condensed.qml
-	plugins/Relays/qml/reports/startList_classes.qml
-	plugins/Relays/qml/reports/startList_clubs.qml
-	plugins/Relays/qml/reports/startList_classes_condensed.qml
-	plugins/Relays/qml/reports/startList_clubs_condensed.qml
-
 	plugins/Relays/reports/awards/relay_awards.typ
-
-	plugins/Runs/qml/reports/competitorsWithCardRent.qml
-	plugins/Runs/qml/reports/results_nstages.qml
-	plugins/Runs/qml/reports/results_nstages_points.qml
-	plugins/Runs/qml/reports/results_nstages_points_condensed.qml
-	plugins/Runs/qml/reports/results_nstagesSpeaker.qml
-	plugins/Runs/qml/reports/results_stage.qml
-	plugins/Runs/qml/reports/results_stageSpeaker.qml
-	plugins/Runs/qml/reports/startList_classes.qml
-	plugins/Runs/qml/reports/startList_classes_nstages.qml
-	plugins/Runs/qml/reports/startList_clubs.qml
-	plugins/Runs/qml/reports/startList_clubs_nstages.qml
-	plugins/Runs/qml/reports/startList_starters.qml
-	plugins/Runs/qml/reports/competitorsStatistics.qml
 
 	plugins/Runs/reports/awards/results_stage_awards.typ
 	plugins/Runs/reports/awards/results_stage_awards_ceskyorientak.typ
@@ -299,6 +279,34 @@ qt_add_resources(quickevent reports_resources
 	BASE "${CMAKE_CURRENT_SOURCE_DIR}/plugins"
 	FILES ${REPORT_RESOURCE_FILES}
 )
+
+# lupdate cannot read XML reports, strings translated in them ('text'|tr and trn:'text' expressions)
+# are written to a generated source file, which is scanned by lupdate but never compiled.
+# Translation context is the report file base name.
+set(REPORT_TR_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/report_translations.cpp")
+set(REPORT_TR_CONTENT "// Generated from XML reports for lupdate, not compiled\nstatic const char *report_translations[] = {\n")
+foreach(report_file IN LISTS REPORT_RESOURCE_FILES)
+	if(NOT report_file MATCHES "\\.xml$")
+		continue()
+	endif()
+	set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${report_file}")
+	get_filename_component(tr_context "${report_file}" NAME_WE)
+	file(READ "${report_file}" report_xml)
+	string(REGEX MATCHALL "'[^']*'\\|tr" tr_matches "${report_xml}")
+	foreach(tr_match IN LISTS tr_matches)
+		string(REGEX REPLACE "^'(.*)'\\|tr$" "\\1" tr_text "${tr_match}")
+		string(APPEND REPORT_TR_CONTENT "\tQT_TRANSLATE_NOOP(\"${tr_context}\", \"${tr_text}\"),\n")
+	endforeach()
+	string(REGEX MATCHALL "trn:'[^']*'" tr_matches "${report_xml}")
+	foreach(tr_match IN LISTS tr_matches)
+		string(REGEX REPLACE "^trn:'(.*)'$" "\\1" tr_text "${tr_match}")
+		string(APPEND REPORT_TR_CONTENT "\tQT_TRANSLATE_N_NOOP(\"${tr_context}\", \"${tr_text}\"),\n")
+	endforeach()
+endforeach()
+string(APPEND REPORT_TR_CONTENT "};\n")
+file(CONFIGURE OUTPUT "${REPORT_TR_SOURCE}" CONTENT "${REPORT_TR_CONTENT}" @ONLY)
+set_source_files_properties("${REPORT_TR_SOURCE}" PROPERTIES HEADER_FILE_ONLY ON)
+target_sources(quickevent PRIVATE "${REPORT_TR_SOURCE}")
 
 target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(quickevent PUBLIC libquickeventcore libquickeventgui libqfgui libsiut)

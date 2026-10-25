@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
+		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
+		textStyle="default">
+	<Parameter name="stagesCount" default="${options.stagesCount|positive|default:1}"/>
+	<Parameter name="reportTitle" default="${stagesCount|trn:'Results after %n stage(s)'}"/>
+	<Parameter name="timeCellWidth" default="${eventConfig.timeMeasurementPrecision|ogTimeColumnWidth}"/>
+	<Parameter name="posCellWidth" default="9"/>
+	<Parameter name="stageCellWidth" default="${timeCellWidth|add:9}"/>
+	<Parameter name="lossCellWidth" default="${timeCellWidth|add:2}"/>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<Frame width="%" height="%" vinset="10">
+			<Band width="%" height="%">
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml"/>
+				<Detail width="%" layout="LayoutVertical">
+					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
+					<Frame height="5"/>
+					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
+						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
+						<Para hinset="1" width="17" textStyle="bold">${'Reg'|tr}</Para>
+						<Repeat var="i" from="1" to="${stagesCount}">
+							<Para hinset="1" textStyle="bold" halign="AlignRight" width="${stageCellWidth}">${'Stage '|tr}${i}</Para>
+						</Repeat>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${timeCellWidth}">${'Time'|tr}</Para>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${lossCellWidth}">${'Loss'|tr}</Para>
+					</Frame>
+					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
+						<Detail width="%" layout="LayoutHorizontal">
+							<Para hinset="1" width="${posCellWidth}" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="%">{{competitorName}}</Para>
+							<Para hinset="1" width="17">{{registration}}</Para>
+							<Repeat var="i" from="1" to="${stagesCount}">
+								<Para hinset="1" width="${timeCellWidth}" halign="AlignRight">{{timeMs${i}|ogTime:-----}}</Para>
+								<Para hinset="1" width="${posCellWidth}" halign="AlignRight">{{pos${i}|nonzero|prefix:(|suffix:)}}</Para>
+							</Repeat>
+							<Para hinset="1" width="${timeCellWidth}" halign="AlignRight">{{timeMs|ogTime:${'DISQ'|tr}}}</Para>
+							<Para hinset="1" width="${lossCellWidth}" halign="AlignRight">{{timeLossMs|ogTime:|prefix:+}}</Para>
+						</Detail>
+					</Band>
+				</Detail>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>

@@ -24,6 +24,8 @@
 #include <QTextLayout>
 #include <QPicture>
 
+#include <functional>
+
 class QDomElement;
 class QDomText;
 
@@ -363,7 +365,12 @@ public:
 
 	/// Called once, when the item tree is built and item properties are set.
 	virtual void complete() {}
+
+	using PrintBinding = std::function<void ()>;
+	/// Binding is called before every item print, it can update item properties from current data.
+	void addPrintBinding(const PrintBinding &fn) {m_printBindings << fn;}
 protected:
+	void updatePrintBindings() {for(const auto &fn : m_printBindings) fn();}
 	style::Text* effectiveTextStyle();
 
 	void createHtmlExportAttributes(HTMLElement &out) const;
@@ -373,6 +380,7 @@ protected:
 	bool m_recentPrintNotFinished;
 private:
 	bool m_visible;
+	QList<PrintBinding> m_printBindings;
 };
 
 /*--

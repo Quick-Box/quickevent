@@ -1655,6 +1655,41 @@ QVariantMap RunsPlugin::startListRecord(int run_id)
 	return {};
 }
 
+qf::core::utils::TreeTable RunsPlugin::competitorsWithCardRentTable(int stage_id)
+{
+	qfs::QueryBuilder qb;
+	qb.select2("classes", "id, name")
+		.from("classes")
+		.orderBy("classes.name");
+	qf::gui::model::SqlTableModel m;
+	m.setQueryBuilder(qb);
+	m.reload();
+	auto tt = m.toTreeTable();
+
+	qfs::QueryBuilder qb2;
+	qb2.select2("competitors", "registration")
+		.select2("runs", "siid, isRunning, cardLent, cardReturned")
+		.select("COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName")
+		.select("lentcards.siid IS NOT NULL AS cardInLentTable")
+		.from("competitors")
+		.joinRestricted("competitors.id", "runs.competitorId", "runs.stageId={{stage_id}}")
+		.joinRestricted("runs.siid", "lentcards.siid", "NOT lentcards.ignored")
+		.where("competitors.classId={{class_id}}")
+		.where("runs.cardLent OR lentcards.siid IS NOT NULL")
+		.orderBy("runs.cardreturned, runs.siid");
+	for(int i=0; i<tt.rowCount(); i++) {
+		QVariantMap qpm;
+		qpm["stage_id"] = stage_id;
+		qpm["class_id"] = tt.row(i).value(QStringLiteral("classes.id"));
+		qf::gui::model::SqlTableModel m2;
+		m2.setQueryBuilder(qb2);
+		m2.setQueryParameters(qpm);
+		m2.reload();
+		tt.appendTable(i, m2.toTreeTable());
+	}
+	return tt;
+}
+
 qf::core::utils::TreeTable RunsPlugin::startListClassesTable(int stage_id, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format)
 {
 	auto start00_epoch_sec = getPlugin<EventPlugin>()->stageStartDateTime(stage_id).toSecsSinceEpoch();
@@ -2105,7 +2140,7 @@ void RunsPlugin::report_startListClasses()
 		props["stageId"] = stage_id;
 		props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(stage_id).toVariantMap();
 		qf::gui::reports::ReportViewWidget::showReport(fwk
-										, findReportFile("startList_classes.qml")
+										, findReportFile("startList_classes.xml")
 									, tt.toVariant()
 									, tr("Start list by classes")
 									, "printStartList"
@@ -2138,7 +2173,7 @@ void RunsPlugin::report_startListClubs()
 		props["stageId"] = stage_id;
 		props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(stage_id).toVariantMap();
 		qf::gui::reports::ReportViewWidget::showReport(fwk
-										, findReportFile("startList_clubs.qml")
+										, findReportFile("startList_clubs.xml")
 									, tt.toVariant()
 									, tr("Start list by clubs")
 									, "printStartList"
@@ -2168,7 +2203,7 @@ void RunsPlugin::report_startListStarters()
 		props["stageId"] = stage_id;
 		props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(stage_id).toVariantMap();
 		qf::gui::reports::ReportViewWidget::showReport(fwk
-										, findReportFile("startList_starters.qml")
+										, findReportFile("startList_starters.xml")
 									, tt.toVariant()
 									, tr("Start list for starters")
 									, "printStartList"
@@ -2205,7 +2240,7 @@ void RunsPlugin::report_startListClassesNStages()
 		//qfDebug() << props;
 		//qfDebug() << "dlg.stagesCount():" << dlg.stagesCount() << opts.stagesCount();
 		qf::gui::reports::ReportViewWidget::showReport(fwk
-									, findReportFile("startList_classes_nstages.qml")
+									, findReportFile("startList_classes_nstages.xml")
 									, tt.toVariant()
 									, tr("Start list by classes for %n stage(s)", "", dlg.stagesCount())
 									, "printStartList"
@@ -2241,7 +2276,7 @@ void RunsPlugin::report_startListClubsNStages()
 		//props["reportTitle"] = "report_title";
 		//qfInfo() << props;
 		qf::gui::reports::ReportViewWidget::showReport(fwk
-									, findReportFile("startList_clubs_nstages.qml")
+									, findReportFile("startList_clubs_nstages.xml")
 									, tt.toVariant()
 									, tr("Start list by clubs for %n stage(s)", "", dlg.stagesCount())
 									, "printStartList"
@@ -2269,7 +2304,7 @@ void RunsPlugin::report_resultsClasses()
 		props["stageId"] = stage_id;
 		props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(stage_id).toVariantMap();
 		qf::gui::reports::ReportViewWidget::showReport(fwk
-										, findReportFile("results_stage.qml")
+										, findReportFile("results_stage.xml")
 									, tt.toVariant()
 									, tr("Results by classes")
 									, "printResults"
@@ -2299,7 +2334,7 @@ void RunsPlugin::report_resultsForSpeaker()
 		//props["stageCount"] = getPlugin<EventPlugin>()->eventConfig()->stageCount();
 		//props["stageNumber"] = selectedStageId();
 		qf::gui::reports::ReportViewWidget::showReport(fwk
-										, findReportFile("results_stageSpeaker.qml")
+										, findReportFile("results_stageSpeaker.xml")
 									, tt.toVariant()
 									, tr("Results by classes")
 									, "printResultsSpeaker"
@@ -2354,7 +2389,7 @@ void RunsPlugin::report_resultsNStages()
 	props["options"] = opts;
 	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
 	qf::gui::reports::ReportViewWidget::showReport(fwk
-								, findReportFile("results_nstages.qml")
+								, findReportFile("results_nstages.xml")
 								, tt.toVariant()
 								, tr("Results after %n stage(s)", "", dlg.stagesCount())
 								, "printResultsNStages"
@@ -2380,7 +2415,7 @@ void RunsPlugin::report_resultsNStagesSpeaker()
 	props["options"] = opts;
 	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
 	qf::gui::reports::ReportViewWidget::showReport(fwk
-								, findReportFile("results_nstagesSpeaker.qml")
+								, findReportFile("results_nstagesSpeaker.xml")
 								, tt.toVariant()
 								, tr("Results after %n stage(s)", "", dlg.stagesCount())
 								, "printResultsNStagesWide"
@@ -2439,7 +2474,7 @@ void RunsPlugin::report_resultsPointsNStagesCondensed()
 	props["options"] = opts;
 	props["eventConfig"] = ec.toVariantMap();
 	qf::gui::reports::ReportViewWidget::showReport(fwk
-												, findReportFile("results_nstages_points_condensed.qml")
+												, findReportFile("results_nstages_points_condensed.xml")
 											, tt.toVariant()
 											, tr("Points after %n stage(s)", "", stages_count)
 											, "printResultsPointsCondensed"
@@ -2469,7 +2504,7 @@ void RunsPlugin::report_resultsPointsNStages()
 	props["options"] = opts;
 	props["eventConfig"] = getPlugin<EventPlugin>()->eventConfig().toVariantMap();
 	qf::gui::reports::ReportViewWidget::showReport(fwk
-										, findReportFile("results_nstages_points.qml")
+										, findReportFile("results_nstages_points.xml")
 										, tt.toVariant()
 										, tr("Results by points after %n stage(s)", "", dlg.stagesCount())
 										, "printResultsPointsNStages"

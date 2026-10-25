@@ -10,14 +10,16 @@
 
 #include <qf/core/log.h>
 
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
-#include <memory>
 #include <QFile>
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QMetaProperty>
 #include <QRegularExpression>
+
+#include <memory>
 
 using namespace qf::gui::reports;
 
@@ -75,75 +77,28 @@ const ObjectType* objectTypeForMetaObject(const QMetaObject *mo)
 }
 
 const auto INCLUDE_TAG = QStringLiteral("include");
+const auto PARAMETER_TAG = QStringLiteral("Parameter");
+const auto REPEAT_TAG = QStringLiteral("Repeat");
 const auto SRC_ATTR = QStringLiteral("src");
 
 //==========================================================
-// text templates
+// expressions
 //==========================================================
-struct TemplateSegment
+bool isTruthy(const QVariant &v)
 {
-	QString literal;
-	QString expression;
-	QStringList formatters;
-};
-using Template = QList<TemplateSegment>;
-
-Template compileTemplate(const QString &text)
-{
-	static const QRegularExpression rx(QStringLiteral(R"(\{\{(.*?)\}\})"));
-	Template ret;
-	qsizetype pos = 0;
-	auto it = rx.globalMatch(text);
-	while(it.hasNext()) {
-		auto m = it.next();
-		if(m.capturedStart() > pos)
-			ret << TemplateSegment{text.mid(pos, m.capturedStart() - pos), {}, {}};
-		auto parts = m.captured(1).split('|');
-		TemplateSegment seg;
-		seg.expression = parts.takeFirst().trimmed();
-		for(const auto &f : parts)
-			seg.formatters << f.trimmed();
-		ret << seg;
-		pos = m.capturedEnd();
+	if(!v.isValid() || v.isNull())
+		return false;
+	switch (v.typeId()) {
+	case QMetaType::Bool: return v.toBool();
+	case QMetaType::QString: {
+		auto s = v.toString();
+		return !s.isEmpty() && s != QLatin1String("false") && s != QLatin1String("0");
 	}
-	if(pos < text.length())
-		ret << TemplateSegment{text.mid(pos), {}, {}};
-	return ret;
-}
-
-bool isTemplate(const QString &text)
-{
-	return text.contains(QLatin1String("{{"));
-}
-
-QMap<QString, XmlReportDocument::Formatter>& formatters()
-{
-	static QMap<QString, XmlReportDocument::Formatter> fmts {
-		{"date", [](const QVariant &v, const QString &arg) {
-			auto d = v.toDate();
-			return arg.isEmpty()? d.toString(Qt::ISODate): d.toString(arg);
-		}},
-		{"time", [](const QVariant &v, const QString &arg) {
-			auto t = v.toTime();
-			return arg.isEmpty()? t.toString(Qt::ISODate): t.toString(arg);
-		}},
-		{"datetime", [](const QVariant &v, const QString &arg) {
-			auto dt = v.toDateTime();
-			return arg.isEmpty()? dt.toString(Qt::TextDate): dt.toString(arg);
-		}},
-		{"number", [](const QVariant &v, const QString &arg) {
-			bool ok;
-			auto d = v.toDouble(&ok);
-			if(!ok)
-				return QString();
-			return QString::number(d, 'f', arg.isEmpty()? 0: arg.toInt());
-		}},
-		{"default", [](const QVariant &v, const QString &arg) {
-			auto s = v.toString();
-			return s.isEmpty()? arg: s;
-		}},
-	};
-	return fmts;
+	default:
+		bool ok;
+		double d = v.toDouble(&ok);
+		return ok? d != 0: true;
+	}
 }
 
 QString valueToString(const QVariant &v)
@@ -158,99 +113,322 @@ QString valueToString(const QVariant &v)
 	}
 }
 
-QVariant evaluateExpression(const QString &expression, ReportItem *item)
+QMap<QString, XmlReportDocument::Formatter>& formatters()
 {
-	if(expression.startsWith('$')) {
-		auto path = expression.mid(1).split('.');
-		auto name = path.takeFirst();
-		if(name == QLatin1String("page")) {
-			auto *proc = item->processor(!qf::core::Exception::Throw);
-			return proc? proc->processedPageNo() + 1: QVariant();
-		}
-		if(name == QLatin1String("now")) {
-			return QDateTime::currentDateTime();
-		}
-		auto *root = qf::core::Utils::findParent<ReportItemReport*>(item, false);
-		if(!root) {
-			qfWarning() << "Cannot find report root for expression:" << expression;
-			return {};
-		}
-		QVariant v = root->property(name.toUtf8().constData());
-		for(const auto &key : path)
-			v = v.toMap().value(key);
-		return v;
-	}
-	for(QObject *o = item; o; o = o->parent()) {
-		if(auto *detail = qobject_cast<ReportItemDetail*>(o))
-			return detail->rowData(expression);
-		if(auto *band = qobject_cast<ReportItemBand*>(o))
-			return band->data(expression);
-	}
-	qfWarning() << "Cannot find Detail or Band to get data for expression:" << expression;
-	return {};
+	static QMap<QString, XmlReportDocument::Formatter> fmts {
+		{"date", [](const QVariant &v, const QString &arg) -> QVariant {
+			auto d = v.toDate();
+			return arg.isEmpty()? d.toString(Qt::ISODate): d.toString(arg);
+		}},
+		{"time", [](const QVariant &v, const QString &arg) -> QVariant {
+			auto t = v.toTime();
+			return arg.isEmpty()? t.toString(Qt::ISODate): t.toString(arg);
+		}},
+		{"datetime", [](const QVariant &v, const QString &arg) -> QVariant {
+			auto dt = v.toDateTime();
+			return arg.isEmpty()? dt.toString(Qt::TextDate): dt.toString(arg);
+		}},
+		{"number", [](const QVariant &v, const QString &arg) -> QVariant {
+			bool ok;
+			auto d = v.toDouble(&ok);
+			if(!ok)
+				return QString();
+			return QString::number(d, 'f', arg.toInt());
+		}},
+		{"add", [](const QVariant &v, const QString &arg) -> QVariant {
+			double d = v.toDouble() + arg.toDouble();
+			if(d == static_cast<qint64>(d))
+				return static_cast<qint64>(d);
+			return d;
+		}},
+		{"default", [](const QVariant &v, const QString &arg) -> QVariant {
+			return valueToString(v).isEmpty()? QVariant(arg): v;
+		}},
+		{"if", [](const QVariant &v, const QString &arg) -> QVariant {
+			return isTruthy(v)? arg.section(':', 0, 0): arg.section(':', 1);
+		}},
+		{"not", [](const QVariant &v, const QString &) -> QVariant {
+			return !isTruthy(v);
+		}},
+		{"nonzero", [](const QVariant &v, const QString &) -> QVariant {
+			bool ok;
+			double d = v.toDouble(&ok);
+			return (ok && d == 0)? QVariant(QString()): v;
+		}},
+		{"positive", [](const QVariant &v, const QString &) -> QVariant {
+			bool ok;
+			double d = v.toDouble(&ok);
+			return (ok && d > 0)? v: QVariant(QString());
+		}},
+		{"arg", [](const QVariant &v, const QString &arg) -> QVariant {
+			return valueToString(v).arg(arg);
+		}},
+		{"key", [](const QVariant &v, const QString &arg) -> QVariant {
+			return v.toMap().value(arg);
+		}},
+		{"prefix", [](const QVariant &v, const QString &arg) -> QVariant {
+			auto s = valueToString(v);
+			return s.isEmpty()? s: arg + s;
+		}},
+		{"suffix", [](const QVariant &v, const QString &arg) -> QVariant {
+			auto s = valueToString(v);
+			return s.isEmpty()? s: s + arg;
+		}},
+	};
+	return fmts;
 }
 
-QString evaluateCompiledTemplate(const Template &tmpl, ReportItem *item)
+QMap<QString, XmlReportDocument::Function>& functions()
 {
-	QString ret;
-	for(const auto &seg : tmpl) {
-		if(seg.expression.isEmpty()) {
-			ret += seg.literal;
-			continue;
-		}
-		QVariant v = evaluateExpression(seg.expression, item);
-		if(seg.formatters.isEmpty()) {
-			ret += valueToString(v);
-			continue;
-		}
-		for(const auto &fmt : seg.formatters) {
-			auto name = fmt.section(':', 0, 0).trimmed();
-			auto arg = fmt.section(':', 1);
-			auto it = formatters().constFind(name);
-			if(it == formatters().constEnd()) {
-				qfWarning() << "Unknown formatter:" << name;
-				v = valueToString(v);
-				continue;
+	static QMap<QString, XmlReportDocument::Function> fns {
+		{"select", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return isTruthy(args.value(0))? args.value(1): args.value(2);
+		}},
+		{"coalesce", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			for(const auto &v : args) {
+				if(!valueToString(v).isEmpty())
+					return v;
 			}
-			v = it.value()(v, arg);
+			return {};
+		}},
+		{"add", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			double d = 0;
+			for(const auto &v : args)
+				d += v.toDouble();
+			return d;
+		}},
+		{"sub", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return args.value(0).toDouble() - args.value(1).toDouble();
+		}},
+		{"and", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return std::all_of(args.cbegin(), args.cend(), isTruthy);
+		}},
+		{"or", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return std::any_of(args.cbegin(), args.cend(), isTruthy);
+		}},
+		{"eq", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return valueToString(args.value(0)) == valueToString(args.value(1));
+		}},
+		{"lt", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return args.value(0).toDouble() < args.value(1).toDouble();
+		}},
+		{"gt", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return args.value(0).toDouble() > args.value(1).toDouble();
+		}},
+	};
+	return fns;
+}
+
+/// split on separator outside of quoted strings, and outside of parentheses if \a track_parens
+QStringList splitOutsideQuotes(const QString &s, QChar sep, int max_parts = -1, bool track_parens = false)
+{
+	QStringList ret;
+	QString part;
+	QChar quote;
+	int depth = 0;
+	for(QChar c : s) {
+		if(!quote.isNull()) {
+			if(c == quote)
+				quote = QChar();
 		}
-		ret += v.toString();
+		else if(c == '\'' || c == '"') {
+			quote = c;
+		}
+		else if(track_parens && c == '(') {
+			depth++;
+		}
+		else if(track_parens && c == ')') {
+			depth--;
+		}
+		else if(c == sep && depth == 0 && (max_parts < 0 || ret.size() < max_parts - 1)) {
+			ret << part;
+			part.clear();
+			continue;
+		}
+		part += c;
+	}
+	ret << part;
+	return ret;
+}
+
+struct Expression
+{
+	QString value;
+	QList<std::pair<QString, QString>> formatters; // name, argument
+};
+
+Expression parseExpression(const QString &expression)
+{
+	Expression ret;
+	auto parts = splitOutsideQuotes(expression, '|');
+	ret.value = parts.takeFirst().trimmed();
+	for(const auto &part : parts) {
+		auto fmt = splitOutsideQuotes(part, ':', 2);
+		// formatter without argument gets null argument, with empty one gets empty non-null string
+		QString arg;
+		if(fmt.size() > 1)
+			arg = fmt.value(1).isNull()? QStringLiteral(""): fmt.value(1);
+		ret.formatters << std::make_pair(fmt.value(0).trimmed(), arg);
 	}
 	return ret;
+}
+
+QString unquote(const QString &s)
+{
+	if(s.size() >= 2 && (s[0] == '\'' || s[0] == '"') && s.back() == s[0])
+		return s.mid(1, s.size() - 2);
+	return s;
+}
+
+QVariant evaluateValue(const QString &value, const XmlReportDocument::ExpressionContext &ctx)
+{
+	if(value.isEmpty())
+		return {};
+	if(value[0] == '\'' || value[0] == '"')
+		return unquote(value);
+	if(value.endsWith(')')) {
+		auto ix = value.indexOf('(');
+		auto name = value.left(ix).trimmed();
+		auto it = functions().constFind(name);
+		if(ix < 0 || it == functions().constEnd()) {
+			// data can contain aggregated fields like SUM(field)
+			if(!ctx.isLoading())
+				return ctx.field(value);
+			qfWarning() << "Unknown report function:" << name;
+			return {};
+		}
+		QVariantList args;
+		auto args_str = value.mid(ix + 1).chopped(1);
+		if(!args_str.trimmed().isEmpty()) {
+			for(const auto &arg : splitOutsideQuotes(args_str, ',', -1, true))
+				args << evaluateValue(arg.trimmed(), ctx);
+		}
+		return it.value()(ctx, args);
+	}
+	if(value[0] == '$') {
+		auto name = value.mid(1);
+		if(!ctx.isLoading()) {
+			if(name == QLatin1String("page")) {
+				auto *proc = ctx.item()->processor(!qf::core::Exception::Throw);
+				return proc? proc->processedPageNo() + 1: QVariant();
+			}
+			if(name == QLatin1String("now"))
+				return QDateTime::currentDateTime();
+		}
+		return ctx.parameter(name);
+	}
+	if(ctx.isLoading())
+		return ctx.parameter(value);
+	return ctx.field(value);
+}
+
+/// returns value, if it is different from value returned for previous detail row
+QVariant changedValue(const QVariant &v, const XmlReportDocument::ExpressionContext &ctx)
+{
+	auto *item = ctx.item();
+	if(!item)
+		return v;
+	auto *detail = qobject_cast<ReportItemDetail*>(item);
+	if(!detail)
+		detail = qf::core::Utils::findParent<ReportItemDetail*>(item, false);
+	int row = detail? detail->currentIndex(): -1;
+	// item can be printed more times for the same row, when it does not fit to page
+	constexpr auto ROW_PROP = "__qf_changed_row";
+	constexpr auto VALUE_PROP = "__qf_changed_value";
+	constexpr auto RESULT_PROP = "__qf_changed_result";
+	if(item->property(ROW_PROP).isValid() && item->property(ROW_PROP).toInt() == row)
+		return item->property(RESULT_PROP);
+	QVariant ret = (item->property(ROW_PROP).isValid() && item->property(VALUE_PROP) == v)? QVariant(QString()): v;
+	item->setProperty(ROW_PROP, row);
+	item->setProperty(VALUE_PROP, v);
+	item->setProperty(RESULT_PROP, ret);
+	return ret;
+}
+
+QVariant evaluateExpression(const Expression &expr, const XmlReportDocument::ExpressionContext &ctx, const QString &tr_context)
+{
+	QVariant v = evaluateValue(expr.value, ctx);
+	for(const auto &[name, arg] : expr.formatters) {
+		if(name == QLatin1String("tr")) {
+			auto s = valueToString(v);
+			v = s.isEmpty()? s: QCoreApplication::translate(tr_context.toUtf8().constData(), s.toUtf8().constData());
+			continue;
+		}
+		if(name == QLatin1String("changed")) {
+			v = changedValue(v, ctx);
+			continue;
+		}
+		if(name == QLatin1String("trn")) {
+			v = QCoreApplication::translate(tr_context.toUtf8().constData(), unquote(arg).toUtf8().constData(), nullptr, v.toInt());
+			continue;
+		}
+		auto it = formatters().constFind(name);
+		if(it == formatters().constEnd()) {
+			qfWarning() << "Unknown report formatter:" << name;
+			continue;
+		}
+		// argument starting with $ is report parameter
+		auto fmt_arg = arg.startsWith('$')? valueToString(evaluateValue(arg, ctx)): unquote(arg);
+		v = it.value()(v, fmt_arg);
+	}
+	return v;
+}
+
+/// text with embedded expressions
+struct Template
+{
+	struct Segment
+	{
+		QString literal;
+		std::optional<Expression> expression;
+	};
+	QList<Segment> segments;
+	QString trContext;
+
+	static Template compile(const QString &text, const QRegularExpression &rx, const QString &tr_context)
+	{
+		Template ret;
+		ret.trContext = tr_context;
+		qsizetype pos = 0;
+		auto it = rx.globalMatch(text);
+		while(it.hasNext()) {
+			auto m = it.next();
+			if(m.capturedStart() > pos)
+				ret.segments << Segment{text.mid(pos, m.capturedStart() - pos), {}};
+			ret.segments << Segment{{}, parseExpression(m.captured(1))};
+			pos = m.capturedEnd();
+		}
+		if(pos < text.length())
+			ret.segments << Segment{text.mid(pos), {}};
+		return ret;
+	}
+	/// returns typed value, when template consists of single expression
+	QVariant evaluate(const XmlReportDocument::ExpressionContext &ctx) const
+	{
+		if(segments.size() == 1 && segments[0].expression)
+			return evaluateExpression(*segments[0].expression, ctx, trContext);
+		QString ret;
+		for(const auto &seg : segments)
+			ret += seg.expression? valueToString(evaluateExpression(*seg.expression, ctx, trContext)): seg.literal;
+		return ret;
+	}
+};
+
+const QRegularExpression& loadTimeRx()
+{
+	static const QRegularExpression rx(QStringLiteral(R"(\$\{(.*?)\})"));
+	return rx;
+}
+
+const QRegularExpression& printTimeRx()
+{
+	static const QRegularExpression rx(QStringLiteral(R"(\{\{(.*?)\}\})"));
+	return rx;
 }
 
 //==========================================================
 // loader
 //==========================================================
-class Loader
-{
-public:
-	explicit Loader(const QString &file_name) { m_fileNames << file_name; }
-
-	QObject* createObject(const QDomElement &el, QObject *parent);
-	bool isError() const { return m_isError; }
-private:
-	QObject* createIncluded(const QDomElement &el, QObject *parent);
-	void addChildObject(QObject *obj, QObject *child, const QDomElement &child_el);
-	void setPropertyElement(QObject *obj, const QDomElement &el);
-	void setProperty(QObject *obj, const QString &name, const QString &value);
-	void setText(ReportItemPara *para, const QString &text);
-	void writePointerProperty(QObject *obj, const QMetaProperty &prop, QObject *value);
-
-	void error(const QString &msg)
-	{
-		qfError() << m_fileNames.last() << msg;
-		m_isError = true;
-	}
-	static QString elementPath(const QDomElement &el)
-	{
-		return QStringLiteral("<%1> line: %2").arg(el.tagName()).arg(el.lineNumber());
-	}
-private:
-	QStringList m_fileNames;
-	bool m_isError = false;
-};
-
 QString resolveFileName(const QString &file_name, const QString &relative_to)
 {
 	QString fn = file_name;
@@ -276,6 +454,115 @@ bool loadDomDocument(const QString &file_name, QDomDocument &doc)
 	return true;
 }
 
+/// write QObject pointer property, returns error description
+QString writePointerPropertyValue(QObject *obj, const QMetaProperty &prop, QObject *value)
+{
+	const QMetaObject *prop_mo = prop.metaType().metaObject();
+	if(!(prop.metaType().flags() & QMetaType::PointerToQObject) || !prop_mo || !value->metaObject()->inherits(prop_mo))
+		return QStringLiteral("Cannot assign %1 to property %2").arg(value->metaObject()->className(), prop.name());
+	if(!value->parent())
+		value->setParent(obj);
+	if(!prop.write(obj, QVariant(prop.metaType(), &value)))
+		return QStringLiteral("Cannot write property %1").arg(prop.name());
+	return {};
+}
+
+/// write property from string value, returns error description
+QString writePropertyValue(QObject *obj, const QMetaProperty &prop, const QString &value, QHash<QString, QObject*> *style_cache)
+{
+	const QString name = prop.name();
+	QVariant v;
+	if(prop.isEnumType()) {
+		QMetaEnum me = prop.enumerator();
+		bool ok;
+		int n = prop.isFlagType()
+				? me.keysToValue(value.toLatin1().constData(), &ok)
+				: me.keyToValue(value.section('.', -1).toLatin1().constData(), &ok);
+		if(!ok)
+			return QStringLiteral("Invalid value %1 of enum property %2").arg(value, name);
+		v = n;
+	}
+	else if(prop.metaType().flags() & QMetaType::PointerToQObject) {
+		// style object shorthand, new object based on named one
+		QObject *o = style_cache? style_cache->value(value): nullptr;
+		if(!o) {
+			const ObjectType *type = objectTypeForMetaObject(prop.metaType().metaObject());
+			if(!type)
+				return QStringLiteral("Property %1 cannot be set from attribute").arg(name);
+			o = type->create(obj);
+			o->setProperty(qobject_cast<style::Color*>(o)? "def": "basedOn", value);
+			if(style_cache)
+				style_cache->insert(value, o);
+		}
+		return writePointerPropertyValue(obj, prop, o);
+	}
+	else if(prop.metaType().id() == QMetaType::QVariantMap) {
+		QJsonParseError err;
+		auto doc = QJsonDocument::fromJson(value.toUtf8(), &err);
+		if(err.error != QJsonParseError::NoError)
+			return QStringLiteral("Property %1 JSON parse error: %2").arg(name, err.errorString());
+		v = doc.toVariant();
+	}
+	else if(prop.metaType().id() == QMetaType::QVariant) {
+		v = value;
+	}
+	else {
+		v = value;
+		if(!v.convert(prop.metaType()))
+			return QStringLiteral("Cannot convert '%1' to type of property %2").arg(value, name);
+	}
+	if(!prop.write(obj, v))
+		return QStringLiteral("Cannot write property %1").arg(name);
+	return {};
+}
+
+class Loader
+{
+public:
+	Loader(const QString &file_name, const QVariantMap &parameters)
+	{
+		m_fileNames << file_name;
+		m_parameters << parameters;
+	}
+
+	QObject* createObject(const QDomElement &el, QObject *parent);
+	bool isError() const { return m_isError; }
+	const QVariantMap& reportParameters() const { return m_parameters.first(); }
+private:
+	QObject* createIncluded(const QDomElement &el, QObject *parent);
+	void createChild(QObject *obj, const QDomElement &child_el);
+	void createRepeated(QObject *obj, const QDomElement &el);
+	void addChildObject(QObject *obj, QObject *child, const QDomElement &child_el);
+	void setPropertyElement(QObject *obj, const QDomElement &el);
+	void setProperty(QObject *obj, const QString &name, const QString &value);
+	void setText(ReportItemPara *para, const QString &text);
+	void writePointerProperty(QObject *obj, const QMetaProperty &prop, QObject *value);
+
+	QString trContext() const { return QFileInfo(m_fileNames.last()).completeBaseName(); }
+	QVariant evaluate(const QString &text) const
+	{
+		if(!text.contains(QLatin1String("${")))
+			return text;
+		auto tmpl = Template::compile(text, loadTimeRx(), trContext());
+		return tmpl.evaluate(XmlReportDocument::ExpressionContext(nullptr, &m_parameters));
+	}
+	QString interpolate(const QString &text) const { return valueToString(evaluate(text)); }
+
+	void error(const QString &msg)
+	{
+		qfError() << m_fileNames.last() << msg;
+		m_isError = true;
+	}
+	static QString elementPath(const QDomElement &el)
+	{
+		return QStringLiteral("<%1> line: %2").arg(el.tagName()).arg(el.lineNumber());
+	}
+private:
+	QStringList m_fileNames;
+	QList<QVariantMap> m_parameters;
+	bool m_isError = false;
+};
+
 QObject *Loader::createIncluded(const QDomElement &el, QObject *parent)
 {
 	auto file_name = resolveFileName(el.attribute(SRC_ATTR), m_fileNames.last());
@@ -288,16 +575,32 @@ QObject *Loader::createIncluded(const QDomElement &el, QObject *parent)
 		m_isError = true;
 		return nullptr;
 	}
+	auto root_el = doc.documentElement();
+	auto type_it = objectTypes().constFind(root_el.tagName());
+	if(type_it == objectTypes().constEnd()) {
+		error(QStringLiteral("Unknown root element %1 of included file %2").arg(elementPath(root_el), file_name));
+		return nullptr;
+	}
+	QVariantMap params;
+	QList<std::pair<QString, QString>> property_overrides;
+	auto attrs = el.attributes();
+	for(int i = 0; i < attrs.count(); i++) {
+		auto attr = attrs.item(i).toAttr();
+		if(attr.name() == SRC_ATTR)
+			continue;
+		if(type_it->metaObject->indexOfProperty(attr.name().toLatin1().constData()) >= 0 || attr.name() == QLatin1String("text"))
+			property_overrides << std::make_pair(attr.name(), interpolate(attr.value()));
+		else
+			params[attr.name()] = evaluate(attr.value());
+	}
+	m_parameters << params;
 	m_fileNames << file_name;
-	QObject *obj = createObject(doc.documentElement(), parent);
+	QObject *obj = createObject(root_el, parent);
 	m_fileNames.removeLast();
+	m_parameters.removeLast();
 	if(obj) {
-		auto attrs = el.attributes();
-		for(int i = 0; i < attrs.count(); i++) {
-			auto attr = attrs.item(i).toAttr();
-			if(attr.name() != SRC_ATTR)
-				setProperty(obj, attr.name(), attr.value());
-		}
+		for(const auto &[name, value] : property_overrides)
+			setProperty(obj, name, value);
 	}
 	return obj;
 }
@@ -311,11 +614,22 @@ QObject *Loader::createObject(const QDomElement &el, QObject *parent)
 		error("Unknown element " + elementPath(el));
 		return nullptr;
 	}
+	// parameters first, they can be used in attributes
+	for(auto child_el = el.firstChildElement(PARAMETER_TAG); !child_el.isNull(); child_el = child_el.nextSiblingElement(PARAMETER_TAG)) {
+		auto name = child_el.attribute(QStringLiteral("name"));
+		if(name.isEmpty()) {
+			error("Parameter name is empty " + elementPath(child_el));
+			continue;
+		}
+		bool is_defined = std::any_of(m_parameters.cbegin(), m_parameters.cend(), [&name](const QVariantMap &m) { return m.contains(name); });
+		if(!is_defined)
+			m_parameters.last()[name] = evaluate(child_el.attribute(QStringLiteral("default")));
+	}
 	QObject *obj = it->create(parent);
 	auto attrs = el.attributes();
 	for(int i = 0; i < attrs.count(); i++) {
 		auto attr = attrs.item(i).toAttr();
-		setProperty(obj, attr.name(), attr.value());
+		setProperty(obj, attr.name(), interpolate(attr.value()));
 	}
 	QString text;
 	for(auto nd = el.firstChild(); !nd.isNull(); nd = nd.nextSibling()) {
@@ -324,25 +638,55 @@ QObject *Loader::createObject(const QDomElement &el, QObject *parent)
 			continue;
 		}
 		auto child_el = nd.toElement();
-		if(child_el.isNull())
-			continue;
-		if(child_el.tagName() == INCLUDE_TAG || objectTypes().contains(child_el.tagName())) {
-			QObject *child = createObject(child_el, obj);
-			if(child)
-				addChildObject(obj, child, child_el);
-		}
-		else {
-			setPropertyElement(obj, child_el);
-		}
+		if(!child_el.isNull())
+			createChild(obj, child_el);
 	}
 	text = text.trimmed();
 	if(!text.isEmpty()) {
 		if(auto *para = qobject_cast<ReportItemPara*>(obj))
-			setText(para, text);
+			setText(para, interpolate(text));
 		else
 			error("Only Para can contain text " + elementPath(el));
 	}
 	return obj;
+}
+
+void Loader::createChild(QObject *obj, const QDomElement &child_el)
+{
+	auto tag = child_el.tagName();
+	if(tag == PARAMETER_TAG) {
+		// already processed
+	}
+	else if(tag == REPEAT_TAG) {
+		createRepeated(obj, child_el);
+	}
+	else if(tag == INCLUDE_TAG || objectTypes().contains(tag)) {
+		QObject *child = createObject(child_el, obj);
+		if(child)
+			addChildObject(obj, child, child_el);
+	}
+	else {
+		setPropertyElement(obj, child_el);
+	}
+}
+
+void Loader::createRepeated(QObject *obj, const QDomElement &el)
+{
+	auto var = el.attribute(QStringLiteral("var"), QStringLiteral("i"));
+	bool ok_from, ok_to;
+	int from = interpolate(el.attribute(QStringLiteral("from"), QStringLiteral("1"))).toInt(&ok_from);
+	int to = interpolate(el.attribute(QStringLiteral("to"))).toInt(&ok_to);
+	if(!ok_from || !ok_to) {
+		// can happen when report is validated without parameters
+		qfDebug() << "Repeat range is not valid" << elementPath(el);
+		return;
+	}
+	for(int i = from; i <= to; i++) {
+		m_parameters << QVariantMap{{var, i}};
+		for(auto child_el = el.firstChildElement(); !child_el.isNull(); child_el = child_el.nextSiblingElement())
+			createChild(obj, child_el);
+		m_parameters.removeLast();
+	}
 }
 
 void Loader::addChildObject(QObject *obj, QObject *child, const QDomElement &child_el)
@@ -361,6 +705,8 @@ void Loader::addChildObject(QObject *obj, QObject *child, const QDomElement &chi
 		if(auto *o = qobject_cast<style::Brush*>(child)) { sheet->brushes() << o; return; }
 		if(auto *o = qobject_cast<style::Font*>(child)) { sheet->fonts() << o; return; }
 		if(auto *o = qobject_cast<style::Text*>(child)) { sheet->textStyles() << o; return; }
+		// nested sheet, for example included one, its style objects are found among sheet children too
+		if(qobject_cast<style::Sheet*>(child)) { return; }
 	}
 	error(QStringLiteral("Element %1 cannot be child of %2").arg(elementPath(child_el), obj->metaObject()->className()));
 	delete child;
@@ -386,23 +732,20 @@ void Loader::setPropertyElement(QObject *obj, const QDomElement &el)
 
 void Loader::writePointerProperty(QObject *obj, const QMetaProperty &prop, QObject *value)
 {
-	const QMetaObject *prop_mo = prop.metaType().metaObject();
-	if(!(prop.metaType().flags() & QMetaType::PointerToQObject) || !prop_mo || !value->metaObject()->inherits(prop_mo)) {
-		error(QStringLiteral("Cannot assign %1 to property %2").arg(value->metaObject()->className(), prop.name()));
+	auto err = writePointerPropertyValue(obj, prop, value);
+	if(!err.isEmpty()) {
+		error(err);
 		delete value;
-		return;
 	}
-	if(!value->parent())
-		value->setParent(obj);
-	if(!prop.write(obj, QVariant(prop.metaType(), &value)))
-		error(QStringLiteral("Cannot write property %1").arg(prop.name()));
 }
 
 void Loader::setText(ReportItemPara *para, const QString &text)
 {
-	if(isTemplate(text)) {
-		auto tmpl = compileTemplate(text);
-		para->setGetTextFunction([para, tmpl]() { return evaluateCompiledTemplate(tmpl, para); });
+	if(text.contains(QLatin1String("{{"))) {
+		auto tmpl = Template::compile(text, printTimeRx(), trContext());
+		para->setGetTextFunction([para, tmpl]() {
+			return valueToString(tmpl.evaluate(XmlReportDocument::ExpressionContext(para)));
+		});
 	}
 	else {
 		para->setText(text);
@@ -424,54 +767,71 @@ void Loader::setProperty(QObject *obj, const QString &name, const QString &value
 		return;
 	}
 	QMetaProperty prop = mo->property(ix);
-	QVariant v;
-	if(prop.isEnumType()) {
-		QMetaEnum me = prop.enumerator();
-		bool ok;
-		int n = prop.isFlagType()
-				? me.keysToValue(value.toLatin1().constData(), &ok)
-				: me.keyToValue(value.section('.', -1).toLatin1().constData(), &ok);
-		if(!ok) {
-			error(QStringLiteral("Invalid value %1 of enum property %2").arg(value, name));
+	if(value.contains(QLatin1String("{{"))) {
+		auto *item = qobject_cast<ReportItem*>(obj);
+		if(!item) {
+			error(QStringLiteral("Print time expression can be used in report item properties only, property: %1").arg(name));
 			return;
 		}
-		v = n;
-	}
-	else if(prop.metaType().flags() & QMetaType::PointerToQObject) {
-		// style object shorthand, new object based on named one
-		const ObjectType *type = objectTypeForMetaObject(prop.metaType().metaObject());
-		if(!type) {
-			error(QStringLiteral("Property %1 cannot be set from attribute").arg(name));
-			return;
-		}
-		QObject *o = type->create(obj);
-		o->setProperty(qobject_cast<style::Color*>(o)? "def": "basedOn", value);
-		writePointerProperty(obj, prop, o);
+		// evaluate before every print, style objects are created once for every value
+		auto tmpl = Template::compile(value, printTimeRx(), trContext());
+		auto style_cache = std::make_shared<QHash<QString, QObject*>>();
+		item->addPrintBinding([item, prop, tmpl, style_cache]() {
+			auto v = valueToString(tmpl.evaluate(XmlReportDocument::ExpressionContext(item)));
+			auto err = writePropertyValue(item, prop, v, style_cache.get());
+			if(!err.isEmpty())
+				qfWarning() << "Print time binding error:" << err;
+		});
 		return;
 	}
-	else if(prop.metaType().id() == QMetaType::QVariantMap) {
-		QJsonParseError err;
-		auto doc = QJsonDocument::fromJson(value.toUtf8(), &err);
-		if(err.error != QJsonParseError::NoError) {
-			error(QStringLiteral("Property %1 JSON parse error: %2").arg(name, err.errorString()));
-			return;
-		}
-		v = doc.toVariant();
-	}
-	else if(prop.metaType().id() == QMetaType::QVariant) {
-		v = value;
-	}
-	else {
-		v = value;
-		if(!v.convert(prop.metaType())) {
-			error(QStringLiteral("Cannot convert %1 to type of property %2").arg(value, name));
-			return;
-		}
-	}
-	if(!prop.write(obj, v))
-		error(QStringLiteral("Cannot write property %1").arg(name));
+	auto err = writePropertyValue(obj, prop, value, nullptr);
+	if(!err.isEmpty())
+		error(err);
 }
 
+}
+
+//==========================================================
+// XmlReportDocument::ExpressionContext
+//==========================================================
+QVariant XmlReportDocument::ExpressionContext::parameter(const QString &path) const
+{
+	auto keys = path.split('.');
+	auto name = keys.takeFirst();
+	QVariant v;
+	if(m_loadParameters) {
+		for(auto it = m_loadParameters->crbegin(); it != m_loadParameters->crend(); ++it) {
+			if(it->contains(name)) {
+				v = it->value(name);
+				break;
+			}
+		}
+	}
+	else {
+		auto *root = qobject_cast<ReportItemReport*>(m_item);
+		if(!root)
+			root = qf::core::Utils::findParent<ReportItemReport*>(m_item, false);
+		if(!root) {
+			qfWarning() << "Cannot find report root for parameter:" << path;
+			return {};
+		}
+		v = root->property(name.toUtf8().constData());
+	}
+	for(const auto &key : keys)
+		v = v.toMap().value(key);
+	return v;
+}
+
+QVariant XmlReportDocument::ExpressionContext::field(const QString &name) const
+{
+	for(QObject *o = m_item; o; o = o->parent()) {
+		if(auto *detail = qobject_cast<ReportItemDetail*>(o))
+			return detail->rowData(name);
+		if(auto *band = qobject_cast<ReportItemBand*>(o))
+			return band->data(name);
+	}
+	qfWarning() << "Cannot find Detail or Band to get data field:" << name;
+	return {};
 }
 
 //==========================================================
@@ -482,9 +842,9 @@ void XmlReportDocument::registerFormatter(const QString &name, const Formatter &
 	formatters()[name] = fn;
 }
 
-QString XmlReportDocument::evaluateTemplate(const QString &text, ReportItem *item)
+void XmlReportDocument::registerFunction(const QString &name, const Function &fn)
 {
-	return evaluateCompiledTemplate(compileTemplate(text), item);
+	functions()[name] = fn;
 }
 
 bool XmlReportDocument::load(const QString &file_name)
@@ -506,7 +866,7 @@ QUrl XmlReportDocument::url() const
 
 ReportItemReport *XmlReportDocument::createReport(const QVariantMap &init_properties)
 {
-	Loader loader(m_fileName);
+	Loader loader(m_fileName, init_properties);
 	QObject *o = loader.createObject(m_document.documentElement(), nullptr);
 	auto *root = qobject_cast<ReportItemReport*>(o);
 	if(!root) {
@@ -518,8 +878,8 @@ ReportItemReport *XmlReportDocument::createReport(const QVariantMap &init_proper
 		delete root;
 		return nullptr;
 	}
-	// report properties are available in text templates as {{$name}}
-	for(const auto &[key, val] : init_properties.asKeyValueRange())
+	// report parameters are available in print time expressions as {{$name}}
+	for(const auto &[key, val] : loader.reportParameters().asKeyValueRange())
 		root->setProperty(key.toUtf8().constData(), val);
 	return root;
 }

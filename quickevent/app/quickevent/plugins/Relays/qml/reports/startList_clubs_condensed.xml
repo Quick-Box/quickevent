@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
+		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
+		textStyle="default">
+	<Parameter name="reportTitle" default="${'Start list by clubs'|tr}"/>
+	<Parameter name="isBreakAfterEachClass" default="false"/>
+	<Parameter name="isColumnBreak" default="false"/>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<Frame width="%" height="%" columns="${options.columns}" vinset="10">
+			<Band width="%" height="%">
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml"/>
+				<Frame height="5"/>
+				<Detail width="%" layout="LayoutVertical">
+					<Break breakType="${isColumnBreak|if:Column:Page}" visible="${isBreakAfterEachClass}" skipFirst="true"/>
+					<Frame height="2"/>
+					<Frame width="%" vinset="1" layout="LayoutHorizontal" fill="khaki" textStyle="bold">
+						<Para hinset="1" width="2"/>
+						<Para hinset="1">{{club}}</Para>
+						<Para hinset="1" width="%">{{name}}</Para>
+					</Frame>
+					<Band width="%" htmlExportAsTable="true">
+						<Detail width="%" layout="LayoutVertical">
+							<Frame width="%" layout="LayoutHorizontal">
+								<Para hinset="1" width="10" halign="AlignRight">{{relays.number}}</Para>
+								<Para hinset="1" width="5"/>
+								<Para hinset="1" width="10" halign="AlignHCenter">{{classes.name}}</Para>
+								<Para hinset="1" width="5"/>
+								<Para hinset="1" width="%" halign="AlignLeft">{{relayName}}</Para>
+							</Frame>
+						</Detail>
+					</Band>
+				</Detail>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>

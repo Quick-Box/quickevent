@@ -518,6 +518,7 @@ ReportItem::PrintResult ReportItemFrame::printMetaPaint(QPaintDevice *paint_devi
 	qfDebug() << "\tlayout:" << ((layout() == LayoutHorizontal)? "horizontal": "vertical") << ", is rubber:" << isRubber(layout());
 	QF_TIME_SCOPE("ReportItemFrame::printMetaPaint ***");
 	PrintResult res = PrintResult::createPrintFinished();
+	updatePrintBindings();
 	if(!isVisible())
 		return res;
 	Rect frame_content_br = bounding_rect;

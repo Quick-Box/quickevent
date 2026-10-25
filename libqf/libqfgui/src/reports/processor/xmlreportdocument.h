@@ -21,31 +21,75 @@ class ReportItem;
 /// Style object properties (textStyle, border, fill, font, pen, color, ...) can be written as attribute,
 /// value is name of style object from report style sheet, which the new object is based on.
 /// Full object can be also defined in property element, for example <bottomBorder><Pen .../></bottomBorder>.
-/// Element <include src="file.xml" [attr="value" ...]/> includes other report file root element,
-/// include element attributes override the included element ones.
 ///
-/// Para text can contain {{expression}} placeholders evaluated during report print:
-///   {{field}} value of field from nearest Detail current row or nearest Band data
-///   {{$page}} current page number, {{$now}} current date-time
-///   {{$name}} or {{$name.key}} report init property, nested maps can be accessed with dot notation
-///   {{expression|formatter}} or {{expression|formatter:argument}} formats value with registered formatter,
-///   formatters can be chained
+/// Special elements:
+///   <Parameter name="n" default="value"/> defines report parameter n, if it is not passed to report.
+///     Report parameters are report init properties passed to ReportProcessor::setReport().
+///   <include src="file.xml" [attr="value" ...]/> includes other report file root element.
+///     Attributes, which are properties of included root element, override them, others are passed
+///     as parameters to the included file.
+///   <Repeat var="i" from="1" to="3"> creates its child elements repeatedly with parameter i set
+///     to from, from + 1, ..., to.
+///
+/// Expressions:
+///   ${expression} is evaluated when report is loaded, it can be used in any attribute or text.
+///   {{expression}} is evaluated during report print, it can be used in Para text and report item properties,
+///     for example textStyle="{{dropped|if:strikeOut:bold}}"
+/// expression is value followed by optional formatters: value|formatter|formatter:argument
+/// formatter argument starting with $ is report parameter value, for example add:$width
+/// value can be:
+///   'text' string literal
+///   name(arg, ...) function call, arguments are values
+///     built-in functions: select(condition, then, else), coalesce(value, ...) first non empty value,
+///     add(a, ...), sub(a, b), and(a, ...), or(a, ...), eq(a, b), lt(a, b), gt(a, b)
+///     unknown function in {{}} is taken as field name, data can contain aggregated fields like SUM(field)
+///   $name or $name.key report parameter, nested maps are accessed with dot notation, $ is optional in ${}
+///   field  value of field from nearest Detail current row or nearest Band data, in {{}} only
+///   $page, $now  current page number and current date-time, in {{}} only
+/// Built-in formatters:
+///   tr  translates value, translation context is report file base name
+///   trn:text  translates text with plural forms, value is count
+///   date, time, datetime  argument is optional QDateTime format string
+///   number:decimals, add:number
+///   default:text  text is used for empty value
+///   if:then:else  then or else text is used depending on the value
+///   not, nonzero (0 to empty), positive (not positive number to empty)
+///   prefix:text, suffix:text  added to non empty value only
+///   key:name  value of key in map
+///   arg:value  replaces %1 in text by value
+///   changed  value if it differs from value printed for previous Detail row, empty otherwise
 class QFGUI_DECL_EXPORT XmlReportDocument : public ReportDocument
 {
+public:
+	class QFGUI_DECL_EXPORT ExpressionContext
+	{
+	public:
+		ExpressionContext(ReportItem *item, const QList<QVariantMap> *load_parameters = nullptr)
+			: m_item(item), m_loadParameters(load_parameters) {}
+
+		/// report parameter, dot notation is used for nested maps
+		QVariant parameter(const QString &path) const;
+		/// field value from nearest Detail current row or nearest Band data, available during print only
+		QVariant field(const QString &name) const;
+		/// report item, which is printed, nullptr when report is loaded
+		ReportItem* item() const { return m_item; }
+		bool isLoading() const { return m_loadParameters != nullptr; }
+	private:
+		ReportItem *m_item;
+		const QList<QVariantMap> *m_loadParameters;
+	};
 public:
 	bool load(const QString &file_name);
 
 	QUrl url() const override;
 	ReportItemReport* createReport(const QVariantMap &init_properties) override;
 public:
-	using Formatter = std::function<QString (const QVariant &value, const QString &argument)>;
-	/// Register formatter usable in Para text placeholders.
-	/// Built-in formatters: date, time, datetime (argument is optional QDateTime format string),
-	/// number (argument is count of decimal places), default (argument is used for empty value)
+	/// formatter with no argument gets null argument
+	using Formatter = std::function<QVariant (const QVariant &value, const QString &argument)>;
 	static void registerFormatter(const QString &name, const Formatter &fn);
 
-	/// Evaluate placeholders in \a text in the context of \a item, see class documentation.
-	static QString evaluateTemplate(const QString &text, ReportItem *item);
+	using Function = std::function<QVariant (const ExpressionContext &context, const QVariantList &args)>;
+	static void registerFunction(const QString &name, const Function &fn);
 private:
 	QString m_fileName;
 	QDomDocument m_document;

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="210" height="297" hinset="5" vinset="5" textStyle="default">
+	<Parameter name="stageCount" default="1"/>
+	<Parameter name="reportTitle" default="${'Competitors statistics'|tr}"/>
+	<styleSheet>
+		<StyleSheet>
+			<include src="../../../shared/qml/reports/ReportStyleCommon.xml"/>
+			<Brush name="none" color="#00000000"/>
+			<Brush name="error" color="salmon"/>
+		</StyleSheet>
+	</styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<Frame width="%" height="%" vinset="10">
+			<Band width="%" height="%" htmlExportAsTable="true">
+				<Frame>
+					<Para textStyle="big">${reportTitle}</Para>
+					<Para textStyle="bold">{{event|key:name}}</Para>
+					<Para>{{event|key:date}}</Para>
+					<Para>{{event|key:place}}</Para>
+				</Frame>
+				<Frame height="5"/>
+				<Frame layout="LayoutHorizontal" textStyle="bold" bottomBorder="black1">
+					<Para hinset="1" width="20">${'Class name'|tr}</Para>
+					<Repeat var="i" from="1" to="${stageCount}">
+						<Para hinset="1" width="15" halign="AlignRight">E${i}</Para>
+						<Para hinset="1" width="15" halign="AlignRight">${'maps'|tr}</Para>
+						<Para hinset="1" width="15" halign="AlignRight">${'res'|tr}</Para>
+					</Repeat>
+				</Frame>
+				<Detail width="%" layout="LayoutHorizontal">
+					<Para hinset="1" width="20">{{classes.name}}</Para>
+					<Repeat var="i" from="1" to="${stageCount}">
+						<Para hinset="1" width="15" halign="AlignRight">{{e${i}_runCount|nonzero}}</Para>
+						<Para hinset="1" width="15" halign="AlignRight">{{e${i}_mapCount|nonzero}}</Para>
+						<Para hinset="1" width="15" halign="AlignRight"
+							fill="{{select(and(e${i}_mapCount, e${i}_runCount, lt(e${i}_mapCount, e${i}_runCount)), 'error', 'none')}}"
+							>{{select(and(e${i}_mapCount, e${i}_runCount), sub(e${i}_mapCount, e${i}_runCount), 0)}}</Para>
+					</Repeat>
+				</Detail>
+				<Frame layout="LayoutHorizontal" textStyle="bold" topBorder="black1">
+					<Para hinset="1" width="20">${'Sum'|tr}</Para>
+					<Repeat var="i" from="1" to="${stageCount}">
+						<Para hinset="1" width="15" halign="AlignRight">{{SUM(e${i}_runCount)|nonzero}}</Para>
+						<Para hinset="1" width="15" halign="AlignRight">{{SUM(e${i}_mapCount)|nonzero}}</Para>
+						<Para hinset="1" width="15" halign="AlignRight"></Para>
+					</Repeat>
+				</Frame>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>

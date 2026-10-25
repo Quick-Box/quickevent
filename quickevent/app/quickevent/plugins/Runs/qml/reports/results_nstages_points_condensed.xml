@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
+		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
+		textStyle="default">
+	<Parameter name="stagesCount" default="${options.stagesCount|positive|default:1}"/>
+	<Parameter name="reportTitle" default="${stagesCount|trn:'Points after %n stage(s)'}"/>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<Frame width="%" height="%" columns="${options.columns}" vinset="10">
+			<Band width="%">
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml" showStageNumber="false"/>
+				<Frame height="5"/>
+				<Detail width="%" layout="LayoutVertical">
+					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
+					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
+						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
+						<Para hinset="1" width="17" halign="AlignRight" textStyle="bold">${'Reg'|tr}</Para>
+						<Para hinset="1" width="15" halign="AlignRight" textStyle="bold">${'Result'|tr}</Para>
+						<Para hinset="1" width="15" halign="AlignRight" textStyle="bold">${'Diff.'|tr}</Para>
+					</Frame>
+					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
+						<Detail width="%" layout="LayoutHorizontal">
+							<Para hinset="1" width="9" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="%">{{competitorName}}</Para>
+							<Para hinset="1" width="17">{{registration}}</Para>
+							<Para hinset="1" width="15" halign="AlignRight">{{points|positive}}</Para>
+							<Para hinset="1" width="15" halign="AlignRight">{{pointsloss|nonzero|prefix:- }}</Para>
+						</Detail>
+					</Band>
+				</Detail>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>

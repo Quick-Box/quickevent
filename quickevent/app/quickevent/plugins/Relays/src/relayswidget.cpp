@@ -473,7 +473,7 @@ void RelaysWidget::print_start_list_classes()
 	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(1).toVariantMap();
 	bool vacants = dlg.startListPrintVacantsOption() != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners;
 	QVariant td = getPlugin<RelaysPlugin>()->startListByClassesTableData(dlg.sqlWhereExpression(), vacants);
-	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_classes.qml" : "startList_classes_condensed.qml";
+	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_classes.xml" : "startList_classes_condensed.xml";
 	qf::gui::reports::ReportViewWidget::showReport(this
 												  , getPlugin<RelaysPlugin>()->findReportFile(report_name)
 												  , td
@@ -499,7 +499,7 @@ void RelaysWidget::print_start_list_clubs()
 	props["stageConfig"] = getPlugin<EventPlugin>()->stageConfig(1).toVariantMap();
 	bool vacants = dlg.startListPrintVacantsOption() != quickevent::gui::ReportOptionsDialog::VacantsOption::OnlyRunners;
 	QVariant td = startListByClubsTableData(vacants);
-	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_clubs.qml" : "startList_clubs_condensed.qml";
+	auto report_name = (dlg.options().isRelayShowLegsDetails()) ? "startList_clubs.xml" : "startList_clubs_condensed.xml";
 	qf::gui::reports::ReportViewWidget::showReport(this,
 												  getPlugin<RelaysPlugin>()->findReportFile(report_name)
 												  , td
@@ -532,7 +532,7 @@ void RelaysWidget::print_results_nlegs()
 	qfDebug() << "opts.resultNumPlaces:" << opts.resultNumPlaces();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(dlg.sqlWhereExpression(), opts.legsCount(), opts.resultNumPlaces(), opts.isResultExcludeDisq());
 	qf::gui::reports::ReportViewWidget::showReport(this,
-												  getPlugin<RelaysPlugin>()->findReportFile("results.qml")
+												  getPlugin<RelaysPlugin>()->findReportFile("results.xml")
 												  , td.toVariant()
 												  , tr("Results")
 												  , "relaysResults"
@@ -559,7 +559,7 @@ void RelaysWidget::print_results_overal()
 	qfDebug() << "opts.resultNumPlaces:" << opts.resultNumPlaces();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(dlg.sqlWhereExpression(), 999, opts.resultNumPlaces(), opts.isResultExcludeDisq());
 	qf::gui::reports::ReportViewWidget::showReport(this,
-												  getPlugin<RelaysPlugin>()->findReportFile("results.qml")
+												  getPlugin<RelaysPlugin>()->findReportFile("results.xml")
 												  , td.toVariant()
 												  , tr("Results")
 												  , "relaysResults"
@@ -586,7 +586,7 @@ void RelaysWidget::print_results_overal_condensed()
 	qfDebug() << "opts.resultNumPlaces:" << opts.resultNumPlaces();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(dlg.sqlWhereExpression(), 999, opts.resultNumPlaces(), opts.isResultExcludeDisq());
 	qf::gui::reports::ReportViewWidget::showReport(this,
-												  getPlugin<RelaysPlugin>()->findReportFile("results_condensed.qml")
+												  getPlugin<RelaysPlugin>()->findReportFile("results_condensed.xml")
 														  , td.toVariant()
 														  , tr("Results")
 														  , "relaysResults"

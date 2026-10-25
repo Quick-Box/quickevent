@@ -1,5 +1,6 @@
 #include "application.h"
 #include "appclioptions.h"
+#include "reportfunctions.h"
 
 #include <qf/gui/reports/processor/qmlreportdocument.h>
 #include <qf/gui/style.h>
@@ -28,6 +29,7 @@ Application::Application(int &argc, char **argv, AppCliOptions *cli_opts)
 			QStringLiteral("ogDefaultTimeMeasurementPrecision"),
 			static_cast<int>(quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision()));
 	});
+	quickevent::registerReportFunctions();
 	if(cli_opts->appFontScale() != 1.) {
 		QFont app_font = font();
 		app_font.setPointSizeF(app_font.pointSizeF() * cli_opts->appFontScale());

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StyleSheet>
+	<Color name="none" def="#00000000"/>
+	<Color name="pink" def="#fd8184"/>
+	<Color name="peach" def="lightgoldenrodyellow"/>
+	<Color name="khaki" def="khaki"/>
+	<Color name="salmon" def="salmon"/>
+
+	<Pen name="black05" color="black" width="0.5"/>
+	<Pen name="black1" color="black" width="1"/>
+	<Pen name="black2" basedOn="black1" width="2"/>
+	<Pen name="black1dot" basedOn="black1" style="DotLine"/>
+	<Pen name="black1dash" basedOn="black1" style="DashLine"/>
+	<Pen name="blue05" basedOn="black05" color="blue"/>
+	<Pen name="blue1" basedOn="black1" color="blue"/>
+	<Pen name="blue1dash" basedOn="black1dash" color="blue"/>
+
+	<Brush name="khaki" color="khaki"/>
+	<Brush name="salmon" color="salmon"/>
+
+	<Font name="default" pointSize="9"/>
+	<Font name="bold" basedOn="default" weight="WeightBold"/>
+	<Font name="boldItalic" basedOn="bold" style="StyleItalic"/>
+	<Font name="italic" basedOn="default" style="StyleItalic"/>
+	<Font name="strikeOut" basedOn="default" strikeOut="StrikeOutTrue"/>
+	<Font name="big" pointSize="18"/>
+
+	<TextStyle name="default" font="default"/>
+	<TextStyle name="bold" font="bold"/>
+	<TextStyle name="tableHeader" font="boldItalic"/>
+	<TextStyle name="reportHeader" font="italic" pen="blue1"/>
+	<TextStyle name="strikeOut" font="strikeOut"/>
+	<TextStyle name="big" font="big"/>
+</StyleSheet>

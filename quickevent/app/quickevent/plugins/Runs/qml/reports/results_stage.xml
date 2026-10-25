@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
+		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
+		textStyle="default">
+	<Parameter name="reportTitle" default="${'Results by classes'|tr}"/>
+	<Parameter name="timeColumnWidth" default="${eventConfig.timeMeasurementPrecision|ogTimeColumnWidth}"/>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<Frame width="%" height="%" columns="${options.columns}" vinset="10">
+			<Band width="%">
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml"/>
+				<Frame height="5"/>
+				<Detail width="%" layout="LayoutVertical">
+					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
+					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
+						<Para hinset="1" textStyle="bold">{{classes.name}}</Para>
+						<Para hinset="1" width="%">({{runnersFinished}}/{{runnersCount}})</Para>
+						<Para hinset="1">{{'length: '|tr}}{{courses.length}}</Para>
+						<Para hinset="1">{{'climb: '|tr}}{{courses.climb}}</Para>
+					</Frame>
+					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
+						<Detail width="%" layout="LayoutHorizontal">
+							<Para hinset="1" width="10" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="%">{{competitorName}}</Para>
+							<Para width="15">{{registration}}</Para>
+							<Para hinset="1" width="${timeColumnWidth}" halign="AlignRight">{{timeMs|ogTime}}</Para>
+							<Para width="10">{{ogRunStatus()}}</Para>
+						</Detail>
+					</Band>
+				</Detail>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>
