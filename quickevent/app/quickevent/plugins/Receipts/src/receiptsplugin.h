@@ -3,7 +3,6 @@
 
 #include <qf/gui/framework/plugin.h>
 
-#include <QQmlListProperty>
 
 class QPrinterInfo;
 class QDomElement;

@@ -5,7 +5,6 @@
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
 
-#include <QQmlEngine>
 #include <QTranslator>
 #include <QFile>
 #include <QDirIterator>

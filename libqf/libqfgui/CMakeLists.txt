@@ -22,7 +22,6 @@ add_library(libqfgui SHARED
     src/dialogs/messagebox.cpp
     src/dialogs/previewdialog.cpp
     src/dialogs/previewdialog.ui
-    src/dialogs/qmldialog.cpp
     src/exportcsvtableviewwidget.cpp
     src/exporttableviewwidget.cpp
     src/exporttableviewwidget.ui
@@ -58,7 +57,6 @@ add_library(libqfgui SHARED
     src/internal/tableviewcopytodialogwidget.cpp
     src/internal/tableviewcopytodialogwidget.ui
     src/label.cpp
-    src/layoutpropertiesattached.cpp
     src/layouttypeproperties.cpp
     src/lineedit.cpp
     src/menubar.cpp
@@ -125,7 +123,7 @@ qt6_add_lupdate(libqfgui TS_FILES ${TS_FILES})
 
 target_sources(libqfgui PRIVATE ${QM_FILES})
 
-target_link_libraries(libqfgui PUBLIC Qt::Svg Qt::PrintSupport Qt::Sql Qt::Qml Qt::Widgets Qt::Xml libqfcore)
+target_link_libraries(libqfgui PUBLIC Qt::Svg Qt::PrintSupport Qt::Sql Qt::Widgets Qt::Xml libqfcore PRIVATE Qt::Network)
 target_include_directories(libqfgui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(libqfgui PUBLIC include)
 target_compile_definitions(libqfgui PRIVATE QFGUI_BUILD_DLL)

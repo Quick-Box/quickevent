@@ -7,7 +7,6 @@
 
 #include <QObject>
 
-class QQmlEngine;
 
 namespace qf {
 namespace gui {

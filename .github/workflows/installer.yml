@@ -93,8 +93,7 @@ jobs:
         shell: bash
 
       - name: Run windeployqt
-        # Report templates are embedded as resources, scan their sources so that QML modules they import (QtQml, ...) are deployed
-        run: windeployqt -serialport -multimedia ${{ matrix.windeployqt_args }} --qmldir '${{ github.workspace }}/install/bin/qml' --qmldir '${{ github.workspace }}/quickevent/app/quickevent/plugins' '${{ github.workspace }}/install/bin/quickevent.exe'
+        run: windeployqt -serialport -multimedia ${{ matrix.windeployqt_args }} '${{ github.workspace }}/install/bin/quickevent.exe'
 
       - name: Copy MinGW runtime libraries
         if: matrix.toolchain == 'mingw'

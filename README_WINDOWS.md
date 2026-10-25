@@ -67,7 +67,6 @@ cmake `
   -DCMAKE_INSTALL_PREFIX="$QUICKBOX_ROOT\install" `
   -DUSE_QT6=ON `
   -DMINGW=ON `
-  -DQF_BUILD_QML_PLUGINS=ON `
   -DBUILD_TESTING=OFF
 
 cmake --build "$QUICKBOX_ROOT\build" --parallel

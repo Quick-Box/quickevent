@@ -33,7 +33,6 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QMetaObject>
-#include <QJSValue>
 #include <QPrinterInfo>
 #include <QTimer>
 #include <QDirIterator>

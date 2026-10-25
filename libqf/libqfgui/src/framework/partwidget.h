@@ -8,8 +8,6 @@
 #include <qf/core/utils.h>
 
 #include <QWidget>
-#include <QQmlListProperty>
-#include <QQmlParserStatus>
 
 class QHBoxLayout;
 
@@ -26,20 +24,15 @@ namespace framework {
 
 class Plugin;
 
-class QFGUI_DECL_EXPORT PartWidget : public QWidget, public IPersistentSettings, public QQmlParserStatus
+class QFGUI_DECL_EXPORT PartWidget : public QWidget, public IPersistentSettings
 {
 	Q_OBJECT
-	Q_INTERFACES(QQmlParserStatus)
-	Q_PROPERTY(QQmlListProperty<QWidget> widgets READ widgets)
-	Q_CLASSINFO("DefaultProperty", "widgets")
 	Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
 	/// url or path to part icon
 	Q_PROPERTY(QString iconSource READ iconSource WRITE setIconSource NOTIFY iconSourceChanged)
 	Q_PROPERTY(QString featureId READ featureId WRITE setFeatureId NOTIFY featureIdChanged FINAL)
 	Q_PROPERTY(QString persistentSettingsId READ persistentSettingsId WRITE setPersistentSettingsId)
 	Q_PROPERTY(bool active READ isActive WRITE setActive NOTIFY activeChanged)
-	/// attachedObjects is a workaround for https://github.com/fvacek/quickbox/issues/2
-	Q_PROPERTY(QQmlListProperty<QObject> attachedObjects READ attachedObjects)
 	Q_PROPERTY(qf::gui::MenuBar* menuBar READ menuBar)
 private:
 	typedef QWidget Super;
@@ -71,13 +64,9 @@ public:
 	Q_INVOKABLE qf::gui::ToolBar* toolBar(const QString &name, bool create_if_not_exists = false);
 	void addWidget(QWidget *w);
 protected:
-	QQmlListProperty<QWidget> widgets();
-	QQmlListProperty<QObject> attachedObjects();
 	Frame* centralFrame();
 private:
 	Q_SLOT void savePersistentSettings();
-	void classBegin() Q_DECL_OVERRIDE;
-	void componentComplete() Q_DECL_OVERRIDE;
 private:
 	MenuBar *m_menuBar = nullptr;
 	QMap<QString, ToolBar*> m_toolBars;
@@ -87,7 +76,6 @@ private:
 	QString m_title;
 	QString m_iconSource;
 	QString m_featureId;
-	QList<QObject*> m_attachedObjects;
 };
 
 }}}

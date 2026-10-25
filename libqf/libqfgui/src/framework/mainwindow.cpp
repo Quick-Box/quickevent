@@ -6,15 +6,12 @@
 #include "../menubar.h"
 #include "../statusbar.h"
 #include "../toolbar.h"
-#include "../dialogs/qmldialog.h"
 
 #include <qf/core/log.h>
 #include <qf/core/exception.h>
 #include <qf/core/assert.h>
 #include <qf/core/utils.h>
 
-#include <QQmlEngine>
-#include <QQmlContext>
 #include <QSettings>
 #include <QCloseEvent>
 #include <QNetworkAccessManager>
@@ -321,13 +318,3 @@ Plugin *MainWindow::pluginForObject(QObject *qml_object)
 	return ret;
 }
 
-qf::gui::dialogs::QmlDialog *MainWindow::createQmlDialog(QWidget *parent)
-{
-	if(parent == nullptr)
-		parent = this;
-	auto *ret = new qf::gui::dialogs::QmlDialog(parent);
-	//Application *app = Application::instance();
-	//QQmlEngine *qe = app->qmlEngine();
-	//qe->setObjectOwnership(ret, QQmlEngine::JavaScriptOwnership);
-	return ret;
-}

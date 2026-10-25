@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/qf/core">
-        <file>qml/js/stringext.js</file>
-        <file>qml/js/treetable.js</file>
-    </qresource>
-</RCC>
