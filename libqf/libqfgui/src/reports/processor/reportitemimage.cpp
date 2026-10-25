@@ -215,6 +215,8 @@ void ReportItemImage::updateResolvedDataSource()
 
 ReportItem::PrintResult ReportItemImage::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint* out, const ReportItem::Rect& bounding_rect)
 {
+	// data source can be set by print binding
+	updatePrintBindings();
 	updateResolvedDataSource();
 	ReportItem::PrintResult ret = Super::printMetaPaint(paint_device, out, bounding_rect);
 	/*--

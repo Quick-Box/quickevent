@@ -21,6 +21,7 @@ class ReportItem;
 /// Style object properties (textStyle, border, fill, font, pen, color, ...) can be written as attribute,
 /// value is name of style object from report style sheet, which the new object is based on.
 /// Full object can be also defined in property element, for example <bottomBorder><Pen .../></bottomBorder>.
+/// Empty style object attribute value sets no style object, it is useful in print time expressions.
 ///
 /// Special elements:
 ///   <Parameter name="n" default="value"/> defines report parameter n, if it is not passed to report.
@@ -38,19 +39,21 @@ class ReportItem;
 /// expression is value followed by optional formatters: value|formatter|formatter:argument
 /// formatter argument starting with $ is report parameter value, for example add:$width
 /// value can be:
-///   'text' string literal
-///   name(arg, ...) function call, arguments are values
+///   'text' string literal, 123 number literal
+///   name(arg, ...) function call, arguments are expressions
 ///     built-in functions: select(condition, then, else), coalesce(value, ...) first non empty value,
-///     add(a, ...), sub(a, b), and(a, ...), or(a, ...), eq(a, b), lt(a, b), gt(a, b)
+///     add(a, ...), sub(a, b), mul(a, ...), div(a, b), and(a, ...), or(a, ...), not(a), eq(a, b), lt(a, b), gt(a, b),
+///     band('name') value from nearest Band data, it can be used to get band data in Detail
 ///     unknown function in {{}} is taken as field name, data can contain aggregated fields like SUM(field)
 ///   $name or $name.key report parameter, nested maps are accessed with dot notation, $ is optional in ${}
 ///   field  value of field from nearest Detail current row or nearest Band data, in {{}} only
 ///   $page, $now  current page number and current date-time, in {{}} only
+///   $row, $rowCount, $lastRow  current row index, row count and if current row is the last one of nearest Detail, in {{}} only
 /// Built-in formatters:
 ///   tr  translates value, translation context is report file base name
 ///   trn:text  translates text with plural forms, value is count
 ///   date, time, datetime  argument is optional QDateTime format string
-///   number:decimals, add:number
+///   number:decimals, add:number, clamp:min:max
 ///   default:text  text is used for empty value
 ///   if:then:else  then or else text is used depending on the value
 ///   not, nonzero (0 to empty), positive (not positive number to empty)

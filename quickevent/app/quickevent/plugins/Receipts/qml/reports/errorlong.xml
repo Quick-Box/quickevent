@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="65" height="297" hinset="0" vinset="5" textStyle="default">
+	<styleSheet>
+		<StyleSheet>
+			<include src="../../../shared/qml/reports/ReportStyleCommon.xml"/>
+			<Brush name="none" color="#00000000"/>
+			<Brush name="error" color="lightsalmon"/>
+		</StyleSheet>
+	</styleSheet>
+	<Frame width="%" hinset="2" vinset="2" border="blue05">
+		<Band modelData="card" width="%">
+			<Frame fill="error">
+				<Para width="%" textStyle="bold" textHAlign="AlignHCenter" topBorder="black2" htmlExportAttributes='{"lpt_textStyle": "bold", "lpt_textAlign": "center", "lpt_textWidth": "%"}'>${'!!! Error !!!'|tr}</Para>
+				<Para width="%" bottomBorder="black2" textStyle="bold" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textAlign": "center", "lpt_borderBottom": "=", "lpt_textWidth": "%"}'>SI: {{cardNumber}}</Para>
+			</Frame>
+		</Band>
+		<Para width="%" height="2"/>
+		<Image width="60" height="60" dataSource="qrc:/quickevent/Receipts/images/no_runner.svg"/>
+	</Frame>
+</Report>

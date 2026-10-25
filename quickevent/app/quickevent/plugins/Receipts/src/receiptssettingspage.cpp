@@ -361,7 +361,7 @@ void ReceiptsSettingsPage::load()
 	ui->chkThisReaderOnly->setChecked(settings.isThisReaderOnly());
 	{
 		auto *cbx = ui->cbxReceipt;
-		QString path = settings.receiptPath();
+		QString path = settings.receiptReportPath();
 		qfInfo() << "current receipt path:" << path;
 		for (int i = 0; i < cbx->count(); ++i) {
 			if(cbx->itemData(i).toString() == path) {
@@ -607,7 +607,14 @@ void ReceiptsSettingsPage::loadReceptList()
 	qfLogFuncFrame();
 	ui->cbxReceipt->clear();
 	auto *receipts_plugin = qf::gui::framework::getPlugin<ReceiptsPlugin>();
-	for(const auto &i : receipts_plugin->listReportFiles("receipts")) {
+	auto report_files = receipts_plugin->listReportFiles("receipts", QStringLiteral("xml"));
+	// custom receipts can be still defined in QML
+	for(const auto &i : receipts_plugin->listReportFiles("receipts", QStringLiteral("qml"))) {
+		auto has_xml = std::any_of(report_files.cbegin(), report_files.cend(), [&i](const auto &xml) { return xml.reportName == i.reportName; });
+		if(!has_xml)
+			report_files << i;
+	}
+	for(const auto &i : report_files) {
 		qfDebug() << i.reportName << i.reportFilePath;
 		ui->cbxReceipt->addItem(i.reportName, i.reportFilePath);
 	}

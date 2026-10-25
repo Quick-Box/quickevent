@@ -369,8 +369,9 @@ public:
 	using PrintBinding = std::function<void ()>;
 	/// Binding is called before every item print, it can update item properties from current data.
 	void addPrintBinding(const PrintBinding &fn) {m_printBindings << fn;}
+	/// Evaluate print bindings of item and its children, it is called before item is printed.
+	virtual void updatePrintBindings() {for(const auto &fn : m_printBindings) fn();}
 protected:
-	void updatePrintBindings() {for(const auto &fn : m_printBindings) fn();}
 	style::Text* effectiveTextStyle();
 
 	void createHtmlExportAttributes(HTMLElement &out) const;

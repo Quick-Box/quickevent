@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="65" height="297" hinset="0" vinset="5" textStyle="default">
+	<Parameter name="printLotteryTicket" default="false"/>
+	<styleSheet>
+		<StyleSheet>
+			<include src="../../../../shared/qml/reports/ReportStyleCommon.xml"/>
+			<Brush name="none" color="#00000000"/>
+			<Brush name="error" color="salmon"/>
+		</StyleSheet>
+	</styleSheet>
+	<Frame width="%" hinset="2" vinset="2" border="blue05">
+		<Band modelData="competitor" width="%">
+			<Detail width="%" layout="LayoutVertical" bottomBorder="black2">
+				<include src="private/LotteryTicket.xml" visible="${printLotteryTicket}"/>
+				<Frame width="%" halign="AlignHCenter" hinset="4" vinset="1" htmlExportAttributes='{"lpt_textAlign": "left", "lpt_borderTop": "=", "lpt_borderBottom": "-"}'>
+					<Para/>
+					<Image visible="{{band('event.receiptImagePath')|if:true:false}}"
+						height="{{select(band('event.receiptImagePath'), band('event.receiptImageHeightMm')|nonzero|default:18|clamp:10:60, 0)}}"
+						dataSource="{{band('event.receiptImagePath')}}"/>
+				</Frame>
+				<Frame hinset="1" vinset="1" textStyle="bold" fill="khaki" htmlExportAttributes='{"lpt_textStyle": "bold"}'>
+					<Frame width="%" layout="LayoutHorizontal">
+						<Para width="%">{{competitorName}}</Para>
+						<Para textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{competitors.registration|default:NO_REG}}</Para>
+					</Frame>
+					<Frame width="%" layout="LayoutHorizontal" htmlExportAttributes='{"lpt_textStyle": "underline2"}'>
+						<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'>{{classes.name}}</Para>
+						<Para>{{div(band('courses.length'), 1000)|default:0}}km</Para>
+						<Para text=" {{band('courses.climb')}}m"/>
+					</Frame>
+				</Frame>
+			</Detail>
+		</Band>
+		<Band modelData="card" width="%">
+			<Frame hinset="1" width="%" bottomBorder="black1" htmlExportAttributes='{"lpt_borderBottom": "="}'>
+				<Frame layout="LayoutHorizontal">
+					<Para width="11">Check:</Para>
+					<Para width="15" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{add(stageStartTimeMs, checkTimeMs)|hhmmss}}</Para>
+					<Para hinset="1" width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>Finish:</Para>
+					<Para width="15" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{select(finishTimeMs, add(stageStartTimeMs, finishTimeMs), '')|hhmmss|default:--:--:--}}</Para>
+				</Frame>
+				<Frame width="%" layout="LayoutHorizontal" htmlExportAttributes='{"lpt_textStyle": "underline2"}'>
+					<Para width="11">Start:</Para>
+					<Para width="15" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{add(stageStartTimeMs, startTimeMs)|hhmmss}}</Para>
+					<Para hinset="1">/</Para>
+					<Para>{{startTimeMs|ogTimeSec}}</Para>
+					<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>SI:{{cardNumber}}</Para>
+				</Frame>
+			</Frame>
+			<Detail width="%" layout="LayoutHorizontal" expandChildFrames="true"
+				fill="{{select(stpTimeMs, 'none', 'error')}}"
+				topBorder="{{select($lastRow, 'black1', '')}}"
+				textStyle="{{select($lastRow, 'bold', '')}}"
+				htmlExportAttributes="{{select(lt($row, sub($rowCount, 2)), '{}', '{&quot;lpt_textStyle&quot;: &quot;underline2&quot;}')}}">
+				<Para hinset="1" width="8" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "3", "lpt_textAlign": "right"}'>{{select($lastRow, '', position)|nonzero|suffix:.}}</Para>
+				<Para width="7" htmlExportAttributes='{"lpt_textWidth": "4", "lpt_textAlign": "right"}'>{{select($lastRow, band('isOk')|if:${'OK'|tr}:${'DISQ'|tr}, code)}}</Para>
+				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{stpTimeMs|positive|ogTimeSec|default:${'-----'|tr}}}</Para>
+				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{lapTimeMs|positive|ogTimeSec|default:${'-----'|tr}}}</Para>
+				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{lossMs|positive|ogTimeSec|prefix:+}}</Para>
+				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{select(and(gt(lapTimeMs, 0), gt(distance, 0)), div(mul(lapTimeMs, 1000), distance), '')|ogTimeSec|prefix:~}}</Para>
+			</Detail>
+			<Frame width="%" bottomBorder="black2" htmlExportAttributes='{"lpt_borderTop": "="}'>
+				<Para/>
+			</Frame>
+			<Frame fill="error" bottomBorder="black1" textStyle="bold" visible="{{isCardLent|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
+				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "center"}'>${'!!! RENTED CARD !!!'|tr}</Para>
+			</Frame>
+			<Para hinset="1">{{extraCodesText|prefix:${'extra: '|tr}}}</Para>
+			<Para hinset="1">{{isBadCheck|if:${'BAD CHECK !!!'|tr}:}}</Para>
+			<Frame width="%" hinset="1" layout="LayoutHorizontal">
+				<Para>{{'current overall loss: +'|tr}}{{SUM(lossMs)|ogTimeSec}}</Para>
+			</Frame>
+			<Frame width="%" hinset="1" layout="LayoutHorizontal">
+				<Para>{{select(and(currentStandings, competitorsFinished), currentStandings, '')|prefix:${'standings: '|tr}|suffix:/}}{{select(and(currentStandings, competitorsFinished), competitorsFinished, '')}}</Para>
+				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{paceMsPerKm|ogTimeSec|suffix:min/km}}</Para>
+			</Frame>
+			<Frame width="%" hinset="1" layout="LayoutHorizontal">
+				<Para>{{data|key:batteryStatus|key:voltage|number:2|prefix:${'Siac battery: '|tr}|suffix:V - }}{{select(data|key:batteryStatus, data|key:batteryStatus|key:low|if:LOW:Ok, '')}}</Para>
+			</Frame>
+			<Frame width="%" halign="AlignHCenter" hinset="1" vinset="2">
+				<Para/>
+				<Image visible="{{event.receiptQrCodePath|if:true:false}}" width="{{select(event.receiptQrCodePath, 24, 0)}}"
+					height="{{select(event.receiptQrCodePath, 24, 0)}}" dataSource="{{event.receiptQrCodePath}}"/>
+				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textAlign": "center", "lpt_textWidth": "%"}'>{{select(event.receiptQrCodePath, event.receiptQrCodeCaption, '')}}</Para>
+			</Frame>
+		</Band>
+	</Frame>
+</Report>

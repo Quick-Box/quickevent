@@ -404,6 +404,7 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 	bool is_card_lent = getPlugin<CardReaderPlugin>()->isCardLent(read_card.cardNumber(), read_card.finishTime(), run_id);
 	int stage_id = 0;
 	int course_id = checked_card.courseId();
+	int course_length = 0;
 	int leg = 0;
 	int relay_num = 0;
 	int current_standings = 1;
@@ -586,6 +587,7 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 					QString fld_name = rec.fieldName(i);
 					tt.setValue(fld_name, rec.value(i));
 				}
+				course_length = q.value("length").toInt();
 			}
 		}
 		{
@@ -663,7 +665,16 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 				}
 			}
 			tt.setValue("extraCodes", xc);
+			QStringList xcs;
+			for(const auto &v : xc) {
+				auto xca = v.toList();
+				xcs << QStringLiteral("%1-%2").arg(xca.value(0).toInt()).arg(xca.value(1).toInt());
+			}
+			tt.setValue("extraCodesText", xcs.join(", "));
 		}
+		tt.setValue("courses.length", course_length);
+		if(course_length > 0)
+			tt.setValue("paceMsPerKm", (checked_card.timeMs() / course_length) * 1000);
 		tt.setValue("currentStandings", current_standings);
 		tt.setValue("competitorsFinished", competitors_finished);
 		tt.setValue("timeMs", checked_card.timeMs());
@@ -703,7 +714,7 @@ void ReceiptsPlugin::previewCard(int card_id)
 	auto *w = new qf::gui::reports::ReportViewWidget();
 	w->setPersistentSettingsId("cardPreview");
 	w->setWindowTitle(tr("Card"));
-	w->setReport(findReportFile("sicard.qml"));
+	w->setReport(findReportFile("sicard.xml"));
 	QVariantMap dt = readCardTablesData(card_id);
 	for(const auto &[k, v] : dt.asKeyValueRange()) {
 		w->setTableData(k, v);
@@ -720,7 +731,7 @@ bool ReceiptsPlugin::printCard(int card_id)
 	QF_TIME_SCOPE("ReceiptsPlugin::printCard()");
 	try {
 		QVariantMap dt = readCardTablesData(card_id);
-		return receiptsPrinter()->printReceipt("sicard.qml", dt, card_id);
+		return receiptsPrinter()->printReceipt("sicard.xml", dt, card_id);
 	}
 	catch(const qf::core::Exception &e) {
 		qfError() << e.toString();
@@ -789,7 +800,7 @@ void ReceiptsPlugin::previewReceipt(int card_id)
 	}
 	w->setPersistentSettingsId("cardPreview");
 	w->setWindowTitle(tr("Receipt"));
-	w->setReport(findReportFile(settings.receiptPath()));
+	w->setReport(findReportFile(settings.receiptReportPath()));
 	QVariantMap dt = receiptTablesData(card_id);
 	for(const auto &[k, v] : dt.asKeyValueRange()) {
 		w->setTableData(k, v);
@@ -812,7 +823,7 @@ bool ReceiptsPlugin::printReceipt(int card_id)
 			return false;
 		}
 		QVariantMap dt = receiptTablesData(card_id);
-		return receiptsPrinter()->printReceipt(settings.receiptPath(), dt, card_id);
+		return receiptsPrinter()->printReceipt(settings.receiptReportPath(), dt, card_id);
 	}
 	catch(const qf::core::Exception &e) {
 		qfError() << e.toString();

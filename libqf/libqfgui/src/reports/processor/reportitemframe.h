@@ -173,6 +173,8 @@ protected:
 	void initDesignedRect();
 public:
 	void complete() override;
+	/// children bindings are updated too, because they can change children size used in frame layout
+	void updatePrintBindings() override;
 
 	PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
 	PrintResult printHtml(HTMLElement &out) override;

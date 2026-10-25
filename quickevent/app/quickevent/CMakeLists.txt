@@ -162,7 +162,6 @@ add_executable(quickevent
 	plugins/Runs/src/findrunnerwidget.cpp
 	plugins/Runs/src/findrunnerwidget.ui
 
-
 	plugins/Runs/src/printawardsoptionsdialogwidget.cpp
 	plugins/Runs/src/printawardsoptionsdialogwidget.ui
 	plugins/Runs/src/runflagsdialog.cpp
@@ -226,28 +225,10 @@ add_executable(quickevent
 
 	quickevent.rc
 
-	plugins/Classes/qml/reports/table.qml
-
-	plugins/Receipts/qml/reports/error.qml
-	plugins/Receipts/qml/reports/errorlong.qml
-	plugins/Receipts/qml/reports/sicard.qml
-	plugins/Receipts/qml/reports/receipts/Classic.qml
-	plugins/Receipts/qml/reports/receipts/ClassicLottery.qml
-	plugins/Receipts/qml/reports/receipts/Default.qml
-	plugins/Receipts/qml/reports/receipts/private/LotteryTicket.qml
-
 	plugins/Relays/reports/awards/relay_awards.typ
 
 	plugins/Runs/reports/awards/results_stage_awards.typ
 	plugins/Runs/reports/awards/results_stage_awards_ceskyorientak.typ
-
-	plugins/shared/qml/reports/Cell.qml
-	plugins/shared/qml/reports/HeaderCell.qml
-	plugins/shared/qml/reports/QfObject.qml
-	plugins/shared/qml/reports/QuickEventHeaderFooter.qml
-	plugins/shared/qml/reports/QuickEventReportHeader.qml
-	plugins/shared/qml/reports/ReportStyleCommon.qml
-	plugins/shared/qml/reports/Space.qml
 )
 
 # Single source of truth for this project's translations: every quickevent-<locale>.ts

@@ -19,6 +19,7 @@
 #include <QMetaProperty>
 #include <QRegularExpression>
 
+#include <algorithm>
 #include <memory>
 
 using namespace qf::gui::reports;
@@ -144,6 +145,9 @@ QMap<QString, XmlReportDocument::Formatter>& formatters()
 		{"default", [](const QVariant &v, const QString &arg) -> QVariant {
 			return valueToString(v).isEmpty()? QVariant(arg): v;
 		}},
+		{"clamp", [](const QVariant &v, const QString &arg) -> QVariant {
+			return std::clamp(v.toDouble(), arg.section(':', 0, 0).toDouble(), arg.section(':', 1).toDouble());
+		}},
 		{"if", [](const QVariant &v, const QString &arg) -> QVariant {
 			return isTruthy(v)? arg.section(':', 0, 0): arg.section(':', 1);
 		}},
@@ -200,8 +204,27 @@ QMap<QString, XmlReportDocument::Function>& functions()
 		{"sub", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
 			return args.value(0).toDouble() - args.value(1).toDouble();
 		}},
+		{"mul", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			double d = 1;
+			for(const auto &v : args)
+				d *= v.toDouble();
+			return d;
+		}},
+		{"div", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			double d = args.value(1).toDouble();
+			return (d == 0)? QVariant(): QVariant(args.value(0).toDouble() / d);
+		}},
 		{"and", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
 			return std::all_of(args.cbegin(), args.cend(), isTruthy);
+		}},
+		{"not", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
+			return !isTruthy(args.value(0));
+		}},
+		{"band", [](const XmlReportDocument::ExpressionContext &ctx, const QVariantList &args) -> QVariant {
+			auto *band = qobject_cast<ReportItemBand*>(ctx.item());
+			if(!band)
+				band = qf::core::Utils::findParent<ReportItemBand*>(ctx.item(), false);
+			return band? band->data(args.value(0).toString()): QVariant();
 		}},
 		{"or", [](const XmlReportDocument::ExpressionContext &, const QVariantList &args) -> QVariant {
 			return std::any_of(args.cbegin(), args.cend(), isTruthy);
@@ -219,14 +242,17 @@ QMap<QString, XmlReportDocument::Function>& functions()
 	return fns;
 }
 
-/// split on separator outside of quoted strings, and outside of parentheses if \a track_parens
-QStringList splitOutsideQuotes(const QString &s, QChar sep, int max_parts = -1, bool track_parens = false)
+/// split on separator outside of quoted strings and outside of function call parentheses
+QStringList splitOutsideQuotes(const QString &s, QChar sep, int max_parts = -1)
 {
 	QStringList ret;
 	QString part;
 	QChar quote;
 	int depth = 0;
+	QChar prev;
 	for(QChar c : s) {
+		auto prev_char = prev;
+		prev = c;
 		if(!quote.isNull()) {
 			if(c == quote)
 				quote = QChar();
@@ -234,10 +260,11 @@ QStringList splitOutsideQuotes(const QString &s, QChar sep, int max_parts = -1, 
 		else if(c == '\'' || c == '"') {
 			quote = c;
 		}
-		else if(track_parens && c == '(') {
+		else if(c == '(' && (prev_char.isLetterOrNumber() || prev_char == '_')) {
+			// function call, '(' in formatter argument like prefix:( is not counted
 			depth++;
 		}
-		else if(track_parens && c == ')') {
+		else if(c == ')' && depth > 0) {
 			depth--;
 		}
 		else if(c == sep && depth == 0 && (max_parts < 0 || ret.size() < max_parts - 1)) {
@@ -280,12 +307,20 @@ QString unquote(const QString &s)
 	return s;
 }
 
-QVariant evaluateValue(const QString &value, const XmlReportDocument::ExpressionContext &ctx)
+QVariant evaluateExpression(const Expression &expr, const XmlReportDocument::ExpressionContext &ctx, const QString &tr_context);
+
+QVariant evaluateValue(const QString &value, const XmlReportDocument::ExpressionContext &ctx, const QString &tr_context)
 {
 	if(value.isEmpty())
 		return {};
 	if(value[0] == '\'' || value[0] == '"')
 		return unquote(value);
+	{
+		bool ok;
+		double d = value.toDouble(&ok);
+		if(ok)
+			return d;
+	}
 	if(value.endsWith(')')) {
 		auto ix = value.indexOf('(');
 		auto name = value.left(ix).trimmed();
@@ -300,8 +335,8 @@ QVariant evaluateValue(const QString &value, const XmlReportDocument::Expression
 		QVariantList args;
 		auto args_str = value.mid(ix + 1).chopped(1);
 		if(!args_str.trimmed().isEmpty()) {
-			for(const auto &arg : splitOutsideQuotes(args_str, ',', -1, true))
-				args << evaluateValue(arg.trimmed(), ctx);
+			for(const auto &arg : splitOutsideQuotes(args_str, ','))
+				args << evaluateExpression(parseExpression(arg.trimmed()), ctx, tr_context);
 		}
 		return it.value()(ctx, args);
 	}
@@ -314,6 +349,18 @@ QVariant evaluateValue(const QString &value, const XmlReportDocument::Expression
 			}
 			if(name == QLatin1String("now"))
 				return QDateTime::currentDateTime();
+			if(name == QLatin1String("row") || name == QLatin1String("rowCount") || name == QLatin1String("lastRow")) {
+				auto *detail = qobject_cast<ReportItemDetail*>(ctx.item());
+				if(!detail)
+					detail = qf::core::Utils::findParent<ReportItemDetail*>(ctx.item(), false);
+				if(!detail)
+					return {};
+				if(name == QLatin1String("row"))
+					return detail->currentIndex();
+				if(name == QLatin1String("rowCount"))
+					return detail->rowCount();
+				return detail->currentIndex() == detail->rowCount() - 1;
+			}
 		}
 		return ctx.parameter(name);
 	}
@@ -347,7 +394,7 @@ QVariant changedValue(const QVariant &v, const XmlReportDocument::ExpressionCont
 
 QVariant evaluateExpression(const Expression &expr, const XmlReportDocument::ExpressionContext &ctx, const QString &tr_context)
 {
-	QVariant v = evaluateValue(expr.value, ctx);
+	QVariant v = evaluateValue(expr.value, ctx, tr_context);
 	for(const auto &[name, arg] : expr.formatters) {
 		if(name == QLatin1String("tr")) {
 			auto s = valueToString(v);
@@ -368,7 +415,7 @@ QVariant evaluateExpression(const Expression &expr, const XmlReportDocument::Exp
 			continue;
 		}
 		// argument starting with $ is report parameter
-		auto fmt_arg = arg.startsWith('$')? valueToString(evaluateValue(arg, ctx)): unquote(arg);
+		auto fmt_arg = arg.startsWith('$')? valueToString(evaluateValue(arg, ctx, tr_context)): unquote(arg);
 		v = it.value()(v, fmt_arg);
 	}
 	return v;
@@ -483,6 +530,13 @@ QString writePropertyValue(QObject *obj, const QMetaProperty &prop, const QStrin
 		v = n;
 	}
 	else if(prop.metaType().flags() & QMetaType::PointerToQObject) {
+		if(value.isEmpty()) {
+			// no style object, it is inherited from parent
+			QObject *null_obj = nullptr;
+			if(!prop.write(obj, QVariant(prop.metaType(), &null_obj)))
+				return QStringLiteral("Cannot write property %1").arg(name);
+			return {};
+		}
 		// style object shorthand, new object based on named one
 		QObject *o = style_cache? style_cache->value(value): nullptr;
 		if(!o) {

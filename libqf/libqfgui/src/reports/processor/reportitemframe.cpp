@@ -169,6 +169,13 @@ void ReportItemFrame::addItem(QObject *item_object)
 	insertItem(m_items.count(), item_object);
 }
 
+void ReportItemFrame::updatePrintBindings()
+{
+	Super::updatePrintBindings();
+	for(auto *it : std::as_const(m_items))
+		it->updatePrintBindings();
+}
+
 void ReportItemFrame::removeAllItems()
 {
 	qDeleteAll(m_items);

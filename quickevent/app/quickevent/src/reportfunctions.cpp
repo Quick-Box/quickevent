@@ -23,6 +23,19 @@ bool isEmptyValue(const QVariant &v)
 	return !v.isValid() || v.isNull() || (v.typeId() == QMetaType::QString && v.toString().isEmpty());
 }
 
+// msec since midnight as h:mm:ss, hours are not wrapped
+QString msecToHhmmss(qint64 msec)
+{
+	if(msec < 0)
+		return QString::number(msec / 1000.);
+	qint64 n = msec / 1000;
+	int sec = n % 60;
+	n /= 60;
+	int min = n % 60;
+	qint64 hod = n / 60;
+	return QStringLiteral("%1:%2:%3").arg(hod).arg(min, 2, 10, QChar('0')).arg(sec, 2, 10, QChar('0'));
+}
+
 int timeMsColumnWidth(int time_prec)
 {
 	switch (static_cast<quickevent::core::og::TimeMeasurementPrecision>(time_prec)) {
@@ -54,6 +67,20 @@ void registerReportFunctions()
 		if(isEmptyValue(v))
 			return QString();
 		return TimeMs(v.toInt()).toString(quickevent::core::og::TimeMeasurementPrecision::Second);
+	});
+	// msec since midnight as h:mm:ss
+	XmlReportDocument::registerFormatter("hhmmss", [](const QVariant &v, const QString &) -> QVariant {
+		if(isEmptyValue(v))
+			return QString();
+		return msecToHhmmss(v.toLongLong());
+	});
+	// SI card time in msec as h:mm:ss, missing time is printed as --:--:--
+	XmlReportDocument::registerFormatter("siTime", [](const QVariant &v, const QString &) -> QVariant {
+		constexpr qint64 SI_NO_TIME_MSEC = 0xeeee * 1000;
+		qint64 msec = v.toLongLong();
+		if(msec == SI_NO_TIME_MSEC)
+			return QStringLiteral("--:--:--");
+		return msecToHhmmss(msec);
 	});
 	// time in msec as mm.ss or run status for special time values
 	XmlReportDocument::registerFormatter("ogTimeStatus", [](const QVariant &v, const QString &) -> QVariant {
