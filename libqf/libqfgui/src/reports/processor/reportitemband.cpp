@@ -203,7 +203,7 @@ void ReportItemBand::createChildItemsFromData()
 				QString ret = mod->dataByIndex(it_det->currentIndex(), i).toString();
 				return ret;
 			};
-			it_para->setGetTextCppFunction(fn);
+			it_para->setGetTextFunction(fn);
 			it_det->addItem(it_para);
 		}
 	}

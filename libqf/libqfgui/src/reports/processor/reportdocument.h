@@ -1,23 +1,29 @@
 #ifndef QF_GUI_REPORTS_REPORTDOCUMENT_H
 #define QF_GUI_REPORTS_REPORTDOCUMENT_H
 
-#include <qf/core/exception.h>
+#include "../../guiglobal.h"
 
-#include <QQmlComponent>
-#include <QCoreApplication>
+#include <QUrl>
+#include <QVariantMap>
 
 namespace qf {
 namespace gui {
 namespace reports {
 
-class ReportDocument : public QQmlComponent
+class ReportItemReport;
+
+/// Report definition, which can instantiate report item tree.
+class QFGUI_DECL_EXPORT ReportDocument
 {
-private:
-	typedef QQmlComponent Super;
 public:
-	explicit ReportDocument(QQmlEngine *engine, QObject *parent = nullptr);
-public:
-	void setFileName(const QString &fname);
+	virtual ~ReportDocument() = default;
+
+	/// Report location, relative paths in report are resolved against it.
+	virtual QUrl url() const = 0;
+	/// Creates new report item tree, caller takes ownership.
+	/// Report root properties are set to \a init_properties values.
+	/// Returns nullptr on error.
+	virtual ReportItemReport* createReport(const QVariantMap &init_properties) = 0;
 };
 
 }}}

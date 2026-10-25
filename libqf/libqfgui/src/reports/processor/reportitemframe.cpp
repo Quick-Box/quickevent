@@ -56,9 +56,11 @@ void ReportItemFrame::setBorder(style::Pen *b)
 	}
 }
 
-void ReportItemFrame::componentComplete()
+void ReportItemFrame::complete()
 {
 	initDesignedRect();
+	for(auto *it : std::as_const(m_items))
+		it->complete();
 }
 
 void ReportItemFrame::initDesignedRect()
@@ -150,16 +152,6 @@ QString ReportItemFrame::toString(int indent, int indent_offset)
 	return ret;
 }
 
-QQmlListProperty<ReportItem> ReportItemFrame::items()
-{
-	return QQmlListProperty<ReportItem>(this, nullptr,
-										ReportItemFrame::addItemFunction,
-										ReportItemFrame::countItemsFunction,
-										ReportItemFrame::itemAtFunction,
-										ReportItemFrame::removeAllItemsFunction
-										);
-}
-
 void ReportItemFrame::insertItem(int ix, QObject *item_object)
 {
 	auto *item = qobject_cast<ReportItem *>(item_object);
@@ -177,32 +169,10 @@ void ReportItemFrame::addItem(QObject *item_object)
 	insertItem(m_items.count(), item_object);
 }
 
-void ReportItemFrame::addItemFunction(QQmlListProperty<ReportItem> *list_property, ReportItem *item)
+void ReportItemFrame::removeAllItems()
 {
-	if (item) {
-		auto *that = static_cast<ReportItemFrame*>(list_property->object);
-		item->setParent(that);
-		that->m_items << item;
-	}
-}
-
-ReportItem *ReportItemFrame::itemAtFunction(QQmlListProperty<ReportItem> *list_property, WidgetIndexType index)
-{
-	auto *that = static_cast<ReportItemFrame*>(list_property->object);
-	return that->m_items.value(index);
-}
-
-void ReportItemFrame::removeAllItemsFunction(QQmlListProperty<ReportItem> *list_property)
-{
-	auto *that = static_cast<ReportItemFrame*>(list_property->object);
-	qDeleteAll(that->m_items);
-	that->m_items.clear();
-}
-
-ReportItemFrame::WidgetIndexType ReportItemFrame::countItemsFunction(QQmlListProperty<ReportItem> *list_property)
-{
-	auto *that = static_cast<ReportItemFrame*>(list_property->object);
-	return that->itemCount();
+	qDeleteAll(m_items);
+	m_items.clear();
 }
 
 int ReportItemFrame::itemCount() const

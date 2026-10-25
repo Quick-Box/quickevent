@@ -64,7 +64,7 @@ add_library(libqfgui SHARED
     src/menubar.cpp
     src/progressbar.cpp
     src/reports/processor/banddatamodel.cpp
-    src/reports/processor/reportdocument.cpp
+    src/reports/processor/qmlreportdocument.cpp
     src/reports/processor/reportitem.cpp
     src/reports/processor/reportitem_html.cpp
     src/reports/processor/reportitemband.cpp

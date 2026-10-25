@@ -1,4 +1,5 @@
 #include "qfqmlreports_plugin.h"
+#include "reportitemextensions.h"
 
 #include <qf/gui/reports/processor/reportitempara.h>
 #include <qf/gui/reports/processor/reportitemimage.h>
@@ -21,16 +22,16 @@ void QFQmlReportPlugin::registerTypes(const char *uri)
 	Q_ASSERT(uri == QLatin1String("qf.qmlreports"));
 
 	qmlRegisterType<qf::gui::reports::ReportItem>(uri, 1, 0, "Item");
-	qmlRegisterType<qf::gui::reports::ReportItemReport>(uri, 1, 0, "Report");
-	qmlRegisterType<qf::gui::reports::ReportItemFrame>(uri, 1, 0, "Frame");
-	qmlRegisterType<qf::gui::reports::ReportItemFrame>(uri, 1, 0, "Space");
+	qmlRegisterExtendedType<qf::gui::reports::ReportItemReport, FrameQmlExtension>(uri, 1, 0, "Report");
+	qmlRegisterExtendedType<qf::gui::reports::ReportItemFrame, FrameQmlExtension>(uri, 1, 0, "Frame");
+	qmlRegisterExtendedType<qf::gui::reports::ReportItemFrame, FrameQmlExtension>(uri, 1, 0, "Space");
 	qmlRegisterType<qf::gui::reports::BandDataModel>(uri, 1, 0, "DataModel");
-	qmlRegisterType<qf::gui::reports::ReportItemBand>(uri, 1, 0, "Band");
-	qmlRegisterType<qf::gui::reports::ReportItemDetail>(uri, 1, 0, "Detail");
-	qmlRegisterType<qf::gui::reports::ReportItemPara>(uri, 1, 0, "Para");
-	qmlRegisterType<qf::gui::reports::ReportItemImage>(uri, 1, 0, "Image");
+	qmlRegisterExtendedType<qf::gui::reports::ReportItemBand, FrameQmlExtension>(uri, 1, 0, "Band");
+	qmlRegisterExtendedType<qf::gui::reports::ReportItemDetail, FrameQmlExtension>(uri, 1, 0, "Detail");
+	qmlRegisterExtendedType<qf::gui::reports::ReportItemPara, ParaQmlExtension>(uri, 1, 0, "Para");
+	qmlRegisterExtendedType<qf::gui::reports::ReportItemImage, ImageQmlExtension>(uri, 1, 0, "Image");
 	qmlRegisterType<qf::gui::reports::ReportItemBreak>(uri, 1, 0, "Break");
-	qmlRegisterType<qf::gui::reports::style::Sheet>(uri, 1, 0, "StyleSheet");
+	qmlRegisterExtendedType<qf::gui::reports::style::Sheet, SheetQmlExtension>(uri, 1, 0, "StyleSheet");
 	qmlRegisterType<qf::gui::reports::style::Color>(uri, 1, 0, "Color");
 	qmlRegisterType<qf::gui::reports::style::Pen>(uri, 1, 0, "Pen");
 	qmlRegisterType<qf::gui::reports::style::Brush>(uri, 1, 0, "Brush");

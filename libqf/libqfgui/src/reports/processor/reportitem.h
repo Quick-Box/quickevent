@@ -23,8 +23,6 @@
 #include <QRectF>
 #include <QTextLayout>
 #include <QPicture>
-#include <QQmlParserStatus>
-#include <QQmlListProperty>
 
 class QDomElement;
 class QDomText;
@@ -41,10 +39,9 @@ class ReportItemBand;
 class ReportItemMetaPaintFrame;
 
 //! Base class of report elements.
-class QFGUI_DECL_EXPORT ReportItem : public QObject, public QQmlParserStatus
+class QFGUI_DECL_EXPORT ReportItem : public QObject
 {
 	Q_OBJECT
-	Q_INTERFACES(QQmlParserStatus)
 	/// Pokud ma frame keepAll atribut a dvakrat za sebou se nevytiskne, znamena to, ze se nevytiskne uz nikdy.
 	Q_PROPERTY(bool keepAll READ isKeepAll WRITE setKeepAll)
 	Q_PROPERTY(bool keepWithPrev READ isKeepWithPrev WRITE setKeepWithPrev)
@@ -364,13 +361,12 @@ public:
 
 	virtual QString toString(int indent = 2, int indent_offset = 0);
 
+	/// Called once, when the item tree is built and item properties are set.
+	virtual void complete() {}
 protected:
 	style::Text* effectiveTextStyle();
 
 	void createHtmlExportAttributes(HTMLElement &out) const;
-
-	void classBegin() override;
-	void componentComplete() override;
 public:
 	Rect designedRect;
 protected:

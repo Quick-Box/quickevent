@@ -20,8 +20,6 @@ class QFGUI_DECL_EXPORT ReportItemFrame : public ReportItem
 private:
 	typedef ReportItem Super;
 public:
-	Q_CLASSINFO("DefaultProperty", "items")
-	Q_PROPERTY(QQmlListProperty<qf::gui::reports::ReportItem> items READ items)
 	Q_PROPERTY(qreal hinset READ hinset WRITE setHinset NOTIFY hinsetChanged)
 	Q_PROPERTY(qreal vinset READ vinset WRITE setVinset NOTIFY vinsetChanged)
 	//Q_PROPERTY(qreal inset READ inset WRITE setInset NOTIFY insetChanged)
@@ -173,9 +171,9 @@ protected:
 	}
 
 	void initDesignedRect();
-
-	void componentComplete() override;
 public:
+	void complete() override;
+
 	PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
 	PrintResult printHtml(HTMLElement &out) override;
 
@@ -184,25 +182,14 @@ public:
 
 	Q_INVOKABLE void insertItem(int ix, QObject *item_object);
 	Q_INVOKABLE void addItem(QObject *item_object);
+	int itemCount() const;
+	ReportItem* itemAt(int index);
+	void removeAllItems();
 
 	QString toString(int indent = 2, int indent_offset = 0) override;
-private:
-#if QT_VERSION_MAJOR < 6
-	using WidgetIndexType = int;
-#else
-	using WidgetIndexType = long long;
-#endif
-	static void addItemFunction(QQmlListProperty<ReportItem> *list_property, ReportItem *item);
-	static ReportItem* itemAtFunction(QQmlListProperty<ReportItem> *list_property, WidgetIndexType index);
-	static void removeAllItemsFunction(QQmlListProperty<ReportItem> *list_property);
-	static WidgetIndexType countItemsFunction(QQmlListProperty<ReportItem> *list_property);
 protected:
 	virtual int itemsToPrintCount() {return itemCount();}
 	virtual ReportItem* itemToPrintAt(int ix) {return itemAt(ix);}
-private:
-	QQmlListProperty<ReportItem> items();
-	int itemCount() const;
-	ReportItem* itemAt(int index);
 protected:
 	//! children, kterym se ma zacit pri tisku
 	int m_indexToPrint;

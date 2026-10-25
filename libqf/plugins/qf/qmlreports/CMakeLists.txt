@@ -15,6 +15,8 @@ qt_add_qml_module(qfqmlreportsplugin
 target_sources(qfqmlreportsplugin PRIVATE
 	src/qfqmlreports_plugin.cpp
 	src/qfqmlreports_plugin.h
+	src/reportitemextensions.cpp
+	src/reportitemextensions.h
 )
 
 target_link_libraries(qfqmlreportsplugin PUBLIC

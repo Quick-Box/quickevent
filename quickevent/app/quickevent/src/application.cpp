@@ -1,11 +1,12 @@
 #include "application.h"
 #include "appclioptions.h"
 
-#include <qf/gui/reports/processor/reportprocessor.h>
+#include <qf/gui/reports/processor/qmlreportdocument.h>
 #include <qf/gui/style.h>
 
 #include <quickevent/core/og/timems.h>
 
+#include <QFont>
 #include <QQmlEngine>
 #include <QJSValue>
 
@@ -22,7 +23,7 @@ Application::Application(int &argc, char **argv, AppCliOptions *cli_opts)
 	: Super(argc, argv)
 	, m_cliOptions(cli_opts)
 {
-	qf::gui::reports::ReportProcessor::addQmlEngineInitializer([](QQmlEngine *engine) {
+	qf::gui::reports::QmlReportDocument::addQmlEngineInitializer([](QQmlEngine *engine) {
 		engine->globalObject().setProperty(
 			QStringLiteral("ogDefaultTimeMeasurementPrecision"),
 			static_cast<int>(quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision()));
@@ -72,7 +73,6 @@ Application::Application(int &argc, char **argv, AppCliOptions *cli_opts)
 	SetDllDirectory(reinterpret_cast<LPCWSTR>(plugin_path.utf16()));
 #endif
 #endif
-	//qf::gui::reports::ReportProcessor::qmlEngineImportPaths().append(plugin_path);
 }
 
 Application *Application::instance(bool must_exist)
