@@ -1169,7 +1169,6 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 		"ResultList",
 		QVariantMap{
 			{"xmlns", "http://www.orienteering.org/datastandard/3.0"},
-			{"xmlns:qe", "http://quickevent.cz/datastandard/extensions"},
 			{"status", "Complete"},
 			{"iofVersion", "3.0"},
 			{"creator", QStringLiteral("QuickEvent %1").arg(QCoreApplication::applicationVersion())},
@@ -1223,14 +1222,13 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 		QVariantList class_result{"ClassResult"};
 		const qf::core::utils::TreeTableRow tt1_row = tt1.row(i);
 		const QString result_list_mode = tt1_row.value(QStringLiteral("classdefs.resultListMode")).toString();
-		QVariantList class_el{"Class",
-			QVariantMap{{"resultListMode", result_list_mode.isEmpty()? QStringLiteral("Default"): result_list_mode}},
-			QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))},
-			QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name")) },
-		};
-		if(result_list_mode == QLatin1String("UnorderedNoTimes"))
-			class_el.insert(class_el.count(), QVariantList{"Extensions", QVariantList{"qe:TimePresentation", "false"}});
-		class_result.insert(class_result.count(), class_el);
+		class_result.insert(class_result.count(),
+			QVariantList{"Class",
+				QVariantMap{{"resultListMode", result_list_mode.isEmpty()? QStringLiteral("Default"): result_list_mode}},
+				QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))},
+				QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name")) },
+			}
+		);
 		class_result.insert(class_result.count(),
 			QVariantList{"Course",
 				QVariantList{"Length", tt1_row.value(QStringLiteral("courses.length")) },
