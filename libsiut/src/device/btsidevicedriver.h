@@ -20,6 +20,7 @@
 #include <QLowEnergyService>
 #include <QObject>
 #include <QSet>
+#include <QTimer>
 #include <QVariantMap>
 #include <qbluetoothdeviceinfo.h>
 
@@ -94,6 +95,11 @@ private:
 	void handleCardStateMessage(const QByteArray &message);
 	void handleCardDataMessage(const QByteArray &message);
 	void requestCardReadout();
+	void onCardReadoutTimeout();
+
+	// Station feedback (LED/buzzer), reader does not play it in readout mode by itself
+	enum class Feedback : quint8 { Ok = 1, Error = 2 };
+	void sendFeedback(Feedback feedback);
 
 	// SI card building
 	SICard buildSICard(const QByteArray &payload);
@@ -122,6 +128,7 @@ private:
 	bool m_cardStateSubscribed = false;
 	QSet<QLowEnergyService *> m_pendingServices;
 	int m_lastStationNumber = 0;
+	QTimer *m_cardReadoutTimer = nullptr;
 
 	// Reassemblers — one per characteristic
 	BtSiReassembler m_cardStateReassembler;
