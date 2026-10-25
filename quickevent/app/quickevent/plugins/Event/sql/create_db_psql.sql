@@ -96,6 +96,8 @@ COMMENT ON COLUMN {{eventId}}.classdefs.vacantsAfter IS 'place n vacants gap aft
 COMMENT ON COLUMN {{eventId}}.classdefs.resultsCount IS 'number of finished competitors, when the results were printed';
 COMMENT ON COLUMN {{eventId}}.classdefs.resultsPrintTS IS 'when results for this class were printed last time';
 COMMENT ON COLUMN {{eventId}}.classdefs.drawLock IS 'The draw of this class is prohibited';
+COMMENT ON COLUMN {{eventId}}.classdefs.startMode IS 'IOF XML start mode: StartList, MassStart, PursuitStart, WaveStart, FreeStart';
+COMMENT ON COLUMN {{eventId}}.classdefs.resultListMode IS 'IOF XML result list mode: Default, Unordered, UnorderedNoTimes';
 ;
 -- create table: {{eventId}}.competitors;
 CREATE TABLE {{eventId}}.competitors (
@@ -318,4 +320,4 @@ CREATE TABLE {{eventId}}.reports (
 ;
 -- insert into table: {{eventId}}.config;
 INSERT INTO {{eventId}}.config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30800', 'int');
+('db.version', 'Data version', '30900', 'int');

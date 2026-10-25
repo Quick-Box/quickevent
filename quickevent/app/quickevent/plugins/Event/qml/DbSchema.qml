@@ -131,7 +131,17 @@ Schema {
 					comment: 'The draw of this class is prohibited'
 				},
 				Field { name: 'relayStartNumber'; type: Int { } },
-				Field { name: 'relayLegCount'; type: Int { } }
+				Field { name: 'relayLegCount'; type: Int { } },
+				Field { name: 'startMode'; type: String { }
+					defaultValue: 'StartList'
+					notNull: true
+					comment: 'IOF XML start mode: StartList, MassStart, PursuitStart, WaveStart, FreeStart'
+				},
+				Field { name: 'resultListMode'; type: String { }
+					defaultValue: 'Default'
+					notNull: true
+					comment: 'IOF XML result list mode: Default, Unordered, UnorderedNoTimes'
+				}
 			]
 			indexes: [
 				Index {fields: ['stageId']},
