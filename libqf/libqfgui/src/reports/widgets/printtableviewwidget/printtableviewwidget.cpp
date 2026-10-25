@@ -67,7 +67,7 @@ void PrintTableViewWidget::chooseReporFileName()
 		if(report_dir.isEmpty())
 			report_dir = qfu::FileUtils::homeDir();
 	}
-	QString fn = QFileDialog::getOpenFileName(this, tr("Open report file"), report_dir, tr("Reports (*.xml *.qml)"));
+	QString fn = QFileDialog::getOpenFileName(this, tr("Open report file"), report_dir, tr("Reports (*.xml)"));
 	if(!fn.isEmpty()) {
 		recently_used_report_dir = qfu::FileUtils::dir(fn);
 		ui->edReportFileName->setText(fn);

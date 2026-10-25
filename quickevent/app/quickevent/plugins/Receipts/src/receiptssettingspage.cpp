@@ -607,14 +607,7 @@ void ReceiptsSettingsPage::loadReceptList()
 	qfLogFuncFrame();
 	ui->cbxReceipt->clear();
 	auto *receipts_plugin = qf::gui::framework::getPlugin<ReceiptsPlugin>();
-	auto report_files = receipts_plugin->listReportFiles("receipts", QStringLiteral("xml"));
-	// custom receipts can be still defined in QML
-	for(const auto &i : receipts_plugin->listReportFiles("receipts", QStringLiteral("qml"))) {
-		auto has_xml = std::any_of(report_files.cbegin(), report_files.cend(), [&i](const auto &xml) { return xml.reportName == i.reportName; });
-		if(!has_xml)
-			report_files << i;
-	}
-	for(const auto &i : report_files) {
+	for(const auto &i : receipts_plugin->listReportFiles("receipts")) {
 		qfDebug() << i.reportName << i.reportFilePath;
 		ui->cbxReceipt->addItem(i.reportName, i.reportFilePath);
 	}

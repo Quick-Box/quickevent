@@ -12,7 +12,7 @@ using quickevent::core::og::TimeMs;
 
 namespace {
 
-// translations are shared with former ogtime.js
+// translation context is shared with former ogtime.js, which had the same texts
 QString trOgTime(const char *text)
 {
 	return QCoreApplication::translate("ogtime", text);
