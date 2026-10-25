@@ -111,6 +111,7 @@ public:
 	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
 	{
 		auto *cbx = new QComboBox(parent);
+		cbx->setAutoFillBackground(true);
 		for(const auto &[value, text] : m_items)
 			cbx->addItem(text, value);
 		return cbx;
