@@ -194,13 +194,13 @@ Report {
 					htmlExportAttributes: {"lpt_textWidth": "%", "lpt_textAlign": "right"}
 					width: "%"
 					textHAlign: Frame.AlignRight
-					text: OGTime.msecToString_mmss(dc.data(dc.currentIndex, "stpTimeMs"));
+					text: OGTime.msecToString_mmss(dc.data(dc.currentIndex, "stpTimeMs"), OGTime.TimeMeasurementPrecision.Second);
 				}
 				Para {
 					htmlExportAttributes: {"lpt_textWidth": "%", "lpt_textAlign": "right"}
 					width: "%"
 					textHAlign: Frame.AlignRight
-					text: OGTime.msecToString_mmss(dc.data(dc.currentIndex, "lapTimeMs"));
+					text: OGTime.msecToString_mmss(dc.data(dc.currentIndex, "lapTimeMs"), OGTime.TimeMeasurementPrecision.Second);
 				}
 			}
 			Frame {

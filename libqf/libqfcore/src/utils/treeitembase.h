@@ -17,18 +17,18 @@ namespace qf {
 namespace core {
 namespace utils {
 	
-class QFCORE_DECL_EXPORT TreeItemPath : public QList<int>
+class TreeItemPath : public QList<int>
 {
 	public:
-		static void ensureMetatypeRegistered();
-		static const TreeItemPath& invalidPath();
-		static const TreeItemPath& rootPath();
+		static QFCORE_DECL_EXPORT void ensureMetatypeRegistered();
+		static QFCORE_DECL_EXPORT const TreeItemPath& invalidPath();
+		static QFCORE_DECL_EXPORT const TreeItemPath& rootPath();
 	public:
-		int length() const;
+		QFCORE_DECL_EXPORT int length() const;
 		int count() const {return length();}
-		bool isValid() const;
-		QString toString() const;
-		static TreeItemPath fromString(const QString &path_str);
+		QFCORE_DECL_EXPORT bool isValid() const;
+		QFCORE_DECL_EXPORT QString toString() const;
+		static QFCORE_DECL_EXPORT TreeItemPath fromString(const QString &path_str);
 	public:
 		/// invalid path
 		/**

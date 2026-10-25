@@ -32,6 +32,7 @@ private:
 	void onBtProcessChangesClicked();
 	void onBtPasteSetupLinkClicked();
 	void onBtTestConnectionClicked();
+	void onBtUploadRentalCardsClicked();
 	void onBtRefreshEventImageClicked();
 	void onBtOpenEventWebsiteClicked();
 	void updateTestConnectionState();
@@ -41,9 +42,9 @@ private:
 	QString defaultReceiptEventLink() const;
 	OFeedClient* service();
 	bool saveSettings();
+	bool acceptDialogDone(int result) override;
 private:
 	Ui::OFeedClientWidget *ui;
-	bool acceptDialogDone(int result) override;
 	bool m_isTestConnectionRunning = false;
 	bool m_isImageRefreshRunning = false;
 	QString m_lastAutoReceiptEventLink;

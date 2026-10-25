@@ -6,11 +6,11 @@
 
 #include <plugins/Runs/src/runsplugin.h>
 
-#include <qabstractsocket.h>
 #include <quickevent/core/si/checkedcard.h>
 
 #include <qf/core/log.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 
@@ -48,11 +48,13 @@ void RadioSenderService::run()
 void RadioSenderService::stop()
 {
 	m_server->close();
-	for (QTcpSocket *socket : m_clients.keys()) {
+	// disconnectFromHost() may emit disconnected() synchronously, which removes the socket from m_clients
+	const auto clients = std::exchange(m_clients, {});
+	for (auto it = clients.keyBegin(); it != clients.keyEnd(); ++it) {
+		QTcpSocket *socket = *it;
 		socket->disconnectFromHost();
 		socket->deleteLater();
 	}
-	m_clients.clear();
 	Super::stop();
 }
 
@@ -188,7 +190,7 @@ void RadioSenderService::processLine(const QByteArray &line)
 		record[field] = {};
 	}
 
-	qf::gui::framework::Application::instance()->updateDbRecord( QStringLiteral("runs"), run_id, record, this);
+	qf::gui::framework::Application::instance()->qxSql()->updateRecord( QStringLiteral("runs"), run_id, record, this);
 	getPlugin<Runs::RunsPlugin>()->computeStageTime(run_id);
 }
 

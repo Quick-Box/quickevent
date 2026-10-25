@@ -48,6 +48,7 @@ QString QxRecChng::recopToString(RecOp op)
 	case RecOp::Update: return "Update";
 	case RecOp::Delete: return "Delete";
 	}
+	return QString();
 }
 
 }

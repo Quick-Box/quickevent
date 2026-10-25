@@ -6,11 +6,11 @@
 #include "relaysplugin.h"
 #include "printrelayawardsoptionsdialogwidget.h"
 #include "partwidget.h"
+#include "relaystableitemdelegate.h"
 
 #include <awarddesigner/awarddesign.h>
 #include <awarddesigner/awardtypstrenderer.h>
 #include <awarddesigner/awardreportviewwidget.h>
-#include "relaystableitemdelegate.h"
 
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Runs/src/runsplugin.h>
@@ -24,8 +24,10 @@
 #include <qf/gui/dialogs/getiteminputdialog.h>
 #include <qf/gui/dialogs/filedialog.h>
 #include <qf/gui/dialogs/messagebox.h>
+#include <qf/gui/framework/cursoroverrider.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
+#include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/toolbar.h>
 #include <qf/gui/combobox.h>
 #include <qf/gui/action.h>
@@ -40,6 +42,7 @@
 #include <qf/core/assert.h>
 #include <qf/core/utils/treetable.h>
 #include <qf/core/utils/csvreader.h>
+#include <QApplication>
 #include <QCheckBox>
 #include <QInputDialog>
 #include <QLabel>
@@ -135,6 +138,7 @@ void RelaysWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		m_cbxClasses->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
 		m_cbxClasses->setMinimumWidth(fontMetrics().horizontalAdvance('X') * 15);
 		m_cbxClasses->setMaxVisibleItems(100);
+		m_cbxClasses->setMultiColumnPopup(true);
 		m_cbxClasses->setReferencedTable("classes");
 		m_cbxClasses->setReferencedField("id");
 		m_cbxClasses->setReferencedCaptionField("name");
@@ -610,26 +614,9 @@ void RelaysWidget::print_results_awards()
 	int num_places = s_opts.value("numPlaces", 3).toInt();
 	auto td = getPlugin<RelaysPlugin>()->nLegsResultsTable(s_opts.value("classFilter").toString(), 999, num_places, true);
 
-	static const QLatin1String DB_PREFIX("db:");
-
-	if(rep_path.startsWith(DB_PREFIX)) {
-		QString design_name = rep_path.mid(DB_PREFIX.size());
-		AwardDesigner::Design design = AwardDesigner::Design::loadFromDb(design_name);
-		if(!design.isValid()) {
-			qfWarning() << "Award design not found in DB:" << design_name;
-			return;
-		}
-		QString typ = design.toTypst();
-		QStringList images = design.imageFiles();
-		AwardTypstRenderer renderer(typ, images);
-		auto pages = renderer.collectPages(td, getPlugin<EventPlugin>()->eventConfig());
-		AwardReportViewWidget::showReport(typ, images, pages, this);
-		return;
-	}
 	if(rep_path.endsWith(QStringLiteral(".typ"))) {
-		QString typ;
-		QStringList images;
-		if(!AwardDesigner::loadTypstTemplate(getPlugin<RelaysPlugin>()->findReportFile(rep_path), typ, images)) {
+		auto [typ, images] = AwardDesigner::loadTypstTemplate(qf::gui::framework::Plugin::reportFileCache()->localReportFile(rep_path));
+		if(typ.isEmpty()) {
 			qfWarning() << "Cannot load Typst award template:" << rep_path;
 			return;
 		}
@@ -641,9 +628,11 @@ void RelaysWidget::print_results_awards()
 	qfWarning() << "Unsupported award template:" << rep_path;
 }
 
-void RelaysWidget::save_xml_file(QString str, QString fn) {
+void RelaysWidget::save_xml_file(const std::function<QString()> &generate_xml, QString fn) {
 	qfLogFuncFrame();
 	QString ext = ".xml";
+	// Ask for the file name before the XML is generated. The generation blocks the GUI thread for seconds
+	// and the native dialog opened right after that is sometimes never shown on Windows, see #1253
 	fn = qf::gui::dialogs::FileDialog::getSaveFileName(this, tr("Save as %1").arg(ext.mid(1).toUpper()), fn, '*' + ext);
 	if(!fn.isEmpty()) {
 		if(!fn.endsWith(ext, Qt::CaseInsensitive))
@@ -651,6 +640,12 @@ void RelaysWidget::save_xml_file(QString str, QString fn) {
 	}
 	if(fn.isEmpty())
 		return;
+	QString str;
+	{
+		qf::gui::framework::CursorOverrider cov(Qt::WaitCursor);
+		QApplication::processEvents(QEventLoop::ExcludeUserInputEvents); // paint the wait cursor before the blocking export
+		str = generate_xml();
+	}
 	QFile out_file(fn);
 	if(!out_file.open(QIODevice::WriteOnly)) {
 		qfError() << "Cannot open file" << out_file.fileName() << "for writing.";
@@ -664,12 +659,12 @@ void RelaysWidget::save_xml_file(QString str, QString fn) {
 
 void RelaysWidget::export_start_list_iofxml3() {
 	QString fn = getPlugin<EventPlugin>()->startListIofXml3FileName(std::nullopt);
-	save_xml_file(getPlugin<RelaysPlugin>()->startListIofXml30(), fn);
+	save_xml_file([]() { return getPlugin<RelaysPlugin>()->startListIofXml30(); }, fn);
 }
 
 void RelaysWidget::export_results_iofxml3() {
 	QString fn = getPlugin<EventPlugin>()->resultsIofXml3FileName(std::nullopt);
-	save_xml_file(getPlugin<RelaysPlugin>()->resultsIofXml30(), fn);
+	save_xml_file([]() { return getPlugin<RelaysPlugin>()->resultsIofXml30(); }, fn);
 }
 
 void RelaysWidget::relays_importBibs() {

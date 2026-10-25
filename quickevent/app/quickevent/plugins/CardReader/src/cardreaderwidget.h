@@ -69,7 +69,7 @@ public:
 
 private:
 	void onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
-	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
+	// void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 	void appendLog(NecroLog::Level level, const QString &msg);
 	void processDriverInfo(NecroLog::Level level, const QString &msg);
 	void logDriverRawData(const QByteArray &data);
@@ -102,6 +102,7 @@ private:
 	void processReadCard(const quickevent::core::si::ReadCard &read_card);
 
 	void updateTableView(int card_id);
+	void updateStatistics();
 
 	void onCustomContextMenuRequest(const QPoint &pos);
 	void showSelectedReceipt();

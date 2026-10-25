@@ -13,19 +13,23 @@
 
 #include "services/serviceswidget.h"
 #include "services/emmaclient.h"
-#include "services/qx/qxclientservice.h"
+#include "services/qx/qxeventservice.h"
 #include "services/punchingtest/punchingtestservice.h"
 #include "services/radiosender/radiosenderservice.h"
 
 #include <plugins/Core/src/widgets/settingsdialog.h>
 #include <plugins/Event/src/services/oresultsclient.h>
 #include <plugins/Core/src/coreplugin.h>
+#include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
+#include <qhashfunctions.h>
 #include <quickevent/core/og/timems.h>
 
 #include <qf/gui/framework/dockwidget.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/application.h>
+#include <qf/gui/framework/plugin.h>
+#include <qf/gui/framework/reportfilecache.h>
 #include <qf/gui/dialogs/dialog.h>
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/gui/dialogs/filedialog.h>
@@ -38,12 +42,12 @@
 
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/querybuilder.h>
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/utils/fileutils.h>
-#include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
 #include <QInputDialog>
 #include <QDate>
@@ -63,6 +67,8 @@
 #include <QJsonDocument>
 #include <QTimer>
 #include <QRandomGenerator>
+#include <QCryptographicHash>
+#include <QFileInfo>
 
 #include <regex>
 
@@ -125,6 +131,20 @@ QString eventNameToFileName(const QString &event_name)
 {
 	QString ret = singleFileStorageDir() + '/' + event_name + QBE_EXT;
 	return ret;
+}
+
+QString reportCacheId(const QString &event_name, EventPlugin::ConnectionType connection_type)
+{
+	if(connection_type == EventPlugin::ConnectionType::SingleFile) {
+		// events with the same name can exist in different directories
+		QString path = eventNameToFileName(event_name);
+#ifdef Q_OS_WIN
+		path = path.toLower();
+#endif
+		const auto hash = QCryptographicHash::hash(path.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
+		return event_name + '-' + QString::fromLatin1(hash);
+	}
+	return event_name;
 }
 
 QString fileNameToEventName(const QString &file_name)
@@ -198,7 +218,7 @@ EventPlugin::EventPlugin(QObject *parent)
 		setEventOpen(!event_name.isEmpty());
 	});
 	connect(this, &Event::EventPlugin::dbEventNotify, this, &Event::EventPlugin::onDbEventNotify, Qt::QueuedConnection);
-	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &EventPlugin::onRecChng);
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &EventPlugin::onRecChng);
 }
 
 EventPlugin::~EventPlugin() = default;
@@ -326,7 +346,7 @@ void EventPlugin::onInstalled()
 	connect(m_actImportEvent_qbe, &QAction::triggered, this, &EventPlugin::importEvent_qbe);
 
 	if(auto *sb = qobject_cast<Core::AppStatusBar*>(fwk->statusBar())) {
-		connect(this, &EventPlugin::eventDbNameChanged, sb, &Core::AppStatusBar::setEventName);
+		connect(this, &EventPlugin::eventDbNameChanged, sb, &Core::AppStatusBar::setEventDbName);
 		connect(this, &EventPlugin::currentStageIdChanged, sb, &Core::AppStatusBar::setStageNo);
 		connect(sb, &Core::AppStatusBar::stageClicked, this, &EventPlugin::setCurrentStage);
 	}
@@ -386,7 +406,7 @@ void EventPlugin::onInstalled()
 	auto *emma_client = new services::EmmaClient(this);
 	services::Service::addService(emma_client);
 
-	auto shvapi_client = new services::qx::QxClientService(this);
+	auto shvapi_client = new services::qx::QxEventService(this);
 	services::Service::addService(shvapi_client);
 
 	auto *radio_sender = new services::RadioSenderService(this);
@@ -622,7 +642,7 @@ void EventPlugin::onDbEvent(const QString &name, QSqlDriver::NotificationSource 
 						qfWarning() << "RecChng loopback detected, issuer:" << recchng.issuer;
 						return;
 					}
-					qf::gui::framework::Application::instance()->emitQxRecChng(recchng, this);
+					qf::gui::framework::Application::instance()->qxSql()->emitRecChng(recchng, this);
 					return;
 				}
 				qfMessage() << "emitting domain:" << domain << "data:" << data;
@@ -646,17 +666,38 @@ void EventPlugin::onRegistrationsDockVisibleChanged(bool on)
 void EventPlugin::repairStageStarts(const qf::core::sql::Connection &from_conn, const qf::core::sql::Connection &to_conn)
 {
 	qfs::Query to_q(to_conn);
+	// keys already present in the copied config table win
+	to_q.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (ckey) DO NOTHING");
+
 	qfs::Query from_q(from_conn);
-	from_q.exec("SELECT * FROM stages ORDER BY id");
+	from_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
 	while(from_q.next()) {
-		int ix = from_q.fieldIndex(QStringLiteral("startDate"));
+		int ix = from_q.fieldIndex(QStringLiteral("startDateTime"));
 		if(ix < 0)
 			break;
-		QDate d = from_q.value(ix).toDate();
-		QTime t = from_q.value("startTime").toTime();
-		QDateTime dt(d, t);
-		int id = from_q.value("id").toInt();
-		to_q.exec("UPDATE stages SET startDateTime=" QF_SARG(dt.toString(Qt::ISODate)) " WHERE id=" QF_IARG(id));
+		auto stage_id = from_q.value("id").toInt();
+		StageConfig stage_config;
+		stage_config.startDateTime = from_q.value(ix).toDateTime();
+		stage_config.drawingConfig = DrawingConfig::fromString(from_q.value("drawingConfig").toString());
+		stage_config.useAllMaps = from_q.value("useAllMaps").toBool();
+		auto make_key = [stage_id](const QString& key) {return QStringLiteral("stage.%1.%2").arg(stage_id).arg(key);};
+		auto exec_insert = [&to_q]() {
+			if(!to_q.exec()) {
+				qfError() << "Cannot store stage config:" << to_q.lastError().text();
+			}
+		};
+		to_q.bindValue(":key", make_key("startDateTime"));
+		to_q.bindValue(":value", stage_config.startDateTime);
+		to_q.bindValue(":type", "QDateTime");
+		exec_insert();
+		to_q.bindValue(":key", make_key("drawingConfig"));
+		to_q.bindValue(":value", qf::core::Utils::qvariantToJson(stage_config.drawingConfig.toVariantMap()));
+		to_q.bindValue(":type", "QString");
+		exec_insert();
+		to_q.bindValue(":key", make_key("useAllMaps"));
+		to_q.bindValue(":value", stage_config.useAllMaps);
+		to_q.bindValue(":type", "bool");
+		exec_insert();
 	}
 }
 
@@ -976,6 +1017,7 @@ bool EventPlugin::closeEvent()
 {
 	qfLogFuncFrame();
 	m_classNameCache.clear();
+	qf::gui::framework::Plugin::reportFileCache()->closeEventCache();
 	setEventDbName(QString());
 	setEventOpen(false);
 	return true;
@@ -1039,9 +1081,10 @@ bool EventPlugin::openEvent(const QString &_event_name)
 			break;
 		}
 	}
-	if(!eventDbName().isEmpty() && db_event_names.contains(eventDbName()) && !ok) // dialog canceled and event is already open => no change
+	if(!eventDbName().isEmpty() && db_event_names.contains(eventDbName()) && !ok) {
+		// dialog canceled and event is already open => no change
 		return true;
-
+	}
 	closeEvent();
 
 	if(ok) {
@@ -1086,7 +1129,7 @@ bool EventPlugin::openEvent(const QString &_event_name)
 		}
 	}
 	if(ok) {
-	    m_appDbConfig = AppDbConfig();
+		m_appDbConfig = AppDbConfig();
 		m_appDbConfig.load();
 		if(m_appDbConfig.dbVersion() < dbVersion()) {
 			qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
@@ -1103,6 +1146,7 @@ bool EventPlugin::openEvent(const QString &_event_name)
 	if(ok) {
 		connection_settings.setEventName(event_name);
 		setEventDbName(event_name);
+		qf::gui::framework::Plugin::reportFileCache()->openEventCache(reportCacheId(event_name, connection_type));
 		//emit reloadDataRequest();
 	}
 
@@ -1161,6 +1205,14 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 			rec.append(dest_rec.field("isRunning"));
 		}
 	}
+	// qxchanges.data_id (always runs.id) was replaced by foreign_table + foreign_id
+	const bool is_import_qxchanges_data_id = table_name == QLatin1String("qxchanges")
+			&& src_rec.contains("data_id") && !src_rec.contains("foreign_id")
+			&& dest_rec.contains("foreign_id") && dest_rec.contains("foreign_table");
+	if(is_import_qxchanges_data_id) {
+		rec.append(dest_rec.field("foreign_id"));
+		rec.append(dest_rec.field("foreign_table"));
+	}
 	auto *sqldrv = to_conn.driver();
 	QString qs = sqldrv->sqlStatement(QSqlDriver::InsertStatement, table_name, rec, true);
 	qfDebug() << qs;
@@ -1191,6 +1243,13 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 					// isRunning cannot be NULL, convert NULL to false during import
 					v = from_q.value(fld_name).toBool();
 				}
+			}
+			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_id")) {
+				v = from_q.value(QStringLiteral("data_id"));
+				v.convert(rec.field(i).metaType());
+			}
+			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_table")) {
+				v = from_q.value(QStringLiteral("data_id")).isNull()? QVariant(QMetaType(QMetaType::QString)): QVariant(QStringLiteral("runs"));
 			}
 			else {
 				v = from_q.value(fld_name);
@@ -1400,7 +1459,7 @@ bool EventPlugin::convertSqlEvent(const QString &from_event, const QString &to_e
 }
 
 QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection &exp_conn,
-                                     const QString &dest_schema_name)
+									 const QString &dest_schema_name)
 {
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	QString err_str;
@@ -1429,12 +1488,10 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 			err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
 			if(!err_str.isEmpty())
 				break;
-			if(table_name == QLatin1String("stages")) {
-				repairStageStarts(imp_conn, exp_conn);
-			}
 		}
 		if(!err_str.isEmpty())
 			break;
+		repairStageStarts(imp_conn, exp_conn);
 		transaction.commit();
 	} while(false);
 	return err_str;

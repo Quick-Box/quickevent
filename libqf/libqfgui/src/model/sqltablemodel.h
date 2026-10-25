@@ -10,12 +10,10 @@
 #include <QMap>
 #include <QSqlError>
 
-namespace qf {
-namespace gui {
-namespace sql {
-class Connection;
-}
-namespace model {
+namespace qf::core::sql { struct QxRecChng; }
+namespace qf::gui::sql { class Connection; }
+
+namespace qf::gui::model {
 
 class QFGUI_DECL_EXPORT SqlTableModel : public TableModel
 {
@@ -33,7 +31,7 @@ public:
 	QF_PROPERTY_BOOL_IMPL(i, I, ncludeJoinedTablesIdsToReloadRowQuery)
 
 public:
-	class QFCORE_DECL_EXPORT DbEnumCastProperties : public QVariantMap
+	class QFGUI_DECL_EXPORT DbEnumCastProperties : public QVariantMap
 	{
 		QF_VARIANTMAP_FIELD(QString, g, setG, roupName)
 		QF_VARIANTMAP_FIELD2(QString, c, setC, aptionFormat, QStringLiteral("{{caption}}"))
@@ -100,5 +98,5 @@ protected:
 	QMap<QString, QString> m_foreignKeyDependencies;
 };
 
-}}}
+}
 

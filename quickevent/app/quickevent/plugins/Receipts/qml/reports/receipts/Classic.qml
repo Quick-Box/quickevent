@@ -174,8 +174,11 @@ Report {
 						width: paraCheckTime.width
 						textHAlign: Frame.AlignRight
 						textFn: function() {
+							var finish_msec = bandCard.data("finishTimeMs");
+							if(!finish_msec)
+								return "--:--:--"; // finish not punched
 							var start00msec = bandCard.data("stageStartTimeMs");
-							return TimeExt.msecToString_hhmmss(start00msec + bandCard.data("finishTimeMs"));
+							return TimeExt.msecToString_hhmmss(start00msec + finish_msec);
 						}
 					}
 				}
@@ -202,7 +205,7 @@ Report {
 					Para {
 						textFn: function() {
 							var start = bandCard.data("startTimeMs");
-							return OGTime.msecToString_mmss(start)
+							return OGTime.msecToString_mmss(start, OGTime.TimeMeasurementPrecision.Second)
 						}
 					}
 					Para {
@@ -263,7 +266,7 @@ Report {
 					text: {
 						var msec = dc.data(dc.currentIndex, "stpTimeMs");
 						if(msec > 0)
-							return OGTime.msecToString_mmss(msec);
+							return OGTime.msecToString_mmss(msec, OGTime.TimeMeasurementPrecision.Second);
 						return qsTr("-----");
 					}
 				}
@@ -275,7 +278,7 @@ Report {
 					text: {
 						var msec = dc.data(dc.currentIndex, "lapTimeMs");
 						if(msec > 0)
-							return OGTime.msecToString_mmss(msec);
+							return OGTime.msecToString_mmss(msec, OGTime.TimeMeasurementPrecision.Second);
 						return qsTr("-----");
 					}
 				}
@@ -287,7 +290,7 @@ Report {
 					text: {
 						var msec = dc.data(dc.currentIndex, "lossMs");
 						if(msec > 0)
-							return "+" + OGTime.msecToString_mmss(msec);
+							return "+" + OGTime.msecToString_mmss(msec, OGTime.TimeMeasurementPrecision.Second);
 						return "";
 					}
 				}
@@ -300,7 +303,7 @@ Report {
 						var msec = dc.data(dc.currentIndex, "lapTimeMs");
 						var km = dc.data(dc.currentIndex, "distance") / 1000;
 						if(msec > 0 && km > 0) {
-							return "~" + OGTime.msecToString_mmss(msec / km);
+							return "~" + OGTime.msecToString_mmss(msec / km, OGTime.TimeMeasurementPrecision.Second);
 						}
 						return "";
 					}
@@ -379,7 +382,7 @@ Report {
 							//console.info(i, loss);
 							overall_loss += loss;
 						}
-						return qsTr("current overall loss: +") + OGTime.msecToString_mmss(overall_loss);
+						return qsTr("current overall loss: +") + OGTime.msecToString_mmss(overall_loss, OGTime.TimeMeasurementPrecision.Second);
 					}
 				}
 			}
@@ -406,7 +409,7 @@ Report {
 						var time = bandCard.data("timeMs");
 						var length = root.courseLength;
 						if(length > 0)
-							return OGTime.msecToString_mmss(((time / length) >> 0) * 1000) + "min/km";
+							return OGTime.msecToString_mmss(((time / length) >> 0) * 1000, OGTime.TimeMeasurementPrecision.Second) + "min/km";
 						return "";
 					}
 				}

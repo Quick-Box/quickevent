@@ -581,9 +581,8 @@ QVariantMap TreeTable::keyvals(int row_ix) const
 {
 	return rows().value(row_ix).toMap().value(KEY_KEYVALS).toMap();
 }
-
 namespace {
-inline QString line_indent(const QString &ind, int level)
+QString line_indent(const QString &ind, int level)
 {
 	QString s;
 	for(int i=0; i<level; i++) s += ind;

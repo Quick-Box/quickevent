@@ -4,6 +4,8 @@
 
 #include "partwidget.h"
 
+#include <functional>
+
 class QCheckBox;
 class RelaysTableItemDelegate;
 
@@ -59,6 +61,6 @@ private:
 	qf::gui::ForeignKeyComboBox *m_cbxClasses = nullptr;
 	RelaysTableItemDelegate *m_relaysTableItemDelegate = nullptr;
 
-	void save_xml_file(QString str, QString fn);
+	void save_xml_file(const std::function<QString()> &generate_xml, QString fn);
 };
 

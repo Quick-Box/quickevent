@@ -1,5 +1,4 @@
-#ifndef RUNSTABLEMODEL_H
-#define RUNSTABLEMODEL_H
+#pragma once
 
 #include <quickevent/gui/og/sqltablemodel.h>
 
@@ -54,7 +53,7 @@ public:
 	bool postRow(int row_no, bool throw_exc) override;
 
 	int stageId() const { return m_stageId; }
-	void load(int stage_id, int class_id, bool show_offrace);
+	void load(int stage_id, int class_id, bool show_offrace, bool only_on_track = false);
 
 	QStringList mimeTypes() const override;
 	QMimeData *mimeData(const QModelIndexList &indexes) const override;
@@ -74,4 +73,3 @@ private:
     int m_stageId = 1;
 };
 
-#endif // RUNSTABLEMODEL_H

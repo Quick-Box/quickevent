@@ -13,7 +13,10 @@ CircularTimerWidget::CircularTimerWidget(QWidget *parent)
 		m_just_fired = false;
 		update();
 	});
-	setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	QSizePolicy size_policy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	// keep the space when hidden, otherwise the row height jumps and shifts the widgets below
+	size_policy.setRetainSizeWhenHidden(true);
+	setSizePolicy(size_policy);
 }
 
 QSize CircularTimerWidget::sizeHint() const

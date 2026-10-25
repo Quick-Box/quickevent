@@ -17,6 +17,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QScrollBar>
+#include <QStyle>
 
 namespace qfm = qf::gui::model;
 
@@ -109,6 +110,16 @@ LogWidget::LogWidget(QWidget *parent)
 	ui->btCopyToClipboard->setIcon(qf::gui::Style::icon("copy"));
 	ui->btResizeColumns->setIcon(qf::gui::Style::icon("zoom_fitwidth"));
 	ui->btTableMenu->setIcon(qf::gui::Style::icon("menu"));
+	{
+		int icon_size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
+		for (auto *bt : {ui->btClearLog, ui->btCopyToClipboard, ui->btResizeColumns, ui->btTableMenu}) {
+			bt->setIconSize(QSize(icon_size, icon_size));
+		}
+	}
+	ui->label_2->setPixmap(qf::gui::Style::instance()->pixmap("find"));
+	ui->label_2->setProperty("class", "filterLabel");
+	ui->edFilter->setMinimumWidth(fontMetrics().horizontalAdvance('X') * 15);
+	ui->edFilter->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 	//setPersistentSettingsId();
 	ui->btCopyToClipboard->setDefaultAction(ui->tableView->copySelectionToClipboardAction());
 

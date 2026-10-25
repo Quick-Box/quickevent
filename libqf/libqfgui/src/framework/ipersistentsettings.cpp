@@ -5,7 +5,7 @@
 #include <QMetaMethod>
 #include <QString>
 
-using namespace qf::gui::framework;
+namespace qf::gui::framework {
 
 IPersistentSettings::IPersistentSettings(QObject *controlled_object) :
 	m_controlledObject(controlled_object)
@@ -39,7 +39,8 @@ QString IPersistentSettings::persistentSettingsPath()
 	return m_persistentSettingsPath;
 }
 
-static void callMethodRecursively(QObject *obj, const char *method_name)
+namespace {
+void callMethodRecursively(QObject *obj, const char *method_name)
 {
 	if(!obj)
 		return;
@@ -48,7 +49,7 @@ static void callMethodRecursively(QObject *obj, const char *method_name)
 		QMetaMethod mm = obj->metaObject()->method(ix);
 		mm.invoke(obj);
 	}
-	Q_FOREACH(auto *o, obj->children()) {
+	for (auto *o : obj->children()) {
 		//static int level = 0;
 		//level++;
 		//QString indent = QString(level, ' ');
@@ -56,6 +57,7 @@ static void callMethodRecursively(QObject *obj, const char *method_name)
 		callMethodRecursively(o, method_name);
 		//level--;
 	}
+}
 }
 
 void IPersistentSettings::loadPersistentSettingsRecursively()
@@ -103,28 +105,24 @@ QString IPersistentSettings::rawPersistentSettingsPath()
 	QString persistent_id = persistentSettingsId();
 	QStringList raw_path;
 	if(!persistent_id.isEmpty()) {
-		for(QObject *obj=m_controlledObject->parent(); obj!=nullptr; obj=obj->parent()) {
+		for(QObject* obj = m_controlledObject->parent(); obj != nullptr; obj = obj->parent()) {
 			auto *ps = dynamic_cast<IPersistentSettings*>(obj);
 			if(ps) {
 				QString pp = ps->rawPersistentSettingsPath();
-				if(!pp.isEmpty())
+				if(!pp.isEmpty()) {
 					raw_path.insert(0, pp);
-				//qfWarning() << "reading property 'persistentSettingsId' error" << obj << "casted to IPersistentSettings" << ps;
-				//qfWarning() << "\tcorrect value should be:" << parent_id;
+				}
 				break;
 			}
-							QVariant vid = obj->property("persistentSettingsId");
-				QString parent_id = vid.toString();
-				if(!parent_id.isEmpty()) {
-					raw_path.insert(0, parent_id);
-				}
-		
-			// reading property using QQmlProperty is crashing my app Qt 5.3.1 commit a83826dad0f62d7a96f5a6093240e4c8f7f2e06e
-			//QQmlProperty p(obj, "persistentSettingsId");
-			//QVariant v2 = p.read();
+			QVariant vid = obj->property("persistentSettingsId");
+			QString parent_id = vid.toString();
+			if(!parent_id.isEmpty()) {
+				raw_path.insert(0, parent_id);
+			}
 		}
 		raw_path.append(persistent_id);
 	}
 	return raw_path.join('/');
 }
 
+}

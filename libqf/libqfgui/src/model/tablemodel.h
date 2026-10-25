@@ -209,7 +209,7 @@ public:
 
 	static QColor contrastTextColor(const QColor &background_color);
 
-	void handleQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
+	void applyQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 protected:
 	virtual void checkColumns();
 	void createColumnsFromTableFields();

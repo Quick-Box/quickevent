@@ -140,19 +140,26 @@ void RunsTableItemDelegate::paintBackground(QPainter *painter, const QStyleOptio
 			//int table_row = v->toTableModelRowNo(index.row());
 			QString club = m->data(index.sibling(index.row(), RunsTableModel::Columns::col_registration), Qt::EditRole).toString().mid(0, 3).trimmed();
 			QString prev_club;
-			if(index.row() > 0) {
-				prev_start_ms = m->data(index.sibling(index.row() - 1, RunsTableModel::Columns::col_runs_startTimeMs), Qt::EditRole).value<quickevent::core::og::TimeMs>().msec();
-				prev_club = m->data(index.sibling(index.row() - 1, RunsTableModel::Columns::col_registration), Qt::EditRole).toString().mid(0, 3).trimmed();
+			// prev/next are meant in start time order, rows are reversed when sorted descending
+			bool is_desc = isStartTimeSortDescending();
+			int last_row = tm->rowCount() - 1;
+			int prev_row = is_desc ? index.row() + 1 : index.row() - 1;
+			int next_row = is_desc ? index.row() - 1 : index.row() + 1;
+			bool is_first = is_desc ? index.row() == last_row : index.row() == 0;
+			bool is_last = is_desc ? index.row() == 0 : index.row() == last_row;
+			if(!is_first) {
+				prev_start_ms = m->data(index.sibling(prev_row, RunsTableModel::Columns::col_runs_startTimeMs), Qt::EditRole).value<quickevent::core::og::TimeMs>().msec();
+				prev_club = m->data(index.sibling(prev_row, RunsTableModel::Columns::col_registration), Qt::EditRole).toString().mid(0, 3).trimmed();
 			}
-			if(index.row() < tm->rowCount() - 1) {
-				next_start_ms = m->data(index.sibling(index.row() + 1, RunsTableModel::Columns::col_runs_startTimeMs), Qt::EditRole).value<quickevent::core::og::TimeMs>().msec();
+			if(!is_last) {
+				next_start_ms = m->data(index.sibling(next_row, RunsTableModel::Columns::col_runs_startTimeMs), Qt::EditRole).value<quickevent::core::og::TimeMs>().msec();
 			}
 
 			bool bad_start_time = (start_ms > m_classDef.classStartFirst && start_ms == prev_start_ms) || ((start_ms - prev_start_ms) % m_classDef.classInterval) != 0;
-			bool vacant_before = !bad_start_time && (((start_ms - prev_start_ms) > m_classDef.classInterval) || ((index.row() == 0) && (start_ms > m_classDef.classStartFirst)));
+			bool vacant_before = !bad_start_time && (((start_ms - prev_start_ms) > m_classDef.classInterval) || (is_first && (start_ms > m_classDef.classStartFirst)));
 			bool vacant_after = !bad_start_time
 					&& (((next_start_ms - start_ms) > m_classDef.classInterval)
-						|| ((index.row() == tm->rowCount() - 1) && (start_ms < m_classDef.classStartLast)));
+						|| (is_last && (start_ms < m_classDef.classStartLast)));
 			bool bad_club = !vacant_before && (club == prev_club);
 			//auto cd = tm->columnDefinition(index.column());
 			if(index.column() == RunsTableModel::Columns::col_runs_startTimeMs) {
@@ -177,13 +184,13 @@ void RunsTableItemDelegate::paintBackground(QPainter *painter, const QStyleOptio
 			}
 			static const QColor vacant_color("forestgreen");
 			static constexpr int vacant_h_ratio = 20;
-			if(vacant_before) {
+			if(is_desc ? vacant_after : vacant_before) {
 				QRect r = option.rect;
 				int h = r.height() / vacant_h_ratio + 1;
 				r.setHeight(h);
 				painter->fillRect(r, vacant_color);
 			}
-			if(vacant_after) {
+			if(is_desc ? vacant_before : vacant_after) {
 				QRect r = option.rect;
 				int h = r.height() / vacant_h_ratio + 1;
 				r.setY(r.bottom() - h);

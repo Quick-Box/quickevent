@@ -19,6 +19,7 @@
         <file>qml/sql/def/Schema.qml</file>
         <file>qml/sql/def/Serial.qml</file>
         <file>qml/sql/def/String.qml</file>
+        <file>qml/sql/def/Blob.qml</file>
         <file>qml/sql/def/Table.qml</file>
         <file>qml/sql/def/Time.qml</file>
         <file>qml/sql/def/qmldir</file>

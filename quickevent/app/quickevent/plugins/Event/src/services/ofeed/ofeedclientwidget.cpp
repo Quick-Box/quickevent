@@ -214,6 +214,8 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		updateEventImagePreview();
 		ui->processChangesOnOffButton->setChecked(svc->runStartChangesProcessing());
 		ui->processOfficeChangesOnOffButton->setChecked(svc->runOfficeChangesProcessing());
+		ui->uploadStartListOnOffButton->setChecked(svc->uploadStartList());
+		ui->uploadResultsOnOffButton->setChecked(svc->uploadResults());
 		updateCredentialStatus(svc->credentialsValid() == 1);
 		connect(svc, &OFeedClient::credentialsStatusChanged, this, &OFeedClientWidget::updateCredentialStatus);
 	}
@@ -254,6 +256,20 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 		if(svc)
 			svc->setRunOfficeChangesProcessing(checked);
 	});
+	connect(ui->uploadStartListOnOffButton, &QAbstractButton::toggled, this, [this](bool checked) {
+		OFeedClient *svc = service();
+		if(svc) {
+			svc->setUploadStartList(checked);
+		}
+		updateTimerIndicators();
+	});
+	connect(ui->uploadResultsOnOffButton, &QAbstractButton::toggled, this, [this](bool checked) {
+		OFeedClient *svc = service();
+		if(svc) {
+			svc->setUploadResults(checked);
+		}
+		updateTimerIndicators();
+	});
 	connect(ui->btContinueToSynchronization, &QPushButton::clicked, this, [this]() {
 		ui->tabWidget->setCurrentWidget(ui->tabSynchronization);
 	});
@@ -262,6 +278,7 @@ OFeedClientWidget::OFeedClientWidget(QWidget *parent)
 	});
 	connect(ui->btPasteSetupLink, &QPushButton::clicked, this, &OFeedClientWidget::onBtPasteSetupLinkClicked);
 	connect(ui->btTestConnection, &QPushButton::clicked, this, &OFeedClientWidget::onBtTestConnectionClicked);
+	connect(ui->btUploadRentalCards, &QPushButton::clicked, this, &OFeedClientWidget::onBtUploadRentalCardsClicked);
 	connect(ui->btRefreshEventImage, &QPushButton::clicked, this, &OFeedClientWidget::onBtRefreshEventImageClicked);
 	connect(ui->btOpenEventWebsite, &QToolButton::clicked, this, &OFeedClientWidget::onBtOpenEventWebsiteClicked);
 	const QIcon show_password_icon = qf::gui::Style::icon("eye");
@@ -418,6 +435,26 @@ void OFeedClientWidget::onBtPasteSetupLinkClicked()
 	updateTestConnectionState();
 }
 
+void OFeedClientWidget::onBtUploadRentalCardsClicked()
+{
+	OFeedClient *svc = service();
+	if(!svc) {
+		return;
+	}
+	ui->btUploadRentalCards->setEnabled(false);
+	ui->lbRentalCardsResult->setStyleSheet("color:#666;");
+	ui->lbRentalCardsResult->setText(tr("Uploading..."));
+	QPointer<OFeedClientWidget> widget_guard(this);
+	svc->uploadRentalCards([widget_guard](bool success, int count, const QString &error) {
+		if(!widget_guard) {
+			return;
+		}
+		widget_guard->ui->btUploadRentalCards->setEnabled(true);
+		widget_guard->ui->lbRentalCardsResult->setStyleSheet(success ? "color:#0a7a2f;" : "color:#b00020;");
+		widget_guard->ui->lbRentalCardsResult->setText(success ? OFeedClientWidget::tr("Uploaded rental cards: %1").arg(count) : error);
+	});
+}
+
 void OFeedClientWidget::onBtTestConnectionClicked()
 {
 	OFeedClient *svc = service();
@@ -526,14 +563,21 @@ void OFeedClientWidget::updateTestConnectionState()
 void OFeedClientWidget::updateTimerIndicators()
 {
 	OFeedClient *svc = service();
+	// setProgress() decides visibility itself, so hide the indicators of disabled sections afterwards
 	m_exportTimerIndicator->setProgress(
 		svc ? svc->exportTimerRemainingMs() : -1,
 		svc ? svc->exportTimerIntervalMs() : 0
 	);
+	if(!svc || !(svc->uploadStartList() || svc->uploadResults())) {
+		m_exportTimerIndicator->hide();
+	}
 	m_changesTimerIndicator->setProgress(
 		svc ? svc->changesTimerRemainingMs() : -1,
 		svc ? svc->changesTimerIntervalMs() : 0
 	);
+	if(!svc || !(svc->runStartChangesProcessing() || svc->runOfficeChangesProcessing())) {
+		m_changesTimerIndicator->hide();
+	}
 	m_credentialTimerIndicator->setProgress(
 		svc ? svc->credentialCheckRemainingMs() : -1,
 		svc ? svc->credentialCheckIntervalMs() : 0

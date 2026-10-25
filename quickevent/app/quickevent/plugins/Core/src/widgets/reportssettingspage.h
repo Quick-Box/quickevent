@@ -3,11 +3,15 @@
 
 #include "settingspage.h"
 
+class QSortFilterProxyModel;
+
 namespace Core {
 
 namespace Ui {
 class ReportsSettingsPage;
 }
+
+class ReportsTableModel;
 
 class ReportsSettingsPage : public Core::SettingsPage
 {
@@ -16,19 +20,19 @@ class ReportsSettingsPage : public Core::SettingsPage
 	using Super = Core::SettingsPage;
 public:
 	explicit ReportsSettingsPage(QWidget *parent = nullptr);
-	~ReportsSettingsPage();
-
-	QString reportsDirectoryFromSettings() const;
-private slots:
-	void onSelectCustomReportsDirectoryClicked();
+	~ReportsSettingsPage() override;
 private:
 	void load() override;
 	void save() override;
 
-	void setReportsDirectory(const QString dir);
+	void resizeTableColumnsToFit();
+	void showReportContextMenu(const QPoint &position);
+	void loadModel();
+
 private:
 	Ui::ReportsSettingsPage *ui;
-	//QString m_exportReportDefinitionsDir;
+	ReportsTableModel *m_reportModel;
+	QSortFilterProxyModel *m_reportProxyModel;
 };
 
 }

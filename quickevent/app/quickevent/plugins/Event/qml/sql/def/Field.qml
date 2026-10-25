@@ -21,6 +21,8 @@ QtObject {
 			def += ' DEFAULT ';
 			if(typeof defaultValue === 'boolean' && driver_name.endsWith("SQLITE"))
 				def += (defaultValue)? 1: 0;
+			else if(defaultValue === 'CURRENT_TIMESTAMP')
+				def += defaultValue;
 			else if(typeof defaultValue === 'string')
 				def += "'" + defaultValue + "'";
 			else

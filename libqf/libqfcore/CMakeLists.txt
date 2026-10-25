@@ -49,5 +49,11 @@ if(WIN32)
     target_compile_definitions(libqfcore PRIVATE _UNICODE)
 endif()
 
+if(MSVC)
+    # Every target using libqfcore must see the Qt container exports declared in coreglobal.h, otherwise
+    # it instantiates them itself and fails to link with duplicate symbols.
+    target_compile_options(libqfcore PUBLIC "$<$<COMPILE_LANGUAGE:CXX>:/FI${CMAKE_CURRENT_SOURCE_DIR}/src/core/coreglobal.h>")
+endif()
+
 install(TARGETS libqfcore)
 install(FILES ${QM_FILES} DESTINATION ${CMAKE_INSTALL_BINDIR}/translations)

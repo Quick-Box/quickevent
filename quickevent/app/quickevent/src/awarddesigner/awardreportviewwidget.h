@@ -1,4 +1,6 @@
 #pragma once
+#include "awardtypstrenderer.h"
+
 #include <qf/gui/framework/dialogwidget.h>
 
 #include <QList>
@@ -54,7 +56,8 @@ private:
 
 	qf::gui::StatusBar *statusBar();
 
-	int pageCount() const { return m_renderers.size(); }
+	int pageCount() const { return m_pages.size(); }
+	QSvgRenderer *pageRenderer(int pg_no);
 	int currentPageNo() const { return m_currentPageNo; }
 	void setCurrentPageNo(int pg_no);
 
@@ -75,7 +78,8 @@ private:
 	qreal m_pageW = 210;
 	qreal m_pageH = 297;
 	QList<QVariantMap> m_pages;
-	QList<QSharedPointer<QSvgRenderer>> m_renderers;
+	AwardTypstRenderer m_renderer;
+	QList<QSharedPointer<QSvgRenderer>> m_renderers; // null until the page is first shown
 
 	QScrollArea *m_scrollArea = nullptr;
 	QLabel *m_pageLabel = nullptr;

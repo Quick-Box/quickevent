@@ -12,6 +12,8 @@
 
 class QQmlEngine;
 
+namespace qf::core::sql { class QxSql; }
+
 namespace qf {
 namespace gui {
 namespace framework {
@@ -28,15 +30,13 @@ public:
 	explicit Application(int & argc, char ** argv);
 	~Application() override = default;
 
-	Q_SIGNAL void qxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
-	qint64 createDbRecord(const QString &table, const QVariantMap &record, QObject *source);
-	std::optional<QVariantMap> readDbRecord(const QString &table, qint64 id, const std::optional<QStringList> &fields = std::nullopt) const;
-	bool updateDbRecord(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
-	bool deleteDbRecord(const QString &table, qint64 id, QObject *source);
-	void emitDbRecInserted(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
-	void emitDbRecUpdated(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
-	void emitDbRecDeleted(const QString &table, qint64 id, QObject *source);
-	void emitQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
+	qf::core::sql::QxSql *qxSql();
+
+	// Q_SIGNAL void qxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
+	// qint64 createDbRecord(const QString &table, const QVariantMap &record, QObject *source);
+	// std::optional<QVariantMap> readDbRecord(const QString &table, qint64 id, const std::optional<QStringList> &fields = std::nullopt) const;
+	// bool updateDbRecord(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
+	// bool deleteDbRecord(const QString &table, qint64 id, QObject *source);
 
 	Q_INVOKABLE QString versionString() const;
 public:
@@ -53,6 +53,7 @@ public:
 	static QString uuidString();
 protected:
 	MainWindow* m_frameWork = nullptr;
+	qf::core::sql::QxSql *m_qxSql = nullptr;
 };
 
 }}}

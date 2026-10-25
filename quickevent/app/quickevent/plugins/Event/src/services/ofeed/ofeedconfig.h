@@ -19,6 +19,8 @@ struct OFeedConfig
 	bool runXmlValidation = true;
 	bool runStartChangesProcessing = false;
 	bool runOfficeChangesProcessing = false;
+	bool uploadStartList = true;
+	bool uploadResults = true;
 	// Non-stage-specific field, stored as ofeed.introTourShowed
 	bool introTourShowed = false;
 };

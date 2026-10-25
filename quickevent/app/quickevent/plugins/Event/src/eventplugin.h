@@ -21,7 +21,6 @@ class DbSchema;
 
 namespace Event {
 
-
 static constexpr auto START_LIST_IOFXML3_FILE = "startlist-iof3.xml";
 static constexpr auto RESULTS_IOFXML3_FILE = "results-iof3.xml";
 
@@ -60,7 +59,6 @@ public:
 	static constexpr auto DBEVENT_PUNCH_RECEIVED = "punchReceived";
 	static constexpr auto DBEVENT_REGISTRATIONS_IMPORTED = "registrationsImported";
 	static constexpr auto DBEVENT_STAGE_START_CHANGED = "stageStartChanged";
-	static constexpr auto DBEVENT_QX_CHANGE_RECEIVED = "qxChangeReceived";
 	static constexpr auto DBEVENT_QX_RECCHNG = "qxRecChng";
 
 	Event::AppDbConfig& appDbConfig();
@@ -145,8 +143,7 @@ private:
 	bool importEventFromFile(const QString &src_file, const QString &dest_event_name);
 	bool convertSqlEvent(const QString &from_event, const QString &to_event);
 	void deleteEvent(const QString &event_name);
-	QString copyEventSchema(qf::core::sql::Connection &imp_conn, qf::core::sql::Connection &exp_conn,
-	                        const QString &dest_schema_name);
+	QString copyEventSchema(qf::core::sql::Connection &imp_conn, qf::core::sql::Connection &exp_conn, const QString &dest_schema_name);
 
 	void onServiceDockVisibleChanged(bool on = true);
 private:

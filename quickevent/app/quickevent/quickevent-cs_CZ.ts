@@ -864,6 +864,42 @@
 <context>
     <name>CardReaderWidget</name>
     <message>
+        <source>At start</source>
+        <translation>Na startu</translation>
+    </message>
+    <message>
+        <source>Started</source>
+        <translation>Odstartovali</translation>
+    </message>
+    <message>
+        <source>On track</source>
+        <translation>Na trati</translation>
+    </message>
+    <message>
+        <source>Finished</source>
+        <translation>V cíli</translation>
+    </message>
+    <message>
+        <source>... and %1 more</source>
+        <translation>… a %1 dalších</translation>
+    </message>
+    <message>
+        <source>Runners on the start list who have not started yet</source>
+        <translation>Závodníci na startovce, kteří ještě neodstartovali</translation>
+    </message>
+    <message>
+        <source>Runners with a passed start time, a start corridor entry or DNS</source>
+        <translation>Závodníci s uplynulým startovním časem, vstupem do startovního koridoru nebo DNS</translation>
+    </message>
+    <message>
+        <source>Started runners who have not finished yet</source>
+        <translation>Odstartovaní závodníci, kteří ještě nejsou v cíli</translation>
+    </message>
+    <message>
+        <source>Runners who finished, are disqualified or did not start</source>
+        <translation>Závodníci, kteří doběhli, jsou diskvalifikovaní nebo nestartovali</translation>
+    </message>
+    <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="14"/>
         <source>Form</source>
         <translation>Formulář</translation>
@@ -1908,6 +1944,16 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <location filename="plugins/Competitors/src/competitorwidget.ui" line="245"/>
         <source>Switch Names</source>
         <translation>Zaměnit jména</translation>
+    </message>
+    <message>
+        <location filename="plugins/Competitors/src/competitorwidget.ui" line="119"/>
+        <source>Switch cards</source>
+        <translation>Prohodit čipy</translation>
+    </message>
+    <message>
+        <location filename="plugins/Competitors/src/competitorwidget.cpp" line="568"/>
+        <source>Switch cards with runner</source>
+        <translation>Prohodit čipy se závodníkem</translation>
     </message>
     <message>
         <source>Start times</source>
@@ -3812,6 +3858,26 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="405"/>
         <source>Enable or disable automatic processing of late entries and changes from the OFeed office</source>
         <translation type="unfinished">Zapnout nebo vypnout automatické zpracování dohlášek a změn z kanceláře OFeedu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="415"/>
+        <source>Upload start list</source>
+        <translation>Nahrávat startovní listinu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="415"/>
+        <source>Upload results</source>
+        <translation>Nahrávat výsledky</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="415"/>
+        <source>Enable or disable automatic upload of the start list</source>
+        <translation>Zapnout nebo vypnout automatické nahrávání startovní listiny</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="415"/>
+        <source>Enable or disable automatic upload of the results</source>
+        <translation>Zapnout nebo vypnout automatické nahrávání výsledků</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="415"/>
@@ -8390,6 +8456,14 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <location filename="plugins/Runs/src/runswidget.cpp" line="426"/>
         <source>Show o&amp;ff-race</source>
         <translation>Zobrazit &amp;nestartující závodníky</translation>
+    </message>
+    <message>
+        <source>Show runners &amp;on track</source>
+        <translation>Zobrazit závodníky na &amp;trati</translation>
+    </message>
+    <message>
+        <source>Show only runners who have started and are not finished yet</source>
+        <translation>Zobrazí jen závodníky, kteří odstartovali a ještě nejsou v cíli</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="427"/>

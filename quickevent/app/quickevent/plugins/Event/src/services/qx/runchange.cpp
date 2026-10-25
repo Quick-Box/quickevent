@@ -1,5 +1,7 @@
 #include "runchange.h"
 
+#include <qf/core/log.h>
+
 #include <QJsonDocument>
 #include <QVariantMap>
 
@@ -11,17 +13,25 @@ namespace Event::services::qx {
 // 	return ret;
 // }
 
-RunChange RunChange::fromVariantMap(const QVariantMap &map)
+LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
 {
-	RunChange ret;
+	LateEntry ret;
 
-	if (auto v = map.value("class_name"); v.isValid()) { ret.class_name = v.toString(); }
-	if (auto v = map.value("first_name"); v.isValid()) { ret.first_name = v.toString(); }
-	if (auto v = map.value("last_name"); v.isValid()) { ret.last_name = v.toString(); }
+	auto id_map = map.value("id").toMap();
+	if (auto id = id_map.value("RunId").toInt(); id > 0) {
+		ret.id = RunId{id};
+	}
+	if (auto id = id_map.value("ClassId").toInt(); id > 0) {
+		ret.id = ClassId{id};
+	}
+	if (auto v = map.value("firstname"); v.isValid()) { ret.first_name = v.toString(); }
+	if (auto v = map.value("lastname"); v.isValid()) { ret.last_name = v.toString(); }
 	if (auto v = map.value("registration"); v.isValid()) { ret.registration = v.toString(); }
-	if (auto v = map.value("si_id"); v.isValid()) { ret.si_id = v.toInt(); }
+	if (auto v = map.value("starttimems"); v.isValid()) { ret.start_time_ms = v.toInt(); }
+	if (auto v = map.value("siid"); v.isValid()) { ret.si_id = v.toInt(); }
 	// if (auto v = map.value("si_id_rent"); v.isValid()) { ret.si_id_rent = v.toBool(); }
-	ret.note = map.value("note").toString();
+	if (auto v = map.value("note"); v.isValid()) { ret.note = v.toString(); }
+	if (auto v = map.value("paid"); v.isValid()) { ret.paid = v.toBool(); }
 
 	return ret;
 }
@@ -29,13 +39,37 @@ RunChange RunChange::fromVariantMap(const QVariantMap &map)
 QVariantMap OrigRunRecord::toVariantMap() const
 {
 	QVariantMap ret;
-	ret["first_name"] = first_name;
-	ret["last_name"] = last_name;
+	ret["firstname"] = first_name;
+	ret["lastname"] = last_name;
 	ret["registration"] = registration;
-	ret["si_id"] = si_id;
+	ret["siid"] = si_id;
+	ret["starttimems"] = start_time_ms;
 	return ret;
 }
 
+QxChangeData QxChangeData::fromJson(const QString &json)
+{
+	QxChangeData ret;
+	auto map = QJsonDocument::fromJson(json.toUtf8()).toVariant().toMap();
+	if (auto v = map.value(DATA_TYPE_LATE_ENTRY); v.isValid()) {
+		ret.lateEntry = LateEntry::fromVariantMap(v.toMap());
+	}
+	return ret;
+}
+
+QxChangeStatus qxChangeStatusFromString(const QString &status)
+{
+	if (status.compare(QStringLiteral("Pending"), Qt::CaseInsensitive) == 0) {
+		return QxChangeStatus::Pending;
+	}
+	if (status.compare(QStringLiteral("Accepted"), Qt::CaseInsensitive) == 0) {
+		return QxChangeStatus::Accepted;
+	}
+	if (status.compare(QStringLiteral("Rejected"), Qt::CaseInsensitive) == 0) {
+		return QxChangeStatus::Rejected;
+	}
+	qfWarning() << "Unknown late entry status:" << status;
+	return QxChangeStatus::Rejected;
+}
+
 } // namespace Event::services::qx
-
-

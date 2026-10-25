@@ -7,4 +7,7 @@ namespace Typst {
 // Returns an empty string if typst cannot be found anywhere.
 QString executablePath();
 
+// Directory with the fonts bundled next to the application, empty if there is none.
+QString fontsDir();
+
 } // namespace Typst

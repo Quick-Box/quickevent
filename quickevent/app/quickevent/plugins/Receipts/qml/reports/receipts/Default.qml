@@ -247,8 +247,11 @@ Report {
 						width: paraCheckTime.width
 						textHAlign: Frame.AlignLeft
 						textFn: function() {
+							var finish_msec = bandCard.data("finishTimeMs");
+							if(!finish_msec)
+								return "--:--:--"; // finish not punched
 							var start00msec = bandCard.data("stageStartTimeMs");
-							return TimeExt.msecToString_hhmmss(start00msec + bandCard.data("finishTimeMs"));
+							return TimeExt.msecToString_hhmmss(start00msec + finish_msec);
 						}
 					}
 				}
@@ -341,7 +344,7 @@ Report {
 					text: {
 						var msec = dc.data(dc.currentIndex, "stpTimeMs");
 						if(msec > 0)
-							return " " + OGTime.msecToString_mmss(msec);
+							return " " + OGTime.msecToString_mmss(msec, OGTime.TimeMeasurementPrecision.Second);
 						return qsTr("-----");
 					}
 					textStyle: (dc.currentIndex < (dc.rowCount - 1) && dc.data(dc.currentIndex, "standCummulative") !== 1)? null: myStyle.textStyleBold;
@@ -405,7 +408,7 @@ Report {
 					textFn: function() {
 						var msec = dc.data(dc.currentIndex, "lapTimeMs");
 						if(msec > 0)
-							return OGTime.msecToString_mmss(msec);
+							return OGTime.msecToString_mmss(msec, OGTime.TimeMeasurementPrecision.Second);
 						return qsTr("-----");
 					}
 					textStyle: (dc.data(dc.currentIndex, "standLap") !== 1)? null: myStyle.textStyleBold;
@@ -461,7 +464,7 @@ Report {
 					text: {
 						var msec = dc.data(dc.currentIndex, "lossMs");
 						if(msec > 0)
-							return OGTime.msecToString_mmss(msec);
+							return OGTime.msecToString_mmss(msec, OGTime.TimeMeasurementPrecision.Second);
 						return "";
 					}
 				}
@@ -517,7 +520,7 @@ Report {
 					textFn: function() {
 						var dm = bandCard.dataModel;
 						var loss = bandCard.data("timeMs") - bandCard.data("bestTime");
-						return qsTr("loss to leading runner = ") + OGTime.msecToString_mmss(loss);
+						return qsTr("loss to leading runner = ") + OGTime.msecToString_mmss(loss, OGTime.TimeMeasurementPrecision.Second);
 					}
 				}
 				Para {
@@ -530,7 +533,7 @@ Report {
 							//console.info(i, loss);
 							overall_loss += loss;
 						}
-						return qsTr("loss to best splits =  ") + OGTime.msecToString_mmss(overall_loss);
+						return qsTr("loss to best splits =  ") + OGTime.msecToString_mmss(overall_loss, OGTime.TimeMeasurementPrecision.Second);
 					}
 				}
 				Para {
@@ -538,7 +541,7 @@ Report {
 						var time = bandCard.data("timeMs");
 						var length = root.courseLength;
 						if(length > 0)
-							return qsTr("average pace = ") + OGTime.msecToString_mmss(((time / length) >> 0) * 1000) + " min/km";
+							return qsTr("average pace = ") + OGTime.msecToString_mmss(((time / length) >> 0) * 1000, OGTime.TimeMeasurementPrecision.Second) + " min/km";
 						return "";
 					}
 				}

@@ -12,12 +12,13 @@ struct StartSlotConfig
 	static StartSlotConfig fromVariantMap(const QVariantMap &map);
 	QVariantMap toVariantMap() const;
 
-	int startOffset;
+	int startOffset = 0;
 	bool ignoreClassClashCheck = false;
 };
 
 struct DrawingConfig
 {
+    static DrawingConfig fromString(const QString& str);
 	static DrawingConfig fromVariantMap(const QVariantMap &map);
 	QVariantMap toVariantMap() const;
 	const StartSlotConfig &startSlotConfig(int index) const;

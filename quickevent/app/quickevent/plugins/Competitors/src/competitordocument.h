@@ -1,5 +1,4 @@
-#ifndef COMPETITORS_COMPETITORDOCUMENT_H
-#define COMPETITORS_COMPETITORDOCUMENT_H
+#pragma once
 
 #include <qf/gui/model/sqldatadocument.h>
 
@@ -15,13 +14,13 @@ private:
 public:
 	CompetitorDocument(QObject *parent = nullptr);
 
-	//bool isSaveSiidToRuns() const {return m_saveSiidToRuns;}
 	void setEmitDbEventsOnSave(bool b) {m_isEmitDbEventsOnSave = b;}
 
-	//void setSiid(const QVariant &siid, bool save_siid_to_runs);
 	void setSiid(const QVariant &siid);
 	QVariant siid() const;
 	const QVector<int>& runsIds() const {return m_runsIds;}
+
+	static QList<int> possibleStartTimesMs(int run_id);
 protected:
 	bool loadData() override;
 	bool saveData() override;
@@ -33,4 +32,3 @@ private:
 
 }
 
-#endif // COMPETITORS_COMPETITORDOCUMENT_H

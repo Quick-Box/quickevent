@@ -2,10 +2,14 @@
 
 #include <quickevent/core/codedef.h>
 #include <quickevent/core/coursedef.h>
+#include <quickevent/core/og/timems.h>
 #include <quickevent/core/si/punchrecord.h>
 #include <quickevent/core/si/readcard.h>
 
 #include <qf/core/log.h>
+
+using quickevent::core::og::quantizeTimeMsec;
+using quickevent::core::og::TimeMs;
 
 namespace CardReader {
 
@@ -128,16 +132,21 @@ quickevent::core::si::CheckedCard CardCheckerFreeOrderCpp::checkCard(const quick
 	quickevent::core::si::CheckedPunch finish_punch;
 	if(!finish_code.isEmpty())
 		finish_punch = quickevent::core::si::CheckedPunch::fromCodeDef(finish_code);
-	finish_punch.setStpTimeMs(msecIntervalAM(checked_card.startTimeMs(), checked_card.finishTimeMs()));
+	// no finish split time when finish is not punched, interval to the not set finish time is nonsense
+	if(read_card.finishTime() != 0xEEEE) {
+		finish_punch.setStpTimeMs(msecIntervalAM(checked_card.startTimeMs(), checked_card.finishTimeMs()));
+	}
 	checked_punches << finish_punch;
 
 	QVariant prev_stp_time_ms = 0;
 	for(auto &checked_punch : checked_punches) {
 		if(checked_punch.stpTimeMs()) {
+			// quantize to event precision, so that printed lap times sum up to printed split times
+			int stp_time_ms = quantizeTimeMsec(checked_punch.stpTimeMs(), TimeMs::defaultTimeMeasurementPrecision());
 			if(prev_stp_time_ms.isValid()) {
-				checked_punch.setLapTimeMs(checked_punch.stpTimeMs() - prev_stp_time_ms.toInt());
+				checked_punch.setLapTimeMs(stp_time_ms - prev_stp_time_ms.toInt());
 			}
-			prev_stp_time_ms = checked_punch.stpTimeMs();
+			prev_stp_time_ms = stp_time_ms;
 		}
 		else {
 			prev_stp_time_ms = QVariant();

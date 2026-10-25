@@ -24,6 +24,7 @@
 #include <qf/core/assert.h>
 #include <qf/core/exception.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/sql/querybuilder.h>
@@ -282,7 +283,7 @@ int CardReaderPlugin::saveCardToSql(const quickevent::core::si::ReadCard &read_c
 			{"runIdAssignError", read_card.runIdAssignError()},
 			{"data", qf::core::Utils::qvariantToJson(read_card.data())},
 		};
-		auto id = app->createDbRecord("cards", rec, this);
+		auto id = app->qxSql()->createRecord("cards", rec, this);
 		return id;
 	}
 	catch (const std::exception &e) {
@@ -335,7 +336,7 @@ int CardReaderPlugin::savePunchRecordToSql(const quickevent::core::si::PunchReco
 			{"timeMs", punch.timems()},
 			{"runTimeMs", punch.runtimems_isset()? punch.runtimems(): QVariant()},
 		};
-		auto id = app->createDbRecord("punches", rec, this);
+		auto id = app->qxSql()->createRecord("punches", rec, this);
 		return id;
 	}
 	catch (const std::exception &e) {
@@ -377,24 +378,28 @@ void CardReaderPlugin::updateCheckedCardValuesSql(int card_id,
 		QF_TIME_SCOPE("DELETE FROM runlaps");
 		q.exec("DELETE FROM runlaps WHERE runId=" + QString::number(run_id), qf::core::Exception::Throw);
 	}
-	q.prepare(QStringLiteral("INSERT INTO runlaps (runId, position, code, stpTimeMs, lapTimeMs)"
-							 " VALUES (:runId, :position, :code, :stpTimeMs, :lapTimeMs)"), qf::core::Exception::Throw);
 	auto punch_list = checked_card.punches();
 	if(punch_list.count()) {
 		QF_TIME_SCOPE("INSERT INTO runlaps, records cnt: " + QString::number(punch_list.count()));
+		// all the laps are inserted by single query, query per lap is slow when SQL server is connected via slow network
+		QStringList rows;
 		int position = 0;
 		for(const auto &v : punch_list) {
 			position++;
 			quickevent::core::si::CheckedPunch cp(v.toMap());
 			//qfInfo() << run_id << position << cp;
 			if(cp.stpTimeMs() > 0) {
-				q.bindValue(QStringLiteral(":runId"), run_id);
-				q.bindValue(QStringLiteral(":code"), cp.code());
-				q.bindValue(QStringLiteral(":position"), position);
-				q.bindValue(QStringLiteral(":stpTimeMs"), cp.stpTimeMs());
-				q.bindValue(QStringLiteral(":lapTimeMs"), cp.lapTimeMs());
-				q.exec(qf::core::Exception::Throw);
+				rows << QStringLiteral("(%1, %2, %3, %4, %5)")
+						.arg(run_id)
+						.arg(position)
+						.arg(cp.code())
+						.arg(cp.stpTimeMs())
+						.arg(cp.lapTimeMs());
 			}
+		}
+		if(!rows.isEmpty()) {
+			q.exec(QStringLiteral("INSERT INTO runlaps (runId, position, code, stpTimeMs, lapTimeMs) VALUES ") + rows.join(QStringLiteral(", "))
+				   , qf::core::Exception::Throw);
 		}
 	}
 
@@ -413,7 +418,7 @@ void CardReaderPlugin::updateCheckedCardValuesSql(int card_id,
 				// update start time if punched
 				rec["startTimeMs"] = checked_card.startTimeMs();
 			}
-			app->updateDbRecord("runs", run_id, rec, this);
+			app->qxSql()->updateRecord("runs", run_id, rec, this);
 			getPlugin<RunsPlugin>()->computeStageTime(run_id);
 		}
 		if (auto missing_codes = checked_card.missingCodes(); !missing_codes.isEmpty()) {
@@ -428,7 +433,7 @@ void CardReaderPlugin::updateCheckedCardValuesSql(int card_id,
 			QVariantMap rec {
 				{"runIdAssignError", note.isEmpty()? missing : note + QStringLiteral("; ") + missing},
 			};
-			app->updateDbRecord("cards", card_id, rec, this);
+			app->qxSql()->updateRecord("cards", card_id, rec, this);
 		}
 	}
 	catch (const std::exception &e) {
@@ -459,7 +464,7 @@ bool CardReaderPlugin::saveCardAssignedRunnerIdSql(int card_id, int run_id)
 			{"runId", run_id},
 			{"runIdAssignTS", QDateTime::currentDateTime()},
 		};
-		app->updateDbRecord("cards", card_id, rec, this);
+		app->qxSql()->updateRecord("cards", card_id, rec, this);
 		return true;
 	}
 	catch (const std::exception &e) {
@@ -523,7 +528,7 @@ void CardReaderPlugin::setStartTime(int relay_id, int leg, int start_time) {
 				{"startTimeMs", start_time},
 			};
 			auto run_id = q.value(0).toInt();
-			app->updateDbRecord("runs", run_id, rec, this);
+			app->qxSql()->updateRecord("runs", run_id, rec, this);
 		}
 		catch (const std::exception &e) {
 			qfError() << "setStartTime(): Update runs error, query:" << e.what();
@@ -563,7 +568,7 @@ bool CardReaderPlugin::processCardToRunAssignment(int card_id, int run_id)
 			else if(!start_time.isNull()) {
 				/// handover time is unknown, clear invalid start time 0 to not count the leg time from 00:00
 				auto *app = qf::gui::framework::Application::instance();
-				app->updateDbRecord("runs", run_id, QVariantMap{{"startTimeMs", QVariant()}}, this);
+				app->qxSql()->updateRecord("runs", run_id, QVariantMap{{"startTimeMs", QVariant()}}, this);
 			}
 		}
 		const auto [read_card, checked_card] = checkCard(card_id, run_id);
@@ -588,7 +593,7 @@ bool CardReaderPlugin::processCardToRunAssignment(int card_id, int run_id)
 				if (is_handover_changed) {
 					// clear old handover time, it is set again from the new finish time
 					auto *app = qf::gui::framework::Application::instance();
-					app->updateDbRecord("runs", next_leg_run_id, QVariantMap{{"startTimeMs", QVariant()}}, this);
+					app->qxSql()->updateRecord("runs", next_leg_run_id, QVariantMap{{"startTimeMs", QVariant()}}, this);
 				}
 				int next_leg_card_id = (next_leg_finish_time > 0)? getPlugin<RunsPlugin>()->cardForRun(next_leg_run_id): 0;
 				// if next leg is finished and has not start time set, proces it too

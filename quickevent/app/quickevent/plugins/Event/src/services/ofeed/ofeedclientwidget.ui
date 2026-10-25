@@ -314,6 +314,74 @@
            </layout>
           </item>
           <item>
+           <layout class="QHBoxLayout" name="uploadStartListLayout">
+            <item>
+             <widget class="ToggleSwitch" name="uploadStartListOnOffButton">
+              <property name="toolTip">
+               <string>Enable or disable automatic upload of the start list</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="uploadStartListOnOffLabel">
+              <property name="text">
+               <string>Upload start list</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="uploadStartListHorizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="uploadResultsLayout">
+            <item>
+             <widget class="ToggleSwitch" name="uploadResultsOnOffButton">
+              <property name="toolTip">
+               <string>Enable or disable automatic upload of the results</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="uploadResultsOnOffLabel">
+              <property name="text">
+               <string>Upload results</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="uploadResultsHorizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
            <widget class="QLabel" name="exportIntervalDescription">
             <property name="text">
              <string>Start list and results are uploaded automatically in this interval. The buttons below upload them immediately.</string>
@@ -363,6 +431,69 @@
           <string>Process changes setup</string>
          </property>
          <layout class="QVBoxLayout" name="processChangesGroupLayout">
+          <item>
+           <layout class="QFormLayout" name="processChangesForm">
+            <property name="labelAlignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="changesIntervalLabel">
+              <property name="text">
+               <string>Interval</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="changesIntervalRowLayout">
+              <item>
+               <layout class="QHBoxLayout" name="changesIntervalLayout">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QSpinBox" name="edChangesInterval">
+                  <property name="toolTip">
+                   <string>How often to download changes from OFeed, independent of the export interval</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
+                  <property name="suffix">
+                   <string> sec</string>
+                  </property>
+                  <property name="minimum">
+                   <number>10</number>
+                  </property>
+                  <property name="maximum">
+                   <number>600</number>
+                  </property>
+                  <property name="singleStep">
+                   <number>5</number>
+                  </property>
+                  <property name="value">
+                   <number>15</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="changesIntervalHorizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
           <item>
            <layout class="QHBoxLayout" name="processChangesLayout">
             <item>
@@ -428,69 +559,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QFormLayout" name="processChangesForm">
-            <property name="labelAlignment">
-             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="changesIntervalLabel">
-              <property name="text">
-               <string>Interval</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <layout class="QHBoxLayout" name="changesIntervalRowLayout">
-              <item>
-               <layout class="QHBoxLayout" name="changesIntervalLayout">
-                <property name="spacing">
-                 <number>6</number>
-                </property>
-                <item>
-                 <widget class="QSpinBox" name="edChangesInterval">
-                  <property name="toolTip">
-                   <string>How often to download changes from OFeed, independent of the export interval</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                  </property>
-                  <property name="suffix">
-                   <string> sec</string>
-                  </property>
-                  <property name="minimum">
-                   <number>10</number>
-                  </property>
-                  <property name="maximum">
-                   <number>600</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>5</number>
-                  </property>
-                  <property name="value">
-                   <number>15</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="changesIntervalHorizontalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
             </item>
            </layout>
           </item>
@@ -923,6 +991,40 @@
             </item>
             <item>
              <spacer name="xmlValidationSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="rentalCardsLayout">
+            <item>
+             <widget class="QPushButton" name="btUploadRentalCards">
+              <property name="toolTip">
+               <string>One-time upload of the cards from "Cards to rent" in the settings to OFeed.</string>
+              </property>
+              <property name="text">
+               <string>Upload rental cards</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lbRentalCardsResult">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="rentalCardsSpacer">
               <property name="orientation">
                <enum>Qt::Orientation::Horizontal</enum>
               </property>

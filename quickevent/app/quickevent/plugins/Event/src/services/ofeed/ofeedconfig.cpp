@@ -20,6 +20,8 @@ OFeedConfig OFeedConfig::fromVariantMap(const QVariantMap& map)
     config.runXmlValidation = map.value("runXmlValidation", config.runXmlValidation).toBool();
     config.runStartChangesProcessing = map.value("runStartChangesProcessing", map.value("runChangesProcessing", config.runStartChangesProcessing)).toBool();
     config.runOfficeChangesProcessing = map.value("runOfficeChangesProcessing", config.runOfficeChangesProcessing).toBool();
+    config.uploadStartList = map.value("uploadStartList", config.uploadStartList).toBool();
+    config.uploadResults = map.value("uploadResults", config.uploadResults).toBool();
     config.introTourShowed = map.value("introTourShowed", config.introTourShowed).toBool();
     return config;
 }
@@ -35,6 +37,8 @@ QVariantMap OFeedConfig::toVariantMap() const
     map["runXmlValidation"] = runXmlValidation;
     map["runStartChangesProcessing"] = runStartChangesProcessing;
     map["runOfficeChangesProcessing"] = runOfficeChangesProcessing;
+    map["uploadStartList"] = uploadStartList;
+    map["uploadResults"] = uploadResults;
     map["introTourShowed"] = introTourShowed;
     return map;
 }

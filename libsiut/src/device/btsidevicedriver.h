@@ -63,8 +63,7 @@ public:
 	explicit BtSiDeviceDriver(QObject *parent = nullptr);
 	~BtSiDeviceDriver() override;
 
-	// void connectToDevice(const QString &address);
-	void connectToDevice(const QBluetoothDeviceInfo &info);
+	void connectToDevice(const QString &address);
 	void disconnectFromDevice();
 	bool isConnected() const;
 
@@ -83,7 +82,7 @@ private:
 	void onCharacteristicChanged(const QLowEnergyCharacteristic &ch, const QByteArray &value);
 
 private:
-	void startScan();
+	void startScan(const QString &address);
 	void createController(const QBluetoothDeviceInfo &info);
 	void subscribeCharacteristicsFrom(QLowEnergyService *svc);
 	void clearServices();
@@ -109,7 +108,7 @@ private:
 	QBluetoothDeviceInfo m_deviceInfo;
 
 	// Qt Bluetooth objects
-	// QBluetoothDeviceDiscoveryAgent *m_discoveryAgent = nullptr;
+	QBluetoothDeviceDiscoveryAgent *m_discoveryAgent = nullptr;
 	QLowEnergyController *m_controller = nullptr;
 	QList<QLowEnergyService *>	m_services;
 	QLowEnergyService *m_cardDataService = nullptr;

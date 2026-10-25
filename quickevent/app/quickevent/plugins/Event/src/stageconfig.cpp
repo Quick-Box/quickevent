@@ -1,14 +1,18 @@
 #include "stageconfig.h"
 
-#include <qcontainerfwd.h>
 #include <qf/core/utils.h>
+#include <qf/core/log.h>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
 
 namespace Event {
 
 StartSlotConfig StartSlotConfig::fromVariantMap(const QVariantMap& map)
 {
     StartSlotConfig config;
-    config.startOffset = map.value("startOffset").toInt();
+    config.startOffset = map.value("startOffset", 0).toInt();
     config.ignoreClassClashCheck = map.value("ignoreClassClashCheck").toBool();
     return config;
 }
@@ -19,6 +23,21 @@ QVariantMap StartSlotConfig::toVariantMap() const
     map["startOffset"] = startOffset;
     map["ignoreClassClashCheck"] = ignoreClassClashCheck;
     return map;
+}
+
+DrawingConfig DrawingConfig::fromString(const QString& str)
+{
+    DrawingConfig config;
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(str.toUtf8(), &parseError);
+    if (parseError.error == QJsonParseError::NoError) {
+        if (doc.isObject()) {
+            config = fromVariantMap(doc.object().toVariantMap());
+        }
+    } else {
+        qfWarning() << "Failed to parse drawing config JSON:" << parseError.errorString();
+    }
+    return config;
 }
 
 DrawingConfig DrawingConfig::fromVariantMap(const QVariantMap& map)
@@ -56,7 +75,13 @@ StageConfig StageConfig::fromVariantMap(const QVariantMap& map)
     StageConfig config;
     config.startDateTime = map.value("startDateTime").toDateTime();
     config.useAllMaps = map.value("useAllMaps").toBool();
-    config.drawingConfig = DrawingConfig::fromVariantMap(map.value("drawingConfig").toMap());
+    auto v = map.value("drawingConfig");
+    if (v.userType() == QMetaType::QVariantMap) {
+        config.drawingConfig = DrawingConfig::fromVariantMap(v.toMap());
+    }
+    else if (v.userType() == QMetaType::QString) {
+        config.drawingConfig = DrawingConfig::fromString(v.toString());
+    }
     return config;
 }
 

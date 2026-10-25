@@ -1,10 +1,14 @@
 #include "awarddesignerdialog.h"
 #include "ui_awarddesignerdialog.h"
 #include "awarddesignerscene.h"
+#include "typstexecutable.h"
 
 #include <QColorDialog>
+#include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QFontComboBox>
+#include <QFontDatabase>
 #include <QGraphicsView>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -12,18 +16,34 @@
 #include <QTimer>
 #include <QWheelEvent>
 
-AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &available_fields,
-	const AwardDesigner::Design &default_design,
-	QWidget *parent)
+// Make the bundled fonts selectable in the designer; Typst gets the same directory via --font-path.
+static void registerBundledFonts()
+{
+	static bool registered = false;
+	if (registered) {
+		return;
+	}
+	registered = true;
+	const QString dir = Typst::fontsDir();
+	if (dir.isEmpty()) {
+		return;
+	}
+	const auto files = QDir(dir).entryInfoList({QStringLiteral("*.ttf"), QStringLiteral("*.otf")}, QDir::Files);
+	for (const auto &fi : files) {
+		QFontDatabase::addApplicationFont(fi.absoluteFilePath());
+	}
+}
+
+AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &available_fields, const AwardDesigner::Design &default_design, const QString &design_relative_root, QWidget *parent)
 	: QDialog(parent)
 	, ui(new Ui::AwardDesignerDialog)
+	, m_relativeDesignFilesRoot(design_relative_root)
 	, m_availableFields(available_fields)
-	, m_designType(default_design.type)
 {
+	registerBundledFonts(); // before setupUi so the font combo already lists them
 	ui->setupUi(this);
 
 	m_scene = new AwardDesignerScene(this);
-	m_scene->setAvailableFields(m_availableFields);
 	ui->graphicsView->setScene(m_scene);
 	ui->graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 	ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
@@ -32,15 +52,28 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	ui->graphicsView->setBackgroundBrush(QColor(130, 130, 130));
 	ui->graphicsView->installEventFilter(this);
 
-	// Populate field selector in properties panel
+	// Populate placeholder selector in properties panel (item 0 is the idle caption)
+	ui->cbxItemField->addItem(tr("Vložit zástupný znak…"), QString());
 	for (const auto &fd : m_availableFields) {
 		ui->cbxItemField->addItem(fd.label, fd.id);
 	}
 
 	ui->cbxAlign->clear();
-	ui->cbxAlign->addItem(tr("Vlevo"), static_cast<int>(Qt::AlignLeft));
-	ui->cbxAlign->addItem(tr("Na střed"), static_cast<int>(Qt::AlignHCenter));
-	ui->cbxAlign->addItem(tr("Vpravo"), static_cast<int>(Qt::AlignRight));
+	ui->cbxAlign->addItem(tr("Left"), static_cast<int>(Qt::AlignLeft));
+	ui->cbxAlign->addItem(tr("Center"), static_cast<int>(Qt::AlignHCenter));
+	ui->cbxAlign->addItem(tr("Right"), static_cast<int>(Qt::AlignRight));
+
+	ui->cbxPaper->addItem(QStringLiteral("A4"), 210);
+	ui->cbxPaper->addItem(QStringLiteral("A5"), 148);
+	ui->cbxOrientation->addItem(tr("Na výšku"), false);
+	ui->cbxOrientation->addItem(tr("Na šířku"), true);
+	connect(ui->cbxPaper, qOverload<int>(&QComboBox::currentIndexChanged), this, &AwardDesignerDialog::onPageChanged);
+	connect(ui->cbxOrientation, qOverload<int>(&QComboBox::currentIndexChanged), this, &AwardDesignerDialog::onPageChanged);
+	connect(ui->btnBrowseBg, &QPushButton::clicked, this, &AwardDesignerDialog::onBrowseBgClicked);
+	connect(ui->btnClearBg, &QPushButton::clicked, this, [this]() {
+		m_scene->setBackground({}, {});
+		ui->edBgPath->clear();
+	});
 
 	connect(m_scene, &AwardDesignerScene::selectedItemChanged,
 		this, &AwardDesignerDialog::onSelectedItemChanged);
@@ -64,8 +97,15 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	connect(ui->chkBold, &QCheckBox::toggled, this, prop_changed);
 	connect(ui->chkItalic, &QCheckBox::toggled, this, prop_changed);
 	connect(ui->cbxAlign, qOverload<int>(&QComboBox::currentIndexChanged), this, prop_changed);
-	connect(ui->cbxItemField, qOverload<int>(&QComboBox::currentIndexChanged), this, prop_changed);
-	connect(ui->edCustomText, &QLineEdit::editingFinished, this, prop_changed);
+	connect(ui->cbxItemField, qOverload<int>(&QComboBox::activated), this, [this](int index) {
+		const QString key = ui->cbxItemField->itemData(index).toString();
+		if (key.isEmpty()) {
+			return;
+		}
+		ui->edText->insertPlainText(QStringLiteral("$(") + key + QLatin1Char(')'));
+		ui->cbxItemField->setCurrentIndex(0);
+	});
+	connect(ui->edText, &QPlainTextEdit::textChanged, this, prop_changed);
 	connect(ui->chkScaleProportional, &QCheckBox::toggled, this, prop_changed);
 
 	connect(ui->btnFitView, &QPushButton::clicked, this, [this]() {
@@ -81,7 +121,7 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	setPropsEnabled(false);
 
 	// Load default design on first open
-	loadDesign(default_design);
+	setDesign(default_design);
 }
 
 AwardDesignerDialog::~AwardDesignerDialog()
@@ -89,23 +129,81 @@ AwardDesignerDialog::~AwardDesignerDialog()
 	delete ui;
 }
 
-void AwardDesignerDialog::loadDesign(const AwardDesigner::Design &design)
+QString AwardDesignerDialog::relativeDesignFilePath(const QString &file_name) const
 {
-	ui->edDesignName->setText(design.name);
+	if (file_name.trimmed().isEmpty())
+		return QString();
+	return m_relativeDesignFilesRoot + '/' + file_name.trimmed();
+}
+
+void AwardDesignerDialog::loadDesign(const QString &file_name)
+{
+	auto design = AwardDesigner::Design::loadFile(relativeDesignFilePath(file_name));
+	setDesign(design);
+	ui->edDesignName->setText(file_name);
+}
+
+void AwardDesignerDialog::setDesign(const AwardDesigner::Design &design)
+{
 	m_scene->loadDesign(design);
+	syncPageControls();
 	QTimer::singleShot(0, this, [this]() {
 		ui->graphicsView->fitInView(m_scene->sceneRect(), Qt::KeepAspectRatio);
 	});
 }
 
+// Paper/orientation are derived from the page size, so nothing extra is persisted.
+void AwardDesignerDialog::syncPageControls()
+{
+	const QSignalBlocker b1(ui->cbxPaper), b2(ui->cbxOrientation);
+	const qreal shorter = qMin(m_scene->pageW(), m_scene->pageH());
+	ui->cbxPaper->setCurrentIndex(shorter < 180 ? 1 : 0);
+	ui->cbxOrientation->setCurrentIndex(m_scene->pageW() > m_scene->pageH() ? 1 : 0);
+	ui->edBgPath->setText(m_scene->backgroundPath());
+}
+
+void AwardDesignerDialog::onPageChanged()
+{
+	const bool a5 = ui->cbxPaper->currentIndex() == 1;
+	const qreal shorter = a5 ? 148 : 210;
+	const qreal longer = a5 ? 210 : 297;
+	if (ui->cbxOrientation->currentData().toBool()) {
+		m_scene->setPageSize(longer, shorter);
+	} else {
+		m_scene->setPageSize(shorter, longer);
+	}
+	ui->graphicsView->fitInView(m_scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+void AwardDesignerDialog::onBrowseBgClicked()
+{
+	const QString path = QFileDialog::getOpenFileName(this, tr("Select a background image"), QString(),
+		tr("Images (*.png *.jpg *.jpeg *.svg *.bmp);;All files (*)"));
+	if (path.isEmpty()) {
+		return;
+	}
+	QFile f(path);
+	if (!f.open(QIODevice::ReadOnly)) {
+		QMessageBox::warning(this, tr("Background"), tr("Cannot read '%1'.").arg(path));
+		return;
+	}
+	m_scene->setBackground(path, f.readAll());
+	ui->edBgPath->setText(path);
+}
+
 AwardDesigner::Design AwardDesignerDialog::currentDesign() const
 {
-	return m_scene->collectDesign(ui->edDesignName->text().trimmed());
+	return m_scene->collectDesign();
 }
 
 QString AwardDesignerDialog::designName() const
 {
-	return ui->edDesignName->text().trimmed();
+	auto name = ui->edDesignName->text().trimmed();
+	if (name.isEmpty())
+		return QString();
+	if (!name.endsWith(".typ"))
+		name += ".typ";
+	return name;
 }
 
 void AwardDesignerDialog::onSelectedItemChanged(AwardSceneItem *item)
@@ -121,7 +219,6 @@ void AwardDesignerDialog::onAddFieldClicked()
 {
 	AwardDesigner::Item item;
 	item.kind = AwardDesigner::Item::Field;
-	item.fieldId = QStringLiteral("eventName");
 	item.w = 170;
 	item.h = 15;
 	int count = m_scene->collectDesign().items.count();
@@ -133,9 +230,9 @@ void AwardDesignerDialog::onAddFieldClicked()
 void AwardDesignerDialog::onAddImageClicked()
 {
 	QString path = QFileDialog::getOpenFileName(this,
-		tr("Vyberte obrázek"),
+		tr("Select an image"),
 		QString(),
-		tr("Obrázky (*.png *.jpg *.jpeg *.svg *.bmp);;Všechny soubory (*)"));
+		tr("Images (*.png *.jpg *.jpeg *.svg *.bmp);;All files (*)"));
 
 	AwardDesigner::Item item;
 	item.kind = AwardDesigner::Item::Image;
@@ -156,9 +253,9 @@ void AwardDesignerDialog::onDeleteItemClicked()
 void AwardDesignerDialog::onBrowseImageClicked()
 {
 	QString path = QFileDialog::getOpenFileName(this,
-		tr("Vyberte obrázek"),
+		tr("Select an image"),
 		QString(),
-		tr("Obrázky (*.png *.jpg *.jpeg *.svg *.bmp);;Všechny soubory (*)"));
+		tr("Images (*.png *.jpg *.jpeg *.svg *.bmp);;All files (*)"));
 	if (!path.isEmpty()) {
 		ui->edImagePath->setText(path);
 		if (!m_updatingProps) {
@@ -169,7 +266,7 @@ void AwardDesignerDialog::onBrowseImageClicked()
 
 void AwardDesignerDialog::onChooseColorClicked()
 {
-	QColor c = QColorDialog::getColor(QColor(m_colorHex), this, tr("Zvolte barvu textu"));
+	QColor c = QColorDialog::getColor(QColor(m_colorHex), this, tr("Choose text color"));
 	if (c.isValid()) {
 		m_colorHex = c.name();
 		updateColorButton();
@@ -188,40 +285,39 @@ void AwardDesignerDialog::onItemPropertyChanged()
 
 void AwardDesignerDialog::onSaveDesignClicked()
 {
-	QString name = ui->edDesignName->text().trimmed();
+	QString name = relativeDesignFilePath(designName());
 	if (name.isEmpty()) {
-		QMessageBox::warning(this, tr("Uložit návrh"), tr("Zadejte prosím název návrhu."));
+		QMessageBox::warning(this, tr("Save design"), tr("Please enter a design name."));
 		ui->edDesignName->setFocus();
 		return;
 	}
-	AwardDesigner::Design d = m_scene->collectDesign(name);
-	d.type = m_designType;
-	if (d.saveToDb()) {
-		QMessageBox::information(this, tr("Uložit návrh"),
-			tr("Návrh '%1' byl uložen do databáze.").arg(name));
+	AwardDesigner::Design d = m_scene->collectDesign();
+	if (d.saveToDb(name)) {
+		QMessageBox::information(this, tr("Save design"),
+			tr("Design '%1' was saved to the database.").arg(name));
 	} else {
-		QMessageBox::critical(this, tr("Uložit návrh"),
-			tr("Návrh '%1' se nepodařilo uložit do databáze.").arg(name));
+		QMessageBox::critical(this, tr("Save design"),
+			tr("Could not save design '%1' to the database.").arg(name));
 	}
 }
 
 void AwardDesignerDialog::onLoadDesignClicked()
 {
-	QStringList designs = AwardDesigner::Design::listFromDb(m_designType);
+	auto designs = AwardDesigner::Design::listAwards(m_relativeDesignFilesRoot);
 	if (designs.isEmpty()) {
-		QMessageBox::information(this, tr("Načíst návrh"),
-			tr("V databázi nejsou uloženy žádné návrhy diplomů."));
+		QMessageBox::information(this, tr("Load design"),
+			tr("No award designs are saved in the database."));
 		return;
 	}
 	bool ok;
 	QString name = QInputDialog::getItem(this,
-		tr("Načíst návrh"), tr("Vyberte návrh:"), designs, 0, false, &ok);
+		tr("Load design"), tr("Select a design:"), designs.keys(), 0, false, &ok);
 	if (!ok || name.isEmpty()) {
 		return;
 	}
-	AwardDesigner::Design d = AwardDesigner::Design::loadFromDb(name);
+	AwardDesigner::Design d = AwardDesigner::Design::loadFile(designs.value(name));
 	if (d.isValid()) {
-		loadDesign(d);
+		setDesign(d);
 	}
 }
 
@@ -229,18 +325,17 @@ void AwardDesignerDialog::onNewDesignClicked()
 {
 	AwardDesigner::Design empty;
 	ui->edDesignName->clear();
-	m_scene->loadDesign(empty);
+	setDesign(empty);
 }
 
 void AwardDesignerDialog::accept()
 {
-	QString name = ui->edDesignName->text().trimmed();
+	QString name = relativeDesignFilePath(designName());
 	if (!name.isEmpty()) {
-		AwardDesigner::Design d = m_scene->collectDesign(name);
-		d.type = m_designType;
-		if (!d.saveToDb()) {
-			QMessageBox::critical(this, tr("Uložit návrh"),
-				tr("Návrh '%1' se nepodařilo uložit do databáze.").arg(name));
+		AwardDesigner::Design d = m_scene->collectDesign();
+		if (!d.saveToDb(name)) {
+			QMessageBox::critical(this, tr("Save design"),
+				tr("Could not save design '%1' to the database.").arg(name));
 			return;
 		}
 	}
@@ -260,17 +355,7 @@ void AwardDesignerDialog::populatePropsFromItem(AwardSceneItem *item)
 	ui->spH->setValue(it.h);
 
 	if (it.kind == AwardDesigner::Item::Field) {
-		// Select field in combo
-		for (int i = 0; i < ui->cbxItemField->count(); ++i) {
-			if (ui->cbxItemField->itemData(i).toString() == it.fieldId) {
-				ui->cbxItemField->setCurrentIndex(i);
-				break;
-			}
-		}
-		// Custom text (shown only when fieldId == "customText")
-		ui->edCustomText->setText(it.customText);
-		ui->lblCustomText->setVisible(it.fieldId == QLatin1String("customText"));
-		ui->edCustomText->setVisible(it.fieldId == QLatin1String("customText"));
+		ui->edText->setPlainText(it.text);
 
 		ui->cbxFont->setCurrentFont(QFont(it.fontFamily));
 		ui->spFontSize->setValue(it.fontSize);
@@ -306,19 +391,13 @@ void AwardDesignerDialog::applyPropsToItem()
 	it.h = ui->spH->value();
 
 	if (it.kind == AwardDesigner::Item::Field) {
-		it.fieldId = ui->cbxItemField->currentData().toString();
-		it.customText = ui->edCustomText->text();
+		it.text = ui->edText->toPlainText();
 		it.fontFamily = ui->cbxFont->currentFont().family();
 		it.fontSize = ui->spFontSize->value();
 		it.bold = ui->chkBold->isChecked();
 		it.italic = ui->chkItalic->isChecked();
 		it.color = m_colorHex;
 		it.halign = ui->cbxAlign->currentData().toInt();
-
-		// Show/hide custom text input depending on selected field
-		bool is_custom = (it.fieldId == QLatin1String("customText"));
-		ui->lblCustomText->setVisible(is_custom);
-		ui->edCustomText->setVisible(is_custom);
 	} else {
 		it.imagePath = ui->edImagePath->text();
 		it.scaleProportional = ui->chkScaleProportional->isChecked();

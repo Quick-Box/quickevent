@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.18.4)
 
 set(QF_BUILD_QML_PLUGINS ON CACHE BOOL "Build with QML Plugins support")
+set(QF_WITH_LIBSHV OFF CACHE BOOL "Build with libshv")
 
 project(quickbox LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
@@ -36,8 +37,20 @@ if (NOT TARGET libnecrolog)
 	add_subdirectory(3rdparty/necrolog)
 endif()
 
+set(QF_QT_COMPONENTS Core Widgets Gui Sql Qml Xml LinguistTools PrintSupport Svg SerialPort Multimedia Network Bluetooth)
+
+if (QF_WITH_LIBSHV)
+	set(LIBSHV_WITH_WEBSOCKETS ON)
+	set(LIBSHV_WITH_CLI_EXAMPLES OFF)
+	set(LIBSHV_WITH_GUI_EXAMPLES OFF)
+	set(LIBSHV_WITH_LDAP OFF)
+	set(BUILD_SHV_UTILS OFF)
+	set(QF_QT_COMPONENTS ${QF_QT_COMPONENTS} WebSockets NetworkAuth)
+	add_subdirectory(3rdparty/libshv)
+endif()
+
 set(USE_QT6 ON)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui Sql Qml Xml LinguistTools PrintSupport Svg SerialPort Multimedia Network Bluetooth)
+find_package(Qt6 REQUIRED COMPONENTS ${QF_QT_COMPONENTS})
 set(Qt_FOUND ${Qt6_FOUND})
 
 if(Qt_FOUND)
@@ -52,6 +65,7 @@ if(Qt_FOUND)
 	# variable instead of hard-coding a path back to the application.
 	set(QE_TRANSLATIONS_OUTPUT_DIR "${CMAKE_BINARY_DIR}/quickevent/app/quickevent/translations"
 		CACHE INTERNAL "Build-tree output directory for .qm translation files")
+	file(MAKE_DIRECTORY "${QE_TRANSLATIONS_OUTPUT_DIR}")
 
 	add_subdirectory(libqf)
 	if(QF_LIB_ONLY)

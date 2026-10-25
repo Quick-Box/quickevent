@@ -89,6 +89,7 @@ void GanttItem::load(int stage_id)
 			.join("coursecodes.codeId", "codes.id")
 			.joinQuery("classdefs.classId", qb1, "classId")
 			.where("classdefs.stageId=" QF_IARG(stage_id))
+			.where("COALESCE(classdefs.startIntervalMin, 0) > 0")
 			.orderBy("startSlotIndex, startTimeMin, firstCode, classdefs.courseId");
 	int curr_course_id = -1;
 	int curr_slot_ix = -1;

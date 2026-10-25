@@ -8,8 +8,6 @@
 #include <QSignalBlocker>
 #include <QTableWidget>
 
-
-
 EventDialogWidget::EventDialogWidget(QWidget *parent) :
 	Super(parent),
 	ui(new Ui::EventDialogWidget)

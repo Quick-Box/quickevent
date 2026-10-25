@@ -3,7 +3,7 @@
 #include "runsplugin.h"
 #include "../../Event/src/eventplugin.h"
 
-#include <qnamespace.h>
+
 #include <quickevent/core/og/timems.h>
 #include <quickevent/core/si/siid.h>
 
@@ -11,6 +11,7 @@
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/application.h>
 
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/qxrecchng.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/connection.h>
@@ -56,13 +57,13 @@ RunsTableModel::RunsTableModel(QObject *parent)
 	setColumn(col_competitors_note, ColumnDefinition("competitors.note", tr("Note")));
 
 	connect(this, &RunsTableModel::dataChanged, this, &RunsTableModel::onDataChanged, Qt::QueuedConnection);
-	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &RunsTableModel::onQxRecChng, Qt::QueuedConnection);
 }
 
-void RunsTableModel::load(int stage_id, int class_id, bool show_offrace)
+void RunsTableModel::load(int stage_id, int class_id, bool show_offrace, bool only_on_track)
 {
 	m_stageId = stage_id;
-	auto qb = getPlugin<Runs::RunsPlugin>()->runsQuery(stage_id, class_id, show_offrace);
+	auto qb = getPlugin<Runs::RunsPlugin>()->runsQuery(stage_id, class_id, show_offrace, only_on_track);
 	qb.orderBy("runs.id");
 	qfDebug() << qb.toString();
 	setQueryBuilder(qb, false);
@@ -169,6 +170,12 @@ QVariant RunsTableModel::data(const QModelIndex &index, int role) const
 
 QVariant RunsTableModel::value(int row_ix, int column_ix) const
 {
+	if(column_ix == col_competitorName) {
+		qf::core::utils::TableRow row = tableRow(row_ix);
+		auto first_name = row.value(QStringLiteral("firstName")).toString();
+		auto last_name = row.value(QStringLiteral("lastName")).toString();
+		return last_name + ' ' + first_name;
+	}
 	if(column_ix == col_runFlags) {
 		qf::core::utils::TableRow row = tableRow(row_ix);
 		bool mis_punch = row.value(QStringLiteral("runs.misPunch")).toBool();
@@ -357,7 +364,11 @@ void RunsTableModel::onDataChanged(const QModelIndex &top_left, const QModelInde
 
 void RunsTableModel::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
-	handleQxRecChng(recchng, source);
+	if (recchng.op == qf::core::sql::RecOp::Insert) {
+		// inserts might be in filterred out class or stage, this cannot be solved by applyQxRecChng
+		return;
+	}
+	applyQxRecChng(recchng, source);
 }
 
 bool RunsTableModel::postRow(int row_no, bool throw_exc)

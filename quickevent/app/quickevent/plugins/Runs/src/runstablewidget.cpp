@@ -8,9 +8,9 @@
 #include "cardflagsdialog.h"
 
 #include <plugins/Classes/src/courseitemdelegate.h>
-#include <plugins/Event/src/eventplugin.h>
 #include <plugins/CardReader/src/cardreaderplugin.h>
 #include <plugins/Receipts/src/receiptsplugin.h>
+#include <plugins/Event/src/eventplugin.h>
 
 #include <quickevent/core/si/siid.h>
 #include <quickevent/core/og/timems.h>
@@ -19,6 +19,8 @@
 #include <qf/gui/dialogs/messagebox.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
+
+#include <qf/core/sql/qxrecchng.h>
 
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/transaction.h>
@@ -149,11 +151,11 @@ void RunsTableWidget::updateStartTimeHighlight() const
 	auto logical_index = ui->tblRuns->horizontalHeader()->sortIndicatorSection();
 	auto order = ui->tblRuns->horizontalHeader()->sortIndicatorOrder();
 	auto cd = m_runsModel->columnDefinition(logical_index);
-	bool is_sort_start_time_asc = (cd.matchesSqlId(QStringLiteral("runs.startTimeMs"))
-								   && order == Qt::AscendingOrder
-								   && ui->tblRuns->filterString().isEmpty());
-	m_runsTableItemDelegate->setStartTimeHighlightVisible(is_sort_start_time_asc);
-	ui->tblRuns->setDragEnabled(is_sort_start_time_asc);
+	bool is_sort_start_time = (cd.matchesSqlId(QStringLiteral("runs.startTimeMs"))
+							   && ui->tblRuns->filterString().isEmpty());
+	m_runsTableItemDelegate->setStartTimeHighlightVisible(is_sort_start_time);
+	m_runsTableItemDelegate->setStartTimeSortDescending(order == Qt::DescendingOrder);
+	ui->tblRuns->setDragEnabled(is_sort_start_time && order == Qt::AscendingOrder);
 }
 
 void RunsTableWidget::clear()
@@ -161,7 +163,7 @@ void RunsTableWidget::clear()
 	m_runsModel->clearRows();
 }
 
-void RunsTableWidget::reload(int stage_id, int class_id, bool show_offrace, const QString &sort_column, int select_competitor_id)
+void RunsTableWidget::reload(int stage_id, int class_id, bool show_offrace, const QString &sort_column, int select_competitor_id, bool only_on_track)
 {
 	qfLogFuncFrame() << "class id:" << class_id;
 	{
@@ -183,7 +185,7 @@ void RunsTableWidget::reload(int stage_id, int class_id, bool show_offrace, cons
 		m_courseItemDelegate->setCourses(definedCourses());
 	}
 	m_runsTableItemDelegate->setHighlightedClassId(class_id, stage_id);
-	m_runsModel->load(stage_id, class_id, show_offrace);
+	m_runsModel->load(stage_id, class_id, show_offrace, only_on_track);
 	updateStartTimeHighlight();
 
 	QHeaderView *hh = ui->tblRuns->horizontalHeader();

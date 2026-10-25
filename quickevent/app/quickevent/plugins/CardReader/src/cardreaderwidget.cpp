@@ -1,9 +1,7 @@
 #include "cardreaderwidget.h"
-#include "necrolog/necrologlevel.h"
 #include "ui_cardreaderwidget.h"
 #include "cardreadersettings.h"
 
-#include "btdeviceinfoutil.h"
 #include "cardreaderplugin.h"
 #include "testcardreader.h"
 #include "../../Core/src/coreplugin.h"
@@ -43,6 +41,7 @@
 
 #include <qf/core/assert.h>
 #include <qf/core/exception.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/dbenum.h>
 #include <qf/core/sql/transaction.h>
@@ -65,7 +64,11 @@
 #include <QPushButton>
 #include <QProgressDialog>
 #include <QTimer>
+#include <QDateTime>
 #include <QSerialPortInfo>
+
+#include <algorithm>
+#include <limits>
 
 namespace qfc = qf::core;
 namespace qfs = qf::core::sql;
@@ -118,6 +121,7 @@ public:
 Model::Model(QObject *parent)
 	: Super(parent)
 {
+	setIdColumnName("cards.id");
 	clearColumns(col_COUNT);
 	setColumn(col_cards_id, ColumnDefinition("cards.id", "id").setReadOnly(true));
 	setColumn(col_cards_siId, ColumnDefinition("cards.siId", tr("SI")).setReadOnly(true).setCastType(qMetaTypeId<quickevent::core::si::SiId>()));
@@ -270,7 +274,15 @@ CardReaderWidget::CardReaderWidget(QWidget *parent)
 		}
 	}, Qt::QueuedConnection);
 
-	connect(qf::gui::framework::Application::instance(), &qf::gui::framework::Application::qxRecChng, this, &CardReaderWidget::onQxRecChng, Qt::QueuedConnection);
+	connect(qf::gui::framework::Application::instance()->qxSql(), &qf::core::sql::QxSql::recChng, this, &CardReaderWidget::onQxRecChng, Qt::QueuedConnection);
+
+	auto *statistics_timer = new QTimer(this);
+	connect(statistics_timer, &QTimer::timeout, this, [this]() {
+		if(isVisible()) {
+			updateStatistics();
+		}
+	});
+	statistics_timer->start(5000);
 }
 
 CardReaderWidget::~CardReaderWidget()
@@ -483,7 +495,7 @@ void CardReaderWidget::settleDownInPartWidget(::PartWidget *part_widget)
 			a_tools->addActionInto(a);
 		}
 	}
-	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &CardReaderWidget::onDbEventNotify, Qt::QueuedConnection);
+	// connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &CardReaderWidget::onDbEventNotify, Qt::QueuedConnection);
 	connect(getPlugin<CorePlugin>()->settingsDialog(), &QDialog::finished, this, &CardReaderWidget::updateButtonsEnabled);
 }
 
@@ -525,25 +537,140 @@ void CardReaderWidget::reload()
 	qfDebug() << qb.toString();
 	m_cardsModel->setQueryBuilder(qb, false);
 	m_cardsModel->reload();
+	updateStatistics();
+}
+
+namespace {
+
+using StatisticsRows = QList<QPair<int, QString>>;
+
+struct Statistics
+{
+	int started = 0;
+	int finished = 0;
+	StatisticsRows on_track;
+	StatisticsRows not_started;
+};
+
+Statistics loadStatistics(int stage_id)
+{
+	Statistics ret;
+	const QDateTime stage_start = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
+	const QDateTime now = QDateTime::currentDateTime();
+	const qint64 started_until_ms = stage_start.msecsTo(now);
+	// vacants have no competitor, relay legs have only relayId
+	const QString cond = "runs.stageId=" QF_IARG(stage_id) " AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)";
+	const QString start_ms = RunsPlugin::plannedStartMsSqlExpression();
+	const QString finished_cond = RunsPlugin::finishedSqlCondition();
+	const QString started_cond = RunsPlugin::startedSqlCondition(started_until_ms);
+	const QString from = " FROM runs"
+		" LEFT JOIN competitors ON competitors.id=runs.competitorId"
+		" LEFT JOIN relays ON relays.id=runs.relayId"
+		" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
+		" LEFT JOIN classdefs ON classdefs.classId=classes.id AND classdefs.stageId=runs.stageId";
+	qfs::Query q;
+	q.execThrow("SELECT COALESCE(SUM(CASE WHEN " + started_cond + " THEN 1 ELSE 0 END), 0)"
+		", COALESCE(SUM(CASE WHEN " + finished_cond + " THEN 1 ELSE 0 END), 0)"
+		+ from + " WHERE " + cond);
+	if(q.next()) {
+		ret.started = q.value(0).toInt();
+		ret.finished = q.value(1).toInt();
+	}
+
+	// conditions can be NULL (e.g. NULL finishTimeMs), so compare them as numbers to make NOT work
+	auto is_false = [](const QString &sql_cond) { return "(CASE WHEN " + sql_cond + " THEN 1 ELSE 0 END)=0"; };
+	const QString select_runner = " AS startMs, runs.corridorTime, competitors.lastName, competitors.firstName, classes.name AS className";
+	auto runner_name_class = [&q]() {
+		QString name = q.value(QStringLiteral("lastName")).toString() + ' ' + q.value(QStringLiteral("firstName")).toString();
+		return QStringList { name.trimmed(), q.value(QStringLiteral("className")).toString() };
+	};
+	// corridorTime is stored as e.g. "2026-04-30 14:58:06.550 +0200", which is not ISO 8601
+	auto corridor_time = [](const QVariant &value) {
+		QDateTime ret = value.toDateTime();
+		return ret.isValid() ? ret : QDateTime::fromString(value.toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss.zzz t"));
+	};
+
+	// started and not finished, the longest running first
+	q.execThrow("SELECT " + start_ms + select_runner + from + " WHERE " + cond + " AND " + RunsPlugin::onTrackSqlCondition(started_until_ms));
+	while(q.next()) {
+		qint64 elapsed_ms = q.value(0).isNull()
+				? corridor_time(q.value(1)).msecsTo(now)
+				: started_until_ms - q.value(0).toInt();
+		elapsed_ms = qMax<qint64>(0, elapsed_ms);
+		QStringList row = runner_name_class();
+		row << quickevent::core::og::TimeMs(static_cast<int>(elapsed_ms)).toString(quickevent::core::og::TimeMeasurementPrecision::Second);
+		ret.on_track << qMakePair(static_cast<int>(elapsed_ms), row.join(QStringLiteral(", ")));
+	}
+	std::sort(ret.on_track.begin(), ret.on_track.end(), [](const auto &a, const auto &b) { return a.first > b.first; });
+
+	// not started, the earliest planned start first, runners without start time last
+	q.execThrow("SELECT " + start_ms + select_runner + from + " WHERE " + cond + " AND " + is_false(started_cond));
+	while(q.next()) {
+		QStringList row = runner_name_class();
+		int planned_start_ms = std::numeric_limits<int>::max();
+		if(!q.value(0).isNull()) {
+			planned_start_ms = q.value(0).toInt();
+			row << stage_start.addMSecs(planned_start_ms).time().toString(QStringLiteral("HH:mm:ss"));
+		}
+		ret.not_started << qMakePair(planned_start_ms, row.join(QStringLiteral(", ")));
+	}
+	std::sort(ret.not_started.begin(), ret.not_started.end(), [](const auto &a, const auto &b) { return a.first < b.first; });
+	return ret;
+}
+
+}
+
+void CardReaderWidget::updateStatistics()
+{
+	Statistics stats;
+	if(getPlugin<EventPlugin>()->isEventOpen()) {
+		try {
+			stats = loadStatistics(getPlugin<CardReaderPlugin>()->currentStageId());
+		}
+		catch(const qfc::Exception &e) {
+			qfError() << e.message();
+		}
+	}
+
+	auto set_label = [](QLabel *label, const QString &name, int count) {
+		label->setText(QStringLiteral("<b>%1:</b> %2").arg(name).arg(count));
+	};
+	auto set_tooltip = [](QLabel *label, const StatisticsRows &rows, const QString &empty_tooltip) {
+		static constexpr int MAX_TOOLTIP_ROWS = 20;
+		QStringList tooltip_rows;
+		for(int i = 0; i < qMin(MAX_TOOLTIP_ROWS, static_cast<int>(rows.count())); ++i) {
+			tooltip_rows << rows[i].second.toHtmlEscaped();
+		}
+		if(rows.count() > MAX_TOOLTIP_ROWS) {
+			tooltip_rows << tr("... and %1 more").arg(rows.count() - MAX_TOOLTIP_ROWS);
+		}
+		label->setToolTip(tooltip_rows.isEmpty() ? empty_tooltip : tooltip_rows.join(QStringLiteral("<br>")));
+	};
+	set_label(ui->lblAtStart, tr("At start"), stats.not_started.count());
+	set_label(ui->lblStarted, tr("Started"), stats.started);
+	set_label(ui->lblOnTrack, tr("On track"), stats.on_track.count());
+	set_label(ui->lblFinished, tr("Finished"), stats.finished);
+	set_tooltip(ui->lblAtStart, stats.not_started, tr("Runners on the start list who have not started yet"));
+	set_tooltip(ui->lblOnTrack, stats.on_track, tr("Started runners who have not finished yet"));
 }
 
 void CardReaderWidget::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source)
 {
 	if(isVisible()) {
-		m_cardsModel->handleQxRecChng(recchng, source);
+		m_cardsModel->applyQxRecChng(recchng, source);
 	}
 }
 
-void CardReaderWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
-{
-	Q_UNUSED(connection_id)
-	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_CARD_READ)) {
-		int card_id = data.toInt();
-		if(isVisible()) {
-			updateTableView(card_id);
-		}
-	}
-}
+// void CardReaderWidget::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
+// {
+// 	Q_UNUSED(connection_id)
+// 	if(domain == QLatin1String(Event::EventPlugin::DBEVENT_CARD_READ)) {
+// 		int card_id = data.toInt();
+// 		if(isVisible()) {
+// 			updateTableView(card_id);
+// 		}
+// 	}
+// }
 
 void CardReaderWidget::createActions()
 {
@@ -595,7 +722,7 @@ siut::BtSiDeviceDriver *CardReaderWidget::btDriver()
 void CardReaderWidget::setConnectionInfoLabel(const QString &info, NecroLog::Level level)
 {
 	ui->lblConnectionInfo->setText(info);
-    ui->lblConnectionInfo->setStyleSheet(level < NecroLogLevel::Info? "background: salmon": "");
+	ui->lblConnectionInfo->setStyleSheet(level < NecroLogLevel::Info? "background: salmon": "");
 }
 
 void CardReaderWidget::updateButtonsEnabled()
@@ -629,6 +756,7 @@ void CardReaderWidget::onBtConnectionChanged(bool connected)
 	// keep the button in sync (e.g. on unexpected disconnect)
 	QSignalBlocker blocker(ui->btBtReader);
 	ui->btBtReader->setChecked(connected);
+	ui->btBtReader->setStyleSheet(connected ? (qf::gui::isDarkTheme()? "background: darkgreen;": "background: lime;") : QString());
 	updateConnectionInfoLabel();
 }
 
@@ -675,19 +803,23 @@ void CardReaderWidget::onOpenUsbTriggered(bool checked)
 void CardReaderWidget::onOpenBtTriggered(bool checked)
 {
 	qfLogFuncFrame() << "checked:" << checked;
+	ui->btBtReader->setStyleSheet(QString());
 	if(checked) {
+		delete m_btDriver;
+		m_btDriver = nullptr;
 		CardReaderSettings settings;
-		const QBluetoothDeviceInfo bt_info = CardReader::btDeviceInfoFromMap(settings.btsiDeviceInfoMap());
-		if (bt_info.isValid()) {
-			ui->lblConnectionInfo->setText(tr("Connecting to BT SI Reader %1 …").arg(bt_info.address().toString()));
-			btDriver()->connectToDevice(bt_info);
+		const QString address = settings.btsiDevice().value(QStringLiteral("address")).toString().trimmed();
+		if (!address.isEmpty()) {
+			ui->lblConnectionInfo->setText(tr("Connecting to BT SI Reader %1 …").arg(address));
+			btDriver()->connectToDevice(address);
 		} else {
 			qf::gui::dialogs::MessageBox::showError(
 				this, tr("BT SI Reader: no device address configured.\n"
 				         "Please set it in Settings Card reader."));
 		}
 	} else {
-		btDriver()->disconnectFromDevice();
+		delete m_btDriver;
+		m_btDriver = nullptr;
 	}
 }
 
@@ -841,6 +973,7 @@ void CardReaderWidget::updateTableView(int card_id)
 		return;
 	}
 	ui->tblCards->updateRow(0);
+	updateStatistics();
 }
 
 void CardReaderWidget::showSelectedReceipt()
@@ -902,26 +1035,15 @@ void CardReaderWidget::assignRunnerToSelectedCard()
 				QVariantMap rec {
 					{"isRunning", true},
 				};
-				app->updateDbRecord("runs", run_id, rec, this);
+				app->qxSql()->updateRecord("runs", run_id, rec, this);
 				// QString qs = "UPDATE runs SET isRunning=true WHERE competitorId=" QF_IARG(competitor_id) " AND stageId=" QF_IARG(stage_id);
 				// q.execThrow(qs);
 			}
 		}
 		{
 			getPlugin<CardReaderPlugin>()->assignCardToRun(card_id, run_id);
-			q.execThrow("SELECT id FROM runs WHERE competitorId=" QF_IARG(competitor_id)
-						" AND stageId>=" QF_IARG(stage_id)
-						" ORDER BY stageId");
-			int n = 0;
-			auto *app = qf::gui::framework::Application::instance();
 			bool use_si_in_next_stages = values.value(Runs::FindRunnerWidget::UseSIInNextStages).toBool();
-			while (q.next()) {
-				QVariantMap rec { {"siId", si_id}, };
-				auto run_id = q.value(0).toInt();
-				if (n++ == 0 || use_si_in_next_stages) {
-					app->updateDbRecord("runs", run_id, rec, this);
-				}
-			}
+			getPlugin<RunsPlugin>()->setCompetitorRunsSiId(competitor_id, stage_id, si_id, use_si_in_next_stages, this);
 			// QString qs = "UPDATE runs SET siId=" QF_IARG(si_id) " WHERE competitorId=" QF_IARG(competitor_id) " AND stageId=" QF_IARG(stage_id);
 			// if(values.value(Runs::FindRunnerWidget::UseSIInNextStages).toBool()) {
 			// 	qs = "UPDATE runs SET siId=" QF_IARG(si_id) " WHERE competitorId=" QF_IARG(competitor_id) " AND stageId>=" QF_IARG(stage_id);

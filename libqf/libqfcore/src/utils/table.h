@@ -131,6 +131,7 @@ public:
 		Field(const QString &name, int user_type);
 
 		bool isNull() const {return d == sharedNull().d;}
+		bool operator==(const Field &) const = default;
 
 		QString shortName() const;
 		/// [schema.]table

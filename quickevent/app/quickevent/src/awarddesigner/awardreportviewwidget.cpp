@@ -48,24 +48,14 @@ AwardReportViewWidget::AwardReportViewWidget(const QString &typ_source, const QS
 	, m_typSource(typ_source)
 	, m_imageFiles(image_files)
 	, m_pages(pages)
+	, m_renderer(m_typSource, m_imageFiles)
+	, m_renderers(pages.size())
 {
 	setPersistentSettingsId(QStringLiteral("awardReportView"));
 
 	const QSizeF page_size = AwardDesigner::Design::pageSizeFromTypst(m_typSource);
 	m_pageW = page_size.width();
 	m_pageH = page_size.height();
-
-	AwardTypstRenderer renderer(m_typSource, m_imageFiles);
-	qf::gui::framework::CursorOverrider cov(Qt::WaitCursor);
-	QApplication::processEvents(); // paint the wait cursor before the blocking Typst render
-	const QList<QByteArray> svgs = renderer.renderToSvgs(m_pages);
-	for (const QByteArray &svg : svgs) {
-		auto r = QSharedPointer<QSvgRenderer>::create();
-		if (r->load(svg))
-			m_renderers.append(r);
-		else
-			qfWarning() << "Cannot load a rendered award SVG page";
-	}
 
 	auto *layout = new QVBoxLayout(this);
 	layout->setSpacing(0);
@@ -251,9 +241,31 @@ void AwardReportViewWidget::setScale(qreal scale)
 	refreshWidget();
 }
 
+// Pages are rendered one by one on demand: Typst embeds the background image into every SVG,
+// so rendering and parsing all pages up front is slow for large documents.
+QSvgRenderer *AwardReportViewWidget::pageRenderer(int pg_no)
+{
+	auto &r = m_renderers[pg_no];
+	if (r.isNull()) {
+		qf::gui::framework::CursorOverrider cov(Qt::WaitCursor);
+		const QList<QByteArray> svgs = m_renderer.renderToSvgs({m_pages.at(pg_no)});
+		if (svgs.isEmpty()) {
+			return nullptr;
+		}
+		auto renderer = QSharedPointer<QSvgRenderer>::create();
+		if (!renderer->load(svgs.first())) {
+			qfWarning() << "Cannot load a rendered award SVG page";
+			return nullptr;
+		}
+		r = renderer;
+	}
+	return r.data();
+}
+
 void AwardReportViewWidget::refreshCurrentPage()
 {
-	if (m_currentPageNo < 0 || m_currentPageNo >= m_renderers.size()) {
+	QSvgRenderer *page_renderer = (m_currentPageNo >= 0 && m_currentPageNo < pageCount()) ? pageRenderer(m_currentPageNo) : nullptr;
+	if (!page_renderer) {
 		m_pageLabel->clear();
 		m_pageLabel->resize(0, 0);
 		return;
@@ -268,7 +280,7 @@ void AwardReportViewWidget::refreshCurrentPage()
 	img.fill(Qt::transparent);
 	QPainter p(&img);
 	p.fillRect(QRect(PAGE_BORDER, PAGE_BORDER, w, h), Qt::white);
-	m_renderers.at(m_currentPageNo)->render(&p, QRectF(PAGE_BORDER, PAGE_BORDER, w, h));
+	page_renderer->render(&p,QRectF(PAGE_BORDER, PAGE_BORDER, w, h));
 	p.end();
 
 	m_pageLabel->setPixmap(QPixmap::fromImage(img));
@@ -363,10 +375,19 @@ void AwardReportViewWidget::print(QPrinter &printer)
 		return;
 	}
 	const QRectF target = printer.pageRect(QPrinter::DevicePixel);
-	for (int i = 0; i < m_renderers.size(); ++i) {
-		if (i > 0)
+	// One Typst run for all pages (much faster than per-page), parsed and released page by page.
+	qf::gui::framework::CursorOverrider cov(Qt::WaitCursor);
+	const QList<QByteArray> svgs = m_renderer.renderToSvgs(m_pages);
+	for (int i = 0; i < svgs.size(); ++i) {
+		QSvgRenderer renderer;
+		if (!renderer.load(svgs.at(i))) {
+			qfWarning() << "Cannot load a rendered award SVG page";
+			continue;
+		}
+		if (i > 0) {
 			printer.newPage();
-		m_renderers.at(i)->render(&painter, target);
+		}
+		renderer.render(&painter, target);
 	}
 	painter.end();
 }

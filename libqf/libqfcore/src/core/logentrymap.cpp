@@ -2,6 +2,10 @@
 
 #include <QDateTime>
 
+#ifdef Q_CC_MSVC
+template class QFCORE_DECL_EXPORT QMap<QString, QVariant>;
+#endif
+
 namespace qf::core {
 
 //=========================================================

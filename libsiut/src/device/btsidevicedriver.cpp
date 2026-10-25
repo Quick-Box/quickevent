@@ -181,9 +181,8 @@ BtSiDeviceDriver::BtSiDeviceDriver(QObject *parent)
 
 BtSiDeviceDriver::~BtSiDeviceDriver()
 {
-	// Disconnect without emitting signals from a partially-destroyed object
-	// if (m_discoveryAgent->isActive())
-	// 	m_discoveryAgent->stop();
+	if (m_discoveryAgent)
+		m_discoveryAgent->stop();
 
 	clearServices();
 
@@ -203,34 +202,23 @@ bool BtSiDeviceDriver::isConnected() const
 	return m_connected;
 }
 
-// void BtSiDeviceDriver::connectToDevice(const QString &address)
-// {
-// 	if (address.isEmpty()) {
-// 		emitInfo(NecroLog::Level::Error, tr("connectToDevice: empty address."));
-// 		return;
-// 	}
-// 	m_targetAddress = address.toUpper().trimmed();
-// 	emitInfo(NecroLog::Level::Info,
-// 	         tr("Starting BLE scan for device %1 ...").arg(m_targetAddress));
-// 	startScan();
-// }
-
-void BtSiDeviceDriver::connectToDevice(const QBluetoothDeviceInfo &info)
+void BtSiDeviceDriver::connectToDevice(const QString &address)
 {
-	if (!info.isValid()) {
-		emitInfo(NecroLog::Level::Error, tr("connectToDevice: invalid QBluetoothDeviceInfo."));
+	const QString target_address = address.trimmed();
+	if (target_address.isEmpty()) {
+		emitInfo(NecroLog::Level::Error, tr("connectToDevice: empty Bluetooth address."));
 		return;
 	}
-	m_deviceInfo = info;
-	emitInfo(NecroLog::Level::Info,
-	         tr("Connecting to BLE device %1 %2 ...").arg(info.address().toString().toUpper()).arg(info.name()));
-	createController(info);
+
+	if (m_controller || (m_discoveryAgent && m_discoveryAgent->isActive()))
+		disconnectFromDevice();
+
+	emitInfo(NecroLog::Level::Info, tr("Looking for BLE device %1 ...").arg(target_address));
+	startScan(target_address);
 }
 
 void BtSiDeviceDriver::disconnectFromDevice()
 {
-	// if (m_discoveryAgent->isActive())
-	// 	m_discoveryAgent->stop();
 
 	clearServices();
 
@@ -254,52 +242,47 @@ void BtSiDeviceDriver::disconnectFromDevice()
 // BtSiDeviceDriver — scan
 // ===========================================================================
 
-// void BtSiDeviceDriver::startScan()
-// {
-// 	if (m_discoveryAgent->isActive())
-// 		m_discoveryAgent->stop();
-// 	m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
-// }
+void BtSiDeviceDriver::startScan(const QString &address)
+{
+	if (!m_discoveryAgent) {
+		m_discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
+		m_discoveryAgent->setLowEnergyDiscoveryTimeout(10000);
+	}
 
-// void BtSiDeviceDriver::onDeviceDiscovered(const QBluetoothDeviceInfo &info)
-// {
-// 	if (!(info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration))
-// 		return;
+	if (m_discoveryAgent->isActive())
+		m_discoveryAgent->stop();
 
-// 	bool matches = false;
-// 	qfInfo() << "BT device discovered:" << info.address().toString().toUpper() << info.name();
-// 	// MAC address format (Linux, Windows)
-// 	if (m_targetAddress.contains(':')) {
-// 		matches = info.address().toString().toUpper() == m_targetAddress;
-// 		// macOS: address() is always empty, fall back to name matching
-// 		if (!matches && info.address().isNull())
-// 			matches = !info.name().isEmpty() &&
-// 			          info.name().compare(m_targetAddress, Qt::CaseInsensitive) == 0;
-// 	} else {
-// 		// User entered a device name (useful on macOS where addresses are unavailable)
-// 		matches = info.name().compare(m_targetAddress, Qt::CaseInsensitive) == 0;
-// 	}
+	// The agent is reused, but each scan must use its current target address.
+	QObject::disconnect(m_discoveryAgent, nullptr, this, nullptr);
+	connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered,
+			this, [this, address](const QBluetoothDeviceInfo &info) {
+				if (info.address().toString().compare(address, Qt::CaseInsensitive) != 0)
+					return;
 
-// 	if (matches) {
-// 		emitInfo(NecroLog::Level::Info, tr("Found BLE device: %1 (%2)").arg(info.name(), info.address().toString()));
-// 		m_discoveryAgent->stop();
-// 		createController(info);
-// 	}
-// }
+				m_discoveryAgent->stop();
+				emitInfo(NecroLog::Level::Info,
+						tr("Found BLE device %1 %2, connecting ...")
+							.arg(info.address().toString().toUpper())
+							.arg(info.name()));
+				m_deviceInfo = info;
+				createController(info);
+			});
+	connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished, this,
+				[this, address]() {
+					if (!m_controller)
+						emitInfo(NecroLog::Level::Error,
+								tr("BLE device %1 was not found.").arg(address));
+				});
+	connect(m_discoveryAgent, &QBluetoothDeviceDiscoveryAgent::errorOccurred, this,
+				[this](QBluetoothDeviceDiscoveryAgent::Error error) {
+					Q_UNUSED(error)
+					emitInfo(NecroLog::Level::Error,
+							tr("BLE discovery error: %1").arg(m_discoveryAgent->errorString()));
+				});
 
-// void BtSiDeviceDriver::onScanFinished()
-// {
-// 	// Scan ended without finding the device (it would have been stopped early on match)
-// 	if (!m_controller) {
-// 		emitInfo(NecroLog::Level::Warning, tr("BLE scan finished — device %1 not found.").arg(m_targetAddress));
-// 	}
-// }
+	m_discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
+}
 
-// void BtSiDeviceDriver::onScanError(QBluetoothDeviceDiscoveryAgent::Error error)
-// {
-// 	Q_UNUSED(error)
-// 	emitInfo(NecroLog::Level::Error, tr("BLE scan error: %1").arg(m_discoveryAgent->errorString()));
-// }
 
 // ===========================================================================
 // BtSiDeviceDriver — GATT controller
@@ -307,7 +290,13 @@ void BtSiDeviceDriver::disconnectFromDevice()
 
 void BtSiDeviceDriver::createController(const QBluetoothDeviceInfo &info)
 {
+	if (m_controller)
+		m_controller->deleteLater();
 	m_controller = QLowEnergyController::createCentral(info, this);
+	if (!m_controller) {
+		emitInfo(NecroLog::Level::Error, tr("Unable to create BLE controller."));
+		return;
+	}
 
 	connect(m_controller, &QLowEnergyController::connected, this, &BtSiDeviceDriver::onControllerConnected);
 	connect(m_controller, &QLowEnergyController::disconnected, this, &BtSiDeviceDriver::onControllerDisconnected);

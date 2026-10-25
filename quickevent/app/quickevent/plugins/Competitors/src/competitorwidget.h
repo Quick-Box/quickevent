@@ -25,6 +25,7 @@ public:
 private:
 	void onRegistrationSelected(const QVariantMap &values);
 	void onSwitchNames();
+	void onSwitchCards();
 	bool loadRunsTable();
 	bool saveRunsTable();
 	// void onRunsTableCustomContextMenuRequest(const QPoint &pos);

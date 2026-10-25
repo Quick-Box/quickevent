@@ -1,0 +1,57 @@
+#ifndef REPORTSTABLEMODEL_H
+#define REPORTSTABLEMODEL_H
+
+#include <QAbstractTableModel>
+#include <QList>
+#include <QString>
+
+namespace Core {
+
+class ReportsTableModel : public QAbstractTableModel
+{
+	Q_OBJECT
+
+public:
+	enum Column {
+		FileNameColumn,
+		FileSizeColumn,
+		ResourcesHashColumn,
+		LocalHashColumn,
+		DatabaseHashColumn,
+		ColumnCount
+	};
+
+	struct Report {
+		QString relativePath;
+		qint64 size = 0;
+		QString resourcesHash;
+		QString localHash;
+		QString databaseHash;
+	};
+
+	explicit ReportsTableModel(QObject *parent = nullptr);
+
+	int rowCount(const QModelIndex &parent = {}) const override;
+	int columnCount(const QModelIndex &parent = {}) const override;
+	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+	Qt::ItemFlags flags(const QModelIndex &index) const override;
+
+	void load();
+	bool saveReportToDb(const QModelIndex &report_index, QString *error_text = nullptr);
+	bool clearReportFromDb(const QModelIndex &report_index, QString *error_text = nullptr);
+	bool restoreReportFromDb(const QModelIndex &report_index, QString *error_text = nullptr);
+	bool restoreReportFromResources(const QModelIndex &report_index, QString *error_text = nullptr);
+	void setReports(QList<Report> reports);
+	const Report &reportAt(int row) const;
+
+private:
+	void emitReportHashChanged(const QModelIndex &report_index);
+
+	QString m_reportsDir;
+	QList<Report> m_reports;
+};
+
+}
+
+#endif // REPORTSTABLEMODEL_H

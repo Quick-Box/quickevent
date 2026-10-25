@@ -18,6 +18,7 @@ using namespace drawing;
 StartSlotItem::StartSlotItem(QGraphicsItem *parent)
 	: Super(parent), IGanttItem(this)
 {
+	m_config = {};
 	m_header = new StartSlotHeader(this);
 	//setFlag(QGraphicsItem::ItemIsSelectable);
 	setAcceptDrops(true);

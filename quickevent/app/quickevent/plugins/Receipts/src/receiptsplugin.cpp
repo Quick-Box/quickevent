@@ -51,6 +51,9 @@ using ::PartWidget;
 using qff::getPlugin;
 using Event::EventPlugin;
 using CardReader::CardReaderPlugin;
+using quickevent::core::og::quantizeTimeMsec;
+using quickevent::core::og::TimeMeasurementPrecision;
+using quickevent::core::og::TimeMs;
 
 namespace Receipts {
 
@@ -341,7 +344,8 @@ QVariantMap ReceiptsPlugin::readCardTablesData(int card_id)
 		for(const auto &v : read_card.punches()) {
 			quickevent::core::si::ReadPunch punch(v.toMap());
 			int punch_time_ms = punch.time() * 1000 + punch.msec();
-			int stp_time_ms = quickevent::core::og::TimeMs::msecIntervalAM(start_time_ms, punch_time_ms);
+			// printed in whole seconds, quantize so that printed laps sum up to printed split times
+			int stp_time_ms = quantizeTimeMsec(TimeMs::msecIntervalAM(start_time_ms, punch_time_ms), TimeMeasurementPrecision::Second);
 			int ix = tt.appendRow();
 			qf::core::utils::TreeTableRow tt_row = tt.row(ix);
 			++position;
@@ -360,7 +364,8 @@ QVariantMap ReceiptsPlugin::readCardTablesData(int card_id)
 			//ttr.setValue("position", position);
 			//ttr.setValue("code", code);
 			int punch_time_ms = read_card.finishTime() * 1000 + read_card.finishTimeMs();
-			int stp_time_ms = quickevent::core::og::TimeMs::msecIntervalAM(start_time_ms, punch_time_ms);
+			// printed in whole seconds, quantize so that printed laps sum up to printed split times
+			int stp_time_ms = quantizeTimeMsec(TimeMs::msecIntervalAM(start_time_ms, punch_time_ms), TimeMeasurementPrecision::Second);
 			qf::core::utils::TreeTableRow tt_row = tt.row(ix);
 			tt_row.setValue(QStringLiteral("punchTimeMs"), punch_time_ms);
 			tt_row.setValue(QStringLiteral("stpTimeMs"), stp_time_ms);
@@ -435,15 +440,26 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 		if(model.rowCount() == 1) {
 			competitor_class_name = model.value(0, QStringLiteral("classes.name")).toString().trimmed();
 			stage_id = model.value(0, "runs.stageId").toInt();
-			qf::core::sql::Query run_laps;
-			run_laps.execThrow("SELECT runlaps.position, runlaps.code, runlaps.lapTimeMs FROM runlaps WHERE runId = " QF_IARG(run_id) " ORDER BY position");
-			while(run_laps.next()) {
-				int pos = run_laps.value("position").toInt();
-				int lapTimeMs = run_laps.value("lapTimeMs").toInt();
+			struct Lap
+			{
+				int position;
+				int lapTimeMs;
+			};
+			QList<Lap> run_laps;
+			{
+				qf::core::sql::Query q;
+				q.execThrow("SELECT runlaps.position, runlaps.lapTimeMs FROM runlaps WHERE runId = " QF_IARG(run_id) " ORDER BY position");
+				while(q.next()) {
+					run_laps << Lap{q.value(0).toInt(), q.value(1).toInt()};
+				}
+			}
+			if(!run_laps.isEmpty()) {
+				// laps of all the ranked runs in the class are loaded by single query and standings are computed here,
+				// query per lap makes receipt printing slow when SQL server is connected via slow network
+				QMap<int, QList<Lap>> class_laps; // runId->laps
 				{
-					// best lap times and position/place/standing in lap
 					qf::core::sql::QueryBuilder qb_laps;
-					qb_laps.select("MIN(runlaps.lapTimeMs) AS minLapTimeMs, SUM(CASE WHEN runlaps.lapTimeMs < " QF_IARG(lapTimeMs) " THEN 1 ELSE 0 END) as standingLap");
+					qb_laps.select2("runlaps", "runId, position, lapTimeMs");
 					if(is_relays) {
 						int leg = model.value(0, "runs.leg").toInt();
 						int class_id = model.value(0, "relays.classId").toInt();
@@ -458,66 +474,56 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 							.join("competitors.id", "runs.competitorId",qf::core::sql::QueryBuilder::INNER_JOIN)
 							.where("runs.stageId=" QF_IARG(stage_id)
 								" AND competitors.classId=" QF_IARG(class_id));
-
-
 					}
 					qb_laps.join("runs.id", "runlaps.runId", qf::core::sql::QueryBuilder::INNER_JOIN)
 						.where("runlaps.position > 0"
 							" AND runlaps.lapTimeMs > 0"
-							" AND runlaps.position=" QF_IARG(pos)
 							" AND NOT runs.disqualified"
 							" AND runs.isRunning"
-							" AND NOT runs.misPunch")
-						.groupBy("runlaps.position");
-					qf::core::sql::Query q_laps;
-					q_laps.execThrow(qb_laps.toString());
-					if (q_laps.next()) {
-						best_laps[pos] = q_laps.value("minLapTimeMs").toInt();
-						lap_stand[pos] = q_laps.value("standingLap").toInt() + 1;
+							" AND NOT runs.misPunch");
+					qf::core::sql::Query q;
+					q.execThrow(qb_laps.toString());
+					while(q.next()) {
+						class_laps[q.value(0).toInt()] << Lap{q.value(1).toInt(), q.value(2).toInt()};
 					}
 				}
-				{
-					// current position/place/standing after lap
-					qf::core::sql::Query q_run_curr_time;
-					q_run_curr_time.execThrow("SELECT SUM(lapTimeMs) as currTime FROM runlaps WHERE position <= " QF_IARG(pos) " AND runId = " QF_IARG(run_id) " GROUP BY runId" );
-					q_run_curr_time.next();
-					int run_curr_time = q_run_curr_time.value("currTime").toInt();
-
-					qf::core::sql::QueryBuilder qb_curr_times;
-					qb_curr_times.select("runs.id, SUM(runlaps.lapTimeMs) as currTime");
-					if(is_relays) {
-						int leg = model.value(0, "runs.leg").toInt();
-						int class_id = model.value(0, "relays.classId").toInt();
-						qb_curr_times.from("relays")
-							.join("relays.id", "runs.relayId", qf::core::sql::QueryBuilder::INNER_JOIN)
-							.where("relays.classId=" QF_IARG(class_id)
-								" AND runs.leg=" QF_IARG(leg));
+				for(const Lap &run_lap : run_laps) {
+					int pos = run_lap.position;
+					int run_curr_time = 0;
+					for(const Lap &lap : run_laps) {
+						if(lap.position <= pos)
+							run_curr_time += lap.lapTimeMs;
 					}
-					else {
-						int class_id = model.value(0, "competitors.classId").toInt();
-						qb_curr_times.from("competitors")
-							.join("competitors.id", "runs.competitorId",qf::core::sql::QueryBuilder::INNER_JOIN)
-							.where("runs.stageId=" QF_IARG(stage_id)
-								" AND competitors.classId=" QF_IARG(class_id));
-
-
+					bool lap_found = false;
+					int best_lap = 0;
+					int lap_standing = 0;
+					int curr_standing = 0;
+					for(const QList<Lap> &laps : class_laps) {
+						bool curr_time_found = false;
+						int curr_time = 0;
+						for(const Lap &lap : laps) {
+							if(lap.position == pos) {
+								// best lap times and position/place/standing in lap
+								if(!lap_found || lap.lapTimeMs < best_lap)
+									best_lap = lap.lapTimeMs;
+								lap_found = true;
+								if(lap.lapTimeMs < run_lap.lapTimeMs)
+									lap_standing++;
+							}
+							if(lap.position <= pos) {
+								curr_time_found = true;
+								curr_time += lap.lapTimeMs;
+							}
+						}
+						// current position/place/standing after lap
+						if(curr_time_found && curr_time < run_curr_time)
+							curr_standing++;
 					}
-					qb_curr_times.join("runs.id", "runlaps.runId", qf::core::sql::QueryBuilder::INNER_JOIN)
-						.where("runlaps.position > 0"
-							" AND runlaps.lapTimeMs > 0"
-							" AND runlaps.position<=" QF_IARG(pos)
-							" AND NOT runs.disqualified"
-							" AND runs.isRunning"
-							" AND NOT runs.misPunch")
-						.groupBy("runs.id");
-					qf::core::sql::Query q_curr_time;
-					q_curr_time.execThrow(
-								"SELECT COUNT(*) as currStanding"
-								" FROM (" + qb_curr_times.toString() + ") AS foo"
-								" WHERE currTime < " QF_IARG(run_curr_time));
-					if (q_curr_time.next()) {
-						lap_stand_cummulative[pos] = q_curr_time.value("currStanding").toInt() + 1;
+					if(lap_found) {
+						best_laps[pos] = best_lap;
+						lap_stand[pos] = lap_standing + 1;
 					}
+					lap_stand_cummulative[pos] = curr_standing + 1;
 				}
 			}
 			if(is_relays) {
@@ -619,6 +625,7 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 		}
 		tt.setValue("isOk", checked_card.isOk());
 		int position = 0;
+		int prev_stp_time_ms = 0;
 		for(const auto &v : checked_card.punches()) {
 			quickevent::core::si::CheckedPunch punch(v.toMap());
 			int ix = tt.appendRow();
@@ -630,9 +637,12 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 			tt_row.setValue("stpTimeMs", punch.stpTimeMs());
 			tt_row.setValue("standLap", lap_stand[position]);
 			tt_row.setValue("standCummulative", lap_stand_cummulative[position]);
-			int lap = punch.lapTimeMs();
+			// receipt is printed in whole seconds, compute lap and loss in whole seconds too, so that printed laps sum up to printed split times
+			int stp_time_ms = quantizeTimeMsec(punch.stpTimeMs(), TimeMeasurementPrecision::Second);
+			int lap = (punch.lapTimeMs() > 0)? stp_time_ms - prev_stp_time_ms: punch.lapTimeMs();
+			prev_stp_time_ms = stp_time_ms;
 			tt_row.setValue("lapTimeMs", lap);
-			int best_lap = best_laps.value(position);
+			int best_lap = quantizeTimeMsec(best_laps.value(position), TimeMeasurementPrecision::Second);
 			if(lap > 0 && best_lap > 0) {
 				int loss = lap - best_lap;
 				tt_row.setValue("lossMs", loss);

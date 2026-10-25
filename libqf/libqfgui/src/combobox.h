@@ -35,17 +35,24 @@ public:
 	Q_INVOKABLE void setItems(const QVariantList &items);
 	Q_INVOKABLE virtual void removeItems();
 	Q_INVOKABLE virtual void loadItems(bool force = false);
+
+	// Show popup items in several shorter columns instead of one long list.
+	void setMultiColumnPopup(bool b);
+	void showPopup() Q_DECL_OVERRIDE;
 protected:
 	QVariant dataValue() Q_DECL_OVERRIDE;
 	void setDataValue(const QVariant &value) Q_DECL_OVERRIDE;
 	Q_SIGNAL void dataValueChanged(const QVariant &value);
 
 	Q_SLOT virtual void onCurrentTextChanged(const QString &txt);
+	bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 private:
+	void updateMultiColumnPopupGeometry();
 	Q_SLOT void currentDataChanged_helper(int ix);
 	Q_SLOT void currentDataActivated_helper(int ix);
 protected:
 	bool m_ignoreIndexChangedSignals = false;
+	bool m_multiColumnPopup = false;
 };
 
 class QFGUI_DECL_EXPORT ForeignKeyComboBox : public ComboBox

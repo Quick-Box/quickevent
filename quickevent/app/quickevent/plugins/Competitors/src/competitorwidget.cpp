@@ -6,6 +6,7 @@
 #include <plugins/Classes/src/classesplugin.h>
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Runs/src/cardflagsdialog.h>
+#include <plugins/Runs/src/findrunnerwidget.h>
 #include <plugins/Runs/src/runflagsdialog.h>
 #include <plugins/Runs/src/runsplugin.h>
 
@@ -16,11 +17,13 @@
 
 #include <qf/gui/dialogs/dialog.h>
 #include <qf/gui/dialogs/messagebox.h>
+#include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 
 #include <qf/core/sql/dbenum.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/assert.h>
 
 #include <QMenu>
@@ -178,6 +181,7 @@ CompetitorWidget::CompetitorWidget(QWidget *parent) :
 
 	connect(ui->edFind, &FindRegistrationEdit::registrationSelected, this, &CompetitorWidget::onRegistrationSelected);
 	connect(ui->btnSwitchNames, &QPushButton::clicked, this, &CompetitorWidget::onSwitchNames);
+	connect(ui->btnSwitchCards, &QPushButton::clicked, this, &CompetitorWidget::onSwitchCards);
 	connect(ui->btCreateRuns, &QPushButton::clicked, this, &CompetitorWidget::save);
 
 	dataController()->setDocument(new Competitors::CompetitorDocument(this));
@@ -321,6 +325,7 @@ bool CompetitorWidget::load(const QVariant &id, int mode)
 	}
 	else if(mode == qf::gui::model::DataDocument::ModeView || mode == qf::gui::model::DataDocument::ModeDelete) {
 		ui->frmFind->hide();
+		ui->btnSwitchCards->setEnabled(false);
 	}
 	if(Super::load(id, mode)) {
 		return loadRunsTable();
@@ -376,97 +381,7 @@ QString CompetitorWidget::guessClassFromRegistration(const QString &registration
 
 QList<int> CompetitorWidget::possibleStartTimesMs(int run_id)
 {
-	int class_id;
-	int stage_id;
-	int start_time;
-	QString club_abbr;
-	{
-		qf::core::sql::QueryBuilder qb;
-		qb.select2("runs", "competitorId, stageId, startTimeMs")
-				.select2("competitors", "classId, registration")
-				.from("runs")
-				.joinRestricted("runs.competitorId", "competitors.id", "runs.id=" QF_IARG(run_id), qf::core::sql::QueryBuilder::INNER_JOIN)
-				.where("runs.isRunning");
-		qfs::Query q;
-		q.exec(qb.toString(), qf::core::Exception::Throw);
-		if (q.next()) {
-			class_id = q.value("classId").toInt();
-			stage_id = q.value("stageId").toInt();
-			start_time = q.value("startTimeMs").toInt();
-			club_abbr = q.value("registration").toString().mid(0, 3).toUpper();
-		}
-		else {
-			return {};
-		}
-	}
-
-	Classes::ClassDef class_def;
-	class_def.load(class_id, stage_id, false);
-
-	if (class_def.classInterval == 0) {
-		return {};
-	}
-
-	struct S {
-		QString club;
-		int start_time = 0;
-
-		bool operator<(const S &o) const { return start_time < o.start_time; }
-	};
-	QList<S> runs;
-	{
-		qf::core::sql::QueryBuilder qb;
-		qb.select2("runs", "startTimeMs")
-				.select2("competitors", "registration")
-				.from("runs")
-				.joinRestricted("runs.competitorId", "competitors.id", "competitors.classId=" QF_IARG(class_id), qf::core::sql::QueryBuilder::INNER_JOIN)
-				.where("runs.stageId=" QF_IARG(stage_id))
-				.where("runs.isRunning")
-				.orderBy("runs.startTimeMs");
-		//qfInfo() << qb.toString();
-		qfs::Query q;
-		q.exec(qb.toString(), qf::core::Exception::Throw);
-		while (q.next()) {
-			//auto start_time = q.value("startTimeMs").toInt();
-			//if (start_time < class_def.classStartFirst) {
-			//	continue;
-			//}
-			runs << S {
-					.club = q.value("registration").toString().mid(0, 3).toUpper(),
-					.start_time = q.value("startTimeMs").toInt()
-			};
-		}
-		std::sort(runs.begin(), runs.end());
-	}
-	QList<int> ret;
-	auto start_interval_ms = class_def.classInterval * 60 * 1000;
-	for (auto stime = class_def.classStartFirst; stime <= class_def.classStartLast; stime += class_def.classInterval) {
-		S r { .club = {}, .start_time = stime };
-		auto [lo, up] = std::equal_range(runs.begin(), runs.end(), r);
-		if (lo == up || stime == start_time) {
-			// stime does not exist or it is my current start_time, should be inserted before up
-			// check next club
-			// qfInfo() << "free stime:" << quickevent::core::og::TimeMs(stime).toString();
-			if (up != runs.end()) {
-				qfInfo() << "next club:" << up->club;
-				if (up->club == club_abbr && (up->start_time - stime) <= start_interval_ms) {
-					// qfInfo() << "same next club:" << club_abbr;
-					continue;
-				}
-			}
-			// check prev club
-			if (up != runs.begin()) {
-				up--;
-				// qfInfo() << "prev club:" << up->club;
-				if (up->club == club_abbr && (stime - up->start_time) <= start_interval_ms) {
-					// qfInfo() << "same prev club:" << club_abbr;
-					continue;
-				}
-			}
-			ret << stime;
-		}
-	}
-	return ret;
+	return Competitors::CompetitorDocument::possibleStartTimesMs(run_id);
 }
 
 void CompetitorWidget::onRegistrationSelected(const QVariantMap &values)
@@ -555,5 +470,56 @@ void CompetitorWidget::onSwitchNames()
 	QString ln = doc->value("lastname").toString();
 	doc->setValue("firstname",ln);
 	doc->setValue("lastname",fn);
+}
+
+void CompetitorWidget::onSwitchCards()
+{
+	int stage_id = getPlugin<EventPlugin>()->currentStageId();
+	auto *w = new Runs::FindRunnerWidget(stage_id);
+	w->setWindowTitle(tr("Switch cards with runner"));
+	qf::gui::dialogs::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+	dlg.setPersistentSettingsId("dlgSwitchCardsWithRunner");
+	dlg.setCentralWidget(w);
+	w->focusLineEdit();
+	if(!dlg.exec()) {
+		return;
+	}
+	QVariantMap values = w->selectedRunner();
+	int other_competitor_id = values.value("competitorid").toInt();
+	if(other_competitor_id <= 0) {
+		return;
+	}
+	if(!saveData()) {
+		return;
+	}
+	int competitor_id = dataController()->document()->value("competitors.id").toInt();
+	if(competitor_id <= 0 || competitor_id == other_competitor_id) {
+		return;
+	}
+	bool use_si_in_next_stages = values.value(Runs::FindRunnerWidget::UseSIInNextStages).toBool();
+	try {
+		auto run_si_id = [stage_id](int comp_id) {
+			qfs::Query q;
+			q.execThrow("SELECT siId FROM runs WHERE competitorId=" QF_IARG(comp_id) " AND stageId=" QF_IARG(stage_id));
+			return q.next()? q.value(0).toInt(): 0;
+		};
+		int si_id = run_si_id(competitor_id);
+		int other_si_id = run_si_id(other_competitor_id);
+		auto set_si_id = [this, stage_id, use_si_in_next_stages](int comp_id, int new_si_id) {
+			QVariantMap rec { {"siId", new_si_id > 0? QVariant(new_si_id): QVariant()}, };
+			qf::gui::framework::Application::instance()->qxSql()->updateRecord("competitors", comp_id, rec, this);
+			getPlugin<Runs::RunsPlugin>()->setCompetitorRunsSiId(comp_id, stage_id, new_si_id, use_si_in_next_stages, this);
+		};
+		qfs::Transaction transaction;
+		set_si_id(competitor_id, other_si_id);
+		set_si_id(other_competitor_id, si_id);
+		transaction.commit();
+	}
+	catch (const qf::core::Exception &e) {
+		QMessageBox::warning(this, tr("SQL error"), e.message());
+		return;
+	}
+	getPlugin<Runs::RunsPlugin>()->clearRunnersTableCache();
+	load(competitor_id, qf::gui::model::DataDocument::ModeEdit);
 }
 

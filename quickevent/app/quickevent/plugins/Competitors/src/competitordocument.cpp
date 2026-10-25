@@ -1,5 +1,6 @@
 #include "competitordocument.h"
 
+#include <plugins/Classes/src/classesplugin.h>
 #include <plugins/Event/src/eventplugin.h>
 #include <plugins/Runs/src/runsplugin.h>
 
@@ -9,6 +10,7 @@
 
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/transaction.h>
 #include <qf/core/assert.h>
 
@@ -92,7 +94,7 @@ bool CompetitorDocument::saveData()
 					getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, rec});
 					// new update API
 					auto *app = qf::gui::framework::Application::instance();
-					app->emitDbRecInserted( "runs", run_id, rec, this);
+					app->qxSql()->emitRecInserted( "runs", run_id, rec, this);
 				}
 			}
 		}
@@ -103,7 +105,7 @@ bool CompetitorDocument::saveData()
 				auto *app = qf::gui::framework::Application::instance();
 				QVariantMap rec { {"siId", siid()}, };
 				for (const auto &[run_id, _] : old_records.asKeyValueRange()) {
-					app->updateDbRecord("runs", run_id, rec, this);
+					app->qxSql()->updateRecord("runs", run_id, rec, this);
 				}
 				// int competitor_id = dataId().toInt();
 				// qf::core::sql::Query q(sqlModel()->connectionName());
@@ -175,7 +177,7 @@ bool CompetitorDocument::dropData()
 				getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, {}});
 				// new update API
 				auto *app = qf::gui::framework::Application::instance();
-				app->emitDbRecDeleted("runs", run_id, this);
+				app->qxSql()->emitRecDeleted("runs", run_id, this);
 			}
 		}
 	}
@@ -210,6 +212,103 @@ void CompetitorDocument::setSiid(const QVariant &siid)
 QVariant CompetitorDocument::siid() const
 {
 	return value(SIID);
+}
+
+QList<int> CompetitorDocument::possibleStartTimesMs(int run_id)
+{
+	using namespace qf::core::sql;
+
+	int class_id;
+	int stage_id;
+	int start_time;
+	QString club_abbr;
+	{
+		qf::core::sql::QueryBuilder qb;
+		qb.select2("runs", "competitorId, stageId, startTimeMs")
+				.select2("competitors", "classId, registration")
+				.from("runs")
+				.joinRestricted("runs.competitorId", "competitors.id", "runs.id=" QF_IARG(run_id), qf::core::sql::QueryBuilder::INNER_JOIN)
+				.where("runs.isRunning");
+		Query q;
+		q.exec(qb.toString(), qf::core::Exception::Throw);
+		if (q.next()) {
+			class_id = q.value("classId").toInt();
+			stage_id = q.value("stageId").toInt();
+			start_time = q.value("startTimeMs").toInt();
+			club_abbr = q.value("registration").toString().mid(0, 3).toUpper();
+		}
+		else {
+			return {};
+		}
+	}
+
+	Classes::ClassDef class_def;
+	class_def.load(class_id, stage_id, false);
+
+	if (class_def.classInterval == 0) {
+		return {};
+	}
+
+	struct S {
+		QString club;
+		int start_time = 0;
+
+		bool operator<(const S &o) const { return start_time < o.start_time; }
+	};
+	QList<S> runs;
+	{
+		qf::core::sql::QueryBuilder qb;
+		qb.select2("runs", "startTimeMs")
+				.select2("competitors", "registration")
+				.from("runs")
+				.joinRestricted("runs.competitorId", "competitors.id", "competitors.classId=" QF_IARG(class_id), qf::core::sql::QueryBuilder::INNER_JOIN)
+				.where("runs.stageId=" QF_IARG(stage_id))
+				.where("runs.isRunning")
+				.orderBy("runs.startTimeMs");
+		//qfInfo() << qb.toString();
+		Query q;
+		q.exec(qb.toString(), qf::core::Exception::Throw);
+		while (q.next()) {
+			//auto start_time = q.value("startTimeMs").toInt();
+			//if (start_time < class_def.classStartFirst) {
+			//	continue;
+			//}
+			runs << S {
+					.club = q.value("registration").toString().mid(0, 3).toUpper(),
+					.start_time = q.value("startTimeMs").toInt()
+			};
+		}
+		std::sort(runs.begin(), runs.end());
+	}
+	QList<int> ret;
+	auto start_interval_ms = class_def.classInterval * 60 * 1000;
+	for (auto stime = class_def.classStartFirst; stime <= class_def.classStartLast; stime += class_def.classInterval) {
+		S r { .club = {}, .start_time = stime };
+		auto [lo, up] = std::equal_range(runs.begin(), runs.end(), r);
+		if (lo == up || stime == start_time) {
+			// stime does not exist or it is my current start_time, should be inserted before up
+			// check next club
+			// qfInfo() << "free stime:" << quickevent::core::og::TimeMs(stime).toString();
+			if (up != runs.end()) {
+				// qfInfo() << "next club:" << up->club;
+				if (up->club == club_abbr && (up->start_time - stime) <= start_interval_ms) {
+					// qfInfo() << "same next club:" << club_abbr;
+					continue;
+				}
+			}
+			// check prev club
+			if (up != runs.begin()) {
+				up--;
+				// qfInfo() << "prev club:" << up->club;
+				if (up->club == club_abbr && (stime - up->start_time) <= start_interval_ms) {
+					// qfInfo() << "same prev club:" << club_abbr;
+					continue;
+				}
+			}
+			ret << stime;
+		}
+	}
+	return ret;
 }
 
 

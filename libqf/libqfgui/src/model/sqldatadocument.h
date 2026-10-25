@@ -3,9 +3,7 @@
 #include "datadocument.h"
 #include "sqltablemodel.h"
 
-namespace qf {
-namespace gui {
-namespace model {
+namespace qf::gui::model {
 
 class QFGUI_DECL_EXPORT SqlDataDocument : public DataDocument
 {
@@ -21,7 +19,7 @@ public:
 	qf::core::sql::QueryBuilder queryBuilder();
 	void setQueryBuilder(const qf::core::sql::QueryBuilder &qb);
 protected:
-	SqlTableModel* createModel(QObject *parent) Q_DECL_OVERRIDE;
+	SqlTableModel* createModel(QObject *parent) override;
 
 	///! load model persistent storage via model
 	bool loadData() Q_DECL_OVERRIDE;
@@ -35,5 +33,5 @@ protected:
 	*/
 };
 
-}}}
+}
 
