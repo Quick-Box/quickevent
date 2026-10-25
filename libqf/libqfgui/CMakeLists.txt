@@ -84,6 +84,7 @@ add_library(libqfgui SHARED
     src/reports/processor/style/sheet.cpp
     src/reports/processor/style/styleobject.cpp
     src/reports/processor/style/text.cpp
+    src/reports/processor/xmlreportdocument.cpp
     src/reports/widgets/itemvalueeditorwidget.cpp
     src/reports/widgets/itemvalueeditorwidget.ui
     src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp

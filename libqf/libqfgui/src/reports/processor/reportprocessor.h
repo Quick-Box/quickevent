@@ -60,7 +60,7 @@ public:
 public:
 	/// vymaze vsechna data vznikla predchozimi kompilacemi
 	void reset();
-	/// load report from QML file
+	/// load report from XML (*.xml) or QML file
 	bool setReport(const QString &rep_file_name, const QVariantMap &report_init_properties = QVariantMap());
 	void setReport(std::unique_ptr<ReportDocument> doc, const QVariantMap &report_init_properties = QVariantMap());
 	QUrl reportUrl() const;

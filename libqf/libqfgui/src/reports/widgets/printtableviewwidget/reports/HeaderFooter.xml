@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Frame width="%" height="%" textStyle="reportHeader">
+	<Frame layout="LayoutHorizontal" bottomBorder="blue1">
+		<Para>QuickBox reports</Para>
+		<Para width="%"/>
+		<Para>{{$now|datetime}}</Para>
+	</Frame>
+	<Frame height="%"/>
+	<Frame width="%" layout="LayoutHorizontal" topBorder="blue1">
+		<Para>{{$reportTitle}}</Para>
+		<Para width="%"/>
+		<Para>Page {{$page}}/@{n}</Para>
+	</Frame>
+</Frame>

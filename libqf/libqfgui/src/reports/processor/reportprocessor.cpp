@@ -2,6 +2,7 @@
 #include "reportitemreport.h"
 #include "reportpainter.h"
 #include "qmlreportdocument.h"
+#include "xmlreportdocument.h"
 
 #include <qf/core/utils/fileutils.h>
 #include <qf/core/log.h>
@@ -54,10 +55,18 @@ bool ReportProcessor::setReport(const QString &rep_file_name, const QVariantMap 
 	QF_TIME_SCOPE("ReportProcessor::setReport()");
 	reset();
 	m_reportDocument.reset();
-	auto doc = std::make_unique<QmlReportDocument>(this);
-	if(!doc->load(rep_file_name))
-		return false;
-	setReport(std::move(doc), report_init_properties);
+	if(rep_file_name.endsWith(QLatin1String(".xml"), Qt::CaseInsensitive)) {
+		auto doc = std::make_unique<XmlReportDocument>();
+		if(!doc->load(rep_file_name))
+			return false;
+		setReport(std::move(doc), report_init_properties);
+	}
+	else {
+		auto doc = std::make_unique<QmlReportDocument>(this);
+		if(!doc->load(rep_file_name))
+			return false;
+		setReport(std::move(doc), report_init_properties);
+	}
 	return true;
 }
 
