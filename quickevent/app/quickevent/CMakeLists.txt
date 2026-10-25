@@ -227,24 +227,6 @@ add_executable(quickevent
 
 	plugins/Classes/qml/reports/table.qml
 
-	plugins/Event/qml/DbSchema.qml
-	plugins/Event/qml/sql/def/Boolean.qml
-	plugins/Event/qml/sql/def/Date.qml
-	plugins/Event/qml/sql/def/DateTime.qml
-	plugins/Event/qml/sql/def/Enum.qml
-	plugins/Event/qml/sql/def/Field.qml
-	plugins/Event/qml/sql/def/ForeignKeyReference.qml
-	plugins/Event/qml/sql/def/Index.qml
-	plugins/Event/qml/sql/def/Insert.qml
-	plugins/Event/qml/sql/def/Int.qml
-	plugins/Event/qml/sql/def/Real.qml
-	plugins/Event/qml/sql/def/Schema.qml
-	plugins/Event/qml/sql/def/Serial.qml
-	plugins/Event/qml/sql/def/String.qml
-	plugins/Event/qml/sql/def/Table.qml
-	plugins/Event/qml/sql/def/Time.qml
-	plugins/Event/qml/sql/def/private/FieldType.qml
-
 	plugins/Receipts/qml/reports/error.qml
 	plugins/Receipts/qml/reports/errorlong.qml
 	plugins/Receipts/qml/reports/sicard.qml
