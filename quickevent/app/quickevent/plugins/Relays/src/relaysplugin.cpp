@@ -875,7 +875,7 @@ QString RelaysPlugin::resultsIofXml30()
 				append_list(person_result, QVariantList{"Leg", k+1 } );
 				append_list(person_result, QVariantList{"BibNumber", QString::number(relay_number) + '.' + QString::number(k+1)});
 				int run_id = tt_leg_row.value(QStringLiteral("runId")).toInt();
-				int stime = 0, ftime = 0, time_msec = 0, siId = 0;
+				int stime = 0, ftime = 0, time_msec = 0, si_id = 0;
 				bool is_stime_null = true;
 				if(run_id > 0) {
 					qfs::QueryBuilder qb;
@@ -888,7 +888,7 @@ QString RelaysPlugin::resultsIofXml30()
 						stime = q.value(0).toInt();
 						ftime = q.value(1).toInt();
 						time_msec = q.value(2).toInt();
-						siId = q.value(3).toInt();
+						si_id = q.value(3).toInt();
 					}
 					else {
 						qfWarning() << "Cannot load run for id:" << run_id;
@@ -987,7 +987,9 @@ QString RelaysPlugin::resultsIofXml30()
 						append_list(person_result, split);
 					}
 				}
-				append_list(person_result, QVariantList{"ControlCard", siId});
+				if (si_id > 0) {
+					append_list(person_result, QVariantList{"ControlCard", si_id});
+				}
 				append_list(member_result, person_result);
 				append_list(team_result, member_result);
 			}
@@ -1157,9 +1159,9 @@ QString RelaysPlugin::startListIofXml30()
 					append_list(start, course);
 				}
 
-				QVariant siId = tt_leg_row.value(QStringLiteral("runs.siId"));
-				if (siId.toBool()) {
-					append_list(start, QVariantList{"ControlCard", siId.toInt()});
+				int si_id = tt_leg_row.value(QStringLiteral("runs.siId")).toInt();
+				if (si_id > 0) {
+					append_list(start, QVariantList{"ControlCard", si_id});
 				}
 				append_list(member_start, start);
 				append_list(team_start, member_start);
