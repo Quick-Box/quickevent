@@ -221,7 +221,7 @@
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="52"/>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="54"/>
@@ -231,7 +231,7 @@
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="59"/>
         <source>−</source>
-        <translation type="unfinished"></translation>
+        <translation>−</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="61"/>
@@ -271,7 +271,7 @@
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="129"/>
         <source>×</source>
-        <translation type="unfinished"></translation>
+        <translation>×</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="131"/>
@@ -322,7 +322,7 @@
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="123"/>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="207"/>
         <source>...</source>
-        <translation type="unfinished">...</translation>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="180"/>
@@ -342,12 +342,12 @@
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="237"/>
         <source>X (mm):</source>
-        <translation type="unfinished"></translation>
+        <translation>X (mm):</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="247"/>
         <source>Y (mm):</source>
-        <translation type="unfinished"></translation>
+        <translation>Y (mm):</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.ui" line="257"/>
@@ -407,17 +407,17 @@
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="62"/>
         <source>Left</source>
-        <translation type="unfinished"></translation>
+        <translation>Vlevo</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="63"/>
         <source>Center</source>
-        <translation type="unfinished"></translation>
+        <translation>Na střed</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="64"/>
         <source>Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Vpravo</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="68"/>
@@ -432,35 +432,35 @@
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="180"/>
         <source>Select a background image</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte obrázek pozadí</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="181"/>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="235"/>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="258"/>
         <source>Images (*.png *.jpg *.jpeg *.svg *.bmp);;All files (*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Obrázky (*.png *.jpg *.jpeg *.svg *.bmp);;Všechny soubory (*)</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="187"/>
         <source>Background</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozadí</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="187"/>
         <source>Cannot read &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze načíst &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="233"/>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="256"/>
         <source>Select an image</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte obrázek</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="269"/>
         <source>Choose text color</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvolte barvu textu</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="290"/>
@@ -468,39 +468,39 @@
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="299"/>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="337"/>
         <source>Save design</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit návrh</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="290"/>
         <source>Please enter a design name.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zadejte prosím název návrhu.</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="297"/>
         <source>Design &apos;%1&apos; was saved to the database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Návrh &apos;%1&apos; byl uložen do databáze.</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="300"/>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="338"/>
         <source>Could not save design &apos;%1&apos; to the database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Návrh &apos;%1&apos; se nepodařilo uložit do databáze.</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="308"/>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="314"/>
         <source>Load design</source>
-        <translation type="unfinished"></translation>
+        <translation>Načíst návrh</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="309"/>
         <source>No award designs are saved in the database.</source>
-        <translation type="unfinished"></translation>
+        <translation>V databázi nejsou uloženy žádné návrhy diplomů.</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awarddesignerdialog.cpp" line="314"/>
         <source>Select a design:</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte návrh:</translation>
     </message>
 </context>
 <context>
@@ -508,82 +508,82 @@
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="82"/>
         <source>Awards</source>
-        <translation type="unfinished"></translation>
+        <translation>Diplomy</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="110"/>
         <source>&amp;File</source>
-        <translation type="unfinished">Soubo&amp;r</translation>
+        <translation>&amp;Soubor</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="117"/>
         <source>&amp;View</source>
-        <translation type="unfinished">&amp;Zobrazit</translation>
+        <translation>&amp;Zobrazit</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="157"/>
         <source>First page</source>
-        <translation type="unfinished"></translation>
+        <translation>První stránka</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="163"/>
         <source>Prev page</source>
-        <translation type="unfinished"></translation>
+        <translation>Předchozí stránka</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="169"/>
         <source>Next page</source>
-        <translation type="unfinished"></translation>
+        <translation>Následující stránka</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="175"/>
         <source>Last page</source>
-        <translation type="unfinished"></translation>
+        <translation>Poslední stránka</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="181"/>
         <source>Zoom in</source>
-        <translation type="unfinished"></translation>
+        <translation>Přiblížit</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="187"/>
         <source>Zoom out</source>
-        <translation type="unfinished"></translation>
+        <translation>Oddálit</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="193"/>
         <source>Zoom to fit width</source>
-        <translation type="unfinished"></translation>
+        <translation>Přizpůsobit šířce</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="199"/>
         <source>Zoom to fit height</source>
-        <translation type="unfinished"></translation>
+        <translation>Přizpůsobit výšce</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="205"/>
         <source>&amp;Print</source>
-        <translation type="unfinished">&amp;Tisk</translation>
+        <translation>&amp;Tisk</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="211"/>
         <source>Print pre&amp;view</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Náhled tisku</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="217"/>
         <source>Export PD&amp;F</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportovat PD&amp;F</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="219"/>
         <source>Export in the Adobe Acrobat PDF format</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportovat ve formátu Adobe Acrobat PDF</translation>
     </message>
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="421"/>
         <source>Export PDF</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportovat PDF</translation>
     </message>
 </context>
 <context>
@@ -6581,47 +6581,47 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="77"/>
         <source>Designer...</source>
-        <translation type="unfinished"></translation>
+        <translation>Designer...</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="88"/>
         <source>Class filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtr kategorií</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="112"/>
         <source>An question mark (?) in pattern stands for (matches) any single character; a asterisk (*) matches any sequence of zero or more characters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Otazník (?) ve vzoru zastupuje libovolný jeden znak, hvězdička (*) libovolnou posloupnost znaků (i prázdnou).</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="115"/>
         <source>Wild card</source>
-        <translation type="unfinished"></translation>
+        <translation>Zástupné znaky</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="125"/>
         <source>Posix regular expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Regulární výraz POSIX</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="128"/>
         <source>RegExp</source>
-        <translation type="unfinished"></translation>
+        <translation>RegExp</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="135"/>
         <source>Comma delimited list of class names</source>
-        <translation type="unfinished"></translation>
+        <translation>Seznam názvů kategorií oddělených čárkou</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="138"/>
         <source>Class names</source>
-        <translation type="unfinished"></translation>
+        <translation>Názvy kategorií</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="148"/>
         <source>Doesn&apos;t match</source>
-        <translation type="unfinished"></translation>
+        <translation>Neodpovídá</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/printawardsoptionsdialogwidget.ui" line="45"/>
@@ -6634,7 +6634,7 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="14"/>
         <source>Print Relay Awards</source>
-        <translation type="unfinished"></translation>
+        <translation>Tisk diplomů štafet</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="25"/>
@@ -6649,7 +6649,7 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="67"/>
         <source>Designer...</source>
-        <translation type="unfinished"></translation>
+        <translation>Designer...</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="70"/>
@@ -6659,42 +6659,42 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="81"/>
         <source>Class filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtr kategorií</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="105"/>
         <source>An question mark (?) in pattern stands for (matches) any single character; a asterisk (*) matches any sequence of zero or more characters.</source>
-        <translation type="unfinished"></translation>
+        <translation>Otazník (?) ve vzoru zastupuje libovolný jeden znak, hvězdička (*) libovolnou posloupnost znaků (i prázdnou).</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="108"/>
         <source>Wild card</source>
-        <translation type="unfinished"></translation>
+        <translation>Zástupné znaky</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="118"/>
         <source>Posix regular expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Regulární výraz POSIX</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="121"/>
         <source>RegExp</source>
-        <translation type="unfinished"></translation>
+        <translation>RegExp</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="128"/>
         <source>Comma delimited list of class names</source>
-        <translation type="unfinished"></translation>
+        <translation>Seznam názvů kategorií oddělených čárkou</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="131"/>
         <source>Class names</source>
-        <translation type="unfinished"></translation>
+        <translation>Názvy kategorií</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/printrelayawardsoptionsdialogwidget.ui" line="141"/>
         <source>Doesn&apos;t match</source>
-        <translation type="unfinished"></translation>
+        <translation>Neodpovídá</translation>
     </message>
 </context>
 <context>
