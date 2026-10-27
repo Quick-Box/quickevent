@@ -756,6 +756,16 @@
     </message>
 </context>
 <context>
+    <name>CardReader::services::QrOPunch</name>
+    <message>
+        <location filename="plugins/CardReader/src/services/qropunch.cpp" line="51"/>
+        <source>Receives punches over TCP from the QR-O-Punch mobile app.
+https://github.com/sakhnik/qr-o-punch</source>
+        <translation>Recibe picadas por TCP desde la aplicación móvil QR-O-Punch.
+https://github.com/sakhnik/qr-o-punch</translation>
+    </message>
+</context>
+<context>
     <name>CardReader::services::QrOPunchWidget</name>
     <message>
         <location filename="plugins/CardReader/src/services/qropunchwidget.ui" line="14"/>
@@ -791,6 +801,14 @@
         <location filename="plugins/CardReader/src/services/qropunchwidget.cpp" line="74"/>
         <source>Choose file to log requests</source>
         <translation>Elije un archivo para guardar las peticiones</translation>
+    </message>
+</context>
+<context>
+    <name>CardReader::services::RacomClient</name>
+    <message>
+        <location filename="plugins/CardReader/src/services/racomclient.cpp" line="227"/>
+        <source>Connects to Racom radio controls.</source>
+        <translation>Conexión a los controles de radio Racom.</translation>
     </message>
 </context>
 <context>
@@ -3165,6 +3183,16 @@ Utilice: Archivo --&gt; Importar --&gt; Evento (*.qbe) para convertir el evento 
     </message>
 </context>
 <context>
+    <name>Event::services::EmmaClient</name>
+    <message>
+        <location filename="plugins/Event/src/services/emmaclient.cpp" line="52"/>
+        <source>Uploads results and radio control data to liveresultat.
+https://liveresultat.orientering.se</source>
+        <translation>Sube resultados y datos de controles de radio a liveresultat.
+https://liveresultat.orientering.se</translation>
+    </message>
+</context>
+<context>
     <name>Event::services::EmmaClientWidget</name>
     <message>
         <location filename="plugins/Event/src/services/emmaclientwidget.ui" line="20"/>
@@ -3460,6 +3488,15 @@ Por favor, abre la configuración de OFeed y actualice sus credenciales.</transl
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1732"/>
         <source>No data received or an error occurred.</source>
         <translation>No se recibieron datos o ha ocurrido un error.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="140"/>
+        <source>Platform for sharing data during a race, e.g. integration with OChecklist or the OFB visualization.
+https://orienteerfeed.com
+Docs: https://docs.orienteerfeed.com</source>
+        <translation>Plataforma para compartir datos durante una carrera, p. ej. integración con OChecklist o la visualización OFB.
+https://orienteerfeed.com
+Documentación: https://docs.orienteerfeed.com</translation>
     </message>
 </context>
 <context>
@@ -3918,6 +3955,16 @@ Por favor, abre la configuración de OFeed y actualice sus credenciales.</transl
     </message>
 </context>
 <context>
+    <name>Event::services::OResultsClient</name>
+    <message>
+        <location filename="plugins/Event/src/services/oresultsclient.cpp" line="46"/>
+        <source>Uploads start lists and results to the OResults online results service.
+https://oresults.eu</source>
+        <translation>Sube las listas de salida y los resultados al servicio de resultados en línea OResults.
+https://oresults.eu</translation>
+    </message>
+</context>
+<context>
     <name>Event::services::OResultsClientWidget</name>
     <message>
         <location filename="plugins/Event/src/services/oresultsclientwidget.ui" line="14"/>
@@ -4040,6 +4087,13 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
         <source>Card SI %1, %2 controls</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="37"/>
+        <source>For learning the program and testing. Generates random punch data simulating situations that can occur during a real race. Generated data has TEST written in the last column.
+Do not run it in a live race!</source>
+        <translation>Para aprender a usar el programa y para pruebas. Genera datos de picadas aleatorios y simula situaciones que pueden ocurrir en una carrera real. Los datos generados tienen TEST escrito en la última columna.
+¡No lo ejecute durante una carrera real!</translation>
+    </message>
 </context>
 <context>
     <name>Event::services::PunchingTestServiceWidget</name>
@@ -4131,6 +4185,11 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
         <source>Listening, %1 sender(s) connected</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="33"/>
+        <source>TCP service broadcasting run data, with start/stop controls in the UI (start gate use case).</source>
+        <translation>Servicio TCP que difunde datos de las carreras, con controles de inicio/parada en la interfaz (p. ej. para la puerta de salida).</translation>
+    </message>
 </context>
 <context>
     <name>Event::services::RadioSenderServiceWidget</name>
@@ -4217,6 +4276,19 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
         <source>neco neco</source>
         <translation>algo</translation>
     </message>
+    <message>
+        <location filename="plugins/Event/src/services/servicewidget.cpp" line="25"/>
+        <source>Show / hide service in the list</source>
+        <translation>Mostrar / ocultar el servicio en la lista</translation>
+    </message>
+</context>
+<context>
+    <name>Event::services::ServicesWidget</name>
+    <message>
+        <location filename="plugins/Event/src/services/serviceswidget.cpp" line="29"/>
+        <source>Choose visible services</source>
+        <translation>Elegir los servicios visibles</translation>
+    </message>
 </context>
 <context>
     <name>Event::services::qx::QxClientService</name>
@@ -4229,6 +4301,13 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
         <location filename="plugins/Event/src/services/qx/qxclientservice.cpp" line="267"/>
         <source>Event ID is not loaded, service is not probably running.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/qx/qxclientservice.cpp" line="60"/>
+        <source>Electronic late entries.
+https://qxqx.org</source>
+        <translation>Inscripciones tardías electrónicas.
+https://qxqx.org</translation>
     </message>
 </context>
 <context>
@@ -7136,6 +7215,14 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
         <location filename="plugins/Runs/src/runssettingspage.cpp" line="35"/>
         <source>Runs</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Runs::services::ResultsExporter</name>
+    <message>
+        <location filename="plugins/Runs/src/services/resultsexporter.cpp" line="42"/>
+        <source>Exports results in the selected format (XML, HTML, ...) at the selected interval to the selected directory.</source>
+        <translation>Exporta los resultados en el formato seleccionado (XML, HTML, ...) con el intervalo seleccionado al directorio seleccionado.</translation>
     </message>
 </context>
 <context>
