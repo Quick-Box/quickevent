@@ -6,9 +6,7 @@
 #include <QUrl>
 #include <QVariantMap>
 
-namespace qf {
-namespace gui {
-namespace reports {
+namespace qf::gui::reports {
 
 class ReportItemReport;
 
@@ -26,6 +24,6 @@ public:
 	virtual ReportItemReport* createReport(const QVariantMap &init_properties) = 0;
 };
 
-}}}
+}
 
 #endif // QF_GUI_REPORTS_REPORTDOCUMENT_H

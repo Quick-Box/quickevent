@@ -11,9 +11,7 @@
 
 #include "../../guiglobal.h"
 
-namespace qf {
-namespace gui {
-namespace reports {
+namespace qf::gui::reports {
 
 
 class QFGUI_DECL_EXPORT ReportItemReport : public ReportItemFrame
@@ -61,6 +59,6 @@ public:
 	//virtual PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect);
 };
 #endif
-}}}
+}
 
 #endif // QF_GUI_REPORTS_REPORTITEMREPORT_H

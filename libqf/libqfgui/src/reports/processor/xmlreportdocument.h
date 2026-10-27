@@ -7,9 +7,7 @@
 
 #include <functional>
 
-namespace qf {
-namespace gui {
-namespace reports {
+namespace qf::gui::reports {
 
 class ReportItem;
 
@@ -98,6 +96,6 @@ private:
 	QDomDocument m_document;
 };
 
-}}}
+}
 
 #endif // QF_GUI_REPORTS_XMLREPORTDOCUMENT_H
