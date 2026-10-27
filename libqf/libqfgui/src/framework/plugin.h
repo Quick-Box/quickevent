@@ -43,7 +43,7 @@ public:
 		}
 	};
 	QList<ReportFileInfo> listReportFiles(const QString &report_dir,
-		const QString &suffix = QStringLiteral("xml")) const;
+		const QString &suffix = QStringLiteral("qrep")) const;
 
 	Q_SIGNAL void installed();
 private:

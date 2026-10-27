@@ -1,8 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">  
 <qresource prefix="/qf/gui/reports">
-	<file>portrait.xml</file>
-	<file>landscape.xml</file>
-	<file>style.xml</file>
-	<file>HeaderFooter.xml</file>
+	<file>portrait.qrep</file>
+	<file>landscape.qrep</file>
+	<file>style.qrepi</file>
+	<file>HeaderFooter.qrepi</file>
 </qresource>      
 </RCC>                                

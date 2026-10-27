@@ -6,12 +6,12 @@
 	<Parameter name="reportTitle" default="${stagesCount|trn:'Results after %n stage(s)'}"/>
 	<Parameter name="timeCellWidth" default="${eventConfig.timeMeasurementPrecision|ogTimeColumnWidth}"/>
 	<Parameter name="posCellWidth" default="10"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" vinset="10">
 			<Band width="%" height="%">
-				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml"/>
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.qrepi"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Frame height="5"/>
 					<Frame width="%" layout="LayoutHorizontal" fill="khaki">

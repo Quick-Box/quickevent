@@ -4,8 +4,8 @@ QString ReceiptsSettings::receiptReportPath() const
 {
 	QString path = receiptPath();
 	for(const auto *name : {"receipts/Default", "receipts/Classic", "receipts/ClassicLottery"}) {
-		if(path == QLatin1String(name) + QLatin1String(".qml"))
-			return QLatin1String(name) + QLatin1String(".xml");
+		if(path == QLatin1String(name) + QLatin1String(".qml") || path == QLatin1String(name) + QLatin1String(".xml"))
+			return QLatin1String(name) + QLatin1String(".qrep");
 	}
 	return path;
 }

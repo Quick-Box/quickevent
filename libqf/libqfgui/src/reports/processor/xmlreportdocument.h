@@ -13,6 +13,9 @@ class ReportItem;
 
 /// Report defined in XML file.
 ///
+/// Report files have .qrep extension, files intended only to be included by other reports
+/// (style sheets, page headers, ...) have .qrepi extension.
+///
 /// Element names are report item and style types (Report, Frame, Band, Detail, Para, Image, Break,
 /// StyleSheet, Color, Pen, Brush, Font, TextStyle), attributes are their properties.
 /// Enum values are written as enum key names, for example layout="LayoutHorizontal".
@@ -24,7 +27,7 @@ class ReportItem;
 /// Special elements:
 ///   <Parameter name="n" default="value"/> defines report parameter n, if it is not passed to report.
 ///     Report parameters are report init properties passed to ReportProcessor::setReport().
-///   <include src="file.xml" [attr="value" ...]/> includes other report file root element.
+///   <include src="file.qrepi" [attr="value" ...]/> includes other report file root element.
 ///     Attributes, which are properties of included root element, override them, others are passed
 ///     as parameters to the included file.
 ///   <Repeat var="i" from="1" to="3"> creates its child elements repeatedly with parameter i set

@@ -9,12 +9,12 @@
 	<Parameter name="stageCellWidth" default="${pointsCellWidth|add:9}"/>
 	<Parameter name="totalCellWidth" default="${pointsCellWidth|add:2}"/>
 	<Parameter name="diffCellWidth" default="13"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" vinset="10">
 			<Band width="%" height="%">
-				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml"/>
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.qrepi"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
 					<Frame height="5"/>

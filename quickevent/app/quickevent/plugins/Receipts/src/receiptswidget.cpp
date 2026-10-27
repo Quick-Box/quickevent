@@ -252,9 +252,9 @@ bool ReceiptsWidget::printReceipt(int card_id)
 				ReceiptsSettings settings;
 				auto runner_not_found = settings.whenRunnerNotFoundPrintEnum();
 				if (runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfo)
-					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"error.xml");
+					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"error.qrep");
 				else if (runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfoLong)
-					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"errorlong.xml");
+					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"errorlong.qrep");
 				else
 					ok = getPlugin<ReceiptsPlugin>()->printCard(card_id);
 			}

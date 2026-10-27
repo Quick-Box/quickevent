@@ -3,12 +3,12 @@
 		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
 		textStyle="default">
 	<Parameter name="reportTitle" default="${'Start list for starters'|tr}"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" columns="${options.columns}" vinset="10">
 			<Band width="%" height="%">
-				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml"/>
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.qrepi"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
 						<Para hinset="1" width="10" textStyle="bold">{{startTimeMin|changed}}</Para>

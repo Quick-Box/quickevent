@@ -2,34 +2,39 @@
 <Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
 		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
 		textStyle="default">
-	<Parameter name="reportTitle" default="${'Start list by classes'|tr}"/>
+	<Parameter name="reportTitle" default="${'Results'|tr}"/>
 	<Parameter name="isBreakAfterEachClass" default="false"/>
 	<Parameter name="isColumnBreak" default="false"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" columns="${options.columns}" vinset="10">
 			<Band width="%" height="%">
-				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml"/>
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.qrepi"/>
 				<Frame height="5"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Break breakType="${isColumnBreak|if:Column:Page}" visible="${isBreakAfterEachClass}" skipFirst="true"/>
 					<Frame height="2"/>
 					<Frame width="%" vinset="1" layout="LayoutHorizontal" fill="khaki">
-						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
+						<Para hinset="1" width="%" textStyle="bold">{{className}}</Para>
 					</Frame>
 					<Band width="%" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutVertical">
 							<Frame height="2"/>
-							<Frame width="%" layout="LayoutHorizontal" bottomBorder="black1" textStyle="bold">
-								<Para hinset="1" width="%">{{relays.number}} {{relayName}} {{clubs.name}}</Para>
+							<Frame width="%" layout="LayoutHorizontal" valign="AlignBottom" bottomBorder="black1" textStyle="bold">
+								<Para width="9" halign="AlignRight">{{pos|nonzero|suffix:.}}</Para>
+								<Para hinset="1" width="%">{{name}}</Para>
+								<Para width="15" halign="AlignRight">{{time|ogTimeStatus}}</Para>
+								<Para width="17" halign="AlignRight">{{loss|nonzero|ogTime|prefix:+}}</Para>
 							</Frame>
 							<Band width="%" keepFirst="10" keepWithPrev="true" htmlExportAsTable="true">
 								<Detail width="%" layout="LayoutHorizontal">
-									<Para hinset="1" width="15" halign="AlignRight">{{leg}}</Para>
 									<Para hinset="1" width="%">{{competitorName}}</Para>
-									<Para width="15">{{registration}}</Para>
-									<Para hinset="1" width="18" halign="AlignRight">{{runs.siId}}</Para>
+									<Para width="16">{{registration}}</Para>
+									<Para width="13" halign="AlignRight">{{time|ogTimeStatus}}</Para>
+									<Para width="9" halign="AlignRight">{{pos|nonzero|prefix:(|suffix:)}}</Para>
+									<Para width="13" halign="AlignRight">{{stime|nonzero|ogTime}}</Para>
+									<Para width="9" halign="AlignRight">{{spos|nonzero|prefix:(|suffix:)}}</Para>
 								</Detail>
 							</Band>
 						</Detail>

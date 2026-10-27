@@ -412,10 +412,10 @@ void CardReaderWidget::onCustomContextMenuRequest(const QPoint & pos)
 	}
 #ifdef QT_DEBUG
 	else if(a == &a_show_error1) {
-		getPlugin<ReceiptsPlugin>()->previewError(card_id,"error.xml");
+		getPlugin<ReceiptsPlugin>()->previewError(card_id,"error.qrep");
 	}
 	else if(a == &a_show_error2) {
-		getPlugin<ReceiptsPlugin>()->previewError(card_id,"errorlong.xml");
+		getPlugin<ReceiptsPlugin>()->previewError(card_id,"errorlong.qrep");
 	}
 #endif
 }

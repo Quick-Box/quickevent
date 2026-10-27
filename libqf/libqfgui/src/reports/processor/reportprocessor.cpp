@@ -54,8 +54,8 @@ bool ReportProcessor::setReport(const QString &rep_file_name, const QVariantMap 
 	QF_TIME_SCOPE("ReportProcessor::setReport()");
 	reset();
 	m_reportDocument.reset();
-	if(!rep_file_name.endsWith(QLatin1String(".xml"), Qt::CaseInsensitive)) {
-		qfError() << "Unsupported report file:" << rep_file_name << ", only XML reports are supported.";
+	if(!rep_file_name.endsWith(QLatin1String(".qrep"), Qt::CaseInsensitive)) {
+		qfError() << "Unsupported report file:" << rep_file_name << ", only .qrep reports are supported.";
 		return false;
 	}
 	auto doc = std::make_unique<XmlReportDocument>();

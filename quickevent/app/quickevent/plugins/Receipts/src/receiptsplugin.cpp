@@ -714,7 +714,7 @@ void ReceiptsPlugin::previewCard(int card_id)
 	auto *w = new qf::gui::reports::ReportViewWidget();
 	w->setPersistentSettingsId("cardPreview");
 	w->setWindowTitle(tr("Card"));
-	w->setReport(findReportFile("sicard.xml"));
+	w->setReport(findReportFile("sicard.qrep"));
 	QVariantMap dt = readCardTablesData(card_id);
 	for(const auto &[k, v] : dt.asKeyValueRange()) {
 		w->setTableData(k, v);
@@ -731,7 +731,7 @@ bool ReceiptsPlugin::printCard(int card_id)
 	QF_TIME_SCOPE("ReceiptsPlugin::printCard()");
 	try {
 		QVariantMap dt = readCardTablesData(card_id);
-		return receiptsPrinter()->printReceipt("sicard.xml", dt, card_id);
+		return receiptsPrinter()->printReceipt("sicard.qrep", dt, card_id);
 	}
 	catch(const qf::core::Exception &e) {
 		qfError() << e.toString();

@@ -4,12 +4,12 @@
 		textStyle="default">
 	<Parameter name="stagesCount" default="${options.stagesCount|positive|default:1}"/>
 	<Parameter name="reportTitle" default="${stagesCount|trn:'Points after %n stage(s)'}"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.xml"/></styleSheet>
+	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.xml"/>
+		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" columns="${options.columns}" vinset="10">
 			<Band width="%">
-				<include src="../../../shared/qml/reports/QuickEventReportHeader.xml" showStageNumber="false"/>
+				<include src="../../../shared/qml/reports/QuickEventReportHeader.qrepi" showStageNumber="false"/>
 				<Frame height="5"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>

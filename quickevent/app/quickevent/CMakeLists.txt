@@ -267,7 +267,7 @@ qt_add_resources(quickevent reports_resources
 set(REPORT_TR_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/report_translations.cpp")
 set(REPORT_TR_CONTENT "// Generated from XML reports for lupdate, not compiled\nstatic const char *report_translations[] = {\n")
 foreach(report_file IN LISTS REPORT_RESOURCE_FILES)
-	if(NOT report_file MATCHES "\\.xml$")
+	if(NOT report_file MATCHES "\\.qrepi?$")
 		continue()
 	endif()
 	set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${report_file}")

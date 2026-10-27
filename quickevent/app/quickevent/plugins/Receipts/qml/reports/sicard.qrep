@@ -2,7 +2,7 @@
 <Report width="65" height="297" hinset="0" vinset="5" textStyle="default">
 	<styleSheet>
 		<StyleSheet>
-			<include src="../../../shared/qml/reports/ReportStyleCommon.xml"/>
+			<include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/>
 			<Brush name="none" color="#00000000"/>
 			<Brush name="error" color="salmon"/>
 		</StyleSheet>

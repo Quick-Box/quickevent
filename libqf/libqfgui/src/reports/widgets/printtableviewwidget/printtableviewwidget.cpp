@@ -16,9 +16,9 @@ namespace {
 QString builtInReportFileName(const QString &file_name)
 {
 	if(file_name == QLatin1String(":/qf/gui/reports/portrait.qml"))
-		return QStringLiteral(":/qf/gui/reports/portrait.xml");
+		return QStringLiteral(":/qf/gui/reports/portrait.qrep");
 	if(file_name == QLatin1String(":/qf/gui/reports/landscape.qml"))
-		return QStringLiteral(":/qf/gui/reports/landscape.xml");
+		return QStringLiteral(":/qf/gui/reports/landscape.qrep");
 	return file_name;
 }
 }
@@ -32,8 +32,8 @@ PrintTableViewWidget::PrintTableViewWidget(TableView *table_view, QWidget *paren
 	connect(ui->btChooseReportFileName, &QPushButton::clicked, this, &PrintTableViewWidget::chooseReporFileName);
 	{
 		QComboBox *cbx = ui->lstQrcReports;
-		cbx->addItem(tr("portrait"), ":/qf/gui/reports/portrait.xml");
-		cbx->addItem(tr("landscape"), ":/qf/gui/reports/landscape.xml");
+		cbx->addItem(tr("portrait"), ":/qf/gui/reports/portrait.qrep");
+		cbx->addItem(tr("landscape"), ":/qf/gui/reports/landscape.qrep");
 		cbx->setCurrentIndex(-1);
 		connect(cbx, &QComboBox::activated, this, &PrintTableViewWidget::onLstQrcReportsActivated);
 	}
@@ -67,7 +67,7 @@ void PrintTableViewWidget::chooseReporFileName()
 		if(report_dir.isEmpty())
 			report_dir = qfu::FileUtils::homeDir();
 	}
-	QString fn = QFileDialog::getOpenFileName(this, tr("Open report file"), report_dir, tr("Reports (*.xml)"));
+	QString fn = QFileDialog::getOpenFileName(this, tr("Open report file"), report_dir, tr("Reports (*.qrep)"));
 	if(!fn.isEmpty()) {
 		recently_used_report_dir = qfu::FileUtils::dir(fn);
 		ui->edReportFileName->setText(fn);

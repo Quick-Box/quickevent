@@ -261,7 +261,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 			props["stageId"] = stage_id;
 			props["options"] = opts;
 			qf::gui::reports::ReportViewWidget::showReport(fwk
-										, getPlugin<RunsPlugin>()->findReportFile("competitorsWithCardRent.xml")
+										, getPlugin<RunsPlugin>()->findReportFile("competitorsWithCardRent.qrep")
 										, getPlugin<RunsPlugin>()->competitorsWithCardRentTable(stage_id).toVariant()
 										, tr("Competitors with rented cards")
 										, "printReport"
@@ -1205,7 +1205,7 @@ void RunsWidget::report_competitorsStatistics()
 	//props["isBreakAfterEachClass"] = (opts.breakType() != (int)quickevent::gui::ReportOptionsDialog::BreakType::None);
 	//props["isColumnBreak"] = (opts.breakType() == (int)quickevent::gui::ReportOptionsDialog::BreakType::Column);
 	props["stageCount"] = stage_cnt;
-	QString rep_fn = getPlugin<RunsPlugin>()->findReportFile("competitorsStatistics.xml");
+	QString rep_fn = getPlugin<RunsPlugin>()->findReportFile("competitorsStatistics.qrep");
 	qf::gui::reports::ReportViewWidget::showReport(this
 								, rep_fn
 								, tt.toVariant()

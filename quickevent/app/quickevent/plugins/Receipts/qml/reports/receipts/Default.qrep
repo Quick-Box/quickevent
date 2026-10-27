@@ -3,7 +3,7 @@
 	<Parameter name="printLotteryTicket" default="false"/>
 	<styleSheet>
 		<StyleSheet>
-			<include src="../../../../shared/qml/reports/ReportStyleCommon.xml"/>
+			<include src="../../../../shared/qml/reports/ReportStyleCommon.qrepi"/>
 			<Brush name="none" color="#00000000"/>
 			<Brush name="error" color="salmon"/>
 		</StyleSheet>
@@ -12,7 +12,7 @@
 	<Frame width="%" border="blue05">
 		<Band modelData="competitor" width="%">
 			<Detail width="%" layout="LayoutVertical" bottomBorder="black2">
-				<include src="private/LotteryTicket.xml" visible="${printLotteryTicket}"/>
+				<include src="private/LotteryTicket.qrepi" visible="${printLotteryTicket}"/>
 				<Frame width="%" halign="AlignHCenter" hinset="4" vinset="1" htmlExportAttributes='{"lpt_textAlign": "center", "lpt_textWidth": "%"}'>
 					<Para/>
 					<Image visible="{{band('event.receiptImagePath')|if:true:false}}"
