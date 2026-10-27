@@ -17,21 +17,19 @@
 
 namespace AwardDesigner {
 
-#define TR(s) QCoreApplication::translate("AwardDesigner", s)
-
 QList<FieldDef> relayFields()
 {
 	return {
-		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
-		{.id = QStringLiteral("date"), .label = TR("Datum")},
-		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
-		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
-		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
-		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
-		{.id = QStringLiteral("clubName"), .label = TR("Název štafety/klubu")},
-		{.id = QStringLiteral("runners"), .label = TR("Závodníci (seznam)")},
-		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
-		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("eventName"), .label = QCoreApplication::translate("AwardDesigner", "Event name")},
+		{.id = QStringLiteral("date"), .label = QCoreApplication::translate("AwardDesigner", "Date")},
+		{.id = QStringLiteral("place"), .label = QCoreApplication::translate("AwardDesigner", "Venue")},
+		{.id = QStringLiteral("positionCategory"), .label = QCoreApplication::translate("AwardDesigner", "Position in class")},
+		{.id = QStringLiteral("position"), .label = QCoreApplication::translate("AwardDesigner", "Position")},
+		{.id = QStringLiteral("category"), .label = QCoreApplication::translate("AwardDesigner", "Class")},
+		{.id = QStringLiteral("clubName"), .label = QCoreApplication::translate("AwardDesigner", "Relay/club name")},
+		{.id = QStringLiteral("runners"), .label = QCoreApplication::translate("AwardDesigner", "Runners (list)")},
+		{.id = QStringLiteral("mainReferee"), .label = QCoreApplication::translate("AwardDesigner", "Main referee")},
+		{.id = QStringLiteral("director"), .label = QCoreApplication::translate("AwardDesigner", "Event director")},
 	};
 
 }
@@ -39,16 +37,16 @@ QList<FieldDef> relayFields()
 QList<FieldDef> runsFields()
 {
 	return {
-		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
-		{.id = QStringLiteral("date"), .label = TR("Datum")},
-		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
-		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
-		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
-		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
-		{.id = QStringLiteral("competitorName"), .label = TR("Jméno závodníka")},
-		{.id = QStringLiteral("clubName"), .label = TR("Klub")},
-		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
-		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("eventName"), .label = QCoreApplication::translate("AwardDesigner", "Event name")},
+		{.id = QStringLiteral("date"), .label = QCoreApplication::translate("AwardDesigner", "Date")},
+		{.id = QStringLiteral("place"), .label = QCoreApplication::translate("AwardDesigner", "Venue")},
+		{.id = QStringLiteral("positionCategory"), .label = QCoreApplication::translate("AwardDesigner", "Position in class")},
+		{.id = QStringLiteral("position"), .label = QCoreApplication::translate("AwardDesigner", "Position")},
+		{.id = QStringLiteral("category"), .label = QCoreApplication::translate("AwardDesigner", "Class")},
+		{.id = QStringLiteral("competitorName"), .label = QCoreApplication::translate("AwardDesigner", "Competitor name")},
+		{.id = QStringLiteral("clubName"), .label = QCoreApplication::translate("AwardDesigner", "Club")},
+		{.id = QStringLiteral("mainReferee"), .label = QCoreApplication::translate("AwardDesigner", "Main referee")},
+		{.id = QStringLiteral("director"), .label = QCoreApplication::translate("AwardDesigner", "Event director")},
 	};
 }
 

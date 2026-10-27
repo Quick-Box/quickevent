@@ -1660,18 +1660,18 @@ void TableView::createActions()
 		m_actions[a->oid()] = a;
 	}
 	{
-		a = new Action(tr("Zobrazit ve formulari"), this);
+		a = new Action(tr("View in form"), this);
 		a->setIcon(qf::gui::Style::icon("view"));
-		a->setToolTip(tr("Zobrazit radek v formulari pro cteni"));
+		a->setToolTip(tr("View row in read-only form"));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		//connect(a, &Action::triggered, this, &TableView::emitViewRowInExternalEditor()));
 		a->setOid("viewRowExternal");
 		m_actions[a->oid()] = a;
 	}
 	{
-		a = new Action(tr("Upravit ve formulari"), this);
+		a = new Action(tr("Edit in form"), this);
 		a->setIcon(qf::gui::Style::icon("edit"));
-		a->setToolTip(tr("Upravit radek ve formulari"));
+		a->setToolTip(tr("Edit row in form"));
 		//a->setShortcutContext(Qt::WidgetShortcut);
 		//connect(a, &Action::triggered, this, &TableView::emitEditRowInExternalEditor()));
 		a->setOid("editRowExternal");
