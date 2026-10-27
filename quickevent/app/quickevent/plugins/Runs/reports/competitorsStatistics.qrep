@@ -4,13 +4,13 @@
 	<Parameter name="reportTitle" default="${'Competitors statistics'|tr}"/>
 	<styleSheet>
 		<StyleSheet>
-			<include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/>
+			<include src="../../shared/reports/ReportStyleCommon.qrepi"/>
 			<Brush name="none" color="#00000000"/>
 			<Brush name="error" color="salmon"/>
 		</StyleSheet>
 	</styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
+		<include src="../../shared/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" vinset="10">
 			<Band width="%" height="%" htmlExportAsTable="true">
 				<Frame>

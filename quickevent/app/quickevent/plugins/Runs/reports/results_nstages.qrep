@@ -8,12 +8,12 @@
 	<Parameter name="posCellWidth" default="9"/>
 	<Parameter name="stageCellWidth" default="${timeCellWidth|add:9}"/>
 	<Parameter name="lossCellWidth" default="${timeCellWidth|add:2}"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
+	<styleSheet><include src="../../shared/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
+		<include src="../../shared/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" vinset="10">
 			<Band width="%" height="%">
-				<include src="../../../shared/qml/reports/QuickEventReportHeader.qrepi"/>
+				<include src="../../shared/reports/QuickEventReportHeader.qrepi"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
 					<Frame height="5"/>

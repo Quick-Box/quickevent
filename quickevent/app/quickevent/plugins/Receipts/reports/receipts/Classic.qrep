@@ -3,7 +3,7 @@
 	<Parameter name="printLotteryTicket" default="false"/>
 	<styleSheet>
 		<StyleSheet>
-			<include src="../../../../shared/qml/reports/ReportStyleCommon.qrepi"/>
+			<include src="../../../shared/reports/ReportStyleCommon.qrepi"/>
 			<Brush name="none" color="#00000000"/>
 			<Brush name="error" color="salmon"/>
 		</StyleSheet>

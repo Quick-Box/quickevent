@@ -5,12 +5,12 @@
 	<Parameter name="reportTitle" default="${'Start list by clubs'|tr}"/>
 	<Parameter name="isBreakAfterEachClass" default="false"/>
 	<Parameter name="isColumnBreak" default="false"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
+	<styleSheet><include src="../../shared/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
+		<include src="../../shared/reports/QuickEventHeaderFooter.qrepi"/>
 		<Frame width="%" height="%" columns="${options.columns}" vinset="10">
 			<Band width="%" height="%">
-				<include src="../../../shared/qml/reports/QuickEventReportHeader.qrepi"/>
+				<include src="../../shared/reports/QuickEventReportHeader.qrepi"/>
 				<Frame height="5"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Break breakType="${isColumnBreak|if:Column:Page}" visible="${isBreakAfterEachClass}" skipFirst="true"/>

@@ -4,8 +4,8 @@ QuickEvent reports (start lists, results, receipts, ...) are defined in XML file
 loaded by `qf::gui::reports::XmlReportDocument`
 (`libqf/libqfgui/src/reports/processor/xmlreportdocument.h`).
 
-Report files are in `quickevent/app/quickevent/plugins/*/qml/reports/`, shared parts
-(style sheet, page header and footer) are in `plugins/shared/qml/reports/`.
+Report files are in `quickevent/app/quickevent/plugins/*/reports/`, shared parts
+(style sheet, page header and footer) are in `plugins/shared/reports/`.
 
 Report files have the `.qrep` extension. Files that are only meant to be included
 by other reports (style sheets, headers, footers, ...) have the `.qrepi` extension.
@@ -41,9 +41,9 @@ in the editor settings, or reference the schema in the root element. The loader 
 <?xml version="1.0" encoding="UTF-8"?>
 <Report width="210" height="297" hinset="10" vinset="5" textStyle="default">
 	<Parameter name="reportTitle" default="${'Start list by classes'|tr}"/>
-	<styleSheet><include src="../../../shared/qml/reports/ReportStyleCommon.qrepi"/></styleSheet>
+	<styleSheet><include src="../../shared/reports/ReportStyleCommon.qrepi"/></styleSheet>
 	<Frame width="%" height="%" layout="LayoutStacked">
-		<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi"/>
+		<include src="../../shared/reports/QuickEventHeaderFooter.qrepi"/>
 		<Band width="%" height="%">
 			<Detail width="%">
 				<Frame width="%" layout="LayoutHorizontal" fill="khaki">
@@ -183,7 +183,7 @@ passed to the report. Report parameters are the report init properties passed to
 ### include
 
 ```xml
-<include src="../../../shared/qml/reports/QuickEventHeaderFooter.qrepi" width="%" reportTitle="Results"/>
+<include src="../../shared/reports/QuickEventHeaderFooter.qrepi" width="%" reportTitle="Results"/>
 ```
 
 Includes the root element of another report file. The `src` path is relative to the current file.

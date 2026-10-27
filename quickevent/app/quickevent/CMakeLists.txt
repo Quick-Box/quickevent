@@ -246,13 +246,9 @@ target_sources(quickevent PRIVATE ${QM_FILES})
 # Embed the default report templates. ReportFileCache extracts these resources to
 # the user's writable report cache on its first use.
 file(GLOB_RECURSE REPORT_RESOURCE_FILES CONFIGURE_DEPENDS
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Classes/qml/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Runs/qml/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Runs/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/qml/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Receipts/qml/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Receipts/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/reports/*"
 )
 qt_add_resources(quickevent reports_resources
