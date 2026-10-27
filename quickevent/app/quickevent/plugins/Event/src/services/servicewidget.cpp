@@ -98,7 +98,7 @@ void ServiceWidget::setServiceVisible(bool on)
 	ui->btVisible->setChecked(on);
 	ui->btVisible->setIcon(qf::gui::Style::icon(on? "eye": "eye-off"));
 	// grey out hidden services in edit mode
-	const bool dim = !on && !ui->btVisible->isHidden();
+	const bool dim = !on && m_visibilityEditMode;
 	for (QWidget *w : {ui->lblStatus, ui->lblServiceName, ui->lblServiceMessage}) {
 		w->setEnabled(!dim);
 	}
@@ -106,7 +106,9 @@ void ServiceWidget::setServiceVisible(bool on)
 
 void ServiceWidget::setVisibilityEditMode(bool on)
 {
+	m_visibilityEditMode = on;
 	ui->btVisible->setVisible(on);
+	setServiceVisible(ui->btVisible->isChecked());
 }
 
 void ServiceWidget::onBtPlayClicked()

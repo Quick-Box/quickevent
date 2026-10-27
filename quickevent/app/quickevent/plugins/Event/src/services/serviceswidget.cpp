@@ -37,11 +37,13 @@ void ServicesWidget::reload()
 	delete m_centralWidget;
 	auto *sa = new QScrollArea();
 	sa->setFrameShape(QFrame::NoFrame);
+	sa->setWidgetResizable(true);
 	m_centralWidget = sa;
 	QLayout *ly = layout();
 	ly->addWidget(m_centralWidget);
 
-	auto *ly2 = new QVBoxLayout(m_centralWidget);
+	auto *content = new QWidget();
+	auto *ly2 = new QVBoxLayout(content);
 #if QT_VERSION_MAJOR >= 6
 	ly2->setContentsMargins({});
 #else
@@ -59,11 +61,16 @@ void ServicesWidget::reload()
 		connect(sw, &ServiceWidget::serviceVisibleToggled, this, [this, id = svc->serviceId()](bool on) {
 			setServiceHidden(id, !on);
 		});
+		// running service stays visible even when hidden
+		connect(svc, &Service::statusChanged, sw, [this] {
+			updateVisibility();
+		});
 
 		ly2->addWidget(sw);
 		m_serviceWidgets << sw;
 	}
 	ly2->addStretch();
+	sa->setWidget(content);
 	updateVisibility();
 }
 
@@ -74,7 +81,7 @@ void ServicesWidget::updateVisibility()
 		const bool visible = !m_hiddenServices.contains(sw->serviceId());
 		sw->setVisibilityEditMode(edit_mode);
 		sw->setServiceVisible(visible);
-		sw->setVisible(edit_mode || visible);
+		sw->setVisible(edit_mode || visible || sw->isRunning());
 	}
 }
 
