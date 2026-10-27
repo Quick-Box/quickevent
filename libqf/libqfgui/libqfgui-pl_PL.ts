@@ -299,22 +299,22 @@
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1663"/>
-        <source>Zobrazit ve formulari</source>
+        <source>View in form</source>
         <translation type="unfinished">Wyświetl w formularzu</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1665"/>
-        <source>Zobrazit radek v formulari pro cteni</source>
+        <source>View row in read-only form</source>
         <translation type="unfinished">Pokaż wiersz w formie do odczytu</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1672"/>
-        <source>Upravit ve formulari</source>
+        <source>Edit in form</source>
         <translation type="unfinished">Edytuj w formularzu</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1674"/>
-        <source>Upravit radek ve formulari</source>
+        <source>Edit row in form</source>
         <translation type="unfinished">Edytuj wiersz w formularzu</translation>
     </message>
     <message>
@@ -464,12 +464,12 @@
         <translation type="unfinished">Wartość początkowa:</translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="2143"/>
+        <location filename="src/tableview.cpp" line="2146"/>
         <source>Do you really want to remove row?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/tableview.cpp" line="2146"/>
+        <location filename="src/tableview.cpp" line="2149"/>
         <source>Do you really want to remove all selected rows?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -491,13 +491,12 @@
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="70"/>
-        <source>textove soubory (*.txt)</source>
+        <source>Text files (*.txt)</source>
         <translation type="unfinished">Pliki tekstowe (*.txt)</translation>
     </message>
     <message>
-        <location filename="src/texteditwidget.cpp" line="79"/>
         <source>Uložit jako ...</source>
-        <translation type="unfinished">Zapisz jako ...</translation>
+        <translation type="obsolete">Zapisz jako ...</translation>
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="92"/>
@@ -507,6 +506,7 @@
     <message>
         <location filename="src/texteditwidget.cpp" line="103"/>
         <location filename="src/texteditwidget.cpp" line="110"/>
+        <location filename="src/texteditwidget.cpp" line="220"/>
         <source>Cannot load text codec %1.</source>
         <translation type="unfinished">Nie można załadować kodeka tekstu %1.</translation>
     </message>
@@ -521,6 +521,7 @@
         <translation type="unfinished">Zapisz</translation>
     </message>
     <message>
+        <location filename="src/texteditwidget.cpp" line="79"/>
         <location filename="src/texteditwidget.cpp" line="140"/>
         <source>Save as</source>
         <translation type="unfinished">Zapisz jako</translation>
@@ -542,13 +543,12 @@
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="215"/>
-        <source>Soubor %1 nelze otevrit pro cteni.</source>
+        <source>Cannot open file %1 for reading.</source>
         <translation type="unfinished">Plik %1 nie można otworzyć do odczytu.</translation>
     </message>
     <message>
-        <location filename="src/texteditwidget.cpp" line="220"/>
         <source>Nelze nahrát kodek pro kódování %1.</source>
-        <translation type="unfinished">Nie można załadować kodeka do kodowania %1.</translation>
+        <translation type="obsolete">Nie można załadować kodeka do kodowania %1.</translation>
     </message>
 </context>
 <context>
@@ -627,7 +627,7 @@
 <context>
     <name>qf::gui::framework::DialogWidget</name>
     <message>
-        <location filename="src/framework/dialogwidget.cpp" line="50"/>
+        <location filename="src/framework/dialogwidget.cpp" line="45"/>
         <source>Cannot find action name &apos;%1&apos;</source>
         <translation type="unfinished">Nie można znaleźć nazwy działania &apos;%1&apos;</translation>
     </message>
@@ -645,47 +645,46 @@
         <translation type="unfinished">Pokaż:</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.ui" line="47"/>
         <source>Filter</source>
-        <translation type="unfinished">Filtruj</translation>
+        <translation type="obsolete">Filtruj</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.ui" line="74"/>
+        <location filename="src/framework/logwidget.ui" line="47"/>
         <source>Clear</source>
         <translation type="unfinished">Wyczyść</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.ui" line="88"/>
+        <location filename="src/framework/logwidget.ui" line="61"/>
         <source>Copy to clipboard.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.ui" line="102"/>
+        <location filename="src/framework/logwidget.ui" line="75"/>
         <source>Resize columns to fit content</source>
         <translation type="unfinished">Dopasuj kolumny do zawartości</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.ui" line="116"/>
+        <location filename="src/framework/logwidget.ui" line="89"/>
         <source>Event log options</source>
         <translation type="unfinished">Opcje dziennika zdarzeń</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.ui" line="119"/>
+        <location filename="src/framework/logwidget.ui" line="92"/>
         <source>...</source>
         <translation type="unfinished">...</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.cpp" line="116"/>
+        <location filename="src/framework/logwidget.cpp" line="127"/>
         <source>Maximal log length</source>
         <translation type="unfinished">Maksymalna długość dziennika</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.cpp" line="121"/>
+        <location filename="src/framework/logwidget.cpp" line="132"/>
         <source>Get number</source>
         <translation type="unfinished">Pobierz numer</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.cpp" line="121"/>
+        <location filename="src/framework/logwidget.cpp" line="132"/>
         <source>Maximal log row count:</source>
         <translation type="unfinished">Maksymalna liczba wierszy dziennika:</translation>
     </message>
@@ -693,12 +692,12 @@
 <context>
     <name>qf::gui::framework::LogWidgetTableView</name>
     <message>
-        <location filename="src/framework/logwidget.cpp" line="29"/>
+        <location filename="src/framework/logwidget.cpp" line="30"/>
         <source>Copy</source>
         <translation type="unfinished">Kopiuj</translation>
     </message>
     <message>
-        <location filename="src/framework/logwidget.cpp" line="32"/>
+        <location filename="src/framework/logwidget.cpp" line="33"/>
         <source>Ctrl+C</source>
         <comment>Copy selection</comment>
         <translation type="unfinished"></translation>
@@ -874,42 +873,42 @@
 <context>
     <name>qf::gui::model::LogTableModel</name>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="50"/>
+        <location filename="src/model/logtablemodel.cpp" line="79"/>
         <source>Category</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="52"/>
+        <location filename="src/model/logtablemodel.cpp" line="81"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="54"/>
+        <location filename="src/model/logtablemodel.cpp" line="83"/>
         <source>Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="56"/>
+        <location filename="src/model/logtablemodel.cpp" line="85"/>
         <source>Severity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="58"/>
+        <location filename="src/model/logtablemodel.cpp" line="87"/>
         <source>Time stamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="60"/>
+        <location filename="src/model/logtablemodel.cpp" line="89"/>
         <source>Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="62"/>
+        <location filename="src/model/logtablemodel.cpp" line="91"/>
         <source>Function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/logtablemodel.cpp" line="64"/>
+        <location filename="src/model/logtablemodel.cpp" line="93"/>
         <source>Data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -917,13 +916,13 @@
 <context>
     <name>qf::gui::model::SqlTableModel</name>
     <message>
-        <location filename="src/model/sqltablemodel.cpp" line="243"/>
+        <location filename="src/model/sqltablemodel.cpp" line="228"/>
         <source>numRowsAffected() = %1, should be 1
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/sqltablemodel.cpp" line="272"/>
+        <location filename="src/model/sqltablemodel.cpp" line="257"/>
         <source>Error executing query: %1
  %2</source>
         <translation type="unfinished"></translation>
@@ -984,12 +983,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="737"/>
+        <location filename="src/model/tablemodel.cpp" line="759"/>
         <source>Column named &apos;%1&apos; not found in column list. Existing columns: [%2]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/model/tablemodel.cpp" line="766"/>
+        <location filename="src/model/tablemodel.cpp" line="788"/>
         <source>Cannot find table field for column index: %1, table index: %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1003,7 +1002,7 @@
     </message>
     <message>
         <location filename="src/reports/widgets/itemvalueeditorwidget.ui" line="20"/>
-        <source>Nová hodnota textu</source>
+        <source>New text value</source>
         <translation type="unfinished">Nowa wartość tekstu</translation>
     </message>
 </context>
@@ -1083,7 +1082,7 @@
 <context>
     <name>qf::gui::reports::ReportProcessor</name>
     <message>
-        <location filename="src/reports/processor/reportprocessor.cpp" line="77"/>
+        <location filename="src/reports/processor/reportprocessor.cpp" line="81"/>
         <source>QML component</source>
         <translation type="unfinished">QML element</translation>
     </message>
@@ -1200,7 +1199,7 @@
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="296"/>
-        <source>Editovat text</source>
+        <source>Edit text</source>
         <translation type="unfinished">Edytuj tekst</translation>
     </message>
 </context>
@@ -1435,19 +1434,19 @@
         <translation type="vanished">Ctrl+D</translation>
     </message>
     <message>
-        <source>Zobrazit ve formulari</source>
+        <source>View in form</source>
         <translation type="vanished">Wyświetl w formularzu</translation>
     </message>
     <message>
-        <source>Zobrazit radek v formulari pro cteni</source>
+        <source>View row in read-only form</source>
         <translation type="vanished">Pokaż wiersz w formie do odczytu</translation>
     </message>
     <message>
-        <source>Upravit ve formulari</source>
+        <source>Edit in form</source>
         <translation type="vanished">Edytuj w formularzu</translation>
     </message>
     <message>
-        <source>Upravit radek ve formulari</source>
+        <source>Edit row in form</source>
         <translation type="vanished">Edytuj wiersz w formularzu</translation>
     </message>
     <message>
@@ -1577,7 +1576,7 @@
         <translation type="vanished">Formularz</translation>
     </message>
     <message>
-        <source>textove soubory (*.txt)</source>
+        <source>Text files (*.txt)</source>
         <translation type="vanished">Pliki tekstowe (*.txt)</translation>
     </message>
     <message>
@@ -1617,7 +1616,7 @@
         <translation type="vanished">&amp;Widok</translation>
     </message>
     <message>
-        <source>Soubor %1 nelze otevrit pro cteni.</source>
+        <source>Cannot open file %1 for reading.</source>
         <translation type="vanished">Plik %1 nie można otworzyć do odczytu.</translation>
     </message>
     <message>
@@ -1868,7 +1867,7 @@
         <translation type="vanished">Formularz</translation>
     </message>
     <message>
-        <source>Nová hodnota textu</source>
+        <source>New text value</source>
         <translation type="vanished">Nowa wartość tekstu</translation>
     </message>
 </context>
@@ -2032,7 +2031,7 @@
         <translation type="vanished">Menu elementów</translation>
     </message>
     <message>
-        <source>Editovat text</source>
+        <source>Edit text</source>
         <translation type="vanished">Edytuj tekst</translation>
     </message>
 </context>
