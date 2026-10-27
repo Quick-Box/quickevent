@@ -114,6 +114,8 @@ jobs:
         run: |
           cd "C:/Program Files/PostgreSQL/17/bin"
           cp libiconv-2.dll libintl-9.dll liblz4.dll zlib1.dll libpq.dll '${{ github.workspace }}/install/bin/'
+          # libintl-9.dll needs libwinpthread-1.dll, MinGW build already has its own copy
+          cp -n libwinpthread-1.dll '${{ github.workspace }}/install/bin/'
           cd "C:\openssl"
           cp libssl-3-x64.dll libcrypto-3-x64.dll '${{ github.workspace }}/install/bin/'
         shell: bash
