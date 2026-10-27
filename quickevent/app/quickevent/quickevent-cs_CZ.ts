@@ -9094,6 +9094,40 @@ editing is disabled.</oldsource>
     </message>
 </context>
 <context>
+    <name>main</name>
+    <message>
+        <location filename="src/main.cpp" line="173"/>
+        <source>QuickEvent did not exit correctly last time.
+If you are going to report a problem, please attach the log.
+
+Log file: %1</source>
+        <translation>QuickEvent nebyl minule správně ukončen.
+Pokud budete hlásit problém, přiložte prosím log.
+
+Soubor s logem: %1</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="176"/>
+        <source>QuickEvent</source>
+        <translation>QuickEvent</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="178"/>
+        <source>Copy log to clipboard</source>
+        <translation>Kopírovat log do schránky</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="179"/>
+        <source>Open log folder</source>
+        <translation>Otevřít složku s logy</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="180"/>
+        <source>Report issue on GitHub</source>
+        <translation>Nahlásit problém na GitHubu</translation>
+    </message>
+</context>
+<context>
     <name>results</name>
     <message>
         <location filename="plugins/Relays/qml/reports/results.qml" line="9"/>
