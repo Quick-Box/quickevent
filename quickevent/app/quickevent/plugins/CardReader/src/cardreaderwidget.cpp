@@ -128,7 +128,7 @@ Model::Model(QObject *parent)
 	setColumn(col_classes_name, ColumnDefinition("classes.name", tr("Class")));
 	setColumn(col_competitorName, ColumnDefinition("competitorName", tr("Name")));
 	setColumn(col_competitors_registration, ColumnDefinition("competitors.registration", tr("Reg")));
-	setColumn(col_competirors_bib, ColumnDefinition("competitors.startNumber", tr("Bib")));
+	setColumn(col_competirors_bib, ColumnDefinition("startNumber", tr("Bib")));
 	setColumn(col_runs_startTimeMs, ColumnDefinition("runs.startTimeMs", tr("Start")).setCastType(qMetaTypeId<quickevent::core::og::TimeMs>()).setReadOnly(true));
 	setColumn(col_runs_timeMs, ColumnDefinition("runs.timeMs", tr("Time")).setCastType(qMetaTypeId<quickevent::core::og::TimeMs>()).setReadOnly(true));
 	setColumn(col_runs_finishTimeMs, ColumnDefinition("runs.finishTimeMs", tr("Finish")).setCastType(qMetaTypeId<quickevent::core::og::TimeMs>()).setReadOnly(true));
@@ -157,7 +157,7 @@ QVariant Model::data(const QModelIndex &index, int role) const
 		if(col == col_competirors_bib) {
 			bool is_relays = getPlugin<Event::EventPlugin>()->eventConfig().isRelays();
 			if(is_relays) {
-				int bib = tableRow(index.row()).value(QStringLiteral("competitors.startNumber")).toInt();
+				int bib = tableRow(index.row()).value(QStringLiteral("startNumber")).toInt();
 				int leg = tableRow(index.row()).value(QStringLiteral("runs.leg")).toInt();
 				if(leg > 0) {
 					return QStringLiteral("%1/%2").arg(bib).arg(leg);
@@ -539,7 +539,7 @@ void CardReaderWidget::reload()
 			.where("cards.stageId=" QF_IARG(current_stage))
 			.orderBy("cards.id DESC");
 	if(is_relays) {
-		qb.select("relays.number AS \"competitors.startNumber\"");
+		qb.select("relays.number AS startNumber");
 		qb.join("runs.relayId", "relays.id");
 		qb.join("relays.classId", "classes.id");
 	}

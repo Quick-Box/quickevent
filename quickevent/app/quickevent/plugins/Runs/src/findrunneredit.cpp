@@ -56,7 +56,7 @@ QVariant FindRunnersModel::data(const QModelIndex &index, int role) const
 		static auto col_class_name = fields.fieldIndex(QStringLiteral("classes.name"));
 		static auto col_name = fields.fieldIndex(QStringLiteral("competitorName"));
 		static auto col_searchkey = fields.fieldIndex(QStringLiteral("competitorNameAscii7"));
-		static int col_bib = fields.fieldIndex(QStringLiteral("competitors.startNumber"));
+		static int col_bib = fields.fieldIndex(QStringLiteral("startNumber"));
 		static int col_registration = fields.fieldIndex(QStringLiteral("registration"));
 		static auto col_siid = fields.fieldIndex(QStringLiteral("siid"));
 		static auto col_leg = fields.fieldIndex(QStringLiteral("runs.leg"));

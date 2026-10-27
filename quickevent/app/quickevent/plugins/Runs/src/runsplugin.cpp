@@ -97,12 +97,12 @@ const qf::core::utils::Table &RunsPlugin::runnersTable(int stage_id)
 				.joinRestricted("competitors.id", "runs.competitorId", "runs.stageId=" QF_IARG(stage_id), "JOIN")
 				.orderBy("classes.name, lastName, firstName");
 		if(is_relays) {
-			qb.select("relays.number AS \"competitors.startNumber\"")
+			qb.select("relays.number AS startNumber")
 					.join("runs.relayId", "relays.id")
 					.join("relays.classId", "classes.id");
 		}
 		else {
-			qb.select2("competitors", "startNumber")
+			qb.select("competitors.startNumber AS startNumber")
 					.join("competitors.classId", "classes.id");
 		}
 		qf::gui::model::SqlTableModel m;
