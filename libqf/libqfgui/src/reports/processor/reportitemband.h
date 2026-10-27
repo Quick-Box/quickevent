@@ -10,9 +10,7 @@
 #include "reportitemframe.h"
 #include "../../guiglobal.h"
 
-namespace qf {
-namespace gui {
-namespace reports {
+namespace qf::gui::reports {
 
 class BandDataModel;
 class ReportItemDetail;
@@ -66,7 +64,7 @@ private:
 	QVariant m_data;
 };
 
-#if 0
+#if WITH_DETAIL
 
 class QFGUI_DECL_EXPORT ReportItemDetail : public ReportItemFrame
 {
@@ -136,6 +134,6 @@ protected:
 };
 #endif
 
-}}}
+}
 
 #endif // QF_GUI_REPORTS_REPORTITEMBAND_H

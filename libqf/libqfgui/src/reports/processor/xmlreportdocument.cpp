@@ -509,7 +509,9 @@ QString writePointerPropertyValue(QObject *obj, const QMetaProperty &prop, QObje
 		return QStringLiteral("Cannot assign %1 to property %2").arg(value->metaObject()->className(), prop.name());
 	if(!value->parent())
 		value->setParent(obj);
-	if(!prop.write(obj, QVariant(prop.metaType(), &value)))
+	// QVariant(QMetaType, const void *copy) copies an instance of the meta type from *copy,
+	// the meta type here is a pointer (e.g. Style*), so we pass the address of the pointer
+	if(!prop.write(obj, QVariant(prop.metaType(), static_cast<const void*>(&value))))
 		return QStringLiteral("Cannot write property %1").arg(prop.name());
 	return {};
 }
@@ -533,7 +535,7 @@ QString writePropertyValue(QObject *obj, const QMetaProperty &prop, const QStrin
 		if(value.isEmpty()) {
 			// no style object, it is inherited from parent
 			QObject *null_obj = nullptr;
-			if(!prop.write(obj, QVariant(prop.metaType(), &null_obj)))
+			if(!prop.write(obj, QVariant(prop.metaType(), static_cast<const void*>(&null_obj))))
 				return QStringLiteral("Cannot write property %1").arg(name);
 			return {};
 		}

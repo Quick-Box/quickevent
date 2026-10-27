@@ -7,9 +7,7 @@
 #ifndef QF_GUI_REPORTS_REPORTITEMREPORT_H
 #define QF_GUI_REPORTS_REPORTITEMREPORT_H
 
-#include "reportitemband.h"
-
-#include "../../guiglobal.h"
+#include "reportitemframe.h"
 
 namespace qf::gui::reports {
 
@@ -41,7 +39,7 @@ public:
 private:
 	ReportProcessor *m_reportProcessor;
 };
-#if 0
+#if WITH_BODY
 
 class QFGUI_DECL_EXPORT ReportItemBody : public ReportItemDetail
 {
