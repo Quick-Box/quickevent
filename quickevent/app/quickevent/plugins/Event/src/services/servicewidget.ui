@@ -64,7 +64,7 @@
           <item>
            <widget class="QLabel" name="lblServiceName">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -73,6 +73,20 @@
              <string>EmmaClient</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="btHelp">
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -111,6 +125,13 @@
          <iconset resource="../../../../../../../libqf/libqfgui/images/flat/qf_gui_images_flat.qrc">
           <normaloff>:/qf/gui/images/flat/settings.svg</normaloff>:/qf/gui/images/flat/settings.svg</iconset>
         </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="btVisible">
         <property name="autoRaise">
          <bool>true</bool>
         </property>

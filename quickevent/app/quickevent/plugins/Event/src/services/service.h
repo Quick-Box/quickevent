@@ -33,6 +33,7 @@ public:
 
 	QString serviceId() const {return objectName();}
 	virtual QString serviceDisplayName() const {return serviceId();}
+	virtual QString serviceDescription() const {return {};}
 
 	virtual void run();
 	virtual void stop();

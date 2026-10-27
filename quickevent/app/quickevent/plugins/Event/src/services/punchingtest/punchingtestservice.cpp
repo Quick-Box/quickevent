@@ -32,6 +32,11 @@ PunchingTestService::PunchingTestService(QObject *parent)
 {
 }
 
+QString PunchingTestService::serviceDescription() const
+{
+	return tr("For learning the program and testing. Generates random punch data simulating situations that can occur during a real race. Generated data has TEST written in the last column.\nDo not run it in a live race!");
+}
+
 QString PunchingTestService::serviceName()
 {
 	return QStringLiteral("PunchingTest");

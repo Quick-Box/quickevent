@@ -41,6 +41,11 @@ OResultsClient::OResultsClient(QObject *parent)
 	connect(getPlugin<EventPlugin>(), &Event::EventPlugin::dbEventNotify, this, &OResultsClient::onDbEventNotify, Qt::QueuedConnection);
 }
 
+QString OResultsClient::serviceDescription() const
+{
+	return tr("Uploads start lists and results to the OResults online results service.\nhttps://oresults.eu");
+}
+
 QString OResultsClient::serviceName()
 {
 	return QStringLiteral("OResults");

@@ -24,8 +24,12 @@ public:
 	void setService(Service *service);
 	QString serviceId() const;
 	void setMessage(const QString &m);
+	void setDescription(const QString &d);
+	void setServiceVisible(bool on);
+	void setVisibilityEditMode(bool on);
 
 	Q_SIGNAL void setRunningRequest(bool play);
+	Q_SIGNAL void serviceVisibleToggled(bool on);
 private:
 	void onBtPlayClicked();
 	void showDetail();
