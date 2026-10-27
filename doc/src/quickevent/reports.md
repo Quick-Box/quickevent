@@ -11,6 +11,25 @@ Report files have the `.qrep` extension. Files that are only meant to be include
 by other reports (style sheets, headers, footers, ...) have the `.qrepi` extension.
 Both are XML files.
 
+## Schema
+
+XML schemas are in `libqf/libqfgui/src/reports/schema/`: `qrep.xsd` for reports and
+`qrepi.xsd` for include files, both share types from `report-types.xsd`.
+Validate a report with:
+
+```sh
+xmllint --noout --schema libqf/libqfgui/src/reports/schema/qrep.xsd report.qrep
+```
+
+To get validation and completion in an editor, associate `*.qrep` and `*.qrepi` with the schemas
+in the editor settings, or reference the schema in the root element. The loader ignores
+`xmlns*` and `xsi:*` attributes.
+
+```xml
+<Report xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:noNamespaceSchemaLocation="path/to/qrep.xsd" width="210" height="297">
+```
+
 ## Basic structure
 
 * Element names are report item and style types.

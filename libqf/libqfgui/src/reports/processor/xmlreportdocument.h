@@ -15,6 +15,7 @@ class ReportItem;
 ///
 /// Report files have .qrep extension, files intended only to be included by other reports
 /// (style sheets, page headers, ...) have .qrepi extension.
+/// XML schemas of both are in libqf/libqfgui/src/reports/schema, keep them in sync with item and style properties.
 ///
 /// Element names are report item and style types (Report, Frame, Band, Detail, Para, Image, Break,
 /// StyleSheet, Color, Pen, Brush, Font, TextStyle), attributes are their properties.

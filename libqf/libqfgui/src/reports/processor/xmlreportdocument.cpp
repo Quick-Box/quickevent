@@ -82,6 +82,12 @@ const auto PARAMETER_TAG = QStringLiteral("Parameter");
 const auto REPEAT_TAG = QStringLiteral("Repeat");
 const auto SRC_ATTR = QStringLiteral("src");
 
+/// xmlns and xsi:noNamespaceSchemaLocation attributes, which reference the report schema
+bool isSchemaAttribute(const QDomAttr &attr)
+{
+	return attr.name().startsWith(QLatin1String("xmlns")) || attr.name().startsWith(QLatin1String("xsi:"));
+}
+
 //==========================================================
 // expressions
 //==========================================================
@@ -642,7 +648,7 @@ QObject *Loader::createIncluded(const QDomElement &el, QObject *parent)
 	auto attrs = el.attributes();
 	for(int i = 0; i < attrs.count(); i++) {
 		auto attr = attrs.item(i).toAttr();
-		if(attr.name() == SRC_ATTR)
+		if(attr.name() == SRC_ATTR || isSchemaAttribute(attr))
 			continue;
 		if(type_it->metaObject->indexOfProperty(attr.name().toLatin1().constData()) >= 0 || attr.name() == QLatin1String("text"))
 			property_overrides << std::make_pair(attr.name(), interpolate(attr.value()));
@@ -685,6 +691,8 @@ QObject *Loader::createObject(const QDomElement &el, QObject *parent)
 	auto attrs = el.attributes();
 	for(int i = 0; i < attrs.count(); i++) {
 		auto attr = attrs.item(i).toAttr();
+		if(isSchemaAttribute(attr))
+			continue;
 		setProperty(obj, attr.name(), interpolate(attr.value()));
 	}
 	QString text;
