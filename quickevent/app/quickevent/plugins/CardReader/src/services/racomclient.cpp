@@ -222,6 +222,11 @@ void RacomClient::stop()
 	QF_SAFE_DELETE(m_racomSplitFile)
 }
 
+QString RacomClient::serviceDescription() const
+{
+	return tr("Connects to Racom radio controls.");
+}
+
 QString RacomClient::serviceName()
 {
 	return QStringLiteral("RacomClient");

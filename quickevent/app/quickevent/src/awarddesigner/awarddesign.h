@@ -1,5 +1,6 @@
 #pragma once
 #include <QByteArray>
+#include <QCoreApplication>
 #include <QList>
 #include <QPair>
 #include <QSizeF>
@@ -13,9 +14,6 @@ struct FieldDef {
 	QString id;
 	QString label;
 };
-
-QList<FieldDef> relayFields();
-QList<FieldDef> runsFields();
 
 struct Item {
 	enum Kind { Image = 0, Field = 1 };
@@ -50,6 +48,11 @@ struct Item {
 
 struct Design
 {
+	Q_DECLARE_TR_FUNCTIONS(AwardDesigner::Design)
+public:
+	static QList<FieldDef> relayFields();
+	static QList<FieldDef> runsFields();
+
 	qreal pageW = 210;
 	qreal pageH = 297;
 	// Full-page background image drawn below all items. Bytes are embedded like Item::imageData.

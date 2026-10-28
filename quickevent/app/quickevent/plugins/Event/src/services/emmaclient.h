@@ -41,6 +41,7 @@ public:
 	EmmaClientSettings settings() const {return EmmaClientSettings(m_settings);}
 
 	static QString serviceName();
+	QString serviceDescription() const override;
 
 	void exportRadioCodesRacomTxt();
 	void exportResultsIofXml3();

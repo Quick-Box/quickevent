@@ -47,6 +47,11 @@ EmmaClient::EmmaClient(QObject *parent)
 
 }
 
+QString EmmaClient::serviceDescription() const
+{
+	return tr("Uploads results and radio control data to liveresultat.\nhttps://liveresultat.orientering.se");
+}
+
 QString EmmaClient::serviceName()
 {
 	return QStringLiteral("EmmaClient");

@@ -2,6 +2,7 @@
 #include "awarddesign.h"
 
 #include <QByteArray>
+#include <QCoreApplication>
 #include <QImage>
 #include <QList>
 #include <QPair>
@@ -16,6 +17,7 @@ namespace Event { struct EventConfig; }
 
 class AwardTypstRenderer
 {
+	Q_DECLARE_TR_FUNCTIONS(AwardTypstRenderer)
 public:
 	// Render an arbitrary award .typ document. image_files are absolute paths copied
 	// next to the document under their file name (templates reference them by name).

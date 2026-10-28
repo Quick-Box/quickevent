@@ -293,7 +293,7 @@ void ReportViewWidget::PainterWidget::mousePressEvent(QMouseEvent *e)
 				if(it) {
 					QMenu menu(this);
 					menu.setTitle(tr("Item menu"));
-					QAction *act_edit = menu.addAction(tr("Editovat text"));
+					QAction *act_edit = menu.addAction(tr("Edit text"));
 					/*--
 					{
 						QStringList edit_grants = qf::core::String(it->editGrants).splitAndTrim(',');

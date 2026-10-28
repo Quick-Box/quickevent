@@ -128,7 +128,7 @@ Model::Model(QObject *parent)
 	setColumn(col_classes_name, ColumnDefinition("classes.name", tr("Class")));
 	setColumn(col_competitorName, ColumnDefinition("competitorName", tr("Name")));
 	setColumn(col_competitors_registration, ColumnDefinition("competitors.registration", tr("Reg")));
-	setColumn(col_competirors_bib, ColumnDefinition("competitors.startNumber", tr("Bib")));
+	setColumn(col_competirors_bib, ColumnDefinition("startNumber", tr("Bib")));
 	setColumn(col_runs_startTimeMs, ColumnDefinition("runs.startTimeMs", tr("Start")).setCastType(qMetaTypeId<quickevent::core::og::TimeMs>()).setReadOnly(true));
 	setColumn(col_runs_timeMs, ColumnDefinition("runs.timeMs", tr("Time")).setCastType(qMetaTypeId<quickevent::core::og::TimeMs>()).setReadOnly(true));
 	setColumn(col_runs_finishTimeMs, ColumnDefinition("runs.finishTimeMs", tr("Finish")).setCastType(qMetaTypeId<quickevent::core::og::TimeMs>()).setReadOnly(true));
@@ -154,6 +154,17 @@ QVariant Model::data(const QModelIndex &index, int role) const
 		}
 	}
 	else if(role == Qt::DisplayRole) {
+		if(col == col_competirors_bib) {
+			bool is_relays = getPlugin<Event::EventPlugin>()->eventConfig().isRelays();
+			if(is_relays) {
+				int bib = tableRow(index.row()).value(QStringLiteral("startNumber")).toInt();
+				int leg = tableRow(index.row()).value(QStringLiteral("runs.leg")).toInt();
+				if(leg > 0) {
+					return QStringLiteral("%1/%2").arg(bib).arg(leg);
+				}
+				return bib > 0 ? QVariant(bib) : QVariant();
+			}
+		}
 		if(col == col_cards_checkTime
 		   || col == col_cards_startTime
 		   || col == col_cards_finishTime )
@@ -515,8 +526,8 @@ void CardReaderWidget::reload()
 	int current_stage = getPlugin<CardReaderPlugin>()->currentStageId();
 	qfs::QueryBuilder qb;
 	qb.select2("cards", "id, siId, runId, checkTime, startTime, finishTime, runIdAssignError")
-			.select2("runs", "id, startTimeMs, timeMs, finishTimeMs, misPunch, disqualified, badCheck, notStart, notFinish, disqualifiedByOrganizer, overTime, notCompeting, cardLent, cardReturned")
-			.select2("competitors", "registration, startNumber")
+			.select2("runs", "id, startTimeMs, timeMs, finishTimeMs, misPunch, disqualified, badCheck, notStart, notFinish, disqualifiedByOrganizer, overTime, notCompeting, cardLent, cardReturned, leg")
+			.select2("competitors", "registration")
 			.select2("classes", "name")
 			.select("COALESCE(lastName, '') || ' ' || COALESCE(firstName, '') AS competitorName")
 			.select("lentcards.siid IS NOT NULL AS cardLentTable")
@@ -528,10 +539,12 @@ void CardReaderWidget::reload()
 			.where("cards.stageId=" QF_IARG(current_stage))
 			.orderBy("cards.id DESC");
 	if(is_relays) {
+		qb.select("relays.number AS startNumber");
 		qb.join("runs.relayId", "relays.id");
 		qb.join("relays.classId", "classes.id");
 	}
 	else {
+		qb.select2("competitors", "startNumber");
 		qb.join("competitors.classId", "classes.id");
 	}
 	qfDebug() << qb.toString();

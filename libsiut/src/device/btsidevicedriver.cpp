@@ -40,6 +40,10 @@ constexpr const char *CARD_DATA_UUID		= "bd510013-6aec-4628-a146-f3e95bc49e62";
 constexpr quint16 MSG_CARD_STATE		= 0x1101;
 constexpr quint16 MSG_CARD_MINIMAL		= 0x1102;
 constexpr quint16 MSG_CARD_COMPLETE		= 0x1103;
+constexpr quint16 MSG_FEEDBACK			= 0x1110;
+
+// Max time to wait for card data after readout request
+constexpr int CARD_READOUT_TIMEOUT_MS	= 5000;
 
 // Wrapper chunk flags (payload byte 0), middle chunk has no flag set
 constexpr quint8 WRAP_FLAG_FIRST		= 0x01;
@@ -171,6 +175,11 @@ BtSiDeviceDriver::BtSiDeviceDriver(QObject *parent)
 	, m_cardStateUuid(QString(CARD_STATE_UUID))
 	, m_cardDataUuid(QString(CARD_DATA_UUID))
 {
+	m_cardReadoutTimer = new QTimer(this);
+	m_cardReadoutTimer->setSingleShot(true);
+	m_cardReadoutTimer->setInterval(CARD_READOUT_TIMEOUT_MS);
+	connect(m_cardReadoutTimer, &QTimer::timeout, this, &BtSiDeviceDriver::onCardReadoutTimeout);
+
 	// m_discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
 	// m_discoveryAgent->setLowEnergyDiscoveryTimeout(10000);
 
@@ -308,6 +317,7 @@ void BtSiDeviceDriver::createController(const QBluetoothDeviceInfo &info)
 
 void BtSiDeviceDriver::clearServices()
 {
+	m_cardReadoutTimer->stop();
 	for (auto *svc : m_services)
 		svc->deleteLater();
 	m_services.clear();
@@ -517,6 +527,31 @@ void BtSiDeviceDriver::requestCardReadout()
 	request[1] = static_cast<char>(MSG_CARD_COMPLETE >> 8);
 	logBtSiReaderI() << "Requesting card readout:" << request.toHex().toStdString();
 	m_cardDataService->writeCharacteristic(ch, request, QLowEnergyService::WriteWithResponse);
+	m_cardReadoutTimer->start();
+}
+
+void BtSiDeviceDriver::onCardReadoutTimeout()
+{
+	// card was detected, but readout data did not arrive (unsupported card, card removed too early, ...)
+	emitInfo(NecroLog::Level::Warning, tr("SI card readout timeout."));
+	sendFeedback(Feedback::Error);
+}
+
+void BtSiDeviceDriver::sendFeedback(Feedback feedback)
+{
+	// request: msg_id(u16le) | payload_len(u16le) = 1 | feedback_type(u8)
+	if (!m_cardDataService)
+		return;
+	const QLowEnergyCharacteristic ch = m_cardDataService->characteristic(m_cardDataUuid);
+	if (!ch.isValid())
+		return;
+	QByteArray request(5, 0);
+	request[0] = static_cast<char>(MSG_FEEDBACK & 0xFF);
+	request[1] = static_cast<char>(MSG_FEEDBACK >> 8);
+	request[2] = 1;
+	request[4] = static_cast<char>(feedback);
+	logBtSiReaderD() << "Sending feedback:" << request.toHex().toStdString();
+	m_cardDataService->writeCharacteristic(ch, request, QLowEnergyService::WriteWithResponse);
 }
 
 void BtSiDeviceDriver::handleCardDataMessage(const QByteArray &message)
@@ -532,12 +567,15 @@ void BtSiDeviceDriver::handleCardDataMessage(const QByteArray &message)
 		return;
 	}
 
+	m_cardReadoutTimer->stop();
+
 	// payload starts at byte 4 (after 2-byte msg_id and 2-byte payload_len)
 	QByteArray payload = message.mid(4);
 	SICard card = buildSICard(payload);
 
 	if (card.cardNumber <= 0) {
 		emitInfo(NecroLog::Level::Warning, tr("Received card readout with invalid card number."));
+		sendFeedback(Feedback::Error);
 		return;
 	}
 
@@ -549,6 +587,7 @@ void BtSiDeviceDriver::handleCardDataMessage(const QByteArray &message)
 	             .arg(card.cardNumber)
 	             .arg(card.punchCount()));
 
+	sendFeedback(Feedback::Ok);
 	emit siTaskFinished(static_cast<int>(SiTask::Type::CardRead), QVariant(card.toVariantMap()));
 }
 

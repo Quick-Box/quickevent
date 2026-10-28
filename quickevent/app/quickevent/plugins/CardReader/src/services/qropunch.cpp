@@ -46,6 +46,11 @@ void QrOPunch::stop()
 	delete m_tcpServer, m_tcpServer = nullptr;
 }
 
+QString QrOPunch::serviceDescription() const
+{
+	return tr("Receives punches over TCP from the QR-O-Punch mobile app.\nhttps://github.com/sakhnik/qr-o-punch");
+}
+
 QString QrOPunch::serviceName()
 {
 	return QStringLiteral("QrOPunch");

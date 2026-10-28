@@ -37,6 +37,11 @@ ResultsExporter::ResultsExporter(QObject *parent)
 
 }
 
+QString ResultsExporter::serviceDescription() const
+{
+	return tr("Exports results in the selected format (XML, HTML, ...) at the selected interval to the selected directory.");
+}
+
 QString ResultsExporter::serviceName()
 {
 	return QStringLiteral("ResultsExporter");

@@ -115,9 +115,21 @@ jobs:
         run: |
           cd "C:/Program Files/PostgreSQL/17/bin"
           cp libiconv-2.dll libintl-9.dll liblz4.dll zlib1.dll libpq.dll '${{ github.workspace }}/install/bin/'
+          # libintl-9.dll needs libwinpthread-1.dll, MinGW build already has its own copy
+          cp -n libwinpthread-1.dll '${{ github.workspace }}/install/bin/'
           cd "C:\openssl"
           cp libssl-3-x64.dll libcrypto-3-x64.dll '${{ github.workspace }}/install/bin/'
         shell: bash
+
+      - name: Check PostgreSQL driver loads
+        # Clean PATH, so DLLs of PostgreSQL, OpenSSL or MinGW installed on the runner cannot hide a missing one
+        shell: pwsh
+        run: |
+          Add-Type -Name Native -Namespace Win32 -MemberDefinition '[DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)] public static extern IntPtr LoadLibrary(string path);'
+          $env:PATH = '${{ github.workspace }}\install\bin;C:\Windows\System32'
+          if ([Win32.Native]::LoadLibrary('${{ github.workspace }}\install\bin\sqldrivers\qsqlpsql.dll') -eq [IntPtr]::Zero) {
+            throw "qsqlpsql.dll failed to load, Win32 error $([Runtime.InteropServices.Marshal]::GetLastWin32Error())"
+          }
 
       - name: Bundle Typst binary
         run: |

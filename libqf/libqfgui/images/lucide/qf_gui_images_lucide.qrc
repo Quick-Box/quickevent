@@ -30,6 +30,7 @@
 		<file alias="menu.svg">menu.svg</file>
 		<file>eye.svg</file>
 		<file>eye-off.svg</file>
+		<file alias="help.svg">circle-question-mark.svg</file>
 		<file>globe.svg</file>
 
 		<file alias="zoom_in.svg">zoom-in.svg</file>

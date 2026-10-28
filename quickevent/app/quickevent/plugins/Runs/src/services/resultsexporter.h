@@ -40,6 +40,7 @@ public:
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 
 	static QString serviceName();
+	QString serviceDescription() const override;
 
 	bool exportResults() const;
 	void whenFinishedRunCmd() const;

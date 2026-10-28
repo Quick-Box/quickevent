@@ -17,38 +17,36 @@
 
 namespace AwardDesigner {
 
-#define TR(s) QCoreApplication::translate("AwardDesigner", s)
-
-QList<FieldDef> relayFields()
+QList<FieldDef> Design::relayFields()
 {
 	return {
-		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
-		{.id = QStringLiteral("date"), .label = TR("Datum")},
-		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
-		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
-		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
-		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
-		{.id = QStringLiteral("clubName"), .label = TR("Název štafety/klubu")},
-		{.id = QStringLiteral("runners"), .label = TR("Závodníci (seznam)")},
-		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
-		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("eventName"), .label = tr("Event name")},
+		{.id = QStringLiteral("date"), .label = tr("Date")},
+		{.id = QStringLiteral("place"), .label = tr("Venue")},
+		{.id = QStringLiteral("positionCategory"), .label = tr("Position in class")},
+		{.id = QStringLiteral("position"), .label = tr("Position")},
+		{.id = QStringLiteral("category"), .label = tr("Class")},
+		{.id = QStringLiteral("clubName"), .label = tr("Relay/club name")},
+		{.id = QStringLiteral("runners"), .label = tr("Runners (list)")},
+		{.id = QStringLiteral("mainReferee"), .label = tr("Main referee")},
+		{.id = QStringLiteral("director"), .label = tr("Event director")},
 	};
 
 }
 
-QList<FieldDef> runsFields()
+QList<FieldDef> Design::runsFields()
 {
 	return {
-		{.id = QStringLiteral("eventName"), .label = TR("Název závodu")},
-		{.id = QStringLiteral("date"), .label = TR("Datum")},
-		{.id = QStringLiteral("place"), .label = TR("Místo konání")},
-		{.id = QStringLiteral("positionCategory"), .label = TR("Pořadí v kategorii")},
-		{.id = QStringLiteral("position"), .label = TR("Pořadí")},
-		{.id = QStringLiteral("category"), .label = TR("Kategorie")},
-		{.id = QStringLiteral("competitorName"), .label = TR("Jméno závodníka")},
-		{.id = QStringLiteral("clubName"), .label = TR("Klub")},
-		{.id = QStringLiteral("mainReferee"), .label = TR("Hlavní rozhodčí")},
-		{.id = QStringLiteral("director"), .label = TR("Ředitel závodu")},
+		{.id = QStringLiteral("eventName"), .label = tr("Event name")},
+		{.id = QStringLiteral("date"), .label = tr("Date")},
+		{.id = QStringLiteral("place"), .label = tr("Venue")},
+		{.id = QStringLiteral("positionCategory"), .label = tr("Position in class")},
+		{.id = QStringLiteral("position"), .label = tr("Position")},
+		{.id = QStringLiteral("category"), .label = tr("Class")},
+		{.id = QStringLiteral("competitorName"), .label = tr("Competitor name")},
+		{.id = QStringLiteral("clubName"), .label = tr("Club")},
+		{.id = QStringLiteral("mainReferee"), .label = tr("Main referee")},
+		{.id = QStringLiteral("director"), .label = tr("Event director")},
 	};
 }
 
@@ -84,7 +82,7 @@ Design Design::defaultRelayDesign()
 	// "Diplom" heading — huge Times Serif maroon
 	Item diplom;
 	diplom.kind = Item::Field;
-	diplom.text = QStringLiteral("Diplom");
+	diplom.text = tr("Diploma");
 	diplom.x = 15; diplom.y = 52; diplom.w = 180; diplom.h = 38;
 	diplom.fontFamily = QStringLiteral("Times New Roman"); diplom.fontSize = 72;
 	diplom.color = QStringLiteral("#800000"); diplom.halign = Qt::AlignHCenter;
@@ -126,7 +124,7 @@ Design Design::defaultRunsDesign()
 
 	Item diplom;
 	diplom.kind = Item::Field;
-	diplom.text = QStringLiteral("Diplom");
+	diplom.text = tr("Diploma");
 	diplom.x = 15; diplom.y = 52; diplom.w = 180; diplom.h = 38;
 	diplom.fontFamily = QStringLiteral("Times New Roman"); diplom.fontSize = 72;
 	diplom.color = QStringLiteral("#800000"); diplom.halign = Qt::AlignHCenter;

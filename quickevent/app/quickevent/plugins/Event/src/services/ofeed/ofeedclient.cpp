@@ -138,6 +138,11 @@ OFeedClient::OFeedClient(QObject *parent)
 			this, &OFeedClient::onQxRecChng, Qt::QueuedConnection);
 }
 
+QString OFeedClient::serviceDescription() const
+{
+	return tr("Platform for sharing data during a race, e.g. integration with OChecklist or the OFB visualization.\nhttps://orienteerfeed.com\nDocs: https://docs.orienteerfeed.com");
+}
+
 QString OFeedClient::serviceName()
 {
 	return QStringLiteral("OFeed");

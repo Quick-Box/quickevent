@@ -21,6 +21,7 @@ public:
 
 	static QString serviceName();
 	QString serviceDisplayName() const override;
+	QString serviceDescription() const override;
 	const QStringList &receivedLineLog() const { return m_receivedLineLog; }
 
 	Q_SIGNAL void receivedLineLogged();
