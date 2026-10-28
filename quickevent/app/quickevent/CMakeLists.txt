@@ -340,7 +340,7 @@ if(APPLE)
 		file(COPY \${LIBS} DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/Frameworks\")
 
 		# Copy QML and translations to MacOS (same structure as Linux)
-		file(COPY \"${CMAKE_INSTALL_PREFIX}/bin/qml\" DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/MacOS\")
+		# file(COPY \"${CMAKE_INSTALL_PREFIX}/bin/qml\" DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/MacOS\")
 		file(COPY \"${CMAKE_INSTALL_PREFIX}/bin/translations\" DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/MacOS\")
 	")
 else()
