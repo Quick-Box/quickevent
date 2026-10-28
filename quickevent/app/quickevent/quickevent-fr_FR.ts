@@ -6823,7 +6823,7 @@ Press refresh button to show imported data.</source>
     </message>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2741"/>
-        <source>Laps</source>
+        <source>Splits</source>
         <translation>Délais</translation>
     </message>
     <message>
@@ -7694,7 +7694,7 @@ Press refresh button to show imported data.</source>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="341"/>
-        <source>HTML with &amp;laps</source>
+        <source>HTML with &amp;splits</source>
         <translation>HTML avec dé&amp;lais</translation>
     </message>
     <message>

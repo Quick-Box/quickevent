@@ -7432,7 +7432,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     </message>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2741"/>
-        <source>Laps</source>
+        <source>Splits</source>
         <translation>Mezičasy</translation>
     </message>
     <message>
@@ -8394,7 +8394,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="341"/>
-        <source>HTML with &amp;laps</source>
+        <source>HTML with &amp;splits</source>
         <translation>HTML s &amp;mezičasy</translation>
     </message>
     <message>

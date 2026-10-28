@@ -2782,7 +2782,7 @@ QString RunsPlugin::export_resultsHtmlStage(bool with_laps)
 									 tr("climb:"), tt1_row.value("courses.climb")
 							},
 				QVariantList{"td", QVariantMap{{"colspan", "2"}, {"align", "right"}},
-							class_laps? QVariantList{"a",  QVariantMap{ {"href", "results_" + class_name + ".html"} }, tr("Laps") }: QVariantList{},
+							class_laps? QVariantList{"a",  QVariantMap{ {"href", "results_" + class_name + ".html"} }, tr("Splits") }: QVariantList{},
 							QVariantList{"a", QVariantMap{{"href", "#home"}}, tr("Top") },
 							},
 			};
