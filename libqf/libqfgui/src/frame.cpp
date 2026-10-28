@@ -1,7 +1,6 @@
 #include "frame.h"
 //#include "LayoutTypeProperties.h"
 #include "layouttypeproperties.h"
-#include "layoutpropertiesattached.h"
 
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
@@ -24,8 +23,6 @@ Frame::Frame(QWidget *parent) :
 
 Frame::~Frame()
 {
-	qDeleteAll(m_attachedObjects);
-	m_attachedObjects.clear();
 }
 
 Frame::LayoutType Frame::layoutType() const
@@ -63,43 +60,6 @@ void Frame::setVisible(bool b)
 	}
 }
 
-QQmlListProperty<QWidget> Frame::widgets()
-{
-	return QQmlListProperty<QWidget>(this, nullptr,
-									 Frame::addWidgetFunction,
-									 Frame::countWidgetsFunction,
-									 Frame::widgetAtFunction,
-									 Frame::removeAllWidgetsFunction
-									 );
-}
-
-void Frame::addWidgetFunction(QQmlListProperty<QWidget> *list_property, QWidget *value)
-{
-	if (value) {
-		auto *that = static_cast<Frame*>(list_property->object);
-		that->add(value);
-	}
-}    
-
-QWidget * Frame::widgetAtFunction(QQmlListProperty<QWidget> *list_property, WidgetIndexType index)
-{
-	auto *that = static_cast<Frame*>(list_property->object);
-	return that->at(index);
-}
-
-
-void Frame::removeAllWidgetsFunction(QQmlListProperty<QWidget> *list_property)
-{
-	auto *that = static_cast<Frame*>(list_property->object);
-	that->removeAll();
-}
-
-Frame::WidgetIndexType Frame::countWidgetsFunction(QQmlListProperty<QWidget> *list_property)
-{
-	auto *that = static_cast<Frame*>(list_property->object);
-	return that->count();
-}
-
 void Frame::add(QWidget *widget)
 {
 	if(widget) {
@@ -116,22 +76,6 @@ void Frame::add(QWidget *widget)
 	}
 }
 
-QWidget *Frame::at(int index) const
-{
-	return m_childWidgets.value(index);
-}
-
-void Frame::removeAll()
-{
-	qDeleteAll(m_childWidgets);
-	m_childWidgets.clear();
-}
-
-int Frame::count() const
-{
-	return m_childWidgets.count();
-}
-
 void Frame::setLayoutTypeProperties(LayoutTypeProperties *props)
 {
 	m_layoutTypeProperties = props;
@@ -146,13 +90,6 @@ void Frame::addToLayout(QWidget *widget)
 		qfDebug() << "\tnew layout:" << layout() << this;
 	}
 	qfDebug() << "\tadding:" << widget << "to layout:" << layout() << this;
-	auto *layout_props_attached = qobject_cast<LayoutPropertiesAttached*>(qmlAttachedPropertiesObject<LayoutProperties>(widget, false));
-	if(layout_props_attached) {
-		LayoutTypeProperties::SizePolicy sph = layout_props_attached->horizontalSizePolicy();
-		LayoutTypeProperties::SizePolicy spv = layout_props_attached->verticalSizePolicy();
-		if(sph != LayoutTypeProperties::Preferred || spv != LayoutTypeProperties::Preferred)
-			widget->setSizePolicy((QSizePolicy::Policy)sph, (QSizePolicy::Policy)spv);
-	}
 	{
 		auto *ly = qobject_cast<QGridLayout*>(layout());
 		if(ly) {
@@ -168,22 +105,17 @@ void Frame::addToLayout(QWidget *widget)
 			}
 			if(cnt <= 0)
 				cnt = 2;
-			int row_span = 1, column_span = 1;
-			if(layout_props_attached) {
-				row_span = layout_props_attached->rowSpan();
-				column_span = layout_props_attached->columnSpan();
-			}
 			if(flow == LayoutTypeProperties::LeftToRight) {
-				ly->addWidget(widget, m_currentLayoutRow, m_currentLayoutColumn, 1, column_span);
-				m_currentLayoutColumn += column_span;
+				ly->addWidget(widget, m_currentLayoutRow, m_currentLayoutColumn);
+				m_currentLayoutColumn++;
 				if(m_currentLayoutColumn >= cnt) {
 					m_currentLayoutColumn = 0;
 					m_currentLayoutRow++;
 				}
 			}
 			else {
-				ly->addWidget(widget, m_currentLayoutRow, m_currentLayoutColumn, row_span, 1);
-				m_currentLayoutRow += row_span;
+				ly->addWidget(widget, m_currentLayoutRow, m_currentLayoutColumn);
+				m_currentLayoutRow++;
 				if(m_currentLayoutRow >= cnt) {
 					m_currentLayoutRow = 0;
 					m_currentLayoutColumn++;
@@ -195,24 +127,7 @@ void Frame::addToLayout(QWidget *widget)
 	{
 		auto *ly = qobject_cast<QFormLayout*>(layout());
 		if(ly) {
-			QString buddy_text;
-			int column_span = 1;
-			if(layout_props_attached) {
-				column_span = layout_props_attached->columnSpan();
-				buddy_text = layout_props_attached->buddyText();
-			}
-			if(!buddy_text.isEmpty()) {
-				qfDebug() << "\t add with buddy:" << buddy_text;
-				ly->addRow(buddy_text, widget);
-			}
-			else if(column_span > 1) {
-				qfDebug() << "\t add with col span:" << column_span;
-				ly->addRow(widget);
-			}
-			else {
-				qfDebug() << "\t add single widget";
-				ly->addWidget(widget);
-			}
+			ly->addWidget(widget);
 			return;
 		}
 	}
@@ -255,11 +170,3 @@ void Frame::createLayout(LayoutType layout_type)
 	setLayout(new_ly);
 }
 
-QQmlListProperty<QObject> Frame::attachedObjects()
-{
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<QObject>(this, m_attachedObjects);
-#else
-	return QQmlListProperty<QObject>(this, &m_attachedObjects);
-#endif
-}

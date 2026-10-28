@@ -43,8 +43,6 @@ public:
 
 	Q_SIGNAL void closeDialogRequest(int done_result);
 public:
-	/// define this slot to allow QML code call C++ settleDownInDialog() implementation,
-	/// when settleDownInDialog() is implemented in QML and hides C++ implementations
 	Q_INVOKABLE virtual void settleDownInDialog(qf::gui::dialogs::Dialog *dlg);
 	Q_INVOKABLE void settleDownInDialog_qml(const QVariant &dlg);
 	virtual qf::gui::Action* action(const QString &name, bool throw_exc = true);

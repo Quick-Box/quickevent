@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
+		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
+		textStyle="default">
+	<Parameter name="stagesCount" default="1"/>
+	<Parameter name="reportTitle" default="${stagesCount|trn:'Results after %n stage(s)'}"/>
+	<Parameter name="timeCellWidth" default="${eventConfig.timeMeasurementPrecision|ogTimeColumnWidth}"/>
+	<Parameter name="posCellWidth" default="10"/>
+	<styleSheet><include src="../../shared/reports/ReportStyleCommon.qrepi"/></styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../shared/reports/QuickEventHeaderFooter.qrepi"/>
+		<Frame width="%" height="%" vinset="10">
+			<Band width="%" height="%">
+				<include src="../../shared/reports/QuickEventReportHeader.qrepi"/>
+				<Detail width="%" layout="LayoutVertical">
+					<Frame height="5"/>
+					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
+						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
+						<Para hinset="1" width="100" textStyle="bold">${'Club'|tr}</Para>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${timeCellWidth}">${'Time'|tr}</Para>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${timeCellWidth}">${'Loss'|tr}</Para>
+					</Frame>
+					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
+						<Detail width="%" layout="LayoutHorizontal">
+							<Para hinset="1" width="${posCellWidth}" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="%">{{competitorName}}</Para>
+							<Para hinset="1" width="100">{{name}}</Para>
+							<Para hinset="1" width="${timeCellWidth}" halign="AlignRight">{{timeMs|ogTime:${'DISQ'|tr}}}</Para>
+							<Para hinset="1" width="${timeCellWidth}" halign="AlignRight">{{timeLossMs|ogTime:|prefix:+}}</Para>
+						</Detail>
+					</Band>
+				</Detail>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>

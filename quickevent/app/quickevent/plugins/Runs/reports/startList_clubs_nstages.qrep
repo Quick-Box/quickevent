@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
+		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
+		textStyle="default">
+	<Parameter name="stagesCount" default="${options.stagesCount|positive|default:1}"/>
+	<Parameter name="reportTitle" default="${stagesCount|trn:'Start list by clubs for %n stage(s)'}"/>
+	<styleSheet><include src="../../shared/reports/ReportStyleCommon.qrepi"/></styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../shared/reports/QuickEventHeaderFooter.qrepi"/>
+		<Frame width="%" height="%" vinset="10">
+			<Band width="%" height="%">
+				<include src="../../shared/reports/QuickEventReportHeader.qrepi"/>
+				<Detail width="%" layout="LayoutVertical">
+					<Frame height="5"/>
+					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
+					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
+						<Para hinset="1" textStyle="bold">{{clubAbbr}}</Para>
+						<Para hinset="1" width="%" textStyle="bold">{{name}}</Para>
+						<Para hinset="1" visible="${options.isStartListPrintStartNumbers}" width="12" textStyle="bold" halign="AlignRight">${'Bib'|tr}</Para>
+						<Para hinset="1" width="23" textStyle="bold">${'Registration'|tr}</Para>
+						<Para hinset="1" width="19" textStyle="bold" halign="AlignRight">${'SI'|tr}</Para>
+						<Repeat var="i" from="1" to="${stagesCount}">
+							<Para hinset="1" textStyle="bold" halign="AlignRight" width="17">${'Stage'|tr}${i}</Para>
+						</Repeat>
+					</Frame>
+					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
+						<Detail width="%" layout="LayoutHorizontal">
+							<Para hinset="1" width="12">{{classes.name}}</Para>
+							<Para hinset="1" width="%">{{competitorName}}</Para>
+							<Para hinset="1" visible="${options.isStartListPrintStartNumbers}" width="12" halign="AlignRight">{{startNumber|positive}}</Para>
+							<Para hinset="1" width="23">{{registration}}</Para>
+							<Para hinset="1" width="19" halign="AlignRight">{{competitors.siId}}</Para>
+							<Repeat var="i" from="1" to="${stagesCount}">
+								<Para hinset="1" width="17" halign="AlignRight">{{select(runs${i}.isRunning, runs${i}.startTimeText, '-')}}</Para>
+							</Repeat>
+						</Detail>
+					</Band>
+				</Detail>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>

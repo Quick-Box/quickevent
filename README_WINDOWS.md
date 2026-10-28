@@ -67,7 +67,6 @@ cmake `
   -DCMAKE_INSTALL_PREFIX="$QUICKBOX_ROOT\install" `
   -DUSE_QT6=ON `
   -DMINGW=ON `
-  -DQF_BUILD_QML_PLUGINS=ON `
   -DBUILD_TESTING=OFF
 
 cmake --build "$QUICKBOX_ROOT\build" --parallel
@@ -88,8 +87,6 @@ $SSL_DIR = "C:\Program Files\OpenSSL"            # Update this
 # Deploy Qt DLLs and plugins
 & "$QT_ROOT\$QT_VER\mingw_64\bin\windeployqt.exe" `
   -serialport -multimedia `
-  --qmldir "$QUICKBOX_ROOT\install\bin\qml" `
-  --qmldir "$QUICKBOX_ROOT\install\bin\reports" `
   "$QUICKBOX_ROOT\install\bin\quickevent.exe"
 
 # Copy MinGW runtime DLLs

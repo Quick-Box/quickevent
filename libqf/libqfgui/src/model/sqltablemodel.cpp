@@ -16,7 +16,6 @@
 #include <QSqlIndex>
 #include <QSqlField>
 #include <QSqlDriver>
-#include <QJSValue>
 #include <QColor>
 #include <QSet>
 
@@ -633,10 +632,6 @@ QString SqlTableModel::replaceQueryParameters(const QString query_str)
 {
 	QString ret = query_str;
 	QVariant par_v = queryParameters();
-	if(par_v.userType() == qMetaTypeId<QJSValue>()) {
-		auto jsv = par_v.value<QJSValue>();
-		par_v = jsv.toVariant();
-	}
 #if QT_VERSION_MAJOR >= 6
 	if(par_v.typeId() == QMetaType::QVariantMap) {
 #else

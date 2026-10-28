@@ -97,22 +97,6 @@ QString StyleObject::nextSequentialName()
 	return QString("%1_%2").arg(m_styleGroup).arg(++n);
 }
 */
-void StyleObject::classBegin()
-{
-}
-
-void StyleObject::componentComplete()
-{
-	/*
-	/// object should have parent set, when it is completed
-	if(!parent())
-		qfWarning() << this << "completed without parent set";
-	QString new_name = name();
-	if(!new_name.isEmpty()) {
-		updateStyleCache(QString(), new_name);
-	}
-	*/
-}
 /*
 void StyleObject::updateStyleCache(const QString &old_name, const QString &new_name)
 {

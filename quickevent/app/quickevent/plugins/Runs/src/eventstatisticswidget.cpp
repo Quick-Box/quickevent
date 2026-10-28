@@ -573,7 +573,7 @@ void EventStatisticsWidget::printResultsForRows(const QList<int> &rows)
 	props["isColumnBreak"] = (opts.breakType() == (int)quickevent::gui::ReportOptionsDialog::BreakType::Column);
 	props["options"] = opts;
 	report_printed = qf::gui::reports::ReportViewWidget::showReport(this
-								, getPlugin<RunsPlugin>()->findReportFile("results_stage.qml")
+								, getPlugin<RunsPlugin>()->findReportFile("results_stage.qrep")
 								, td
 								, tr("Results by classes")
 								, "printCurrentStage"

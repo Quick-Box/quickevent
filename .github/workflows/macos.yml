@@ -42,7 +42,6 @@ jobs:
           -S '${{github.workspace}}' \
           -B '${{github.workspace}}/build' \
           -DCMAKE_BUILD_TYPE=Release \
-          -DQF_BUILD_QML_PLUGINS=ON \
           -DQF_WITH_LIBSHV=ON \
           -DBUILD_TESTING=OFF \
           -DUSE_QT6=ON \
@@ -74,7 +73,6 @@ jobs:
       - name: Run macdeployqt
         run: |
           macdeployqt '${{ github.workspace }}/install/quickevent.app' \
-          -qmldir='${{ github.workspace }}/quickevent/app/quickevent/plugins' \
           -always-overwrite
 
       - name: Fix bundle linking

@@ -162,7 +162,6 @@ add_executable(quickevent
 	plugins/Runs/src/findrunnerwidget.cpp
 	plugins/Runs/src/findrunnerwidget.ui
 
-
 	plugins/Runs/src/printawardsoptionsdialogwidget.cpp
 	plugins/Runs/src/printawardsoptionsdialogwidget.ui
 	plugins/Runs/src/runflagsdialog.cpp
@@ -215,6 +214,7 @@ add_executable(quickevent
 
 	src/appclioptions.cpp
 	src/application.cpp
+	src/reportfunctions.cpp
 	src/loggerwidget.cpp
 	src/main.cpp
 	src/mainwindow.cpp
@@ -225,67 +225,10 @@ add_executable(quickevent
 
 	quickevent.rc
 
-	plugins/Classes/qml/reports/table.qml
-
-	plugins/Event/qml/DbSchema.qml
-	plugins/Event/qml/sql/def/Boolean.qml
-	plugins/Event/qml/sql/def/Date.qml
-	plugins/Event/qml/sql/def/DateTime.qml
-	plugins/Event/qml/sql/def/Enum.qml
-	plugins/Event/qml/sql/def/Field.qml
-	plugins/Event/qml/sql/def/ForeignKeyReference.qml
-	plugins/Event/qml/sql/def/Index.qml
-	plugins/Event/qml/sql/def/Insert.qml
-	plugins/Event/qml/sql/def/Int.qml
-	plugins/Event/qml/sql/def/Real.qml
-	plugins/Event/qml/sql/def/Schema.qml
-	plugins/Event/qml/sql/def/Serial.qml
-	plugins/Event/qml/sql/def/String.qml
-	plugins/Event/qml/sql/def/Table.qml
-	plugins/Event/qml/sql/def/Time.qml
-	plugins/Event/qml/sql/def/private/FieldType.qml
-
-	plugins/Receipts/qml/reports/error.qml
-	plugins/Receipts/qml/reports/errorlong.qml
-	plugins/Receipts/qml/reports/sicard.qml
-	plugins/Receipts/qml/reports/receipts/Classic.qml
-	plugins/Receipts/qml/reports/receipts/ClassicLottery.qml
-	plugins/Receipts/qml/reports/receipts/Default.qml
-	plugins/Receipts/qml/reports/receipts/private/LotteryTicket.qml
-
-	plugins/Relays/qml/reports/results.qml
-	plugins/Relays/qml/reports/results_condensed.qml
-	plugins/Relays/qml/reports/startList_classes.qml
-	plugins/Relays/qml/reports/startList_clubs.qml
-	plugins/Relays/qml/reports/startList_classes_condensed.qml
-	plugins/Relays/qml/reports/startList_clubs_condensed.qml
-
 	plugins/Relays/reports/awards/relay_awards.typ
-
-	plugins/Runs/qml/reports/competitorsWithCardRent.qml
-	plugins/Runs/qml/reports/results_nstages.qml
-	plugins/Runs/qml/reports/results_nstages_points.qml
-	plugins/Runs/qml/reports/results_nstages_points_condensed.qml
-	plugins/Runs/qml/reports/results_nstagesSpeaker.qml
-	plugins/Runs/qml/reports/results_stage.qml
-	plugins/Runs/qml/reports/results_stageSpeaker.qml
-	plugins/Runs/qml/reports/startList_classes.qml
-	plugins/Runs/qml/reports/startList_classes_nstages.qml
-	plugins/Runs/qml/reports/startList_clubs.qml
-	plugins/Runs/qml/reports/startList_clubs_nstages.qml
-	plugins/Runs/qml/reports/startList_starters.qml
-	plugins/Runs/qml/reports/competitorsStatistics.qml
 
 	plugins/Runs/reports/awards/results_stage_awards.typ
 	plugins/Runs/reports/awards/results_stage_awards_ceskyorientak.typ
-
-	plugins/shared/qml/reports/Cell.qml
-	plugins/shared/qml/reports/HeaderCell.qml
-	plugins/shared/qml/reports/QfObject.qml
-	plugins/shared/qml/reports/QuickEventHeaderFooter.qml
-	plugins/shared/qml/reports/QuickEventReportHeader.qml
-	plugins/shared/qml/reports/ReportStyleCommon.qml
-	plugins/shared/qml/reports/Space.qml
 )
 
 # Single source of truth for this project's translations: every quickevent-<locale>.ts
@@ -303,13 +246,9 @@ target_sources(quickevent PRIVATE ${QM_FILES})
 # Embed the default report templates. ReportFileCache extracts these resources to
 # the user's writable report cache on its first use.
 file(GLOB_RECURSE REPORT_RESOURCE_FILES CONFIGURE_DEPENDS
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Classes/qml/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Runs/qml/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Runs/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/qml/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Relays/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Receipts/qml/reports/*"
-	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/qml/reports/*"
+	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/Receipts/reports/*"
 	"${CMAKE_CURRENT_SOURCE_DIR}/plugins/shared/reports/*"
 )
 qt_add_resources(quickevent reports_resources
@@ -317,6 +256,34 @@ qt_add_resources(quickevent reports_resources
 	BASE "${CMAKE_CURRENT_SOURCE_DIR}/plugins"
 	FILES ${REPORT_RESOURCE_FILES}
 )
+
+# lupdate cannot read XML reports, strings translated in them ('text'|tr and trn:'text' expressions)
+# are written to a generated source file, which is scanned by lupdate but never compiled.
+# Translation context is the report file base name.
+set(REPORT_TR_SOURCE "${CMAKE_CURRENT_BINARY_DIR}/report_translations.cpp")
+set(REPORT_TR_CONTENT "// Generated from XML reports for lupdate, not compiled\nstatic const char *report_translations[] = {\n")
+foreach(report_file IN LISTS REPORT_RESOURCE_FILES)
+	if(NOT report_file MATCHES "\\.qrepi?$")
+		continue()
+	endif()
+	set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${report_file}")
+	get_filename_component(tr_context "${report_file}" NAME_WE)
+	file(READ "${report_file}" report_xml)
+	string(REGEX MATCHALL "'[^']*'\\|tr" tr_matches "${report_xml}")
+	foreach(tr_match IN LISTS tr_matches)
+		string(REGEX REPLACE "^'(.*)'\\|tr$" "\\1" tr_text "${tr_match}")
+		string(APPEND REPORT_TR_CONTENT "\tQT_TRANSLATE_NOOP(\"${tr_context}\", \"${tr_text}\"),\n")
+	endforeach()
+	string(REGEX MATCHALL "trn:'[^']*'" tr_matches "${report_xml}")
+	foreach(tr_match IN LISTS tr_matches)
+		string(REGEX REPLACE "^trn:'(.*)'$" "\\1" tr_text "${tr_match}")
+		string(APPEND REPORT_TR_CONTENT "\tQT_TRANSLATE_N_NOOP(\"${tr_context}\", \"${tr_text}\"),\n")
+	endforeach()
+endforeach()
+string(APPEND REPORT_TR_CONTENT "};\n")
+file(CONFIGURE OUTPUT "${REPORT_TR_SOURCE}" CONTENT "${REPORT_TR_CONTENT}" @ONLY)
+set_source_files_properties("${REPORT_TR_SOURCE}" PROPERTIES HEADER_FILE_ONLY ON)
+target_sources(quickevent PRIVATE "${REPORT_TR_SOURCE}")
 
 target_include_directories(quickevent PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(quickevent PUBLIC libquickeventcore libquickeventgui libqfgui libsiut)
@@ -373,7 +340,7 @@ if(APPLE)
 		file(COPY \${LIBS} DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/Frameworks\")
 
 		# Copy QML and translations to MacOS (same structure as Linux)
-		file(COPY \"${CMAKE_INSTALL_PREFIX}/bin/qml\" DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/MacOS\")
+		# file(COPY \"${CMAKE_INSTALL_PREFIX}/bin/qml\" DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/MacOS\")
 		file(COPY \"${CMAKE_INSTALL_PREFIX}/bin/translations\" DESTINATION \"${CMAKE_INSTALL_PREFIX}/quickevent.app/Contents/MacOS\")
 	")
 else()

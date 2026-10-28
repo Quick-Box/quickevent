@@ -30,6 +30,8 @@ public:
 	SETTINGS_FIELD(bool, is, set, CharacterPrinterUdpProtocol, "printer/isCharacterPrinterUdpProtocol", {});
 	SETTINGS_FIELD(QString, c, setC, haracterPrinterCodec, "printer/characterPrinterCodec", {});
 
+	/// receipt report file path, built-in receipts were QML and then XML files before
+	QString receiptReportPath() const;
 	WhenRunnerNotFoundPrint whenRunnerNotFoundPrintEnum() const;
 	PrinterType printerTypeEnum() const;
 	static QString printerTypeToString(PrinterType e);

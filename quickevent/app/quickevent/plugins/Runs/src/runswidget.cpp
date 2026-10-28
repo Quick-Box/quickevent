@@ -257,11 +257,12 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 				return;
 			auto opts = dlg.optionsMap();
 			QVariantMap props;
-			props["stageId"] = selectedStageId();
+			int stage_id = selectedStageId();
+			props["stageId"] = stage_id;
 			props["options"] = opts;
 			qf::gui::reports::ReportViewWidget::showReport(fwk
-										, getPlugin<RunsPlugin>()->findReportFile("competitorsWithCardRent.qml")
-										, QVariant()
+										, getPlugin<RunsPlugin>()->findReportFile("competitorsWithCardRent.qrep")
+										, getPlugin<RunsPlugin>()->competitorsWithCardRentTable(stage_id).toVariant()
 										, tr("Competitors with rented cards")
 										, "printReport"
 										, props
@@ -1204,7 +1205,7 @@ void RunsWidget::report_competitorsStatistics()
 	//props["isBreakAfterEachClass"] = (opts.breakType() != (int)quickevent::gui::ReportOptionsDialog::BreakType::None);
 	//props["isColumnBreak"] = (opts.breakType() == (int)quickevent::gui::ReportOptionsDialog::BreakType::Column);
 	props["stageCount"] = stage_cnt;
-	QString rep_fn = getPlugin<RunsPlugin>()->findReportFile("competitorsStatistics.qml");
+	QString rep_fn = getPlugin<RunsPlugin>()->findReportFile("competitorsStatistics.qrep");
 	qf::gui::reports::ReportViewWidget::showReport(this
 								, rep_fn
 								, tt.toVariant()

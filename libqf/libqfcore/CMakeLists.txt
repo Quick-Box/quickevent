@@ -39,7 +39,7 @@ qt6_add_translation(QM_FILES ${TS_FILES})
 qt6_add_lupdate(libqfcore TS_FILES ${TS_FILES})
 
 target_sources(libqfcore PRIVATE ${QM_FILES})
-target_link_libraries(libqfcore PUBLIC libnecrolog Qt::Core Qt::Sql PRIVATE Qt::Gui Qt::Qml Qt::Xml libnecrolog)
+target_link_libraries(libqfcore PUBLIC libnecrolog Qt::Core Qt::Sql PRIVATE Qt::Gui Qt::Xml libnecrolog)
 target_include_directories(libqfcore PUBLIC include)
 target_compile_definitions(libqfcore PRIVATE QFCORE_BUILD_DLL)
 

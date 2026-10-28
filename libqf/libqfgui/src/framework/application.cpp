@@ -5,8 +5,6 @@
 #include <qf/core/utils/fileutils.h>
 #include <qf/core/sql/qxsql.h>
 
-#include <QQmlEngine>
-#include <QQmlContext>
 #include <QFile>
 #include <QJsonParseError>
 #include <QUuid>

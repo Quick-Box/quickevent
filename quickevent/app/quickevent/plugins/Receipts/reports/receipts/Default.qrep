@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="65" height="297" hinset="0" vinset="5" textStyle="default">
+	<Parameter name="printLotteryTicket" default="false"/>
+	<styleSheet>
+		<StyleSheet>
+			<include src="../../../shared/reports/ReportStyleCommon.qrepi"/>
+			<Brush name="none" color="#00000000"/>
+			<Brush name="error" color="salmon"/>
+		</StyleSheet>
+	</styleSheet>
+	<Para/>
+	<Frame width="%" border="blue05">
+		<Band modelData="competitor" width="%">
+			<Detail width="%" layout="LayoutVertical" borderBottom="black2">
+				<include src="private/LotteryTicket.qrepi" visible="${printLotteryTicket}"/>
+				<Frame width="%" halign="AlignHCenter" hinset="4" vinset="1" htmlExportAttributes='{"lpt_textAlign": "center", "lpt_textWidth": "%"}'>
+					<Para/>
+					<Image visible="{{band('event.receiptImagePath')|if:true:false}}"
+						height="{{select(band('event.receiptImagePath'), band('event.receiptImageHeightMm')|nonzero|default:18|clamp:10:60, 0)}}"
+						dataSource="{{band('event.receiptImagePath')}}"/>
+				</Frame>
+				<Frame hinset="2" vinset="1" textStyle="bold" fill="khaki" htmlExportAttributes='{"lpt_textStyle": "bold", "lpt_borderBottom": "-"}'>
+					<Frame width="%" layout="LayoutHorizontal">
+						<Para width="%">{{competitorName}}</Para>
+						<Para textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{competitors.registration|default:${'NO_REG'|tr}}}</Para>
+					</Frame>
+					<Frame width="%" layout="LayoutHorizontal">
+						<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'>{{classes.name}}</Para>
+						<Para>{{div(band('courses.length'), 1000)|default:0}}km</Para>
+						<Para text=" {{band('courses.climb')}}m"/>
+					</Frame>
+				</Frame>
+			</Detail>
+		</Band>
+		<Band modelData="card" width="%">
+			<Frame width="%" hinset="2" vinset="1" borderBottom="black1" htmlExportAttributes='{"lpt_borderBottom": "=", "lpt_textWidth": "%"}'>
+				<Frame width="%" layout="LayoutHorizontal" visible="{{isRelay|if:true:false}}">
+					<Para width="12" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>${'Relay:'|tr}</Para>
+					<Para width="14" textHAlign="AlignLeft" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{relayNumber}}</Para>
+					<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'/>
+					<Para hinset="1" width="12" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>${'Leg:'|tr}</Para>
+					<Para width="14" textHAlign="AlignLeft" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{leg}}</Para>
+				</Frame>
+				<Frame width="%" layout="LayoutHorizontal">
+					<Para width="12" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>${'Check:'|tr}</Para>
+					<Para width="14" textHAlign="AlignLeft" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{add(stageStartTimeMs, checkTimeMs)|hhmmss}}</Para>
+					<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'/>
+					<Para hinset="1" width="12" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>${'SI:'|tr}</Para>
+					<Para width="14" textHAlign="AlignLeft" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{cardNumber}}</Para>
+				</Frame>
+				<Frame width="%" layout="LayoutHorizontal">
+					<Para width="12" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>${'Start:'|tr}</Para>
+					<Para width="14" textHAlign="AlignLeft" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{add(stageStartTimeMs, startTimeMs)|hhmmss}}</Para>
+					<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'/>
+					<Para hinset="1" width="12" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>${'Finish:'|tr}</Para>
+					<Para width="14" textHAlign="AlignLeft" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{select(finishTimeMs, add(stageStartTimeMs, finishTimeMs), '')|hhmmss|default:--:--:--}}</Para>
+				</Frame>
+			</Frame>
+			<Detail width="%" hinset="2" layout="LayoutHorizontal" expandChildFrames="true"
+				fill="{{select(stpTimeMs, 'none', 'error')}}"
+				borderTop="{{select($lastRow, 'black1', '')}}">
+				<Frame>
+					<Para/>
+				</Frame>
+				<Frame layout="LayoutHorizontal" visible="{{$lastRow|not}}">
+					<Para width="4" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "2", "lpt_textAlign": "right"}'>{{select($lastRow, '', position)|nonzero}}</Para>
+					<Para width="2" text=" (" htmlExportAttributes='{"lpt_textWidth": "2"}'/>
+					<Para width="6" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textWidth": "3", "lpt_textAlign": "center"}'>{{code}}</Para>
+					<Para width="1" htmlExportAttributes='{"lpt_textWidth": "1"}'>)</Para>
+				</Frame>
+				<Frame width="10" vinset="1" halign="AlignHCenter" visible="{{$lastRow}}">
+					<Para textStyle="bold" htmlExportAttributes='{"lpt_textWidth": "8", "lpt_textAlign": "center", "lpt_textStyle": "bold"}'>{{band('isOk')|if:${'OK'|tr}:${'DISQ'|tr}}}</Para>
+				</Frame>
+				<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'/>
+				<Para width="{{select($lastRow, 14, 12)}}" textHAlign="AlignRight" textStyle="{{select(or($lastRow, eq(standCummulative, 1)), 'bold', '')}}" vinset="{{select($lastRow, 1, 0)}}"
+					htmlExportAttributes="{{select(or($lastRow, eq(standCummulative, 1)), '{&quot;lpt_textWidth&quot;: &quot;7&quot;, &quot;lpt_textAlign&quot;: &quot;right&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;7&quot;, &quot;lpt_textAlign&quot;: &quot;right&quot;}')}}">{{stpTimeMs|positive|ogTimeSec|prefix: |default:${'-----'|tr}}}</Para>
+				<Para width="2" textStyle="{{select(or($lastRow, eq(standCummulative, 1)), 'bold', '')}}" vinset="{{select($lastRow, 1, 0)}}"
+					htmlExportAttributes="{{select(or($lastRow, eq(standCummulative, 1)), '{&quot;lpt_textWidth&quot;: &quot;2&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;2&quot;}')}}">{{select(and(gt(lapTimeMs, 0), or(not($lastRow), band('isOk'))), ' (', '')}}</Para>
+				<Para width="{{select($lastRow, 5, 4)}}" textHAlign="AlignHCenter" textStyle="{{select(or($lastRow, eq(standCummulative, 1)), 'bold', '')}}" vinset="{{select($lastRow, 1, 0)}}"
+					htmlExportAttributes="{{select(or($lastRow, eq(standCummulative, 1)), '{&quot;lpt_textWidth&quot;: &quot;2&quot;, &quot;lpt_textAlign&quot;: &quot;center&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;2&quot;, &quot;lpt_textAlign&quot;: &quot;center&quot;}')}}">{{select(and(gt(lapTimeMs, 0), or(not($lastRow), band('isOk'))), standCummulative, '')}}</Para>
+				<Para width="1" textStyle="{{select(or($lastRow, eq(standCummulative, 1)), 'bold', '')}}" vinset="{{select($lastRow, 1, 0)}}"
+					htmlExportAttributes="{{select(or($lastRow, eq(standCummulative, 1)), '{&quot;lpt_textWidth&quot;: &quot;1&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;1&quot;}')}}">{{select(and(gt(lapTimeMs, 0), or(not($lastRow), band('isOk'))), ')', '')}}</Para>
+				<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'/>
+				<Para width="10" textHAlign="AlignRight" textStyle="{{select(eq(standLap, 1), 'bold', '')}}"
+					htmlExportAttributes="{{select(eq(standLap, 1), '{&quot;lpt_textWidth&quot;: &quot;6&quot;, &quot;lpt_textAlign&quot;: &quot;right&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;6&quot;, &quot;lpt_textAlign&quot;: &quot;right&quot;}')}}">{{lapTimeMs|positive|ogTimeSec|default:${'-----'|tr}}}</Para>
+				<Para width="2" textStyle="{{select(eq(standLap, 1), 'bold', '')}}"
+					htmlExportAttributes="{{select(eq(standLap, 1), '{&quot;lpt_textWidth&quot;: &quot;2&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;2&quot;}')}}">{{select(gt(lapTimeMs, 0), ' (', '')}}</Para>
+				<Para width="4" textHAlign="AlignHCenter" textStyle="{{select(eq(standLap, 1), 'bold', '')}}"
+					htmlExportAttributes="{{select(eq(standLap, 1), '{&quot;lpt_textWidth&quot;: &quot;2&quot;, &quot;lpt_textAlign&quot;: &quot;center&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;2&quot;, &quot;lpt_textAlign&quot;: &quot;center&quot;}')}}">{{select(gt(lapTimeMs, 0), standLap, '')}}</Para>
+				<Para width="1" textStyle="{{select(eq(standLap, 1), 'bold', '')}}"
+					htmlExportAttributes="{{select(eq(standLap, 1), '{&quot;lpt_textWidth&quot;: &quot;1&quot;, &quot;lpt_textStyle&quot;: &quot;bold&quot;}', '{&quot;lpt_textWidth&quot;: &quot;1&quot;}')}}">{{select(gt(lapTimeMs, 0), ')', '')}}</Para>
+				<Para width="%" htmlExportAttributes='{"lpt_textWidth": "%"}'/>
+				<Para width="2" htmlExportAttributes='{"lpt_textWidth": "2"}'>{{select(gt(lossMs, 0), ' +', '')}}</Para>
+				<Para width="9" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "5", "lpt_textAlign": "right"}'>{{lossMs|positive|ogTimeSec}}</Para>
+			</Detail>
+			<Frame width="%" borderBottom="black2" htmlExportAttributes='{"lpt_borderTop": "="}'>
+				<Para/>
+			</Frame>
+			<Frame hinset="2" fill="error" borderBottom="black1" textStyle="bold" visible="{{isCardLent|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
+				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "center", "lpt_textStyle": "bold"}'>${'!!! RENTED CARD !!!'|tr}</Para>
+			</Frame>
+			<Frame width="%" vinset="1" hinset="2" layout="LayoutVertical" visible="{{isOk|if:true:false}}" htmlExportAttributes='{"lpt_textWidth": "%"}'>
+				<Para>{{select(and(currentStandings, competitorsFinished), currentStandings, '')|prefix:${'current placement = '|tr}|suffix:. / }}{{select(and(currentStandings, competitorsFinished), competitorsFinished, '')}}</Para>
+				<Para>{{'loss to leading runner = '|tr}}{{sub(timeMs, bestTime)|ogTimeSec}}</Para>
+				<Para>{{'loss to best splits =  '|tr}}{{SUM(lossMs)|ogTimeSec}}</Para>
+				<Para>{{paceMsPerKm|ogTimeSec|prefix:${'average pace = '|tr}|suffix: min/km}}</Para>
+			</Frame>
+			<Para hinset="2">{{extraCodesText|prefix:${'extra punches = '|tr}}}</Para>
+			<Frame width="%" halign="AlignHCenter" hinset="2" vinset="2">
+				<Para/>
+				<Image visible="{{event.receiptQrCodePath|if:true:false}}" width="{{select(event.receiptQrCodePath, 24, 0)}}"
+					height="{{select(event.receiptQrCodePath, 24, 0)}}" dataSource="{{event.receiptQrCodePath}}"/>
+				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textAlign": "center", "lpt_textWidth": "%"}'>{{select(event.receiptQrCodePath, event.receiptQrCodeCaption, '')}}</Para>
+			</Frame>
+		</Band>
+	</Frame>
+</Report>
