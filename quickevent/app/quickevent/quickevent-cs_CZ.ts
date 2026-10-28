@@ -9096,7 +9096,7 @@ editing is disabled.</oldsource>
 <context>
     <name>main</name>
     <message>
-        <location filename="src/main.cpp" line="173"/>
+        <location filename="src/main.cpp" line="179"/>
         <source>QuickEvent did not exit correctly last time.
 If you are going to report a problem, please attach the log.
 
@@ -9107,22 +9107,22 @@ Pokud budete hlásit problém, přiložte prosím log.
 Soubor s logem: %1</translation>
     </message>
     <message>
-        <location filename="src/main.cpp" line="176"/>
+        <location filename="src/main.cpp" line="182"/>
         <source>QuickEvent</source>
         <translation>QuickEvent</translation>
     </message>
     <message>
-        <location filename="src/main.cpp" line="178"/>
+        <location filename="src/main.cpp" line="184"/>
         <source>Copy log to clipboard</source>
         <translation>Kopírovat log do schránky</translation>
     </message>
     <message>
-        <location filename="src/main.cpp" line="179"/>
+        <location filename="src/main.cpp" line="185"/>
         <source>Open log folder</source>
         <translation>Otevřít složku s logy</translation>
     </message>
     <message>
-        <location filename="src/main.cpp" line="180"/>
+        <location filename="src/main.cpp" line="186"/>
         <source>Report issue on GitHub</source>
         <translation>Nahlásit problém na GitHubu</translation>
     </message>

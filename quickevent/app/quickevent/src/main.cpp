@@ -47,15 +47,21 @@ std::unique_ptr<QLockFile> file_log_lock;
 
 void file_log_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {
-	{
-		std::lock_guard<std::mutex> lock(file_log_mutex);
-		if (file_log) {
-			std::ostringstream os;
-			NecroLog::writeWithDefaultFormat(os, false, level, context, msg);
-			const std::string line = os.str();
-			file_log->write(line.data(), static_cast<qint64>(line.size()));
-			file_log->flush();
+	// anything logged while the mutex is locked would deadlock, such messages are not written to file
+	thread_local bool recursion_lock = false;
+	if (!recursion_lock) {
+		recursion_lock = true;
+		{
+			std::lock_guard<std::mutex> lock(file_log_mutex);
+			if (file_log) {
+				std::ostringstream os;
+				NecroLog::writeWithDefaultFormat(os, false, level, context, msg);
+				const std::string line = os.str();
+				file_log->write(line.data(), static_cast<qint64>(line.size()));
+				file_log->flush();
+			}
 		}
+		recursion_lock = false;
 	}
 	file_log_old_message_handler(level, context, msg);
 }
