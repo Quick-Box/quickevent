@@ -51,7 +51,6 @@ void ServicesWidget::reload()
 #endif
 	ly->setSpacing(0);
 
-	m_serviceWidgets.clear();
 	for (int i = 0; i < Service::serviceCount(); ++i) {
 		Service *svc = Service::serviceAt(i);
 
@@ -67,7 +66,6 @@ void ServicesWidget::reload()
 		});
 
 		ly2->addWidget(sw);
-		m_serviceWidgets << sw;
 	}
 	ly2->addStretch();
 	sa->setWidget(content);
@@ -77,7 +75,7 @@ void ServicesWidget::reload()
 void ServicesWidget::updateVisibility()
 {
 	const bool edit_mode = m_btEditVisibility->isChecked();
-	for (auto *sw : m_serviceWidgets) {
+	for (auto *sw : findChildren<ServiceWidget*>()) {
 		const bool visible = !m_hiddenServices.contains(sw->serviceId());
 		sw->setVisibilityEditMode(edit_mode);
 		sw->setServiceVisible(visible);
