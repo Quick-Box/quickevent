@@ -18,7 +18,7 @@
 						height="{{select(band('event.receiptImagePath'), band('event.receiptImageHeightMm')|nonzero|default:18|clamp:10:60, 0)}}"
 						dataSource="{{band('event.receiptImagePath')}}"/>
 				</Frame>
-				<Frame hinset="1" vinset="1" textStyle="bold" fill="khaki" htmlExportAttributes='{"lpt_textStyle": "bold"}'>
+				<Frame hinset="1" vinset="1" textStyle="bold" fill="khaki" borderTop="black1" htmlExportAttributes='{"lpt_textStyle": "bold"}'>
 					<Frame width="%" layout="LayoutHorizontal">
 						<Para width="%">{{competitorName}}</Para>
 						<Para textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{competitors.registration|default:NO_REG}}</Para>
