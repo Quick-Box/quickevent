@@ -10,7 +10,7 @@
 	</styleSheet>
 	<Frame width="%" hinset="2" vinset="2" border="blue05">
 		<Band modelData="competitor" width="%">
-			<Detail width="%" layout="LayoutVertical" bottomBorder="black2">
+			<Detail width="%" layout="LayoutVertical" borderBottom="black2">
 				<include src="private/LotteryTicket.qrepi" visible="${printLotteryTicket}"/>
 				<Frame width="%" halign="AlignHCenter" hinset="4" vinset="1" htmlExportAttributes='{"lpt_textAlign": "left", "lpt_borderTop": "=", "lpt_borderBottom": "-"}'>
 					<Para/>
@@ -32,7 +32,7 @@
 			</Detail>
 		</Band>
 		<Band modelData="card" width="%">
-			<Frame hinset="1" width="%" bottomBorder="black1" htmlExportAttributes='{"lpt_borderBottom": "="}'>
+			<Frame hinset="1" width="%" borderBottom="black1" htmlExportAttributes='{"lpt_borderBottom": "="}'>
 				<Frame layout="LayoutHorizontal">
 					<Para width="11">Check:</Para>
 					<Para width="15" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{add(stageStartTimeMs, checkTimeMs)|hhmmss}}</Para>
@@ -49,7 +49,7 @@
 			</Frame>
 			<Detail width="%" layout="LayoutHorizontal" expandChildFrames="true"
 				fill="{{select(stpTimeMs, 'none', 'error')}}"
-				topBorder="{{select($lastRow, 'black1', '')}}"
+				borderTop="{{select($lastRow, 'black1', '')}}"
 				textStyle="{{select($lastRow, 'bold', '')}}"
 				htmlExportAttributes="{{select(lt($row, sub($rowCount, 2)), '{}', '{&quot;lpt_textStyle&quot;: &quot;underline2&quot;}')}}">
 				<Para hinset="1" width="8" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "3", "lpt_textAlign": "right"}'>{{select($lastRow, '', position)|nonzero|suffix:.}}</Para>
@@ -59,10 +59,10 @@
 				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{lossMs|positive|ogTimeSec|prefix:+}}</Para>
 				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{select(and(gt(lapTimeMs, 0), gt(distance, 0)), div(mul(lapTimeMs, 1000), distance), '')|ogTimeSec|prefix:~}}</Para>
 			</Detail>
-			<Frame width="%" bottomBorder="black2" htmlExportAttributes='{"lpt_borderTop": "="}'>
+			<Frame width="%" borderBottom="black2" htmlExportAttributes='{"lpt_borderTop": "="}'>
 				<Para/>
 			</Frame>
-			<Frame fill="error" bottomBorder="black1" textStyle="bold" visible="{{isCardLent|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
+			<Frame fill="error" borderBottom="black1" textStyle="bold" visible="{{isCardLent|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
 				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "center"}'>${'!!! RENTED CARD !!!'|tr}</Para>
 			</Frame>
 			<Para hinset="1">{{extraCodesText|prefix:${'extra: '|tr}}}</Para>

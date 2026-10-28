@@ -37,8 +37,8 @@ ReportItemFrame::~ReportItemFrame()
 style::Pen *ReportItemFrame::border() const
 {
 	style::Pen *ret = nullptr;
-	if(leftBorder() == rightBorder() && rightBorder() == topBorder() && topBorder() == bottomBorder()) {
-		ret = leftBorder();
+	if(borderLeft() == borderRight() && borderRight() == borderTop() && borderTop() == borderBottom()) {
+		ret = borderLeft();
 	}
 	return ret;
 }
@@ -46,10 +46,10 @@ style::Pen *ReportItemFrame::border() const
 void ReportItemFrame::setBorder(style::Pen *b)
 {
 	if(b != border()) {
-		setLeftBorder(b);
-		setRightBorder(b);
-		setTopBorder(b);
-		setBottomBorder(b);
+		setBorderLeft(b);
+		setBorderRight(b);
+		setBorderTop(b);
+		setBorderBottom(b);
 		if(b && !b->parent())
 			b->setParent(this);
 		emit borderChanged(b);

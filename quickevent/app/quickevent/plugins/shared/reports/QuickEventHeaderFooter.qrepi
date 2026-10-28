@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- page header and footer, parameter: reportTitle -->
 <Frame width="%" height="%" textStyle="reportHeader" expandVerticalSprings="true">
-	<Frame layout="LayoutHorizontal" bottomBorder="blue1">
+	<Frame layout="LayoutHorizontal" borderBottom="blue1">
 		<Para>Quick Event ${appVersion()}</Para>
 		<Para width="%"/>
 		<Para>{{$now|datetime}}</Para>
 	</Frame>
 	<Frame height="%"/>
-	<Frame width="%" layout="LayoutHorizontal" topBorder="blue1">
+	<Frame width="%" layout="LayoutHorizontal" borderTop="blue1">
 		<Para>${reportTitle}</Para>
 		<Para width="%"/>
 		<Para>Page {{$page}}/@{n}</Para>

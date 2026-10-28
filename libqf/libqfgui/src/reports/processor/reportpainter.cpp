@@ -382,14 +382,14 @@ ReportItemMetaPaintFrame::ReportItemMetaPaintFrame(ReportItemMetaPaint *_parent,
 				pn.setColor(Qt::blue);
 				lbrd = rbrd = tbrd = bbrd = pn;
 			}
-			if(frame_item->leftBorder())
-				lbrd = frame_item->leftBorder()->pen();
-			if(frame_item->rightBorder())
-				rbrd = frame_item->rightBorder()->pen();
-			if(frame_item->topBorder())
-				tbrd = frame_item->topBorder()->pen();
-			if(frame_item->bottomBorder())
-				bbrd = frame_item->bottomBorder()->pen();
+			if(frame_item->borderLeft())
+				lbrd = frame_item->borderLeft()->pen();
+			if(frame_item->borderRight())
+				rbrd = frame_item->borderRight()->pen();
+			if(frame_item->borderTop())
+				tbrd = frame_item->borderTop()->pen();
+			if(frame_item->borderBottom())
+				bbrd = frame_item->borderBottom()->pen();
 			//qfInfo() << report_item << p;
 		}
 		{

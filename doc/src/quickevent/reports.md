@@ -94,7 +94,7 @@ Frames (and also `Report`, `Band`, `Detail`, `Para` and `Image`):
 * `halign` – `AlignLeft`, `AlignRight`, `AlignHCenter` or `AlignJustify`.
 * `valign` – `AlignTop`, `AlignBottom` or `AlignVCenter`.
 * `columns` – column widths, for example `columns="%,%"` for two equal columns. `columnsGap` is the gap between columns in mm.
-* `border`, `topBorder`, `bottomBorder`, `leftBorder`, `rightBorder` – pen.
+* `border`, `borderTop`, `borderBottom`, `borderLeft`, `borderRight` – pen.
 * `fill` – brush.
 * `textStyle` – text style for this frame and all its children.
 * `expandVerticalSprings`, `expandChildFrames` – layout flags.
@@ -161,7 +161,7 @@ You can set a style property (`textStyle`, `border`, `fill`, `font`, `pen`, `col
 
   ```xml
   <Frame>
-  	<bottomBorder><Pen color="blue" width="0.5"/></bottomBorder>
+  	<borderBottom><Pen color="blue" width="0.5"/></borderBottom>
   </Frame>
   ```
 

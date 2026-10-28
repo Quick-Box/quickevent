@@ -21,7 +21,7 @@
 					<Band width="%" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutVertical">
 							<Frame height="2"/>
-							<Frame width="%" layout="LayoutHorizontal" valign="AlignBottom" bottomBorder="black1" textStyle="bold">
+							<Frame width="%" layout="LayoutHorizontal" valign="AlignBottom" borderBottom="black1" textStyle="bold">
 								<Para width="9" halign="AlignRight">{{pos|nonzero|suffix:.}}</Para>
 								<Para hinset="1" width="%">{{name}}</Para>
 								<Para width="15" halign="AlignRight">{{time|ogTimeStatus}}</Para>

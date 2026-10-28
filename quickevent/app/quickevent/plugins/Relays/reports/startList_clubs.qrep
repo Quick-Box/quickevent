@@ -22,7 +22,7 @@
 					<Band width="%" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutVertical">
 							<Frame height="2"/>
-							<Frame width="%" layout="LayoutHorizontal" bottomBorder="black1" textStyle="bold">
+							<Frame width="%" layout="LayoutHorizontal" borderBottom="black1" textStyle="bold">
 								<Para hinset="1" width="%">{{relays.number}} {{classes.name}} {{relayName}}</Para>
 							</Frame>
 							<Band width="%" keepFirst="10" keepWithPrev="true" htmlExportAsTable="true">

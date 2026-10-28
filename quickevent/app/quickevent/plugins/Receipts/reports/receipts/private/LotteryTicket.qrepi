@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Frame hinset="1" vinset="1">
-	<Frame width="%" layout="LayoutHorizontal" bottomBorder="black2" htmlExportAttributes='{"lpt_textStyle": "bold,underline2"}'>
+	<Frame width="%" layout="LayoutHorizontal" borderBottom="black2" htmlExportAttributes='{"lpt_textStyle": "bold,underline2"}'>
 		<Para width="%" textHAlign="AlignHCenter" textStyle="bold" htmlExportAttributes='{"lpt_textStyle": "bold", "lpt_textWidth": "%", "lpt_textAlign": "center"}'>Slosovatelný kupón</Para>
 	</Frame>
-	<Frame width="%" layout="LayoutHorizontal" textStyle="bold" bottomBorder="black2" htmlExportAttributes='{"lpt_textStyle": "bold,underline2"}'>
+	<Frame width="%" layout="LayoutHorizontal" textStyle="bold" borderBottom="black2" htmlExportAttributes='{"lpt_textStyle": "bold,underline2"}'>
 		<Para width="%">{{classes.name}} {{competitorName}}</Para>
 		<Para textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{competitors.registration|default:NO_REG}}</Para>
 	</Frame>
 	<Para/>
 	<Para/>
 	<Frame layout="LayoutHorizontal" valign="AlignVCenter">
-		<Frame width="%" bottomBorder="black1dot" htmlExportAttributes='{"lpt_textStyle": "underline2"}'/>
+		<Frame width="%" borderBottom="black1dot" htmlExportAttributes='{"lpt_textStyle": "underline2"}'/>
 		<Para htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "center"}'>zde odstřihnout</Para>
-		<Frame width="%" bottomBorder="black1dot"/>
+		<Frame width="%" borderBottom="black1dot"/>
 	</Frame>
 	<Para/>
 	<Para/>

@@ -20,7 +20,7 @@
 					<Para>{{event|key:place}}</Para>
 				</Frame>
 				<Frame height="5"/>
-				<Frame layout="LayoutHorizontal" textStyle="bold" bottomBorder="black1">
+				<Frame layout="LayoutHorizontal" textStyle="bold" borderBottom="black1">
 					<Para hinset="1" width="20">${'Class name'|tr}</Para>
 					<Repeat var="i" from="1" to="${stageCount}">
 						<Para hinset="1" width="15" halign="AlignRight">E${i}</Para>
@@ -38,7 +38,7 @@
 							>{{select(and(e${i}_mapCount, e${i}_runCount), sub(e${i}_mapCount, e${i}_runCount), 0)}}</Para>
 					</Repeat>
 				</Detail>
-				<Frame layout="LayoutHorizontal" textStyle="bold" topBorder="black1">
+				<Frame layout="LayoutHorizontal" textStyle="bold" borderTop="black1">
 					<Para hinset="1" width="20">${'Sum'|tr}</Para>
 					<Repeat var="i" from="1" to="${stageCount}">
 						<Para hinset="1" width="15" halign="AlignRight">{{SUM(e${i}_runCount)|nonzero}}</Para>

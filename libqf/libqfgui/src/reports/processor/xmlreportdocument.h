@@ -22,7 +22,7 @@ class ReportItem;
 /// Enum values are written as enum key names, for example layout="LayoutHorizontal".
 /// Style object properties (textStyle, border, fill, font, pen, color, ...) can be written as attribute,
 /// value is name of style object from report style sheet, which the new object is based on.
-/// Full object can be also defined in property element, for example <bottomBorder><Pen .../></bottomBorder>.
+/// Full object can be also defined in property element, for example <borderBottom><Pen .../></borderBottom>.
 /// Empty style object attribute value sets no style object, it is useful in print time expressions.
 ///
 /// Special elements:

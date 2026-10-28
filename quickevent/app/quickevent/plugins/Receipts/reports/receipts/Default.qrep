@@ -11,7 +11,7 @@
 	<Para/>
 	<Frame width="%" border="blue05">
 		<Band modelData="competitor" width="%">
-			<Detail width="%" layout="LayoutVertical" bottomBorder="black2">
+			<Detail width="%" layout="LayoutVertical" borderBottom="black2">
 				<include src="private/LotteryTicket.qrepi" visible="${printLotteryTicket}"/>
 				<Frame width="%" halign="AlignHCenter" hinset="4" vinset="1" htmlExportAttributes='{"lpt_textAlign": "center", "lpt_textWidth": "%"}'>
 					<Para/>
@@ -33,7 +33,7 @@
 			</Detail>
 		</Band>
 		<Band modelData="card" width="%">
-			<Frame width="%" hinset="2" vinset="1" bottomBorder="black1" htmlExportAttributes='{"lpt_borderBottom": "=", "lpt_textWidth": "%"}'>
+			<Frame width="%" hinset="2" vinset="1" borderBottom="black1" htmlExportAttributes='{"lpt_borderBottom": "=", "lpt_textWidth": "%"}'>
 				<Frame width="%" layout="LayoutHorizontal" visible="{{isRelay|if:true:false}}">
 					<Para width="12" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>${'Relay:'|tr}</Para>
 					<Para width="14" textHAlign="AlignLeft" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{relayNumber}}</Para>
@@ -58,7 +58,7 @@
 			</Frame>
 			<Detail width="%" hinset="2" layout="LayoutHorizontal" expandChildFrames="true"
 				fill="{{select(stpTimeMs, 'none', 'error')}}"
-				topBorder="{{select($lastRow, 'black1', '')}}">
+				borderTop="{{select($lastRow, 'black1', '')}}">
 				<Frame>
 					<Para/>
 				</Frame>
@@ -93,10 +93,10 @@
 				<Para width="2" htmlExportAttributes='{"lpt_textWidth": "2"}'>{{select(gt(lossMs, 0), ' +', '')}}</Para>
 				<Para width="9" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "5", "lpt_textAlign": "right"}'>{{lossMs|positive|ogTimeSec}}</Para>
 			</Detail>
-			<Frame width="%" bottomBorder="black2" htmlExportAttributes='{"lpt_borderTop": "="}'>
+			<Frame width="%" borderBottom="black2" htmlExportAttributes='{"lpt_borderTop": "="}'>
 				<Para/>
 			</Frame>
-			<Frame hinset="2" fill="error" bottomBorder="black1" textStyle="bold" visible="{{isCardLent|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
+			<Frame hinset="2" fill="error" borderBottom="black1" textStyle="bold" visible="{{isCardLent|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
 				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "center", "lpt_textStyle": "bold"}'>${'!!! RENTED CARD !!!'|tr}</Para>
 			</Frame>
 			<Frame width="%" vinset="1" hinset="2" layout="LayoutVertical" visible="{{isOk|if:true:false}}" htmlExportAttributes='{"lpt_textWidth": "%"}'>

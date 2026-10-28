@@ -286,10 +286,10 @@
 	<xs:group name="FrameProperties">
 		<xs:choice>
 			<xs:element name="border" type="PenProperty"/>
-			<xs:element name="topBorder" type="PenProperty"/>
-			<xs:element name="bottomBorder" type="PenProperty"/>
-			<xs:element name="leftBorder" type="PenProperty"/>
-			<xs:element name="rightBorder" type="PenProperty"/>
+			<xs:element name="borderTop" type="PenProperty"/>
+			<xs:element name="borderBottom" type="PenProperty"/>
+			<xs:element name="borderLeft" type="PenProperty"/>
+			<xs:element name="borderRight" type="PenProperty"/>
 			<xs:element name="fill" type="BrushProperty"/>
 			<xs:element name="textStyle" type="TextStyleProperty"/>
 		</xs:choice>
@@ -335,10 +335,10 @@
 		<xs:attribute name="expandVerticalSprings" type="Bool"/>
 		<xs:attribute name="expandChildFrames" type="Bool"/>
 		<xs:attribute name="border" type="StyleRef"/>
-		<xs:attribute name="topBorder" type="StyleRef"/>
-		<xs:attribute name="bottomBorder" type="StyleRef"/>
-		<xs:attribute name="leftBorder" type="StyleRef"/>
-		<xs:attribute name="rightBorder" type="StyleRef"/>
+		<xs:attribute name="borderTop" type="StyleRef"/>
+		<xs:attribute name="borderBottom" type="StyleRef"/>
+		<xs:attribute name="borderLeft" type="StyleRef"/>
+		<xs:attribute name="borderRight" type="StyleRef"/>
 		<xs:attribute name="fill" type="StyleRef"/>
 		<xs:attribute name="textStyle" type="StyleRef"/>
 	</xs:attributeGroup>
