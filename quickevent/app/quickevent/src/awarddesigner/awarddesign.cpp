@@ -17,36 +17,36 @@
 
 namespace AwardDesigner {
 
-QList<FieldDef> relayFields()
+QList<FieldDef> Design::relayFields()
 {
 	return {
-		{.id = QStringLiteral("eventName"), .label = QCoreApplication::translate("AwardDesigner", "Event name")},
-		{.id = QStringLiteral("date"), .label = QCoreApplication::translate("AwardDesigner", "Date")},
-		{.id = QStringLiteral("place"), .label = QCoreApplication::translate("AwardDesigner", "Venue")},
-		{.id = QStringLiteral("positionCategory"), .label = QCoreApplication::translate("AwardDesigner", "Position in class")},
-		{.id = QStringLiteral("position"), .label = QCoreApplication::translate("AwardDesigner", "Position")},
-		{.id = QStringLiteral("category"), .label = QCoreApplication::translate("AwardDesigner", "Class")},
-		{.id = QStringLiteral("clubName"), .label = QCoreApplication::translate("AwardDesigner", "Relay/club name")},
-		{.id = QStringLiteral("runners"), .label = QCoreApplication::translate("AwardDesigner", "Runners (list)")},
-		{.id = QStringLiteral("mainReferee"), .label = QCoreApplication::translate("AwardDesigner", "Main referee")},
-		{.id = QStringLiteral("director"), .label = QCoreApplication::translate("AwardDesigner", "Event director")},
+		{.id = QStringLiteral("eventName"), .label = tr("Event name")},
+		{.id = QStringLiteral("date"), .label = tr("Date")},
+		{.id = QStringLiteral("place"), .label = tr("Venue")},
+		{.id = QStringLiteral("positionCategory"), .label = tr("Position in class")},
+		{.id = QStringLiteral("position"), .label = tr("Position")},
+		{.id = QStringLiteral("category"), .label = tr("Class")},
+		{.id = QStringLiteral("clubName"), .label = tr("Relay/club name")},
+		{.id = QStringLiteral("runners"), .label = tr("Runners (list)")},
+		{.id = QStringLiteral("mainReferee"), .label = tr("Main referee")},
+		{.id = QStringLiteral("director"), .label = tr("Event director")},
 	};
 
 }
 
-QList<FieldDef> runsFields()
+QList<FieldDef> Design::runsFields()
 {
 	return {
-		{.id = QStringLiteral("eventName"), .label = QCoreApplication::translate("AwardDesigner", "Event name")},
-		{.id = QStringLiteral("date"), .label = QCoreApplication::translate("AwardDesigner", "Date")},
-		{.id = QStringLiteral("place"), .label = QCoreApplication::translate("AwardDesigner", "Venue")},
-		{.id = QStringLiteral("positionCategory"), .label = QCoreApplication::translate("AwardDesigner", "Position in class")},
-		{.id = QStringLiteral("position"), .label = QCoreApplication::translate("AwardDesigner", "Position")},
-		{.id = QStringLiteral("category"), .label = QCoreApplication::translate("AwardDesigner", "Class")},
-		{.id = QStringLiteral("competitorName"), .label = QCoreApplication::translate("AwardDesigner", "Competitor name")},
-		{.id = QStringLiteral("clubName"), .label = QCoreApplication::translate("AwardDesigner", "Club")},
-		{.id = QStringLiteral("mainReferee"), .label = QCoreApplication::translate("AwardDesigner", "Main referee")},
-		{.id = QStringLiteral("director"), .label = QCoreApplication::translate("AwardDesigner", "Event director")},
+		{.id = QStringLiteral("eventName"), .label = tr("Event name")},
+		{.id = QStringLiteral("date"), .label = tr("Date")},
+		{.id = QStringLiteral("place"), .label = tr("Venue")},
+		{.id = QStringLiteral("positionCategory"), .label = tr("Position in class")},
+		{.id = QStringLiteral("position"), .label = tr("Position")},
+		{.id = QStringLiteral("category"), .label = tr("Class")},
+		{.id = QStringLiteral("competitorName"), .label = tr("Competitor name")},
+		{.id = QStringLiteral("clubName"), .label = tr("Club")},
+		{.id = QStringLiteral("mainReferee"), .label = tr("Main referee")},
+		{.id = QStringLiteral("director"), .label = tr("Event director")},
 	};
 }
 
@@ -82,7 +82,7 @@ Design Design::defaultRelayDesign()
 	// "Diplom" heading — huge Times Serif maroon
 	Item diplom;
 	diplom.kind = Item::Field;
-	diplom.text = QStringLiteral("Diplom");
+	diplom.text = tr("Diploma");
 	diplom.x = 15; diplom.y = 52; diplom.w = 180; diplom.h = 38;
 	diplom.fontFamily = QStringLiteral("Times New Roman"); diplom.fontSize = 72;
 	diplom.color = QStringLiteral("#800000"); diplom.halign = Qt::AlignHCenter;
@@ -124,7 +124,7 @@ Design Design::defaultRunsDesign()
 
 	Item diplom;
 	diplom.kind = Item::Field;
-	diplom.text = QStringLiteral("Diplom");
+	diplom.text = tr("Diploma");
 	diplom.x = 15; diplom.y = 52; diplom.w = 180; diplom.h = 38;
 	diplom.fontFamily = QStringLiteral("Times New Roman"); diplom.fontSize = 72;
 	diplom.color = QStringLiteral("#800000"); diplom.halign = Qt::AlignHCenter;

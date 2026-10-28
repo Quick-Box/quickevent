@@ -86,8 +86,8 @@ QList<QVariantMap> AwardTypstRenderer::collectPages(const qf::core::utils::TreeT
 			}
 
 			const QString pos_str = (pos > 0)
-				? QString::number(pos) + QStringLiteral(". místo")
-				: QStringLiteral("místo");
+				? tr("Place %1").arg(pos)
+				: tr("Place");
 
 			QVariantMap data;
 			data[QStringLiteral("pos")] = pos; // raw integer for keying
@@ -96,7 +96,7 @@ QList<QVariantMap> AwardTypstRenderer::collectPages(const qf::core::utils::TreeT
 			data[QStringLiteral("place")] = event_place;
 			data[QStringLiteral("position")] = (pos > 0) ? QString::number(pos) : QString();
 			data[QStringLiteral("category")] = class_name;
-			data[QStringLiteral("positionCategory")] = pos_str + QStringLiteral(" v kategorii ") + class_name;
+			data[QStringLiteral("positionCategory")] = tr("%1 in class %2").arg(pos_str, class_name);
 			data[QStringLiteral("clubName")] = org_name;
 			data[QStringLiteral("runners")] = runner_names.join(QStringLiteral("\n"));
 			data[QStringLiteral("mainReferee")] = main_referee;
@@ -161,7 +161,7 @@ QList<QVariantMap> AwardTypstRenderer::collectRunsPagesData(const qf::core::util
 				org_name = runner_row.value(QStringLiteral("club")).toString();
 
 			const QString pos_str = (pos > 0)
-				? QString::number(pos) + QStringLiteral(". místo")
+				? tr("Place %1").arg(pos)
 				: QString();
 
 			QVariantMap data;
@@ -174,8 +174,8 @@ QList<QVariantMap> AwardTypstRenderer::collectRunsPagesData(const qf::core::util
 			data[QStringLiteral("position")] = (pos > 0) ? QString::number(pos) : QString();
 			data[QStringLiteral("category")] = class_name;
 			data[QStringLiteral("positionCategory")] = pos_str.isEmpty()
-				? QStringLiteral("v kategorii ") + class_name
-				: pos_str + QStringLiteral(" v kategorii ") + class_name;
+				? tr("in class %1").arg(class_name)
+				: tr("%1 in class %2").arg(pos_str, class_name);
 			data[QStringLiteral("competitorName")] = competitor_name;
 			data[QStringLiteral("clubName")] = org_name;
 			data[QStringLiteral("mainReferee")] = main_referee;

@@ -111,7 +111,7 @@
     </message>
 </context>
 <context>
-    <name>AwardDesigner</name>
+    <name>AwardDesigner::Design</name>
     <message>
         <location filename="src/awarddesigner/awarddesign.cpp" line="23"/>
         <location filename="src/awarddesigner/awarddesign.cpp" line="40"/>
@@ -181,8 +181,9 @@
         <translation type="unfinished">Club</translation>
     </message>
     <message>
-        <location filename="src/awarddesigner/awarddesignerscene.cpp" line="178"/>
-        <source>[ Image ]</source>
+        <location filename="src/awarddesigner/awarddesign.cpp" line="85"/>
+        <location filename="src/awarddesigner/awarddesign.cpp" line="127"/>
+        <source>Diploma</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -583,6 +584,39 @@
     <message>
         <location filename="src/awarddesigner/awardreportviewwidget.cpp" line="421"/>
         <source>Export PDF</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AwardSceneItem</name>
+    <message>
+        <location filename="src/awarddesigner/awarddesignerscene.cpp" line="177"/>
+        <source>[ Image ]</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AwardTypstRenderer</name>
+    <message>
+        <location filename="src/awarddesigner/awardtypstrenderer.cpp" line="89"/>
+        <location filename="src/awarddesigner/awardtypstrenderer.cpp" line="164"/>
+        <source>Place %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/awarddesigner/awardtypstrenderer.cpp" line="90"/>
+        <source>Place</source>
+        <translation type="unfinished">Place</translation>
+    </message>
+    <message>
+        <location filename="src/awarddesigner/awardtypstrenderer.cpp" line="99"/>
+        <location filename="src/awarddesigner/awardtypstrenderer.cpp" line="178"/>
+        <source>%1 in class %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/awarddesigner/awardtypstrenderer.cpp" line="177"/>
+        <source>in class %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

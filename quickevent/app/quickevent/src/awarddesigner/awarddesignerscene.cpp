@@ -5,7 +5,6 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsPixmapItem>
 #include <QFileInfo>
-#include <QCoreApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
 
@@ -175,7 +174,7 @@ void AwardSceneItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
 			painter->setPen(Qt::darkGray);
 			painter->drawRect(r.adjusted(0.5, 0.5, -0.5, -0.5));
 			painter->drawText(r, Qt::AlignCenter,
-				QCoreApplication::translate("AwardDesigner", "[ Image ]") + QLatin1Char('\n') + QFileInfo(m_item.imagePath).fileName());
+				tr("[ Image ]") + QLatin1Char('\n') + QFileInfo(m_item.imagePath).fileName());
 		}
 	} else {
 		painter->fillRect(r, QColor(240, 248, 255, 200));
