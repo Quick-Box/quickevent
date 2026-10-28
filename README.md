@@ -159,8 +159,6 @@ When QE3 is run from QTC (QT Creator), some symlinks must be created to load QML
 5. Create symlinks to manual istallation, for example `/tmp/qe3`
 ```sh
 cd <qtc-build-dir>/quickevent/app/quickevent
-ln -s /tmp/qe3/bin/qml qml
-ln -s /tmp/qe3/bin/reports reports
 ln -s /tmp/qe3/bin/translations translations
 ```
 

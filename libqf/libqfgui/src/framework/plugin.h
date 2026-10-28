@@ -28,8 +28,6 @@ public:
 
 
 	QString homeDir() const { return pluginDataDir() + '/' +  featureId(); }
-	QString qmlDir() const { return homeDir() + "/qml"; }
-	//QString qmlReportsDir() const { return qmlDir() + "/reports"; }
 	QString featureId() const { return m_featureId; }
 	//QString settingsDir() const { return "plugin/" +  featureId(); }
 	QString findReportFile(const QString &report_file_path) const;

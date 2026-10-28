@@ -44,8 +44,6 @@ public:
 public:
 	BandDataModel* model();
 	bool isModelLoaded();
-	// modelLoaded cannot be used in QML, it was bad pattern, ReportItem has NULL parentBand when Component.onCompleted is called
-	//Q_SIGNAL void modelLoadedChanged(bool is_loaded);
 
 	Q_INVOKABLE QVariant data(const QString &field_name, int role = Qt::DisplayRole);
 public:

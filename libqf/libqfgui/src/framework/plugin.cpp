@@ -53,7 +53,6 @@ QString Plugin::findReportFile(const QString &report_file_path) const
 	}
 	QStringList search_paths;
 	search_paths << reports_dir + '/' + m_featureId + "/reports";
-	//search_paths << qmlReportsDir();
 	for(const QString &dir : search_paths) {
 		qfMessage() << "search_path:" << dir;
 		auto fn = dir + '/' + report_file_path;

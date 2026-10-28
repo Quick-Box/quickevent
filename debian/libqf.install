@@ -2,6 +2,6 @@
 lib/libqfcore.so.1 /usr/lib/${DEB_HOST_MULTIARCH}/
 lib/libqfcore.so.1.0 /usr/lib/${DEB_HOST_MULTIARCH}/
 lib/libqfcore.so.1.0.0 /usr/lib/${DEB_HOST_MULTIARCH}/
-lib/libqfqmlwidgets.so.1 /usr/lib/${DEB_HOST_MULTIARCH}/
-lib/libqfqmlwidgets.so.1.0 /usr/lib/${DEB_HOST_MULTIARCH}/
-lib/libqfqmlwidgets.so.1.0.0 /usr/lib/${DEB_HOST_MULTIARCH}/
+lib/libqfguiwidgets.so.1 /usr/lib/${DEB_HOST_MULTIARCH}/
+lib/libqfguiwidgets.so.1.0 /usr/lib/${DEB_HOST_MULTIARCH}/
+lib/libqfguiwidgets.so.1.0.0 /usr/lib/${DEB_HOST_MULTIARCH}/

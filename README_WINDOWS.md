@@ -87,8 +87,6 @@ $SSL_DIR = "C:\Program Files\OpenSSL"            # Update this
 # Deploy Qt DLLs and plugins
 & "$QT_ROOT\$QT_VER\mingw_64\bin\windeployqt.exe" `
   -serialport -multimedia `
-  --qmldir "$QUICKBOX_ROOT\install\bin\qml" `
-  --qmldir "$QUICKBOX_ROOT\install\bin\reports" `
   "$QUICKBOX_ROOT\install\bin\quickevent.exe"
 
 # Copy MinGW runtime DLLs
