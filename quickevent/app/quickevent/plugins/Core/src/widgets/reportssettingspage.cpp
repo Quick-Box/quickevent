@@ -34,6 +34,9 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 
 	m_reportProxyModel->setSourceModel(m_reportModel);
 	m_reportProxyModel->setSortRole(Qt::DisplayRole);
+	m_reportProxyModel->setFilterKeyColumn(ReportsTableModel::FileNameColumn);
+	m_reportProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	connect(ui->edFilter, &QLineEdit::textChanged, m_reportProxyModel, &QSortFilterProxyModel::setFilterFixedString);
 	ui->tblReportFiles->setModel(m_reportProxyModel);
 	ui->tblReportFiles->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tblReportFiles->setSelectionMode(QAbstractItemView::SingleSelection);
