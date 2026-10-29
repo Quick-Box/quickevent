@@ -24,14 +24,13 @@
 #include <QClipboard>
 #include <QDesktopServices>
 #include <QDir>
-#include <QLockFile>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QScopeGuard>
 #include <QStandardPaths>
 #include <QSysInfo>
 
-#include <mutex>
+#include <cstdio>
 #include <sstream>
 
 #ifdef Q_OS_WIN
@@ -41,85 +40,63 @@
 
 namespace {
 NecroLog::MessageHandler file_log_old_message_handler;
-std::mutex file_log_mutex;
-std::unique_ptr<QFile> file_log;
-std::unique_ptr<QLockFile> file_log_lock;
+FILE *file_log = nullptr;
+QString current_log_path;
+QString previous_log_path;
 
 void file_log_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {
-	// anything logged while the mutex is locked would deadlock, such messages are not written to file
-	thread_local bool recursion_lock = false;
-	if (!recursion_lock) {
-		recursion_lock = true;
-		{
-			std::lock_guard<std::mutex> lock(file_log_mutex);
-			if (file_log) {
-				std::ostringstream os;
-				NecroLog::writeWithDefaultFormat(os, false, level, context, msg);
-				const std::string line = os.str();
-				file_log->write(line.data(), static_cast<qint64>(line.size()));
-				file_log->flush();
-			}
-		}
-		recursion_lock = false;
+	// stdio FILE is locked internally, no mutex needed
+	if (file_log) {
+		std::ostringstream os;
+		NecroLog::writeWithDefaultFormat(os, false, level, context, msg);
+		std::fputs(os.str().c_str(), file_log);
+		std::fflush(file_log);
 	}
 	file_log_old_message_handler(level, context, msg);
 }
 
-// Every running instance writes its log to its own file, which is locked and deleted on clean exit.
-// Unlocked log file left in the log dir means, that some previous instance did not exit correctly.
-// Returns path to crash log of last such instance or empty string.
+bool move_current_log_to_previous()
+{
+	QFile::remove(previous_log_path);
+	return QFile::rename(current_log_path, previous_log_path);
+}
+
+// Log is written to current.log, which is moved to previous.log on clean exit.
+// current.log found at startup means, that previous run did not exit correctly.
+// Returns path to log of such run or empty string.
+// ponytail: single log for all instances, second instance running at the same time reports false crash, add QLockFile if needed
 QString start_file_log()
 {
-	QDir dir(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QStringLiteral("/logs"));
-	if (!dir.mkpath(QStringLiteral("."))) {
+	const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QStringLiteral("/logs");
+	if (!QDir().mkpath(dir)) {
 		return {};
 	}
+	current_log_path = dir + QStringLiteral("/current.log");
+	previous_log_path = dir + QStringLiteral("/previous.log");
 	QString crash_log_path;
-	for (const auto &fi : dir.entryInfoList({QStringLiteral("*.log")}, QDir::Files, QDir::Time | QDir::Reversed)) {
-		if (fi.fileName().endsWith(QLatin1String(".crash.log"))) {
-			continue;
-		}
-		QLockFile lock_file(fi.filePath() + QStringLiteral(".lock"));
-		lock_file.setStaleLockTime(0);
-		if (lock_file.tryLock(0)) {
-			const QString path = dir.filePath(fi.completeBaseName() + QStringLiteral(".crash.log"));
-			if (QFile::rename(fi.filePath(), path)) {
-				crash_log_path = path;
-			}
-		}
+	if (QFile::exists(current_log_path) && move_current_log_to_previous()) {
+		crash_log_path = previous_log_path;
 	}
-	const auto crash_logs = dir.entryInfoList({QStringLiteral("*.crash.log")}, QDir::Files, QDir::Time);
-	for (qsizetype i = 5; i < crash_logs.size(); ++i) {
-		QFile::remove(crash_logs[i].filePath());
-	}
-
-	const QString path = dir.filePath(QStringLiteral("quickevent-%1-%2.log")
-			.arg(QDateTime::currentDateTime().toString(QStringLiteral("yyyyMMdd-hhmmss")))
-			.arg(QCoreApplication::applicationPid()));
-	file_log_lock = std::make_unique<QLockFile>(path + QStringLiteral(".lock"));
-	file_log_lock->setStaleLockTime(0);
-	if (file_log_lock->tryLock(0)) {
-		auto f = std::make_unique<QFile>(path);
-		if (f->open(QFile::WriteOnly | QFile::Append)) {
-			file_log = std::move(f);
-			file_log_old_message_handler = NecroLog::setMessageHandler(file_log_handler);
-		}
+#ifdef Q_OS_WIN
+	file_log = _wfopen(reinterpret_cast<const wchar_t *>(current_log_path.utf16()), L"wb");
+#else
+	file_log = std::fopen(QFile::encodeName(current_log_path).constData(), "wb");
+#endif
+	if (file_log) {
+		file_log_old_message_handler = NecroLog::setMessageHandler(file_log_handler);
 	}
 	return crash_log_path;
 }
 
 void stop_file_log()
 {
-	std::unique_ptr<QFile> f;
-	{
-		std::lock_guard<std::mutex> lock(file_log_mutex);
-		f = std::move(file_log);
+	if (file_log) {
+		FILE *f = file_log;
+		file_log = nullptr;
+		std::fclose(f);
+		move_current_log_to_previous();
 	}
-	if (f) {
-		f->remove();
-	}
-	file_log_lock.reset();
 }
 
 void copy_to_clipboard(const QString &text)
@@ -143,7 +120,7 @@ QUrl crash_report_issue_url(const QString &crash_log_path, const QString &log_ta
 	QStringList lines = log_tail.split('\n', Qt::SkipEmptyParts);
 	lines = lines.mid(std::max<qsizetype>(0, lines.size() - 100));
 	QByteArray query;
-	do {
+	for (;;) {
 		const QString body = QStringLiteral(
 			"## What happened\n"
 			"<!-- Describe what you were doing when QuickEvent stopped working -->\n\n"
@@ -156,10 +133,11 @@ QUrl crash_report_issue_url(const QString &crash_log_path, const QString &log_ta
 			"Full log is in the clipboard (paste it here) or attach the file: `%7`\n")
 			.arg(QCoreApplication::applicationVersion(), commit_sha, QSysInfo::prettyProductName(), QSysInfo::currentCpuArchitecture(), QString::fromLatin1(qVersion()), lines.join('\n'), QDir::toNativeSeparators(crash_log_path));
 		query = "title=" + QUrl::toPercentEncoding(title) + "&body=" + QUrl::toPercentEncoding(body);
-		if (!lines.isEmpty()) {
-			lines.removeFirst();
+		if (query.size() <= max_query_size || lines.isEmpty()) {
+			break;
 		}
-	} while (query.size() > max_query_size && !lines.isEmpty());
+		lines.removeFirst();
+	}
 	return QUrl::fromEncoded("https://github.com/Quick-Box/quickevent/issues/new?" + query);
 }
 
@@ -272,7 +250,7 @@ int main(int argc, char *argv[])
 	qfInfo() << QDateTime::currentDateTime().toString(Qt::ISODate) << "starting" << QCoreApplication::applicationName() << "ver:" << QCoreApplication::applicationVersion();
 	qfInfo() << "Log tresholds:" << NecroLog::thresholdsLogInfo();
 	qfInfo() << "Open SSL:" << QSslSocket::sslLibraryBuildVersionString();
-	qfInfo() << "Log file:" << (file_log ? file_log->fileName() : QStringLiteral("N/A"));
+	qfInfo() << "Log file:" << (file_log ? current_log_path : QStringLiteral("N/A"));
 
 	qRegisterMetaType<qf::core::LogEntryMap>();
 	quickevent::core::og::TimeMs::registerQVariantFunctions();
