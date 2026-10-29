@@ -8003,8 +8003,8 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <translation>Zpracovávám kategorii %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2739"/>
-        <source>Laps</source>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2741"/>
+        <source>Splits</source>
         <translation>Mezičasy</translation>
     </message>
     <message>
@@ -8978,8 +8978,8 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <translation>IOF XML &amp;3.0</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="342"/>
-        <source>HTML with &amp;laps</source>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="341"/>
+        <source>HTML with &amp;splits</source>
         <translation>HTML s &amp;mezičasy</translation>
     </message>
     <message>

@@ -7422,8 +7422,8 @@ Press refresh button to show imported data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2739"/>
-        <source>Laps</source>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2741"/>
+        <source>Splits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -8360,8 +8360,8 @@ Press refresh button to show imported data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runswidget.cpp" line="342"/>
-        <source>HTML with &amp;laps</source>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="341"/>
+        <source>HTML with &amp;splits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
