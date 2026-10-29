@@ -42,7 +42,6 @@ namespace {
 NecroLog::MessageHandler file_log_old_message_handler;
 FILE *file_log = nullptr;
 QString current_log_path;
-QString previous_log_path;
 
 void file_log_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {
@@ -56,15 +55,9 @@ void file_log_handler(NecroLog::Level level, const NecroLog::LogContext &context
 	file_log_old_message_handler(level, context, msg);
 }
 
-bool move_current_log_to_previous()
-{
-	QFile::remove(previous_log_path);
-	return QFile::rename(current_log_path, previous_log_path);
-}
-
-// Log is written to current.log, which is moved to previous.log on clean exit.
-// current.log found at startup means, that previous run did not exit correctly.
-// Returns path to log of such run or empty string.
+// Log is written to current.log, which is deleted on clean exit.
+// current.log found at startup means, that previous run did not exit correctly, it is moved to crash.log.
+// Returns path to crash.log or empty string.
 // ponytail: single log for all instances, second instance running at the same time reports false crash, add QLockFile if needed
 QString start_file_log()
 {
@@ -73,10 +66,13 @@ QString start_file_log()
 		return {};
 	}
 	current_log_path = dir + QStringLiteral("/current.log");
-	previous_log_path = dir + QStringLiteral("/previous.log");
 	QString crash_log_path;
-	if (QFile::exists(current_log_path) && move_current_log_to_previous()) {
-		crash_log_path = previous_log_path;
+	if (QFile::exists(current_log_path)) {
+		const QString path = dir + QStringLiteral("/crash.log");
+		QFile::remove(path);
+		if (QFile::rename(current_log_path, path)) {
+			crash_log_path = path;
+		}
 	}
 #ifdef Q_OS_WIN
 	file_log = _wfopen(reinterpret_cast<const wchar_t *>(current_log_path.utf16()), L"wb");
@@ -95,7 +91,7 @@ void stop_file_log()
 		FILE *f = file_log;
 		file_log = nullptr;
 		std::fclose(f);
-		move_current_log_to_previous();
+		QFile::remove(current_log_path);
 	}
 }
 
