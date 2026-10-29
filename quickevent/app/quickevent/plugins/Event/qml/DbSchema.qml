@@ -133,9 +133,7 @@ Schema {
 				Field { name: 'relayStartNumber'; type: Int { } },
 				Field { name: 'relayLegCount'; type: Int { } },
 				Field { name: 'startMode'; type: String { }
-					defaultValue: 'StartList'
-					notNull: true
-					comment: 'IOF XML start mode: StartList, MassStart, PursuitStart, WaveStart, FreeStart'
+					comment: 'IOF XML start mode: StartList, MassStart, PursuitStart, WaveStart, FreeStart, NULL = derived from start interval'
 				},
 				Field { name: 'resultListMode'; type: String { }
 					defaultValue: 'Default'

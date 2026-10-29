@@ -112,8 +112,9 @@ public:
 	{
 		auto *cbx = new QComboBox(parent);
 		cbx->setAutoFillBackground(true);
-		for(const auto &[value, text] : m_items)
+		for(const auto &[value, text] : m_items) {
 			cbx->addItem(text, value);
+		}
 		return cbx;
 	}
 	void setEditorData(QWidget *editor, const QModelIndex &index) const override
@@ -123,13 +124,16 @@ public:
 	}
 	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
 	{
-		model->setData(index, qobject_cast<QComboBox *>(editor)->currentData(), Qt::EditRole);
+		// empty value is stored as NULL
+		const QString value = qobject_cast<QComboBox *>(editor)->currentData().toString();
+		model->setData(index, value.isEmpty()? QVariant(): QVariant(value), Qt::EditRole);
 	}
 	QString displayText(const QVariant &value, const QLocale &) const override
 	{
 		for(const auto &[v, text] : m_items) {
-			if(v == value.toString())
+			if(v == value.toString()) {
 				return text;
+			}
 		}
 		return m_items.value(0).second;
 	}
@@ -183,6 +187,7 @@ ClassesWidget::ClassesWidget(QWidget *parent) :
 		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.courseId"), m_courseItemDelegate);
 
 		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.startMode"), new EnumItemDelegate({
+			{"", tr("Auto")},
 			{"StartList", tr("Start list")},
 			{"MassStart", tr("Mass start")},
 			{"PursuitStart", tr("Pursuit start")},

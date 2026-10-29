@@ -1071,18 +1071,28 @@ QString RelaysPlugin::startListIofXml30()
 		}
 		// the last class has no upper bound, falls back to the number of teams
 	}
+	QMap<int, QString> class_start_mode;
+	{
+		qfs::Query q;
+		q.execThrow("SELECT classId, startMode FROM classdefs WHERE stageId=1 AND startMode IS NOT NULL");
+		while(q.next()) {
+			class_start_mode[q.value(0).toInt()] = q.value(1).toString();
+		}
+	}
 	for(int i=0; i<tt_classes.rowCount(); i++) {
 		QVariantList class_start{"ClassStart"};
 		const qf::core::utils::TreeTableRow tt_classes_row = tt_classes.row(i);
 		QF_TIME_SCOPE("exporting class: " + tt_classes_row.value(QStringLiteral("classes.name")).toString());
 		qf::core::utils::TreeTable tt_teams = tt_classes_row.table();
 		int max_competitors = class_capacity.value(tt_classes_row.value(QStringLiteral("classes.id")).toInt(), tt_teams.rowCount());
+		// WaveStart is the relays default when start mode is not set
+		QString start_mode = class_start_mode.value(tt_classes_row.value(QStringLiteral("classes.id")).toInt(), QStringLiteral("WaveStart"));
 		append_list(class_start,
 			QVariantList{"Class",
 				(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},
 				QVariantList{"Id", tt_classes_row.value(QStringLiteral("classes.id"))},
 				QVariantList{"Name", tt_classes_row.value(QStringLiteral("classes.name")) },
-				QVariantList{"Extensions", QVariantList{"qe:StartMode", "StartList"}},
+				QVariantList{"Extensions", QVariantList{"qe:StartMode", start_mode}},
 			}
 		);
 		for(int j=0; j<tt_teams.rowCount(); j++) {

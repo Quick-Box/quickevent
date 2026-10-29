@@ -983,8 +983,9 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		const bool unordered = no_times || result_list_mode == QLatin1String("Unordered");
 		// places limit makes sense for ordered results only
 		if(!unordered && max_competitors_in_class > 0) {
-			while(tt2.rowCount() > max_competitors_in_class)
+			while(tt2.rowCount() > max_competitors_in_class) {
 				tt2.removeRow(tt2.rowCount() - 1);
+			}
 		}
 		tt2.appendColumn("resultListMode", QMetaType(QMetaType::QString));
 		for(int j=0; j<tt2.rowCount(); j++) {
@@ -1002,19 +1003,22 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		}
 		if(unordered) {
 			QList<qf::core::utils::TreeTableRow> rows;
-			for(int j=0; j<tt2.rowCount(); j++)
+			for(int j=0; j<tt2.rowCount(); j++) {
 				rows << tt2.row(j);
+			}
 			// keep status groups of the ordered list, sort by name within the group
 			std::stable_sort(rows.begin(), rows.end(), [](const auto &a, const auto &b) {
 				const auto group = [](const qf::core::utils::TreeTableRow &row) {
 					return std::pair(row.value(QStringLiteral("notCompeting")).toBool(), row.value(QStringLiteral("disqualified")).toBool());
 				};
-				if(group(a) != group(b))
+				if(group(a) != group(b)) {
 					return group(a) < group(b);
+				}
 				return QString::localeAwareCompare(a.value(QStringLiteral("competitorName")).toString(), b.value(QStringLiteral("competitorName")).toString()) < 0;
 			});
-			for(int j=0; j<rows.count(); j++)
+			for(int j=0; j<rows.count(); j++) {
 				tt2.setRow(j, rows[j]);
+			}
 		}
 		if(add_laps) {
 			int course_id = tt_row.value("courses.id").toInt();
@@ -1713,7 +1717,8 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(int stage_id, const
 
 	qfs::QueryBuilder qb;
 	qb.select2("classes", "id, name")
-		.select2("classdefs", "startTimeMin, lastStartTimeMin, startIntervalMin, vacantsBefore, vacantEvery, vacantsAfter, mapCount, startMode")
+		.select2("classdefs", "startTimeMin, lastStartTimeMin, startIntervalMin, vacantsBefore, vacantEvery, vacantsAfter, mapCount")
+		.select(getPlugin<EventPlugin>()->startModeSqlExpression() + " AS startMode")
 		.select2("courses", "length, climb, id")
 		.from("classes")
 		.joinRestricted("classes.id", "classdefs.classId", "classdefs.stageId={{stage_id}}")
@@ -2372,8 +2377,9 @@ void RunsPlugin::report_resultsAwards()
 
 	// no awards for classes with unordered results
 	QString class_filter = QStringLiteral("classdefs.resultListMode='Default'");
-	if(const QString opts_filter = opts.value("classFilter").toString(); !opts_filter.isEmpty())
+	if(const QString opts_filter = opts.value("classFilter").toString(); !opts_filter.isEmpty()) {
 		class_filter = '(' + opts_filter + ") AND " + class_filter;
+	}
 	auto tt = stageResultsTable(opts.value("stageId").toInt(), class_filter, opts.value("numPlaces").toInt(), /*exclude_disq=*/true);
 	tt.setValue("event", getPlugin<EventPlugin>()->eventConfig().toVariantMap());
 	tt.setValue("stageStart", getPlugin<EventPlugin>()->stageStartDateTime(opts.value("stageId").toInt()));
@@ -3212,9 +3218,7 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 		qf::core::utils::TreeTable tt2 = tt1_row.table();
 		if (tt2.rowCount() == 0 && is_iof_race)
 			continue; // not save empty class
-		QString start_mode = tt1_row.value(QStringLiteral("startMode")).toString();
-		if (start_mode.isEmpty())
-			start_mode = QStringLiteral("StartList");
+		const QString start_mode = tt1_row.value(QStringLiteral("startMode")).toString();
 		int max_competitors = tt1_row.value(QStringLiteral("mapCount")).toInt();
 		append_list(class_start, QVariantList{"Class",
 								(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},

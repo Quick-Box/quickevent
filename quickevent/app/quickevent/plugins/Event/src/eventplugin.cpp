@@ -617,6 +617,19 @@ QString EventPlugin::dbVersionString()
 	return QString("%1.%2.0").arg(maj).arg(min);
 }
 
+QString EventPlugin::startModeSqlExpression() const
+{
+	if(eventConfig().disciplineId == static_cast<int>(Event::EventConfig::Discipline::MassStart)) {
+		return QStringLiteral("COALESCE(classdefs.startMode, 'MassStart')");
+	}
+	return QStringLiteral("COALESCE(classdefs.startMode, CASE WHEN COALESCE(classdefs.startIntervalMin, 0) = 0 THEN 'FreeStart' ELSE 'StartList' END)");
+}
+
+QString EventPlugin::freeStartSqlCondition() const
+{
+	return '(' + startModeSqlExpression() + " = 'FreeStart')";
+}
+
 void EventPlugin::onDbEvent(const QString &name, QSqlDriver::NotificationSource source, const QVariant &payload)
 {
 	qfLogFuncFrame() << "name:" << name << "source:" << source << "payload:" << payload;

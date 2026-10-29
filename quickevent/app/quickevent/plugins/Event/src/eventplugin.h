@@ -109,6 +109,10 @@ public:
 	DbSchema* dbSchema();
 	static int dbVersion();
 	static QString dbVersionString();
+	// SQL expression of the classdefs start mode, start mode not set is derived from event discipline and start interval
+	QString startModeSqlExpression() const;
+	// SQL condition for classdefs of classes with free start, that is without drawn start times
+	QString freeStartSqlCondition() const;
 
 	Q_SLOT void onInstalled();
 

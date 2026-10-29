@@ -131,10 +131,11 @@ Report {
 								width: root.timeMsColumnWidth
 								halign: Frame.AlignRight
 								textFn: function() {
-										if(runnersDetail.rowData("resultListMode") === "UnorderedNoTimes")
-											return "";
-										return OGTime.msecToString_mmss(runnersDetail.rowData("timeMs"));
+									if(runnersDetail.rowData("resultListMode") === "UnorderedNoTimes") {
+										return "";
 									}
+									return OGTime.msecToString_mmss(runnersDetail.rowData("timeMs"));
+								}
 							}
 							Para {
 								width: 10
