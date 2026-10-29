@@ -2307,14 +2307,14 @@ bool OFeedClient::canCreateCompetitor(int run_id) const
 {
 	// OFeed requires the start time in classes with drawn start times
 	qf::core::sql::Query q;
-	q.exec("SELECT runs.startTimeMs, COALESCE(classdefs.startIntervalMin, 0) AS startIntervalMin "
+	q.exec("SELECT runs.startTimeMs, " + getPlugin<EventPlugin>()->freeStartSqlCondition() + " AS isFreeStart "
 		   "FROM runs "
 		   "INNER JOIN competitors ON competitors.id = runs.competitorId "
 		   "LEFT JOIN relays ON relays.id = runs.relayId "
 		   "LEFT JOIN classdefs ON (classdefs.classId = competitors.classId OR classdefs.classId = relays.classId) "
 		   "AND classdefs.stageId = runs.stageId "
 		   "WHERE runs.id=" QF_IARG(run_id), qf::core::Exception::Throw);
-	return q.next() && (!q.value("startTimeMs").isNull() || q.value("startIntervalMin").toInt() == 0);
+	return q.next() && (!q.value("startTimeMs").isNull() || q.value("isFreeStart").toBool());
 }
 
 /// @brief Creates the competitor in OFeed, when the start time is not set yet, waits for it
@@ -2451,20 +2451,20 @@ void OFeedClient::onRunChanged(int run_id, const QVariantMap &run_fields, const 
 		sendCompetitorUpdate(QString::fromStdString(json_str), run_id);
 	}
 
-	// Start time punched by a competitor of a class without drawn start times (start by punching
-	// the start unit or a mass start). OFeed knows such start time from the punch only and it is
+	// Start time punched by a competitor of a class without drawn start times (free start by
+	// punching the start unit). OFeed knows such start time from the punch only and it is
 	// needed to compute the result, it is sent in a separate request, so that a rejected start
 	// slot cannot drop the result sent above.
 	if (start_time_ms > 0 && is_result) {
 		qf::core::sql::Query dq;
-		dq.exec("SELECT COALESCE(classdefs.startIntervalMin, 0) AS startIntervalMin "
+		dq.exec("SELECT " + getPlugin<EventPlugin>()->freeStartSqlCondition() + " AS isFreeStart "
 				"FROM runs "
 				"INNER JOIN competitors ON competitors.id = runs.competitorId "
 				"LEFT JOIN relays ON relays.id = runs.relayId "
 				"INNER JOIN classdefs ON (classdefs.classId = competitors.classId OR classdefs.classId = relays.classId) "
 				"AND classdefs.stageId = runs.stageId "
 				"WHERE runs.id=" QF_IARG(run_id), qf::core::Exception::Throw);
-		if (dq.next() && dq.value("startIntervalMin").toInt() == 0) {
+		if (dq.next() && dq.value("isFreeStart").toBool()) {
 			std::stringstream spayload;
 			spayload << R"({"origin":"IT","useExternalId":true,)"
 					 << R"("startTime":")" << datetime_to_string(stage_start_date_time.addMSecs(start_time_ms)).toStdString() << R"(")"
