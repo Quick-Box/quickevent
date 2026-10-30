@@ -123,9 +123,9 @@ quickevent::core::si::CheckedCard CardCheckerFreeOrderCpp::checkCard(const quick
 
 	}
 
-	// missing finish only with otherwise correct punching is DNF, with missing controls it is MP
+	// missing controls are MP, missing finish is DNF, both can be set
 	checked_card.setMisPunch(!map_of_control_codes.isEmpty());
-	checked_card.setNotFinish(is_finish_missing && !checked_card.isMisPunch());
+	checked_card.setNotFinish(is_finish_missing);
 
 	quickevent::core::si::CheckedPunch finish_punch;
 	if(!finish_code.isEmpty())
