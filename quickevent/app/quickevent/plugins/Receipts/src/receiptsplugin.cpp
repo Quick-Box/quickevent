@@ -301,7 +301,7 @@ ReceiptsPlugin::ReceiptsPlugin(QObject *parent)
 	connect(this, &ReceiptsPlugin::installed, this, &ReceiptsPlugin::onInstalled);
 }
 
-void ReceiptsPlugin::onInstalled()
+void ReceiptsPlugin::onInstalled() const
 {
 	connect(getPlugin<EventPlugin>(), &EventPlugin::dbEventNotify, this, &ReceiptsPlugin::onDbEventNotify, Qt::QueuedConnection);
 	auto core_plugin = qf::gui::framework::getPlugin<Core::CorePlugin>();

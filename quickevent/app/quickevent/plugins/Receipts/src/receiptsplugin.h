@@ -48,7 +48,7 @@ public:
 
 	bool isAutoPrintEnabled();
 private:
-	void onInstalled();
+	void onInstalled() const;
 	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
 	bool printReceiptAndMark(int card_id, int connection_id);
 
