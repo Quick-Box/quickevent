@@ -36,6 +36,8 @@ public:
 	bool printCard(int card_id);
 	bool printError(int card_id, QString error_qml);
 	void printOnAutoPrintEnabled(int card_id);
+	bool printReceiptAndMark(int card_id);
+	void printNewCards();
 
 	QVariantMap readCardTablesData(int card_id);
 	QVariantMap receiptTablesData(int card_id);
@@ -47,6 +49,8 @@ public:
 	bool isAutoPrintEnabled();
 private:
 	void onInstalled();
+	void onDbEventNotify(const QString &domain, int connection_id, const QVariant &data);
+	void markAsPrinted(int card_id);
 
 	QList<QByteArray> createPrinterData(const QDomElement &body, const ReceiptsSettings &receipts_settings);
 

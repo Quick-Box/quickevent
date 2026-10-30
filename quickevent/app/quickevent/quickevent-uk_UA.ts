@@ -1390,6 +1390,26 @@ If you continue, this flag will be removed</source>
         <source>Station backup memory</source>
         <translation>Резервна пам’ять станції</translation>
     </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="97"/>
+        <source>Print receipts for all cards in the current stage which have not been printed yet. When &apos;This reader only&apos; is enabled in the settings, only cards read by this client are printed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
+        <source>Print new</source>
+        <translation>Друк нового</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
+        <source>Printer</source>
+        <translation>принтер</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="382"/>
+        <source>Print receipts for selected rows</source>
+        <translation>Друкувати чеки для вибраних рядків</translation>
+    </message>
 </context>
 <context>
     <name>ChooseOrisEventDialog</name>
@@ -6481,11 +6501,6 @@ Imported: %1 of %2 clubs.</source>
 <context>
     <name>Receipts::ReceiptsPlugin</name>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="305"/>
-        <source>Receipts</source>
-        <translation>Чеки</translation>
-    </message>
-    <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="705"/>
         <source>Card</source>
         <translation>Картка</translation>
@@ -6852,69 +6867,6 @@ Please choose a receipt template first.</source>
         <location filename="plugins/Receipts/src/receiptssettings.cpp" line="75"/>
         <source>Character</source>
         <translation>Символьний</translation>
-    </message>
-</context>
-<context>
-    <name>ReceiptsWidget</name>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="14"/>
-        <source>Form</source>
-        <translation>Форма</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="66"/>
-        <source>Print new</source>
-        <translation>Друк нового</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="67"/>
-        <source>SI</source>
-        <translation>ЧИП</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="68"/>
-        <source>Class</source>
-        <translation>Група</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="69"/>
-        <source>Name</source>
-        <translation>Ім’я</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="70"/>
-        <source>Reg</source>
-        <translation>Реє</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="71"/>
-        <source>Start</source>
-        <translation>Старт</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="72"/>
-        <source>Time</source>
-        <translation>Час</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="79"/>
-        <source>printer</source>
-        <translation>принтер</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="212"/>
-        <source>Print receipts for selected rows</source>
-        <translation>Друкувати чеки для вибраних рядків</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="213"/>
-        <source>Show receipt</source>
-        <translation>Показати чек</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="215"/>
-        <source>Show card data</source>
-        <translation type="unfinished">Показати дані картки</translation>
     </message>
 </context>
 <context>

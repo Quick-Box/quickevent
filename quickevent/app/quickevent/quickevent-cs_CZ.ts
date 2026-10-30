@@ -1392,6 +1392,26 @@ Pokud budete pokračovat, toto označení bude odebráno</translation>
         <source>SI: %1 class %2 - Number of punches (%3) and number of codes including finish (%4) should be the same! Remove or comment invalid line by #.</source>
         <translation>SI: %1 Kategorie %2 – Počet ražení (%3) a počet kontrol i s cílem (%4) musí být stejný! Odeberte nebo zakomentujte neplatné řádky pomocí #.</translation>
     </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="97"/>
+        <source>Print receipts for all cards in the current stage which have not been printed yet. When &apos;This reader only&apos; is enabled in the settings, only cards read by this client are printed.</source>
+        <translation>Vytiskne mezičasy všech čipů v aktuální etapě, které ještě nebyly vytištěny. Je-li v nastavení zapnuto &apos;Pouze tato tiskárna&apos;, tiskne jen čipy vyčtené tímto klientem.</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
+        <source>Print new</source>
+        <translation>Vytisknout nové</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
+        <source>Printer</source>
+        <translation>Tiskárna</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="382"/>
+        <source>Print receipts for selected rows</source>
+        <translation>Vytisknout mezičasy pro vybrané řádky</translation>
+    </message>
 </context>
 <context>
     <name>ChooseOrisEventDialog</name>
@@ -6798,11 +6818,6 @@ Imported: %1 of %2 clubs.</source>
 <context>
     <name>Receipts::ReceiptsPlugin</name>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="305"/>
-        <source>Receipts</source>
-        <translation>Mezičasy</translation>
-    </message>
-    <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="705"/>
         <source>Card</source>
         <translation>Čip</translation>
@@ -7178,70 +7193,6 @@ Nejprve si prosím vyberte šablonu lístečku.</translatorcomment>
         <location filename="plugins/Receipts/src/receiptssettings.cpp" line="75"/>
         <source>Character</source>
         <translation>Znakově</translation>
-    </message>
-</context>
-<context>
-    <name>ReceiptsWidget</name>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="14"/>
-        <source>Form</source>
-        <translation>Formulář</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="66"/>
-        <source>Print new</source>
-        <translation>Vytisknout nové</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="67"/>
-        <source>SI</source>
-        <translation>SI</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="68"/>
-        <source>Class</source>
-        <translation>Kategorie</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="69"/>
-        <source>Name</source>
-        <translation>Jméno</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="70"/>
-        <source>Reg</source>
-        <translation>Reg. č.</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="71"/>
-        <source>Start</source>
-        <translation>Start</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="72"/>
-        <source>Time</source>
-        <translation>Čas</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="79"/>
-        <source>printer</source>
-        <translation>Tiskárna</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="212"/>
-        <source>Print receipts for selected rows</source>
-        <oldsource>Print selected cards</oldsource>
-        <translation>Vytisknout mezičasy pro vybrané řádky</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="213"/>
-        <source>Show receipt</source>
-        <translation>Zobrazit mezičasy</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="215"/>
-        <source>Show card data</source>
-        <translation>Ukázat data čipu</translation>
     </message>
 </context>
 <context>

@@ -1,6 +1,5 @@
 <RCC>
 	<qresource prefix="/quickevent/Receipts">
-		<file>images/feature.svg</file>
 		<file>images/graphic-printer.svg</file>
 		<file>images/character-printer.svg</file>
 		<file>images/no_runner.svg</file>
