@@ -410,14 +410,16 @@ void CardReaderWidget::onCustomContextMenuRequest(const QPoint & pos)
 	}
 	else if(a == &a_print_receipt) {
 		int card_id = ui->tblCards->tableRow().value("cards.id").toInt();
-		getPlugin<ReceiptsPlugin>()->printReceipt(card_id);
+		getPlugin<ReceiptsPlugin>()->printReceiptsAndMark({card_id});
 	}
 	else if(a == &a_print_receipts) {
+		QList<int> card_ids;
 		for(int ix : ui->tblCards->selectedRowsIndexes()) {
 			int sel_card_id = ui->tblCards->tableRow(ix).value("cards.id").toInt();
 			QF_ASSERT(sel_card_id > 0, "Bad card ID", return);
-			getPlugin<ReceiptsPlugin>()->printReceiptAndMark(sel_card_id);
+			card_ids << sel_card_id;
 		}
+		getPlugin<ReceiptsPlugin>()->printReceiptsAndMark(card_ids);
 	}
 	else if(a == &a_print_card) {
 		int card_id = ui->tblCards->tableRow().value("cards.id").toInt();

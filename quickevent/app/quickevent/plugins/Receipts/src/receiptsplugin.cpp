@@ -829,7 +829,7 @@ bool ReceiptsPlugin::isAutoPrintEnabled()
 void ReceiptsPlugin::printOnAutoPrintEnabled(int card_id)
 {
 	if(isAutoPrintEnabled()) {
-		printReceiptAndMark(card_id);
+		printReceiptsAndMark({card_id});
 	}
 }
 
@@ -841,48 +841,63 @@ void ReceiptsPlugin::onDbEventNotify(const QString &domain, int connection_id, c
 	if(!isAutoPrintEnabled()) {
 		return;
 	}
-	if(ReceiptsSettings().isThisReaderOnly() && connection_id != qf::core::sql::Connection::forName().connectionId()) {
+	int this_connection_id = qf::core::sql::Connection::forName().connectionId();
+	if(ReceiptsSettings().isThisReaderOnly() && connection_id != this_connection_id) {
 		return;
 	}
-	printReceiptAndMark(data.toInt());
+	printReceiptAndMark(data.toInt(), this_connection_id);
 }
 
-bool ReceiptsPlugin::printReceiptAndMark(int card_id)
+void ReceiptsPlugin::printReceiptsAndMark(const QList<int> &card_ids)
 {
-	bool ok = false;
-	qf::core::sql::Query q;
-	if(q.execThrow("SELECT runId FROM cards WHERE id=" QF_IARG(card_id))) {
-		if(q.next()) {
-			int run_id = q.value(0).toInt();
-			if(run_id > 0) {
-				ok = printReceipt(card_id);
-			}
-			else {
-				ReceiptsSettings settings;
-				auto runner_not_found = settings.whenRunnerNotFoundPrintEnum();
-				if(runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfo) {
-					ok = printError(card_id, "error.qml");
-				}
-				else if(runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfoLong) {
-					ok = printError(card_id, "errorlong.qml");
+	int connection_id = qf::core::sql::Connection::forName().connectionId();
+	for(int card_id : card_ids) {
+		if(!printReceiptAndMark(card_id, connection_id)) {
+			break;
+		}
+	}
+}
+
+bool ReceiptsPlugin::printReceiptAndMark(int card_id, int connection_id)
+{
+	try {
+		bool ok = false;
+		qf::core::sql::Query q;
+		if(q.execThrow("SELECT runId FROM cards WHERE id=" QF_IARG(card_id))) {
+			if(q.next()) {
+				int run_id = q.value(0).toInt();
+				if(run_id > 0) {
+					ok = printReceipt(card_id);
 				}
 				else {
-					ok = printCard(card_id);
+					ReceiptsSettings settings;
+					auto runner_not_found = settings.whenRunnerNotFoundPrintEnum();
+					if(runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfo) {
+						ok = printError(card_id, "error.qml");
+					}
+					else if(runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfoLong) {
+						ok = printError(card_id, "errorlong.qml");
+					}
+					else {
+						ok = printCard(card_id);
+					}
 				}
 			}
 		}
+		if(ok) {
+			if(connection_id > 0) {
+				qff::Application::instance()->qxSql()->updateRecord("cards", card_id, {{"printerConnectionId", connection_id}}, this);
+			}
+			else {
+				qfWarning() << "Cannot get SQL connection id, card:" << card_id << "not marked as printed";
+			}
+		}
+		return ok;
 	}
-	if(ok) {
-		markAsPrinted(card_id);
+	catch(const qf::core::Exception &e) {
+		qfError() << e.toString();
 	}
-	return ok;
-}
-
-void ReceiptsPlugin::markAsPrinted(int card_id)
-{
-	int connection_id = qf::core::sql::Connection::forName().connectionId();
-	QF_ASSERT(connection_id > 0, "Cannot get SQL connection id", return);
-	qff::Application::instance()->qxSql()->updateRecord("cards", card_id, {{"printerConnectionId", connection_id}}, this);
+	return false;
 }
 
 void ReceiptsPlugin::printNewCards()
@@ -897,12 +912,17 @@ void ReceiptsPlugin::printNewCards()
 		qs += " AND readerConnectionId=" QF_IARG(connection_id);
 	}
 	qs += " ORDER BY id DESC";
-	qf::core::sql::Query q;
-	q.execThrow(qs);
-	while(q.next()) {
-		if(!printReceiptAndMark(q.value(0).toInt())) {
-			break;
+	try {
+		qf::core::sql::Query q;
+		q.execThrow(qs);
+		while(q.next()) {
+			if(!printReceiptAndMark(q.value(0).toInt(), connection_id)) {
+				break;
+			}
 		}
+	}
+	catch(const qf::core::Exception &e) {
+		qfError() << e.toString();
 	}
 }
 
