@@ -106,6 +106,7 @@ public:
 		col_cards_startTime,
 		col_cards_finishTime,
 		col_cards_runIdAssignError,
+		col_cards_printerConnectionId,
 		col_COUNT
 	};
 public:
@@ -140,6 +141,7 @@ Model::Model(QObject *parent)
 	setColumn(col_cards_startTime, ColumnDefinition("cards.startTime", tr("STIME")).setToolTip(tr("Card start time")).setReadOnly(true));
 	setColumn(col_cards_finishTime, ColumnDefinition("cards.finishTime", tr("FTIME")).setToolTip(tr("Card finish time")).setReadOnly(true));
 	setColumn(col_cards_runIdAssignError, ColumnDefinition("cards.runIdAssignError", tr("Error")).setToolTip(tr("Assign card to runner error")).setReadOnly(true));
+	setColumn(col_cards_printerConnectionId, ColumnDefinition("cards.printerConnectionId", tr("Printer")).setReadOnly(true));
 }
 
 QVariant Model::data(const QModelIndex &index, int role) const
@@ -240,8 +242,21 @@ CardReaderWidget::CardReaderWidget(QWidget *parent)
 
 	connect(ui->btUsbReader, &QPushButton::toggled, this, &CardReaderWidget::onOpenUsbTriggered);
 	connect(ui->btBtReader, &QPushButton::toggled, this, &CardReaderWidget::onOpenBtTriggered);
+	connect(ui->btPrintNew, &QPushButton::clicked, this, []() {
+		getPlugin<ReceiptsPlugin>()->printNewCards();
+	});
 
 	ui->btBtReader->setIcon(qf::gui::Style::icon("bluetooth"));
+	{
+		const QList<QPushButton*> buttons {ui->btPrintNew, ui->btUsbReader, ui->btBtReader};
+		QSize button_size;
+		for(auto *bt : buttons) {
+			button_size = button_size.expandedTo(bt->sizeHint());
+		}
+		for(auto *bt : buttons) {
+			bt->setMinimumSize(button_size);
+		}
+	}
 
 	ui->lblConnectionInfo->setText(tr("Not connected"));
 	updateButtonsEnabled();
@@ -364,6 +379,7 @@ void CardReaderWidget::onCustomContextMenuRequest(const QPoint & pos)
 	a_show_receipt.setEnabled(has_runner);
 	QAction a_print_receipt(tr("Print receipt"), nullptr);
 	a_print_receipt.setEnabled(has_runner);
+	QAction a_print_receipts(tr("Print receipts for selected rows"), nullptr);
 #ifdef QT_DEBUG
 	QAction a_sep0(nullptr); a_sep0.setSeparator(true);
 	QAction a_show_error1(tr("Show error"), nullptr);
@@ -377,7 +393,7 @@ void CardReaderWidget::onCustomContextMenuRequest(const QPoint & pos)
 	QAction a_sep2(nullptr); a_sep2.setSeparator(true);
 	QAction a_recalculate_times(tr("Recalculate times in selected rows"), nullptr);
 	QList<QAction*> lst;
-	lst << &a_show_receipt << &a_print_receipt
+	lst << &a_show_receipt << &a_print_receipt << &a_print_receipts
 #ifdef QT_DEBUG
 		<< &a_sep0 << &a_show_error1 << &a_show_error2
 #endif
@@ -394,7 +410,16 @@ void CardReaderWidget::onCustomContextMenuRequest(const QPoint & pos)
 	}
 	else if(a == &a_print_receipt) {
 		int card_id = ui->tblCards->tableRow().value("cards.id").toInt();
-		getPlugin<ReceiptsPlugin>()->printReceipt(card_id);
+		getPlugin<ReceiptsPlugin>()->printReceiptsAndMark({card_id});
+	}
+	else if(a == &a_print_receipts) {
+		QList<int> card_ids;
+		for(int ix : ui->tblCards->selectedRowsIndexes()) {
+			int sel_card_id = ui->tblCards->tableRow(ix).value("cards.id").toInt();
+			QF_ASSERT(sel_card_id > 0, "Bad card ID", return);
+			card_ids << sel_card_id;
+		}
+		getPlugin<ReceiptsPlugin>()->printReceiptsAndMark(card_ids);
 	}
 	else if(a == &a_print_card) {
 		int card_id = ui->tblCards->tableRow().value("cards.id").toInt();
@@ -525,7 +550,7 @@ void CardReaderWidget::reload()
 	//QString driver_name = m_cardsModel->sqlConnection().driverName();
 	int current_stage = getPlugin<CardReaderPlugin>()->currentStageId();
 	qfs::QueryBuilder qb;
-	qb.select2("cards", "id, siId, runId, checkTime, startTime, finishTime, runIdAssignError")
+	qb.select2("cards", "id, siId, runId, checkTime, startTime, finishTime, runIdAssignError, printerConnectionId")
 			.select2("runs", "id, startTimeMs, timeMs, finishTimeMs, misPunch, disqualified, badCheck, notStart, notFinish, disqualifiedByOrganizer, overTime, notCompeting, cardLent, cardReturned, leg")
 			.select2("competitors", "registration")
 			.select2("classes", "name")
