@@ -9417,6 +9417,40 @@ editing is disabled.</source>
     </message>
 </context>
 <context>
+    <name>main</name>
+    <message>
+        <location filename="src/main.cpp" line="179"/>
+        <source>QuickEvent did not exit correctly last time.
+If you are going to report a problem, please attach the log.
+
+Log file: %1</source>
+        <translation>QuickEvent no se cerró correctamente la última vez.
+Si va a informar de un problema, adjunte el registro.
+
+Archivo de registro: %1</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="182"/>
+        <source>QuickEvent</source>
+        <translation>QuickEvent</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="184"/>
+        <source>Copy log to clipboard</source>
+        <translation>Copiar registro al portapapeles</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="185"/>
+        <source>Open log folder</source>
+        <translation>Abrir carpeta de registros</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="186"/>
+        <source>Report issue on GitHub</source>
+        <translation>Informar del problema en GitHub</translation>
+    </message>
+</context>
+<context>
     <name>results</name>
     <message>
         <location filename="plugins/Relays/qml/reports/results.qml" line="9"/>
