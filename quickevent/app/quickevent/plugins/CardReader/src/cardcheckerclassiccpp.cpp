@@ -79,10 +79,8 @@ quickevent::core::si::CheckedCard CardCheckerClassicCpp::checkCard(const quickev
 		checked_card.setStartTimeMs(msecIntervalAM(start00sec * 1000, read_card.startTime() * 1000));
 	}
 
-	if(read_card.finishTime() == 0xEEEE) {
-		error_mis_punch = true;
-	}
-	else {
+	bool is_finish_missing = read_card.finishTime() == 0xEEEE;
+	if(!is_finish_missing) {
 		checked_card.setFinishTimeMs(msecIntervalAM(start00sec * 1000, read_card.finishTime() * 1000));
 		if(read_card.finishTimeMs()) {
 			// add msec part of finish time
@@ -142,14 +140,16 @@ quickevent::core::si::CheckedCard CardCheckerClassicCpp::checkCard(const quickev
 		}
 		checked_punches << checked_punch;
 	}
+	// missing controls are MP, missing finish is DNF, both can be set
 	checked_card.setMisPunch(error_mis_punch);
+	checked_card.setNotFinish(is_finish_missing);
 	checked_card.setMissingCodes(missing_codes);
 
 	quickevent::core::si::CheckedPunch finish_punch;
 	if(!finish_code.isEmpty())
 		finish_punch = quickevent::core::si::CheckedPunch::fromCodeDef(finish_code);
 	// no finish split time when finish is not punched, interval to the not set finish time is nonsense
-	if(read_card.finishTime() != 0xEEEE) {
+	if(!is_finish_missing) {
 		finish_punch.setStpTimeMs(msecIntervalAM(checked_card.startTimeMs(), checked_card.finishTimeMs()));
 	}
 	checked_punches << finish_punch;

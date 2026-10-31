@@ -408,10 +408,11 @@ void CardReaderPlugin::updateCheckedCardValuesSql(int card_id,
 		{
 			QVariantMap rec {
 				{"checkTimeMs", checked_card.checkTimeMs()},
-				{"finishTimeMs", checked_card.finishTimeMs()},
+				{"finishTimeMs", checked_card.finishTimeMs_isset()? QVariant(checked_card.finishTimeMs()): QVariant()},
 				{"misPunch", checked_card.isMisPunch()},
 				{"badCheck", checked_card.isBadCheck()},
 				{"notStart", false},
+				{"notFinish", checked_card.isNotFinish()},
 				{"penaltyTimeMs", {}},
 			};
 			if (read_card.startTime() != 0xEEEE) {
