@@ -35,13 +35,9 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 
 	auto *svc = service();
 	Q_ASSERT(svc);
-	auto *event_plugin = getPlugin<EventPlugin>();
-	auto current_stage = event_plugin->currentStageId();
 	auto settings = svc->settings();
 	ui->edServerUrl->setText(settings.shvBrokerUrl());
-	ui->chkExportDatabase->setChecked(settings.isExportDatabase());
 	ui->edApiToken->setText(svc->apiToken());
-	ui->edCurrentStage->setValue(current_stage);
 	ui->edEventId->setValue(svc->eventId());
 	connect(ui->btTestConnection, &QAbstractButton::clicked, this, &QxEventServiceWidget::testConnection);
 
@@ -105,7 +101,6 @@ bool QxEventServiceWidget::saveSettings()
 			ss.setShvBrokerUrl(ui->edServerUrl->text());
 		}
 		ss.setLocalBroker(is_localhost);
-		ss.setExportDatabase(ui->chkExportDatabase->isChecked());
 		svc->setSettings(ss);
 
 		auto &app_config = getPlugin<EventPlugin>()->appDbConfig();
@@ -125,7 +120,7 @@ void QxEventServiceWidget::testConnection()
 
 	auto *rpc = new DeviceConnection("QuickEventTest", this);
 	rpc->setConnectionString(ui->edServerUrl->text());
-	if (ui->chkExportDatabase->isChecked()) {
+	{
 		RpcValue::Map opts;
 		RpcValue::Map device;
 		device["deviceId"] = ui->edApiToken->text().toStdString();
