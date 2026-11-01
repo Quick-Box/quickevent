@@ -88,7 +88,7 @@ void QxEventService::run() {
 
 	m_rpcConnection = new DeviceConnection("QuickEvent", this);
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
-	if (ss.isExportDatabase()) {
+	{
 		RpcValue::Map opts;
 		RpcValue::Map device;
 		device["deviceId"] = api_token.toStdString();
