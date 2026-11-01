@@ -1294,7 +1294,7 @@ void EventPlugin::exportEvent_qbe()
 		qfs::Transaction transaction(ex_conn);
 
 		DbSchema *db_schema = dbSchema();
-		auto tables = db_schema->tables();
+		const auto &tables = db_schema->tableNames();
 		int step_cnt = tables.count() + 1;
 		int step_no = 0;
 		fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
@@ -1309,11 +1309,10 @@ void EventPlugin::exportEvent_qbe()
 			}
 		}
 		qfs::Connection conn = qfs::Connection::forName();
-		for(QObject *table : tables) {
-			QString table_name = table->property("name").toString();
+		for(const QString &table_name : tables) {
 			qfDebug() << "Copying table" << table_name;
 			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
-			QSqlRecord rec = db_schema->sqlRecord(table);
+			QSqlRecord rec = db_schema->sqlRecord(ex_conn, table_name);
 			err_str = copy_sql_table(table_name, rec, conn, ex_conn);
 			if(!err_str.isEmpty())
 				break;
@@ -1449,7 +1448,7 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 	QString err_str;
 	qfs::Transaction transaction(exp_conn);
 	DbSchema *db_schema = dbSchema();
-	auto tables = db_schema->tables();
+	const auto &tables = db_schema->tableNames();
 	int step_cnt = tables.count() + 1;
 	int step_no = 0;
 	fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
@@ -1464,11 +1463,10 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 			break;
 		}
 		exp_conn.setCurrentSchema(dest_schema_name);
-		for(QObject *table : tables) {
-			const QString table_name = table->property("name").toString();
+		for(const QString &table_name : tables) {
 			qfDebug() << "Copying table" << table_name;
 			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
-			QSqlRecord rec = db_schema->sqlRecord(table, true);
+			QSqlRecord rec = db_schema->sqlRecord(exp_conn, table_name);
 			err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
 			if(!err_str.isEmpty())
 				break;

@@ -1,8 +1,0 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-	<qresource>
-		<file>images/comm.png</file>
-		<file>images/sql.png</file>
-		<file>images/qsicli.png</file>
-	</qresource>
-</RCC>

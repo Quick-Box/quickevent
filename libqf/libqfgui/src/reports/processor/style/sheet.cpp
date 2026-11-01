@@ -16,7 +16,6 @@ Sheet::Sheet(QObject *parent)
 Sheet::~Sheet()
 {
 	qfLogFuncFrame();
-	//qDeleteAll(m_colors); it seems that QQmlListProperty itself handles color children parentship
 }
 
 void Sheet::createStyleCache()
@@ -59,50 +58,3 @@ void Sheet::setStyleObjectForName(StyleObject::StyleGroup style_object_group, co
 	else
 		om.remove(name);
 }
-
-QQmlListProperty<Color> Sheet::colors()
-{
-	/// Generally this constructor should not be used in production code, as a writable QList violates QML's memory management rules. However, this constructor can be very useful while prototyping.
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<Color>(this, m_colors);
-#else
-	return QQmlListProperty<Color>(this, &m_colors);
-#endif
-}
-
-QQmlListProperty<Pen> Sheet::pens()
-{
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<Pen>(this, m_pens);
-#else
-	return QQmlListProperty<Pen>(this, &m_pens);
-#endif
-}
-
-QQmlListProperty<Brush> Sheet::brushes()
-{
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<Brush>(this, m_brushes);
-#else
-	return QQmlListProperty<Brush>(this, &m_brushes);
-#endif
-}
-
-QQmlListProperty<Font> Sheet::fonts()
-{
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<Font>(this, m_fonts);
-#else
-	return QQmlListProperty<Font>(this, &m_fonts);
-#endif
-}
-
-QQmlListProperty<Text> Sheet::textStyles()
-{
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<Text>(this, m_textStyles);
-#else
-	return QQmlListProperty<Text>(this, &m_textStyles);
-#endif
-}
-

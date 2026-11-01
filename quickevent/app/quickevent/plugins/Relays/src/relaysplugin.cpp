@@ -25,7 +25,6 @@
 #include <plugins/Runs/src/runsplugin.h>
 
 #include <QFile>
-#include <QQmlEngine>
 #include <algorithm>
 
 #include <qf/core/utils/timescope.h>

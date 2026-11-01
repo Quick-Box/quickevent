@@ -54,7 +54,6 @@ runs:
     - name: Create AppImage
       run: |
         LD_LIBRARY_PATH="${{ github.workspace }}/install/usr/lib:$LD_LIBRARY_PATH" \
-        QML_SOURCES_PATHS="$(find "$(pwd)" -type f -name *.qml | xargs dirname | sort --unique | paste --serial --delimiters=:)" \
         ./linuxdeploy-x86_64.AppImage \
         --appdir '${{ github.workspace }}/install' \
         --desktop-file '${{ github.workspace }}/quickevent/distro/QuickEvent.AppDir/QuickEvent.desktop' \

@@ -4,7 +4,6 @@
 #include "../../../guiglobal.h"
 
 #include <QObject>
-#include <QQmlParserStatus>
 
 class QString;
 class QVariant;
@@ -21,10 +20,9 @@ namespace style {
 
 class Sheet;
 
-class QFGUI_DECL_EXPORT StyleObject : public QObject, public QQmlParserStatus
+class QFGUI_DECL_EXPORT StyleObject : public QObject
 {
 	Q_OBJECT
-	Q_INTERFACES(QQmlParserStatus)
 	Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
 private:
 	typedef QObject Super;
@@ -48,9 +46,6 @@ protected:
 
     Q_SLOT void setDirty(bool b = true) {m_dirty = b;}
     bool isDirty() {return m_dirty;}
-
-	void classBegin() Q_DECL_OVERRIDE;
-    void componentComplete() Q_DECL_OVERRIDE;
 private:
 	//void updateStyleCache(const QString &old_name, const QString &new_name);
 private:

@@ -7,7 +7,6 @@
 
 #include <QObject>
 
-class QQmlEngine;
 
 namespace qf {
 namespace gui {
@@ -29,8 +28,6 @@ public:
 
 
 	QString homeDir() const { return pluginDataDir() + '/' +  featureId(); }
-	QString qmlDir() const { return homeDir() + "/qml"; }
-	//QString qmlReportsDir() const { return qmlDir() + "/reports"; }
 	QString featureId() const { return m_featureId; }
 	//QString settingsDir() const { return "plugin/" +  featureId(); }
 	QString findReportFile(const QString &report_file_path) const;
@@ -44,7 +41,7 @@ public:
 		}
 	};
 	QList<ReportFileInfo> listReportFiles(const QString &report_dir,
-		const QString &suffix = QStringLiteral("qml")) const;
+		const QString &suffix = QStringLiteral("qrep")) const;
 
 	Q_SIGNAL void installed();
 private:

@@ -361,7 +361,7 @@ void ReceiptsSettingsPage::load()
 	ui->chkThisReaderOnly->setChecked(settings.isThisReaderOnly());
 	{
 		auto *cbx = ui->cbxReceipt;
-		QString path = settings.receiptPath();
+		QString path = settings.receiptReportPath();
 		qfInfo() << "current receipt path:" << path;
 		for (int i = 0; i < cbx->count(); ++i) {
 			if(cbx->itemData(i).toString() == path) {

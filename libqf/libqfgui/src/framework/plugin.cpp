@@ -5,7 +5,6 @@
 #include <qf/core/log.h>
 #include <qf/core/assert.h>
 
-#include <QQmlEngine>
 #include <QTranslator>
 #include <QFile>
 #include <QDirIterator>
@@ -53,8 +52,7 @@ QString Plugin::findReportFile(const QString &report_file_path) const
 		return {};
 	}
 	QStringList search_paths;
-	search_paths << reports_dir + '/' + m_featureId + "/qml/reports";
-	//search_paths << qmlReportsDir();
+	search_paths << reports_dir + '/' + m_featureId + "/reports";
 	for(const QString &dir : search_paths) {
 		qfMessage() << "search_path:" << dir;
 		auto fn = dir + '/' + report_file_path;
@@ -76,7 +74,7 @@ QList<Plugin::ReportFileInfo> Plugin::listReportFiles(const QString &report_dir,
 	if(reports_dir.isEmpty())
 		return report_files;
 	QStringList search_paths;
-	search_paths << reports_dir + '/' + m_featureId + "/qml/reports";
+	search_paths << reports_dir + '/' + m_featureId + "/reports";
 	for(const QString &dir : search_paths) {
 		QDirIterator it(dir + '/' + report_dir, QDirIterator::NoIteratorFlags);
 		while (it.hasNext()) {

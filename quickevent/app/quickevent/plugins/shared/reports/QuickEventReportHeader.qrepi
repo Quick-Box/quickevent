@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- report title and event info, parameters: reportTitle, eventConfig, stageConfig, stageId, showStageNumber -->
+<Frame>
+	<Parameter name="showStageNumber" default="true"/>
+	<Para textStyle="big">${select(showStageNumber, qeStagePrefix(), '')}${reportTitle}</Para>
+	<Para textStyle="bold">${eventConfig.name}</Para>
+	<Para>${coalesce(stageConfig.startDateTime, eventConfig.dateTime, eventConfig.date)}</Para>
+	<Para>${eventConfig.place}</Para>
+</Frame>

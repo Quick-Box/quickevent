@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.18.4)
 
-set(QF_BUILD_QML_PLUGINS ON CACHE BOOL "Build with QML Plugins support")
 set(QF_WITH_LIBSHV OFF CACHE BOOL "Build with libshv")
 
 project(quickbox LANGUAGES C CXX)
@@ -37,7 +36,7 @@ if (NOT TARGET libnecrolog)
 	add_subdirectory(3rdparty/necrolog)
 endif()
 
-set(QF_QT_COMPONENTS Core Widgets Gui Sql Qml Xml LinguistTools PrintSupport Svg SerialPort Multimedia Network Bluetooth)
+set(QF_QT_COMPONENTS Core Widgets Gui Sql Xml LinguistTools PrintSupport Svg SerialPort Multimedia Network Bluetooth)
 
 if (QF_WITH_LIBSHV)
 	set(LIBSHV_WITH_WEBSOCKETS ON)
@@ -85,17 +84,3 @@ else()
 	message(FATAL_ERROR "Qt not found")
 endif()
 
-# Directories where Qt Creator can find QML files.
-# (Not needed for builds, but makes Qt Creator code completion happy.)
-list(APPEND QML_IMPORT_PATH ${CMAKE_BINARY_DIR}/libqf/plugins)
-#list(APPEND QML_IMPORT_PATH "/second/example/path/to/qml")
-
-# Prevent adding duplicate values at each run of CMake.
-list(REMOVE_DUPLICATES QML_IMPORT_PATH)
-
-# The variable is cached in ${BUILD_DIR}/CMakeCache.txt. We need FORCE to
-# change it there immediately. Also, add a comment to the cache file.
-set(QML_IMPORT_PATH ${QML_IMPORT_PATH}
-	CACHE STRING "Qt Creator extra qml import paths"
-	FORCE
-)

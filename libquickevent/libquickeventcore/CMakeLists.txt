@@ -14,7 +14,6 @@ add_library(libquickeventcore SHARED
     src/si/readcard.cpp
     src/si/siid.cpp
     src/utils.cpp
-	libquickeventcore.qrc
     )
 
 # Single source of truth for this project's translations: every

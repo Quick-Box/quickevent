@@ -392,5 +392,3 @@ void LogWidget::checkScrollToLastEntry()
 }
 
 } // namespace qf::gui::framework
-// namespace qmlwiggets
-

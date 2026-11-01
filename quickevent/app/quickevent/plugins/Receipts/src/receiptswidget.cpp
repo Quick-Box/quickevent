@@ -33,7 +33,6 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QMetaObject>
-#include <QJSValue>
 #include <QPrinterInfo>
 #include <QTimer>
 #include <QDirIterator>
@@ -253,9 +252,9 @@ bool ReceiptsWidget::printReceipt(int card_id)
 				ReceiptsSettings settings;
 				auto runner_not_found = settings.whenRunnerNotFoundPrintEnum();
 				if (runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfo)
-					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"error.qml");
+					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"error.qrep");
 				else if (runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfoLong)
-					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"errorlong.qml");
+					ok = getPlugin<ReceiptsPlugin>()->printError(card_id,"errorlong.qrep");
 				else
 					ok = getPlugin<ReceiptsPlugin>()->printCard(card_id);
 			}

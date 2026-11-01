@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Schema of report files (*.qrep).
+	Root element is Report, or include of other report, which can pass parameters to it.
+	Validate with xmllint, options: noout, schema qrep.xsd
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+	<xs:include schemaLocation="report-types.xsd"/>
+
+	<xs:element name="Report" type="Report"/>
+	<xs:element name="include" type="Include"/>
+</xs:schema>

@@ -8,9 +8,6 @@
 #include <QApplication>
 #include <QJsonDocument>
 #include <QObject>
-#include <QQmlError>
-
-class QQmlEngine;
 
 namespace qf::core::sql { class QxSql; }
 

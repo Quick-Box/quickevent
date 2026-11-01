@@ -29,7 +29,6 @@
 #include <qf/core/sql/transaction.h>
 #include <qf/core/sql/querybuilder.h>
 
-#include <QJSValue>
 #include <QMetaObject>
 #include <QSqlRecord>
 
@@ -71,17 +70,6 @@ void CardReaderPlugin::onInstalled()
 
 	auto core_plugin = getPlugin<Core::CorePlugin>();
 	core_plugin->settingsDialog()->addPage(new CardReaderSettingsPage());
-}
-
-QQmlListProperty<CardReader::CardChecker> CardReaderPlugin::cardCheckersListProperty()
-{
-	/// Generally this constructor should not be used in production code, as a writable QList violates QML's memory management rules.
-	/// However, this constructor can be very useful while prototyping.
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<CardReader::CardChecker>(this, m_cardCheckers);
-#else
-	return QQmlListProperty<CardReader::CardChecker>(this, &m_cardCheckers);
-#endif
 }
 
 CardChecker *CardReaderPlugin::currentCardChecker()
@@ -229,19 +217,8 @@ quickevent::core::si::CheckedCard CardReaderPlugin::checkCard(const quickevent::
 	CardReader::CardChecker *chk = currentCardChecker();
 	QF_ASSERT(chk != nullptr, "CardChecker is NULL", return quickevent::core::si::CheckedCard());
 	auto *cpp_chk = qobject_cast<CardReader::CardCheckerCpp*>(chk);
-	if(cpp_chk) {
-		cc = cpp_chk->checkCard(read_card);
-	}
-	else {
-		QVariant ret_val;
-		QMetaObject::invokeMethod(chk, "checkCard", Qt::DirectConnection,
-								  Q_RETURN_ARG(QVariant, ret_val),
-								  Q_ARG(QVariant, read_card));
-		auto jsv = ret_val.value<QJSValue>();
-		QVariant v = jsv.toVariant();
-		QVariantMap m = v.toMap();
-		cc = quickevent::core::si::CheckedCard(m);
-	}
+	QF_ASSERT(cpp_chk != nullptr, "Only C++ CardChecker is supported", return quickevent::core::si::CheckedCard());
+	cc = cpp_chk->checkCard(read_card);
 	cc.setRunId(read_card.runId());
 	cc.setCardNumber(read_card.cardNumber());
 	qfDebug() << cc.toString();

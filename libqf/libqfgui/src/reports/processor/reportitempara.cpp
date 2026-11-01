@@ -164,31 +164,12 @@ ReportItem::PrintResult ReportItemPara::printMetaPaintChildren(QPaintDevice *pai
 	return res;
 }
 
-void ReportItemPara::setTextFn(const QJSValue &val)
-{
-	if(val.isCallable()) {
-		m_getTextJsFn = val;
-	}
-	else {
-		qfError() << "JavaScript callable value (aka function) must be set to textFn property.";
-	}
-}
-
 QString ReportItemPara::paraText()
 {
 	//qfLogFuncFrame();
 	QString ret;
-	if(m_getTextJsFn.isCallable()) {
-		QJSValue jsv = m_getTextJsFn.call();
-		if(jsv.isDate()) {
-			QDateTime dt = jsv.toDateTime();
-			ret = dt.toString(Qt::ISODate);//.date().toString(Qt::ISODate);
-		}
-		else
-			ret = jsv.toString();
-	}
-	else if(m_getTextCppFn) {
-		ret = m_getTextCppFn();
+	if(m_getTextFn) {
+		ret = m_getTextFn();
 	}
 	else {
 		ret = text();
