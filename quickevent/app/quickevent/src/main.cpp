@@ -34,57 +34,57 @@
 #include <sstream>
 
 namespace {
-NecroLog::MessageHandler file_log_old_message_handler;
-FILE *file_log = nullptr;
+NecroLog::MessageHandler crashlog_old_message_handler;
+FILE *crashlog_file = nullptr;
 
-void file_log_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
+void crashlog_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {
 	// stdio FILE is locked internally, no mutex needed
-	if (file_log) {
+	if (crashlog_file) {
 		std::ostringstream os;
 		NecroLog::writeWithDefaultFormat(os, false, level, context, msg);
-		std::fputs(os.str().c_str(), file_log);
-		std::fflush(file_log);
+		std::fputs(os.str().c_str(), crashlog_file);
+		std::fflush(crashlog_file);
 	}
-	file_log_old_message_handler(level, context, msg);
+	crashlog_old_message_handler(level, context, msg);
 }
 
 // Log is written to crash.log, which is deleted on clean exit.
-// crash.log found at startup means, that previous run did not exit correctly, it must be shown before start_file_log() overwrites it.
+// crash.log found at startup means, that previous run did not exit correctly, it must be shown before create_crashlog_file() overwrites it.
 // ponytail: single log for all instances, second instance running at the same time reports false crash, add QLockFile if needed
-QString file_log_path()
+QString crashlog_file_path()
 {
 	return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QStringLiteral("/logs/crash.log");
 }
 
-void start_file_log()
+void create_crashlog_file()
 {
-	const QString path = file_log_path();
+	const QString path = crashlog_file_path();
 	if (!QDir().mkpath(QFileInfo(path).absolutePath())) {
 		return;
 	}
 #ifdef Q_OS_WIN
-	file_log = _wfopen(reinterpret_cast<const wchar_t *>(path.utf16()), L"wb");
+	crashlog_file = _wfopen(reinterpret_cast<const wchar_t *>(path.utf16()), L"wb");
 #else
-	file_log = std::fopen(QFile::encodeName(path).constData(), "wb");
+	crashlog_file = std::fopen(QFile::encodeName(path).constData(), "wb");
 #endif
-	if (file_log) {
-		file_log_old_message_handler = NecroLog::setMessageHandler(file_log_handler);
+	if (crashlog_file) {
+		crashlog_old_message_handler = NecroLog::setMessageHandler(crashlog_handler);
 	}
 }
 
-void stop_file_log()
+void delete_crashlog_file()
 {
-	if (file_log) {
-		FILE *f = file_log;
-		file_log = nullptr;
+	if (crashlog_file) {
+		FILE *f = crashlog_file;
+		crashlog_file = nullptr;
 		std::fclose(f);
-		QFile::remove(file_log_path());
+		QFile::remove(crashlog_file_path());
 	}
 }
 
 // New GitHub issue prefilled with app info and as much of the log tail as fits into the URL
-QUrl crash_report_issue_url(const QString &crash_log_path, const QString &log_tail)
+QUrl crash_report_issue_url(const QString &crashlog_path, const QString &log_tail)
 {
 	constexpr qsizetype max_query_size = 7000; // GitHub rejects URLs longer than ~8 KB
 	auto commit_sha = QStringLiteral(COMMIT_SHA);
@@ -106,7 +106,7 @@ QUrl crash_report_issue_url(const QString &crash_log_path, const QString &log_ta
 			"## Log (last lines)\n"
 			"```\n%6\n```\n\n"
 			"Full log is in the clipboard (paste it here) or attach the file: `%7`\n")
-			.arg(QCoreApplication::applicationVersion(), commit_sha, QSysInfo::prettyProductName(), QSysInfo::currentCpuArchitecture(), QString::fromLatin1(qVersion()), lines.join('\n'), QDir::toNativeSeparators(crash_log_path));
+			.arg(QCoreApplication::applicationVersion(), commit_sha, QSysInfo::prettyProductName(), QSysInfo::currentCpuArchitecture(), QString::fromLatin1(qVersion()), lines.join('\n'), QDir::toNativeSeparators(crashlog_path));
 		query = "title=" + QUrl::toPercentEncoding(title) + "&body=" + QUrl::toPercentEncoding(body);
 		if (query.size() <= max_query_size || lines.isEmpty()) {
 			break;
@@ -117,10 +117,10 @@ QUrl crash_report_issue_url(const QString &crash_log_path, const QString &log_ta
 }
 
 // Shows crash.log left by previous run, if any
-void show_crash_log_dialog()
+void show_crashlog_dialog()
 {
-	const QString crash_log_path = file_log_path();
-	QFile f(crash_log_path);
+	const QString crashlog_path = crashlog_file_path();
+	QFile f(crashlog_path);
 	if (!f.open(QFile::ReadOnly)) {
 		return;
 	}
@@ -133,7 +133,7 @@ void show_crash_log_dialog()
 
 	const QString text = QCoreApplication::translate("main", "QuickEvent did not exit correctly last time.\n"
 		"If you are going to report a problem, please attach the log.\n\n"
-		"Log file: %1").arg(QDir::toNativeSeparators(crash_log_path));
+		"Log file: %1").arg(QDir::toNativeSeparators(crashlog_path));
 	QMessageBox mbx(QMessageBox::Warning, QCoreApplication::translate("main", "QuickEvent"), text, QMessageBox::Close);
 	mbx.setDetailedText(log_tail);
 	auto *copy_button = mbx.addButton(QCoreApplication::translate("main", "Copy log to clipboard"), QMessageBox::ActionRole);
@@ -144,11 +144,11 @@ void show_crash_log_dialog()
 		QGuiApplication::clipboard()->setText(log_tail);
 	}
 	else if (mbx.clickedButton() == open_dir_button) {
-		QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(crash_log_path).absolutePath()));
+		QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(crashlog_path).absolutePath()));
 	}
 	else if (mbx.clickedButton() == report_button) {
 		QGuiApplication::clipboard()->setText(log_tail);
-		QDesktopServices::openUrl(crash_report_issue_url(crash_log_path, log_tail));
+		QDesktopServices::openUrl(crash_report_issue_url(crashlog_path, log_tail));
 	}
 }
 
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
 	}
 
 	// declared before app, to keep the log if the app crashes in its destructor
-	auto file_log_guard = qScopeGuard(stop_file_log);
+	auto crashlog_guard = qScopeGuard(delete_crashlog_file);
 	qInstallMessageHandler(qt_message_handler);
 
 	QSettings::setDefaultFormat(QSettings::IniFormat);
@@ -314,9 +314,9 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	show_crash_log_dialog();
-	start_file_log();
-	qfInfo() << "Log file:" << (file_log ? file_log_path() : QStringLiteral("N/A"));
+	show_crashlog_dialog();
+	create_crashlog_file();
+	qfInfo() << "Log file:" << (crashlog_file ? crashlog_file_path() : QStringLiteral("N/A"));
 
 	MainWindow main_window;
 
