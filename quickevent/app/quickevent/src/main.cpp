@@ -33,15 +33,9 @@
 #include <cstdio>
 #include <sstream>
 
-#ifdef Q_OS_WIN
-#include <qt_windows.h>
-#include <ole2.h>
-#endif
-
 namespace {
 NecroLog::MessageHandler file_log_old_message_handler;
 FILE *file_log = nullptr;
-QString current_log_path;
 
 void file_log_handler(NecroLog::Level level, const NecroLog::LogContext &context, const std::string &msg)
 {
@@ -55,34 +49,28 @@ void file_log_handler(NecroLog::Level level, const NecroLog::LogContext &context
 	file_log_old_message_handler(level, context, msg);
 }
 
-// Log is written to current.log, which is deleted on clean exit.
-// current.log found at startup means, that previous run did not exit correctly, it is moved to crash.log.
-// Returns path to crash.log or empty string.
+// Log is written to crash.log, which is deleted on clean exit.
+// crash.log found at startup means, that previous run did not exit correctly, it must be shown before start_file_log() overwrites it.
 // ponytail: single log for all instances, second instance running at the same time reports false crash, add QLockFile if needed
-QString start_file_log()
+QString file_log_path()
 {
-	const QString dir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QStringLiteral("/logs");
-	if (!QDir().mkpath(dir)) {
-		return {};
-	}
-	current_log_path = dir + QStringLiteral("/current.log");
-	QString crash_log_path;
-	if (QFile::exists(current_log_path)) {
-		const QString path = dir + QStringLiteral("/crash.log");
-		QFile::remove(path);
-		if (QFile::rename(current_log_path, path)) {
-			crash_log_path = path;
-		}
+	return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QStringLiteral("/logs/crash.log");
+}
+
+void start_file_log()
+{
+	const QString path = file_log_path();
+	if (!QDir().mkpath(QFileInfo(path).absolutePath())) {
+		return;
 	}
 #ifdef Q_OS_WIN
-	file_log = _wfopen(reinterpret_cast<const wchar_t *>(current_log_path.utf16()), L"wb");
+	file_log = _wfopen(reinterpret_cast<const wchar_t *>(path.utf16()), L"wb");
 #else
-	file_log = std::fopen(QFile::encodeName(current_log_path).constData(), "wb");
+	file_log = std::fopen(QFile::encodeName(path).constData(), "wb");
 #endif
 	if (file_log) {
 		file_log_old_message_handler = NecroLog::setMessageHandler(file_log_handler);
 	}
-	return crash_log_path;
 }
 
 void stop_file_log()
@@ -91,13 +79,8 @@ void stop_file_log()
 		FILE *f = file_log;
 		file_log = nullptr;
 		std::fclose(f);
-		QFile::remove(current_log_path);
+		QFile::remove(file_log_path());
 	}
-}
-
-void copy_to_clipboard(const QString &text)
-{
-	QGuiApplication::clipboard()->setText(text);
 }
 
 // New GitHub issue prefilled with app info and as much of the log tail as fits into the URL
@@ -133,8 +116,10 @@ QUrl crash_report_issue_url(const QString &crash_log_path, const QString &log_ta
 	return QUrl::fromEncoded("https://github.com/Quick-Box/quickevent/issues/new?" + query);
 }
 
-void show_crash_log_dialog(const QString &crash_log_path, QWidget *parent)
+// Shows crash.log left by previous run, if any
+void show_crash_log_dialog()
 {
+	const QString crash_log_path = file_log_path();
 	QFile f(crash_log_path);
 	if (!f.open(QFile::ReadOnly)) {
 		return;
@@ -149,20 +134,20 @@ void show_crash_log_dialog(const QString &crash_log_path, QWidget *parent)
 	const QString text = QCoreApplication::translate("main", "QuickEvent did not exit correctly last time.\n"
 		"If you are going to report a problem, please attach the log.\n\n"
 		"Log file: %1").arg(QDir::toNativeSeparators(crash_log_path));
-	QMessageBox mbx(QMessageBox::Warning, QCoreApplication::translate("main", "QuickEvent"), text, QMessageBox::Close, parent);
+	QMessageBox mbx(QMessageBox::Warning, QCoreApplication::translate("main", "QuickEvent"), text, QMessageBox::Close);
 	mbx.setDetailedText(log_tail);
 	auto *copy_button = mbx.addButton(QCoreApplication::translate("main", "Copy log to clipboard"), QMessageBox::ActionRole);
 	auto *open_dir_button = mbx.addButton(QCoreApplication::translate("main", "Open log folder"), QMessageBox::ActionRole);
 	auto *report_button = mbx.addButton(QCoreApplication::translate("main", "Report issue on GitHub"), QMessageBox::ActionRole);
 	mbx.exec();
 	if (mbx.clickedButton() == copy_button) {
-		copy_to_clipboard(log_tail);
+		QGuiApplication::clipboard()->setText(log_tail);
 	}
 	else if (mbx.clickedButton() == open_dir_button) {
 		QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(crash_log_path).absolutePath()));
 	}
 	else if (mbx.clickedButton() == report_button) {
-		copy_to_clipboard(log_tail);
+		QGuiApplication::clipboard()->setText(log_tail);
 		QDesktopServices::openUrl(crash_report_issue_url(crash_log_path, log_tail));
 	}
 }
@@ -221,7 +206,7 @@ int main(int argc, char *argv[])
 		args << QString::fromStdString(s);
 	}
 
-	const QString crash_log_path = start_file_log();
+	// declared before app, to keep the log if the app crashes in its destructor
 	auto file_log_guard = qScopeGuard(stop_file_log);
 	qInstallMessageHandler(qt_message_handler);
 
@@ -242,7 +227,6 @@ int main(int argc, char *argv[])
 	qfInfo() << QDateTime::currentDateTime().toString(Qt::ISODate) << "starting" << QCoreApplication::applicationName() << "ver:" << QCoreApplication::applicationVersion();
 	qfInfo() << "Log tresholds:" << NecroLog::thresholdsLogInfo();
 	qfInfo() << "Open SSL:" << QSslSocket::sslLibraryBuildVersionString();
-	qfInfo() << "Log file:" << (file_log ? current_log_path : QStringLiteral("N/A"));
 
 	qRegisterMetaType<qf::core::LogEntryMap>();
 	quickevent::core::og::TimeMs::registerQVariantFunctions();
@@ -330,6 +314,10 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	show_crash_log_dialog();
+	start_file_log();
+	qfInfo() << "Log file:" << (file_log ? file_log_path() : QStringLiteral("N/A"));
+
 	MainWindow main_window;
 
 	// does nothing before MainWindow is created
@@ -363,9 +351,6 @@ int main(int argc, char *argv[])
 		return EXIT_SUCCESS;
 	}
 	main_window.show();
-	if (!crash_log_path.isEmpty()) {
-		show_crash_log_dialog(crash_log_path, &main_window);
-	}
 	emit main_window.applicationLaunched();
 
 #ifdef QT_DEBUG
