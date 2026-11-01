@@ -247,16 +247,6 @@ CardReaderWidget::CardReaderWidget(QWidget *parent)
 	});
 
 	ui->btBtReader->setIcon(qf::gui::Style::icon("bluetooth"));
-	{
-		const QList<QPushButton*> buttons {ui->btPrintNew, ui->btUsbReader, ui->btBtReader};
-		QSize button_size;
-		for(auto *bt : buttons) {
-			button_size = button_size.expandedTo(bt->sizeHint());
-		}
-		for(auto *bt : buttons) {
-			bt->setMinimumSize(button_size);
-		}
-	}
 
 	ui->lblConnectionInfo->setText(tr("Not connected"));
 	updateButtonsEnabled();

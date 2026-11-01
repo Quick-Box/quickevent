@@ -1409,7 +1409,7 @@ Si continúas, se eliminará esta distinción</translation>
         <translation>Impresora</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="382"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="372"/>
         <source>Print receipts for selected rows</source>
         <translation>Imprimir tickets para las filas seleccionadas</translation>
     </message>

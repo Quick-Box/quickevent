@@ -1406,7 +1406,7 @@ If you continue, this flag will be removed</source>
         <translation>принтер</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="382"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="372"/>
         <source>Print receipts for selected rows</source>
         <translation>Друкувати чеки для вибраних рядків</translation>
     </message>

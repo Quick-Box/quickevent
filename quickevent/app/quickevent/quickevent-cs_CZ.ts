@@ -1408,7 +1408,7 @@ Pokud budete pokračovat, toto označení bude odebráno</translation>
         <translation>Tiskárna</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="382"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="372"/>
         <source>Print receipts for selected rows</source>
         <translation>Vytisknout mezičasy pro vybrané řádky</translation>
     </message>
