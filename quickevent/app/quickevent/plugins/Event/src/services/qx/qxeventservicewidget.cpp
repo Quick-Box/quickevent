@@ -199,4 +199,15 @@ QString QxEventServiceWidget::brokerUrl() const
 	return url;
 }
 
+void QxEventServiceWidget::pushEventDb()
+{
+	QByteArray event_qbe_data = eventQbeData();
+	auto zdata = qCompress(event_qbe_data);
+	auto event_id = ui->edEventId->value();
+	if (event_id == 0) {
+		setMessage(tr("Event ID not set"), MessageType::Error);
+		return;
+	}
+}
+
 }
