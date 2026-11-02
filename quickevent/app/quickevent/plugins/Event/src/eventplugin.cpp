@@ -69,6 +69,8 @@
 #include <QRandomGenerator>
 #include <QCryptographicHash>
 #include <QFileInfo>
+#include <QSaveFile>
+#include <QTemporaryDir>
 
 #include <regex>
 
@@ -1265,40 +1267,40 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	return QString();
 }
 }
-void EventPlugin::exportEvent_qbe()
+QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &progress)
 {
 	qfLogFuncFrame();
-	qff::MainWindow *fwk = qff::MainWindow::frameWork();
-	QString ext = ".qbe";
-	QString ex_fn = qf::gui::dialogs::FileDialog::getSaveFileName (fwk, tr("Export as Quick Event"), singleFileStorageDir(), tr("Quick Event files *%1 (*%1)").arg(ext));
-	if(ex_fn.isEmpty())
-		return;
-	if(!ex_fn.endsWith(ext, Qt::CaseInsensitive))
-		ex_fn += ext;
 	QString err_str;
+	QByteArray data;
+	int step_cnt = 0;
+	int step_no = 0;
+	const auto report_step = [&](const QString &msg) {
+		if(progress)
+			progress(msg, ++step_no, step_cnt);
+	};
+	QTemporaryDir tmp_dir;
+	const QString ex_fn = tmp_dir.filePath(QStringLiteral("event.qbe"));
 	QString export_connection_name = QStringLiteral("qe_export_connection");
 	do {
-		if(QFile::exists(ex_fn)) {
-			if(!QFile::remove(ex_fn)) {
-				err_str = tr("Cannot delete existing file %1").arg(ex_fn);
-				break;
-			}
+		if(!tmp_dir.isValid()) {
+			err_str = tr("Cannot create temporary directory: %1").arg(tmp_dir.errorString());
+			break;
 		}
 		qfs::Connection ex_conn(QSqlDatabase::addDatabase("QSQLITE", export_connection_name));
 		ex_conn.setDatabaseName(ex_fn);
 		qfInfo() << "Opening export database file" << ex_fn;
 		if(!ex_conn.open()) {
-			qfd::MessageBox::showError(fwk, tr("Open Database Error: %1").arg(ex_conn.errorString()));
-			return;
+			err_str = tr("Open Database Error: %1").arg(ex_conn.errorString());
+			break;
 		}
 		//qfLogScope("exportEvent_qbe");
 		qfs::Transaction transaction(ex_conn);
 
 		DbSchema *db_schema = dbSchema();
 		const auto &tables = db_schema->tableNames();
-		int step_cnt = tables.count() + 1;
-		int step_no = 0;
-		fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
+		// create database + tables + read exported file
+		step_cnt = tables.count() + 2;
+		report_step(tr("Creating database"));
 		{
 			DbSchema::CreateDbSqlScriptOptions create_options;
 			create_options.setDriverName(ex_conn.driverName());
@@ -1312,7 +1314,7 @@ void EventPlugin::exportEvent_qbe()
 		qfs::Connection conn = qfs::Connection::forName();
 		for(const QString &table_name : tables) {
 			qfDebug() << "Copying table" << table_name;
-			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
+			report_step(tr("Copying table %1").arg(table_name));
 			QSqlRecord rec = db_schema->sqlRecord(ex_conn, table_name);
 			err_str = copy_sql_table(table_name, rec, conn, ex_conn);
 			if(!err_str.isEmpty())
@@ -1328,9 +1330,46 @@ void EventPlugin::exportEvent_qbe()
 			c.close();
 	}
 	QSqlDatabase::removeDatabase(export_connection_name);
-	fwk->hideProgress();
-	if(!err_str.isEmpty()) {
+	if(err_str.isEmpty()) {
+		report_step(tr("Reading exported database"));
+		QFile f(ex_fn);
+		if(f.open(QFile::ReadOnly))
+			data = f.readAll();
+		if(data.isEmpty())
+			err_str = tr("Cannot read exported database %1: %2").arg(ex_fn, f.errorString());
+	}
+	if(error)
+		*error = err_str;
+	return data;
+}
+
+void EventPlugin::exportEvent_qbe()
+{
+	qfLogFuncFrame();
+	qff::MainWindow *fwk = qff::MainWindow::frameWork();
+	QString ext = ".qbe";
+	QString ex_fn = qf::gui::dialogs::FileDialog::getSaveFileName (fwk, tr("Export as Quick Event"), singleFileStorageDir(), tr("Quick Event files *%1 (*%1)").arg(ext));
+	if(ex_fn.isEmpty())
+		return;
+	if(!ex_fn.endsWith(ext, Qt::CaseInsensitive))
+		ex_fn += ext;
+	QString err_str;
+	const QByteArray data = eventQbeData(&err_str, [fwk](const QString &msg, int completed, int total) {
+		fwk->showProgress(msg, completed, total);
+	});
+	if(data.isEmpty()) {
+		fwk->hideProgress();
 		qfd::MessageBox::showError(fwk, err_str);
+		return;
+	}
+	fwk->showProgress(tr("Saving file %1").arg(ex_fn), 1, 2);
+	// showProgress() processes events before it updates the status bar, repaint it before the blocking write
+	QCoreApplication::processEvents();
+	QSaveFile f(ex_fn);
+	const bool saved = f.open(QFile::WriteOnly) && f.write(data) == data.size() && f.commit();
+	fwk->hideProgress();
+	if(!saved) {
+		qfd::MessageBox::showError(fwk, tr("Cannot write file %1: %2").arg(ex_fn, f.errorString()));
 	}
 }
 

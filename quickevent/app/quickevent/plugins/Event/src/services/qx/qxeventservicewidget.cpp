@@ -201,7 +201,8 @@ QString QxEventServiceWidget::brokerUrl() const
 
 void QxEventServiceWidget::pushEventDb()
 {
-	QByteArray event_qbe_data = eventQbeData();
+	auto *event_plugin = getPlugin<EventPlugin>();
+	QByteArray event_qbe_data = event_plugin->eventQbeData();
 	auto zdata = qCompress(event_qbe_data);
 	auto event_id = ui->edEventId->value();
 	if (event_id == 0) {
