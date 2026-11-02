@@ -118,7 +118,8 @@ QByteArray DbEventPayload::toJson() const
 	return jsd.toJson(QJsonDocument::Compact);
 }
 
-const auto QBE_EXT = QStringLiteral(".qbe");
+const auto QBE_EXT = QStringLiteral(".qbe"); // NOLINT(bugprone-throwing-static-initialization)
+
 
 QString singleFileStorageDir()
 {
