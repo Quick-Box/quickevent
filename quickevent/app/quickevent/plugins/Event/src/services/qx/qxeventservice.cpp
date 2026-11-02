@@ -474,19 +474,24 @@ int QxEventService::currentConnectionId()
 	return qf::core::sql::Connection::forName().connectionId();
 }
 
-const char *QxEventService::eventctlShvPath() const
+QString QxEventService::eventctlShvPath(bool is_local_connection)
 {
-	return "qx/qxeventd/eventctl";
+	QString ret = "qx/qxeventd/eventctl";
+	if (is_local_connection) {
+		ret = "test/" + ret;
+	}
+	return ret;
 }
 
 void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
+		auto ss = settings();
 		auto *event_plugin = getPlugin<EventPlugin>();
 		const auto &app_config = event_plugin->appDbConfig();
 		auto api_token = app_config.qxConfig().apiToken.toStdString();
 		auto *rpc_call = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
-				->setShvPath(eventctlShvPath())
+				->setShvPath(eventctlShvPath(ss.isLocalBroker()))
 				->setMethod("openEventApiKey")
 				->setParams(RpcValue(api_token));
 		connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {

@@ -134,7 +134,7 @@ void QxEventServiceWidget::testConnection()
 			auto *rpc_call = shv::iotqt::rpc::RpcCall::create(rpc)
 					->setShvPath(".broker/currentClient")
 					->setMethod("info");
-			connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+			connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this, rpc](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 				if (error.isValid()) {
 					setMessage(tr("Client info discovery error: %1").arg(error.toString()), MessageType::Error);
 				}
@@ -144,6 +144,22 @@ void QxEventServiceWidget::testConnection()
 					auto event_id = mount_point.section('/', -1, -1).toInt();
 					ui->edEventId->setValue(event_id);
 					setMessage(tr("Event mounted at: %1, event id: %2").arg(mount_point).arg(event_id));
+					bool is_localhost = ui->btLocalhost->isChecked();
+					auto *rpc_call2 = shv::iotqt::rpc::RpcCall::create(rpc)
+							->setShvPath(QxEventService::eventctlShvPath(is_localhost).toStdString())
+							->setMethod("eventData")
+							->setParams(RpcValue::Map{{"event_id", event_id}});
+					connect(rpc_call2, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+						if (error.isValid()) {
+							setMessage(tr("Client DB mode discovery error: %1").arg(error.toString()), MessageType::Error);
+						}
+						else {
+							const auto &info = result.asMap();
+							auto db_mode = info.value("db_mode").to<QString>();
+							ui->edDbMode->setText(db_mode);
+						}
+					});
+					rpc_call2->start();
 				}
 			});
 			rpc_call->start();
