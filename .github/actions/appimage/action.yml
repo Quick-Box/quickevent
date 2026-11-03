@@ -51,6 +51,14 @@ runs:
       env:
         TYPST_VERSION: v0.15.0
 
+    # appimagetool creates .DirIcon only from PNG or XPM icon in the AppDir root
+    - name: Create PNG icon
+      run: |
+        sudo apt-get install -y librsvg2-bin imagemagick
+        rsvg-convert --keep-aspect-ratio -w 256 -h 256 '${{ github.workspace }}/quickevent/distro/QuickEvent.AppDir/quickevent.svg' -o quickevent.png
+        convert quickevent.png -background none -gravity center -extent 256x256 '${{ github.workspace }}/install/quickevent.png'
+      shell: bash
+
     - name: Create AppImage
       run: |
         LD_LIBRARY_PATH="${{ github.workspace }}/install/usr/lib:$LD_LIBRARY_PATH" \
