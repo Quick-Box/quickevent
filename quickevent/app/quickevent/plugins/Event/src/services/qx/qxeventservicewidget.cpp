@@ -41,6 +41,8 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	ui->edEventId->setValue(svc->eventId());
 	connect(ui->btTestConnection, &QAbstractButton::clicked, this, &QxEventServiceWidget::testConnection);
 
+	connect(ui->btPushEventDb, &QAbstractButton::clicked, this, &QxEventServiceWidget::pushEventDb);
+
 	connect(ui->btQxQxOrg, &QRadioButton::toggled, this, &QxEventServiceWidget::setConnectionType);
 	connect(ui->btLocalhost, &QRadioButton::toggled, this, &QxEventServiceWidget::setConnectionType);
 	ui->btQxQxOrg->setChecked(!settings.isLocalBroker());
@@ -203,12 +205,6 @@ void QxEventServiceWidget::pushEventDb()
 {
 	auto *event_plugin = getPlugin<EventPlugin>();
 	QByteArray event_qbe_data = event_plugin->eventQbeData();
-	auto zdata = qCompress(event_qbe_data);
-	auto event_id = ui->edEventId->value();
-	if (event_id == 0) {
-		setMessage(tr("Event ID not set"), MessageType::Error);
-		return;
-	}
 }
 
 }

@@ -158,14 +158,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btTestConnection_2">
+      <widget class="QPushButton" name="btPushEventDb">
        <property name="text">
         <string>Push DB</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btTestConnection_3">
+      <widget class="QPushButton" name="btPullEventDb">
        <property name="text">
         <string>Pull DB</string>
        </property>

@@ -493,16 +493,16 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 		auto *rpc_call = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
 				->setShvPath(eventctlShvPath(ss.isLocalBroker()))
 				->setMethod("openEventApiKey")
-				->setParams(RpcValue(api_token));
+				->setParams(RpcValue::Map { {"api_token", RpcValue(api_token)} });
 		connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 			if (error.isValid()) {
 				setStatus(Status::Stopped);
 				setStatusMessage(tr("Client info discovery error: %1").arg(error.toString()));
 			}
 			else {
-				const auto &info = result.asList();
-				m_eventId = info.value(0).toInt();
-				m_eventMountPoint = info.value(1).to<QString>();
+				const auto &info = result.asMap();
+				m_eventId = info.value("event_id").toInt();
+				m_eventMountPoint = info.value("mount_point").to<QString>();
 				setStatus(Status::Running);
 				setStatusMessage(tr("Event ID: %1").arg(m_eventId));
 				subscribeChanges();
