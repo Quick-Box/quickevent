@@ -35,13 +35,9 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 
 	auto *svc = service();
 	Q_ASSERT(svc);
-	auto *event_plugin = getPlugin<EventPlugin>();
-	auto current_stage = event_plugin->currentStageId();
 	auto settings = svc->settings();
 	ui->edServerUrl->setText(settings.shvBrokerUrl());
-	ui->chkExportDatabase->setChecked(settings.isExportDatabase());
 	ui->edApiToken->setText(svc->apiToken());
-	ui->edCurrentStage->setValue(current_stage);
 	ui->edEventId->setValue(svc->eventId());
 	connect(ui->btTestConnection, &QAbstractButton::clicked, this, &QxEventServiceWidget::testConnection);
 
@@ -105,7 +101,6 @@ bool QxEventServiceWidget::saveSettings()
 			ss.setShvBrokerUrl(ui->edServerUrl->text());
 		}
 		ss.setLocalBroker(is_localhost);
-		ss.setExportDatabase(ui->chkExportDatabase->isChecked());
 		svc->setSettings(ss);
 
 		auto &app_config = getPlugin<EventPlugin>()->appDbConfig();
@@ -125,7 +120,7 @@ void QxEventServiceWidget::testConnection()
 
 	auto *rpc = new DeviceConnection("QuickEventTest", this);
 	rpc->setConnectionString(ui->edServerUrl->text());
-	if (ui->chkExportDatabase->isChecked()) {
+	{
 		RpcValue::Map opts;
 		RpcValue::Map device;
 		device["deviceId"] = ui->edApiToken->text().toStdString();
@@ -139,7 +134,7 @@ void QxEventServiceWidget::testConnection()
 			auto *rpc_call = shv::iotqt::rpc::RpcCall::create(rpc)
 					->setShvPath(".broker/currentClient")
 					->setMethod("info");
-			connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+			connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this, rpc](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 				if (error.isValid()) {
 					setMessage(tr("Client info discovery error: %1").arg(error.toString()), MessageType::Error);
 				}
@@ -149,6 +144,22 @@ void QxEventServiceWidget::testConnection()
 					auto event_id = mount_point.section('/', -1, -1).toInt();
 					ui->edEventId->setValue(event_id);
 					setMessage(tr("Event mounted at: %1, event id: %2").arg(mount_point).arg(event_id));
+					bool is_localhost = ui->btLocalhost->isChecked();
+					auto *rpc_call2 = shv::iotqt::rpc::RpcCall::create(rpc)
+							->setShvPath(QxEventService::eventctlShvPath(is_localhost).toStdString())
+							->setMethod("eventData")
+							->setParams(RpcValue::Map{{"event_id", event_id}});
+					connect(rpc_call2, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+						if (error.isValid()) {
+							setMessage(tr("Client DB mode discovery error: %1").arg(error.toString()), MessageType::Error);
+						}
+						else {
+							const auto &info = result.asMap();
+							auto db_mode = info.value("db_mode").to<QString>();
+							ui->edDbMode->setText(db_mode);
+						}
+					});
+					rpc_call2->start();
 				}
 			});
 			rpc_call->start();
@@ -186,6 +197,18 @@ QString QxEventServiceWidget::brokerUrl() const
 	url = url.arg("password");
 	url = url.arg("2ddf6394ea6");
 	return url;
+}
+
+void QxEventServiceWidget::pushEventDb()
+{
+	auto *event_plugin = getPlugin<EventPlugin>();
+	QByteArray event_qbe_data = event_plugin->eventQbeData();
+	auto zdata = qCompress(event_qbe_data);
+	auto event_id = ui->edEventId->value();
+	if (event_id == 0) {
+		setMessage(tr("Event ID not set"), MessageType::Error);
+		return;
+	}
 }
 
 }

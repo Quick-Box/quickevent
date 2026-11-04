@@ -28,6 +28,7 @@ private:
 	void testConnection();
 	void setConnectionType();
 	QString brokerUrl() const;
+	void pushEventDb();
 private:
 	Ui::QxEventServiceWidget *ui;
 };

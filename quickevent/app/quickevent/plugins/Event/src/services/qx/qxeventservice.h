@@ -20,7 +20,7 @@ class QxEventServiceSettings : public ServiceSettings
 
 	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "tcp://localhost?user=qe&password=test")
 	QF_VARIANTMAP_FIELD2(bool, is, set, LocalBroker, false)
-	QF_VARIANTMAP_FIELD2(bool, is, set, ExportDatabase, false)
+	// QF_VARIANTMAP_FIELD2(bool, is, set, ExportDatabase, false)
 public:
 	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
 };
@@ -75,7 +75,12 @@ public:
 	static int currentConnectionId();
 	QUrl shvBrokerUrl() const;
 
+	static QString eventctlShvPath(bool is_local_connection);
+
 	int eventId() const;
+protected:
+	void loadSettings() override;
+	qf::gui::framework::DialogWidget *createDetailWidget() override;
 private: // shv
 	void onBrokerConnectedChanged(bool is_connected);
 	void onRpcMessageReceived(const shv::chainpack::RpcMessage &msg);
@@ -83,11 +88,8 @@ private: // shv
 	void onBrokerSocketError(const QString &err);
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
 
-	const char* eventctlShvPath() const;
 	void subscribeChanges();
 private:
-	void loadSettings() override;
-	qf::gui::framework::DialogWidget *createDetailWidget() override;
 	void postFileCompressed(std::optional<QString> path, std::optional<QString> name, QByteArray data, QObject *context, std::function<void(QString error)> call_back = nullptr);
 	enum class SpecFile {StartListIofXml3, RunsCsvJson};
 	void uploadSpecFile(SpecFile file, QByteArray data, QObject *context, const std::function<void(QString error)> &call_back = nullptr);
