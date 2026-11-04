@@ -83,6 +83,8 @@ CREATE TABLE classdefs (
 	drawLock boolean NOT NULL DEFAULT 0,
 	relayStartNumber integer,
 	relayLegCount integer,
+	startMode character varying,
+	resultListMode character varying NOT NULL DEFAULT 'Default',
 	CONSTRAINT classdefs_foreign1 FOREIGN KEY (classId) REFERENCES classes (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
 	CONSTRAINT classdefs_foreign2 FOREIGN KEY (courseId) REFERENCES courses (id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
@@ -99,6 +101,10 @@ CREATE INDEX classdefs_ix0 ON classdefs (stageId);
 -- COMMENT ON COLUMN classdefs.resultsPrintTS IS 'when results for this class were printed last time';
 -- comments not suported for driver: SQLITE
 -- COMMENT ON COLUMN classdefs.drawLock IS 'The draw of this class is prohibited';
+-- comments not suported for driver: SQLITE
+-- COMMENT ON COLUMN classdefs.startMode IS 'IOF XML start mode: StartList, MassStart, PursuitStart, WaveStart, FreeStart, NULL = derived from start interval';
+-- comments not suported for driver: SQLITE
+-- COMMENT ON COLUMN classdefs.resultListMode IS 'IOF XML result list mode: Default, Unordered, UnorderedNoTimes';
 ;
 -- create table: competitors;
 CREATE TABLE competitors (
@@ -346,4 +352,4 @@ CREATE TABLE reports (
 ;
 -- insert into table: config;
 INSERT INTO config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30800', 'int');
+('db.version', 'Data version', '30900', 'int');

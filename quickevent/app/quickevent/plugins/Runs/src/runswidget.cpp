@@ -339,7 +339,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 			connect(a, &qfw::Action::triggered, getPlugin<RunsPlugin>(), &Runs::RunsPlugin::export_resultsHtmlStage);
 		}
 		{
-			qfw::Action *a = a_export_results_stage->addActionInto("htmlWithLaps", tr("HTML with &laps"));
+			qfw::Action *a = a_export_results_stage->addActionInto("htmlWithLaps", tr("HTML with &splits"));
 			connect(a, &qfw::Action::triggered, getPlugin<RunsPlugin>(), &Runs::RunsPlugin::export_resultsHtmlStageWithLaps);
 		}
 		{

@@ -152,12 +152,12 @@ void PunchingTestService::onTimerTick()
 	int shame_start_ms = (is_relays && ss.shameStartEnabled())? shameStartTimeMs(stage_id): 0;
 
 	qf::core::sql::Query q;
-	// Classes without start interval have a free (or mass) start, their competitors punch
+	// Classes with free start have no drawn start times, their competitors punch
 	// the start unit. Competitors of classes with drawn start times start on a signal and
 	// have no start punch in the card.
 	if (!q.exec(QStringLiteral(
 			"SELECT runs.id, runs.siId, runs.startTimeMs,"
-			" COALESCE(classdefs.startIntervalMin, 0)=0 AS isFreeStart,"
+			" %3 AS isFreeStart,"
 			" COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName"
 			"%2"
 			" FROM runs"
@@ -168,7 +168,7 @@ void PunchingTestService::onTimerTick()
 			" WHERE runs.stageId=%1"
 			" AND runs.isRunning"
 			" AND runs.siId>0"
-			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id).arg(relay_cols))) {
+			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id).arg(relay_cols).arg(event_plugin->freeStartSqlCondition()))) {
 		qfWarning() << "PunchingTestService: cannot query runs";
 		return;
 	}
