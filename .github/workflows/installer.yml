@@ -77,7 +77,7 @@ jobs:
       - name: Setup CMake
         uses: ./.github/actions/cmake
         with:
-          qt_version: 6.11.2
+          qt_version: 6.11.3
           qt_arch: ${{ matrix.qt_arch }}
           toolchain: ${{ matrix.toolchain }}
           use_qt6: ON
