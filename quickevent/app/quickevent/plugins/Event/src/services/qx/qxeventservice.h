@@ -78,6 +78,7 @@ public:
 	static QString eventctlShvPath(bool is_local_connection);
 
 	int eventId() const;
+	shv::iotqt::rpc::DeviceConnection* rpcConnection() const { return m_rpcConnection; }
 protected:
 	void loadSettings() override;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;

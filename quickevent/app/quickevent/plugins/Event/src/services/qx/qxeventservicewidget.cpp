@@ -19,10 +19,22 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QJsonDocument>
+#include <QCryptographicHash>
+#include <QPointer>
+
+#include <algorithm>
 
 using qf::gui::framework::getPlugin;
 
 namespace Event::services::qx {
+
+namespace {
+constexpr auto QX_API_TOKEN_META_KEY = "qx_api_token";
+// key of the maximal write size in the result of the SHV file node stat method
+constexpr int FILE_STAT_MAX_WRITE = 5;
+// server inflates and verifies the whole database
+constexpr int PUSH_DB_COMMIT_TIMEOUT_MSEC = 60 * 1000;
+}
 
 QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	: Super(parent)
@@ -201,10 +213,125 @@ QString QxEventServiceWidget::brokerUrl() const
 	return url;
 }
 
+struct QxEventServiceWidget::PushDbUpload
+{
+	QPointer<shv::iotqt::rpc::DeviceConnection> rpc;
+	std::string shvPath;
+	shv::chainpack::RpcValue::Map metaData;
+	QByteArray zdata;
+	QByteArray sha1;
+	qsizetype offset = 0;
+	qsizetype chunkSize = 0;
+};
+
+void QxEventServiceWidget::setPushDbRunning(bool is_running)
+{
+	ui->btPushEventDb->setDisabled(is_running);
+	ui->btTestConnection->setDisabled(is_running);
+}
+
 void QxEventServiceWidget::pushEventDb()
 {
-	auto *event_plugin = getPlugin<EventPlugin>();
-	QByteArray event_qbe_data = event_plugin->eventQbeData();
+	using namespace shv::chainpack;
+
+	auto *svc = service();
+	if (!svc) {
+		return;
+	}
+	QPointer rpc = svc->rpcConnection();
+	if (!rpc || !rpc->isBrokerConnected()) {
+		setMessage(tr("Not connected to broker, start the service first"), MessageType::Error);
+		return;
+	}
+	auto event_id = svc->eventId();
+	if (event_id == 0) {
+		setMessage(tr("Event not opened on the server, start the service first"), MessageType::Error);
+		return;
+	}
+	if (!qf::gui::dialogs::MessageBox::askYesNo(this, tr("Replace database of event %1 on the server with the local event data?").arg(event_id), false)) {
+		return;
+	}
+
+	setPushDbRunning(true);
+	setMessage(tr("Exporting event database"), MessageType::Progress);
+	auto *fwk = qf::gui::framework::MainWindow::frameWork();
+	QString err_str;
+	const QByteArray event_qbe_data = getPlugin<EventPlugin>()->eventQbeData(&err_str, [fwk](const QString &msg, int completed, int total) {
+		fwk->showProgress(msg, completed, total);
+	});
+	fwk->hideProgress();
+	if (event_qbe_data.isEmpty()) {
+		setMessage(tr("Event database export error: %1").arg(err_str), MessageType::Error);
+		setPushDbRunning(false);
+		return;
+	}
+
+	auto upload = std::make_shared<PushDbUpload>();
+	upload->rpc = rpc;
+	upload->shvPath = QStringLiteral("%1/%2/pushDb").arg(QxEventService::eventctlShvPath(svc->settings().isLocalBroker())).arg(event_id).toStdString();
+	upload->metaData = RpcValue::Map{{QX_API_TOKEN_META_KEY, svc->apiToken().toStdString()}};
+	// qCompress() prepends 4 bytes of uncompressed size to the zlib stream, the server expects the plain zlib stream
+	upload->zdata = qCompress(event_qbe_data).mid(4);
+	upload->sha1 = QCryptographicHash::hash(event_qbe_data, QCryptographicHash::Sha1);
+
+	callPushDbMethod(upload, "stat", {}, [this, upload](const RpcValue &stat) {
+		upload->chunkSize = stat.asIMap().value(FILE_STAT_MAX_WRITE).toInt();
+		if (upload->chunkSize <= 0) {
+			setMessage(tr("Event database push error, invalid max write size in stat result: %1").arg(upload->chunkSize), MessageType::Error);
+			setPushDbRunning(false);
+			return;
+		}
+		// an unfinished previous upload might be left on the server
+		callPushDbMethod(upload, "truncate", 0, [this, upload](const RpcValue &) {
+			pushEventDbChunk(upload);
+		});
+	});
+}
+
+void QxEventServiceWidget::pushEventDbChunk(const std::shared_ptr<PushDbUpload> &upload)
+{
+	using namespace shv::chainpack;
+
+	if (upload->offset >= upload->zdata.size()) {
+		setMessage(tr("Installing event database"), MessageType::Progress);
+		RpcValue sha1(reinterpret_cast<const uint8_t*>(upload->sha1.constData()), static_cast<size_t>(upload->sha1.size()));
+		callPushDbMethod(upload, "commit", sha1, [this](const RpcValue &) {
+			setMessage(tr("Event database pushed OK"));
+			setPushDbRunning(false);
+		}, PUSH_DB_COMMIT_TIMEOUT_MSEC);
+		return;
+	}
+
+	setMessage(tr("Uploading event database %1 / %2 kB").arg(upload->offset / 1024).arg(upload->zdata.size() / 1024), MessageType::Progress);
+	auto chunk_size = std::min(upload->chunkSize, upload->zdata.size() - upload->offset);
+	RpcValue data(reinterpret_cast<const uint8_t*>(upload->zdata.constData() + upload->offset), static_cast<size_t>(chunk_size));
+	RpcList params{RpcValue(upload->offset), data};
+	upload->offset += chunk_size;
+	callPushDbMethod(upload, "write", params, [this, upload](const RpcValue &) {
+		pushEventDbChunk(upload);
+	});
+}
+
+void QxEventServiceWidget::callPushDbMethod(const std::shared_ptr<PushDbUpload> &upload, const char *method, const shv::chainpack::RpcValue &param, const std::function<void (const shv::chainpack::RpcValue &)> &on_success, int timeout_msec)
+{
+	auto *rpc_call = shv::iotqt::rpc::RpcCall::create(upload->rpc)
+			->setShvPath(upload->shvPath)
+			->setMethod(method)
+			->setParams(param)
+			->setTimeout(timeout_msec)
+			// methods of this node are flagged UserIDRequired, the broker fills the ID in
+			->setUserId(std::string{})
+			->setExtraMetaData(upload->metaData);
+	connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this, method, on_success](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+		if (error.isValid()) {
+			setMessage(tr("Event database push error, method %1: %2").arg(method).arg(error.toString()), MessageType::Error);
+			setPushDbRunning(false);
+		}
+		else {
+			on_success(result);
+		}
+	});
+	rpc_call->start();
 }
 
 }

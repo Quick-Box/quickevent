@@ -812,9 +812,9 @@ void EventPlugin::connectToSqlServer()
 					bool ok = connect(db.driver(), &QSqlDriver::notification, this, &EventPlugin::onDbEvent);
 					if(ok)
 						ok = db.driver()->subscribeToNotification(DBEVENT_NOTIFY_NAME);
-					if(!ok)
+					if(!ok) {
 						qfError() << "Failed to subscribe db notification:" << DBEVENT_NOTIFY_NAME;
-					else {
+					} else {
 						qfInfo() << "Successfully subscribe db notification:" << DBEVENT_NOTIFY_NAME;
 						qfInfo() << db.driver() << "subscribedToNotifications:" << db.driver()->subscribedToNotifications().join(", ");
 					}

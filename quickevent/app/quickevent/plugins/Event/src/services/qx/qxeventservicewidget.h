@@ -2,6 +2,11 @@
 
 #include <qf/gui/framework/dialogwidget.h>
 
+#include <functional>
+#include <memory>
+
+namespace shv::chainpack { class RpcValue; }
+
 namespace Event::services::qx {
 
 namespace Ui {
@@ -29,6 +34,10 @@ private:
 	void setConnectionType();
 	QString brokerUrl() const;
 	void pushEventDb();
+	struct PushDbUpload;
+	void setPushDbRunning(bool is_running);
+	void pushEventDbChunk(const std::shared_ptr<PushDbUpload> &upload);
+	void callPushDbMethod(const std::shared_ptr<PushDbUpload> &upload, const char *method, const shv::chainpack::RpcValue &param, const std::function<void (const shv::chainpack::RpcValue &)> &on_success, int timeout_msec = 0);
 private:
 	Ui::QxEventServiceWidget *ui;
 };
