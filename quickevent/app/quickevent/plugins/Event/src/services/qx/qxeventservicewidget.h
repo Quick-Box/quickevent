@@ -33,14 +33,20 @@ private:
 	void testConnection();
 	void setConnectionType();
 	QString brokerUrl() const;
+	struct DbTransfer;
+	std::shared_ptr<DbTransfer> createDbTransfer(const char *node_name);
+	void setDbTransferRunning(bool is_running);
+	void callDbFileMethod(const std::shared_ptr<DbTransfer> &transfer, const char *method, const shv::chainpack::RpcValue &param, const std::function<void (const shv::chainpack::RpcValue &)> &on_success, int timeout_msec = 0);
+
 	void pushEventDb();
-	struct PushDbUpload;
-	void setPushDbRunning(bool is_running);
-	void pushEventDbChunk(const std::shared_ptr<PushDbUpload> &upload);
-	void callPushDbMethod(const std::shared_ptr<PushDbUpload> &upload, const char *method, const shv::chainpack::RpcValue &param, const std::function<void (const shv::chainpack::RpcValue &)> &on_success, int timeout_msec = 0);
+	void pushEventDbChunk(const std::shared_ptr<DbTransfer> &upload);
+
+	void pullEventDb();
+	void pullEventDbChunk(const std::shared_ptr<DbTransfer> &download);
+	void verifyPulledEventDb(const std::shared_ptr<DbTransfer> &download);
+	void savePulledEventDb(const std::shared_ptr<DbTransfer> &download);
 private:
 	Ui::QxEventServiceWidget *ui;
 };
 
 }
-
