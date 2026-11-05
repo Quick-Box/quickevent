@@ -57,12 +57,12 @@ QxEventService::QxEventService(QObject *parent)
 	connect(m_rootNode, &shv::iotqt::node::ShvNode::sendRpcMessage, this, &QxEventService::sendRpcMessage);
 }
 
-QString QxClientService::serviceDescription() const
+QString QxEventService::serviceDescription() const
 {
 	return tr("Electronic late entries.\nhttps://qxqx.org");
 }
 
-QString QxClientService::serviceDisplayName() const
+QString QxEventService::serviceDisplayName() const
 {
 	return tr("QX Event");
 }

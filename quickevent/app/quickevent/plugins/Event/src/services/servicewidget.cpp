@@ -88,8 +88,7 @@ void ServiceWidget::setDescription(const QString &d)
 {
 	ui->btHelp->setVisible(!d.isEmpty());
 	// rich text, so that long lines are wrapped
-	ui->btHelp->setToolTip("<p>" + d.toHtmlEscaped().replace('
-', "<br>") + "</p>");
+	ui->btHelp->setToolTip("<p>" + d.toHtmlEscaped().replace('\n', "<br>") + "</p>");
 }
 
 void ServiceWidget::setServiceVisible(bool on)
