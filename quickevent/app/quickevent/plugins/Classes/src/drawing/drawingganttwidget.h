@@ -43,6 +43,7 @@ private:
 	Ui::DrawingGanttWidget *ui;
 	QLineEdit *m_edFind = nullptr;
 	QCheckBox *m_cbShowClashes = nullptr;
+	QCheckBox *m_cbLockIntervals = nullptr;
 	QComboBox *m_cbStart = nullptr;
 	int m_stageId = -1;
 	GanttScene *m_ganttScene;

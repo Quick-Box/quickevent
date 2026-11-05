@@ -1,4 +1,5 @@
 #include "ganttitem.h"
+#include "startslotitem.h"
 #include "ganttscene.h"
 
 #include <qf/gui/framework/mainwindow.h>
@@ -31,6 +32,17 @@ void GanttScene::load(int stage_id, const QString &start_code)
 	m_ganttItem->load(stage_id, m_startCode);
 	m_stageId = stage_id;
 	setDirty(false);
+}
+
+void GanttScene::setIntervalsLocked(bool locked)
+{
+	if (m_intervalsLocked == locked)
+		return;
+	m_intervalsLocked = locked;
+	if (!m_ganttItem)
+		return;
+	for (int i = 0; i < m_ganttItem->startSlotItemCount(); ++i)
+		m_ganttItem->startSlotItemAt(i)->updateGeometry();
 }
 
 void GanttScene::save()

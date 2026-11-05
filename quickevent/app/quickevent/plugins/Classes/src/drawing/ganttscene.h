@@ -23,6 +23,9 @@ public:
 	void save();
 	QString startCode() const { return m_startCode; }
 
+	bool areIntervalsLocked() const { return m_intervalsLocked; }
+	void setIntervalsLocked(bool locked);
+
 	GanttItem *ganttItem() { return m_ganttItem; }
 
 	void emitClashesChanged(const QList<ClassClash> &clashes) { emit clashesChanged(clashes); }
@@ -53,6 +56,7 @@ private:
 	GanttItem *m_ganttItem = nullptr;
 	bool m_useAllMaps = false;
 	bool m_dirty = false;
+	bool m_intervalsLocked = false;
 };
 
 }

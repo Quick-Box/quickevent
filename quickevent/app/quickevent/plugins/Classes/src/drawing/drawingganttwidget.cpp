@@ -80,6 +80,11 @@ void DrawingGanttWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 	tb->addWidget(m_cbStart);
 	connect(m_cbStart, qOverload<int>(&QComboBox::currentIndexChanged), this, &DrawingGanttWidget::reloadSelectedStart);
 	tb->addSeparator();
+	m_cbLockIntervals = new QCheckBox(tr("Lock intervals"));
+	m_cbLockIntervals->setToolTip(tr("Prevent changing start intervals with the mouse wheel or interval arrows."));
+	connect(m_cbLockIntervals, &QCheckBox::toggled, m_ganttScene, &GanttScene::setIntervalsLocked);
+	tb->addWidget(m_cbLockIntervals);
+	tb->addSeparator();
 
 	auto *cb_check_runners = new QCheckBox(tr("Runners clash"));
 	cb_check_runners->setToolTip(tr("Highlight classes overlapping in time which share the first control\nand whose start intervals would let two runners punch it at the same moment."));

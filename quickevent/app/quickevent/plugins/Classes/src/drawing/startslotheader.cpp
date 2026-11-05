@@ -397,7 +397,7 @@ void StartSlotHeader::updateGeometry()
 					tr("Start interval of classes in this slot [min].\nUse mouse wheel to change it, the value is set to all classes in the slot."),
 					tr("Decrease the start interval by 1 minute"),
 					tr("Increase the start interval by 1 minute"));
-		interval_spinner->setSpinnerEnabled(true);
+		interval_spinner->setSpinnerEnabled(!ganttScene()->areIntervalsLocked());
 	}
 	else {
 		interval_spinner->setValue(QStringLiteral("≠")); // not-equal sign
