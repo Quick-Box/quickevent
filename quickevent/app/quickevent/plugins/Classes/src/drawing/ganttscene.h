@@ -19,8 +19,9 @@ signals:
 public:
 	GanttScene(QObject * parent = 0);
 
-	void load(int stage_id);
+	void load(int stage_id, const QString &start_code = QStringLiteral("1"));
 	void save();
+	QString startCode() const { return m_startCode; }
 
 	GanttItem *ganttItem() { return m_ganttItem; }
 
@@ -47,6 +48,7 @@ public:
 	void setDirty(bool b) {m_dirty = b;}
 private:
 	int m_stageId = -1;
+	QString m_startCode = QStringLiteral("1");
 	int m_displayUnit;
 	GanttItem *m_ganttItem = nullptr;
 	bool m_useAllMaps = false;

@@ -7,6 +7,7 @@
 
 class QLineEdit;
 class QCheckBox;
+class QComboBox;
 class QListWidgetItem;
 
 namespace drawing {
@@ -37,10 +38,13 @@ private slots:
 	void onClashItemActivated(QListWidgetItem *item);
 private:
 	void applyClashHighlight(int clash_ix);
+	void reloadSelectedStart();
 private:
 	Ui::DrawingGanttWidget *ui;
 	QLineEdit *m_edFind = nullptr;
 	QCheckBox *m_cbShowClashes = nullptr;
+	QComboBox *m_cbStart = nullptr;
+	int m_stageId = -1;
 	GanttScene *m_ganttScene;
 	QList<ClassClash> m_clashes;
 };

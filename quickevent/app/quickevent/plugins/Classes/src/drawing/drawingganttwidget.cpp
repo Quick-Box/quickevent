@@ -15,6 +15,12 @@
 #include <QListWidget>
 #include <QMessageBox>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QLabel>
+#include <qf/core/sql/query.h>
+#include <qf/core/sql/connection.h>
+
+namespace qfs = qf::core::sql;
 
 using namespace drawing;
 
@@ -58,6 +64,8 @@ void DrawingGanttWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 {
 	qf::gui::ToolBar *tb = dlg->toolBar("main", true);
 	tb->addAction(ui->actSave);
+	tb->addSeparator();
+	tb->addWidget(new QLabel(tr("Find")));
 	m_edFind = new QLineEdit();
 	m_edFind->setMaximumWidth(QFontMetrics(font()).horizontalAdvance('X') * 8);
 	m_edFind->setPlaceholderText(tr("Class"));
@@ -65,6 +73,13 @@ void DrawingGanttWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 	connect(m_edFind, &QLineEdit::textEdited, this, &DrawingGanttWidget::onActFindTriggered);
 	tb->addWidget(m_edFind);
 	tb->addAction(ui->actFind);
+	tb->addSeparator();
+	tb->addWidget(new QLabel(tr("Show Start")));
+	m_cbStart = new QComboBox();
+	m_cbStart->setToolTip(tr("Select the start number for class draw preparation."));
+	tb->addWidget(m_cbStart);
+	connect(m_cbStart, qOverload<int>(&QComboBox::currentIndexChanged), this, &DrawingGanttWidget::reloadSelectedStart);
+	tb->addSeparator();
 
 	auto *cb_check_runners = new QCheckBox(tr("Runners clash"));
 	cb_check_runners->setToolTip(tr("Highlight classes overlapping in time which share the first control\nand whose start intervals would let two runners punch it at the same moment."));
@@ -113,6 +128,8 @@ void DrawingGanttWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 		connect(m_cbShowClashes, &QCheckBox::toggled, ui->lstClashes, &QWidget::setVisible);
 		tb->addWidget(m_cbShowClashes);
 	}
+	if (m_stageId >= 0)
+		load(m_stageId);
 	update_class_check();
 
 	//auto *menu = dlg->menuBar();
@@ -140,9 +157,52 @@ bool DrawingGanttWidget::acceptDialogDone(int result)
 
 void DrawingGanttWidget::load(int stage_id)
 {
+	m_stageId = stage_id;
 	setTitle(tr("E%1 Draw tool").arg(stage_id));
-	m_ganttScene->load(stage_id);
+	if (!m_cbStart) {
+		m_ganttScene->load(stage_id, QStringLiteral("1"));
+		return;
+	}
+	m_cbStart->blockSignals(true);
+	m_cbStart->clear();
+	qfs::Query q(qfs::Connection::forName());
+	q.exec(QStringLiteral("SELECT DISTINCT start_codes.code FROM classdefs "
+		"JOIN coursecodes AS start_cc ON start_cc.courseId=classdefs.courseId AND start_cc.position=0 "
+		"JOIN codes AS start_codes ON start_codes.id=start_cc.codeId "
+		"WHERE classdefs.stageId=%1 ORDER BY start_codes.code").arg(stage_id));
+	while (q.next()) {
+		const QString code = q.value(0).toString();
+		m_cbStart->addItem(QStringLiteral("S%1").arg(code), code);
+	}
+	if (m_cbStart->count() == 0)
+		m_cbStart->addItem(QStringLiteral("S1"), QStringLiteral("1"));
+	int ix = m_cbStart->findData(QStringLiteral("1"));
+	m_cbStart->setCurrentIndex(ix >= 0 ? ix : 0);
+	m_cbStart->blockSignals(false);
+	m_ganttScene->load(stage_id, m_cbStart->currentData().toString());
 }
+
+void DrawingGanttWidget::reloadSelectedStart()
+{
+	if (m_stageId < 0 || !m_cbStart || m_cbStart->currentIndex() < 0)
+		return;
+	if (m_ganttScene->isDirty()) {
+		auto answer = QMessageBox::question(this, tr("Unsaved changes"),
+			tr("The current start layout has unsaved changes. Save them before switching starts?"),
+			QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
+		if (answer == QMessageBox::Cancel) {
+			m_cbStart->blockSignals(true);
+			int old_ix = m_cbStart->findData(m_ganttScene->startCode());
+			if (old_ix >= 0) m_cbStart->setCurrentIndex(old_ix);
+			m_cbStart->blockSignals(false);
+			return;
+		}
+		if (answer == QMessageBox::Save)
+			m_ganttScene->save();
+	}
+	m_ganttScene->load(m_stageId, m_cbStart->currentData().toString());
+}
+
 
 void drawing::DrawingGanttWidget::onActSaveTriggered()
 {

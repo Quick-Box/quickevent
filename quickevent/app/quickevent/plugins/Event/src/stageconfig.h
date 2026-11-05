@@ -22,8 +22,10 @@ struct DrawingConfig
 	static DrawingConfig fromVariantMap(const QVariantMap &map);
 	QVariantMap toVariantMap() const;
 	const StartSlotConfig &startSlotConfig(int index) const;
-
+	StartSlotConfig startSlotConfig(int index, const QString &startCode) const;
+	void setStartSlots(const QString &startCode, const std::vector<StartSlotConfig> &slots);
 	std::vector<StartSlotConfig> startSlots;
+	QVariantMap startLayouts;
 };
 
 struct StageConfig

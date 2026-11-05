@@ -20,14 +20,15 @@ GanttScene::GanttScene(QObject * parent)
 
 }
 
-void GanttScene::load(int stage_id)
+void GanttScene::load(int stage_id, const QString &start_code)
 {
 	clear();
 	const auto &stage_data = getPlugin<EventPlugin>()->stageConfig(stage_id);
 	m_useAllMaps = stage_data.useAllMaps;
 	m_ganttItem = new GanttItem();
 	addItem(m_ganttItem);
-	m_ganttItem->load(stage_id);
+	m_startCode = start_code;
+	m_ganttItem->load(stage_id, m_startCode);
 	m_stageId = stage_id;
 	setDirty(false);
 }
@@ -35,7 +36,7 @@ void GanttScene::load(int stage_id)
 void GanttScene::save()
 {
 	if(m_ganttItem) {
-		m_ganttItem->save(m_stageId);
+		m_ganttItem->save(m_stageId, m_startCode);
 		setDirty(false);
 	}
 }
