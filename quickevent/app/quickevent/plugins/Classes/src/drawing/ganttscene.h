@@ -19,7 +19,7 @@ signals:
 public:
 	GanttScene(QObject * parent = 0);
 
-	void load(int stage_id, const QString &start_code = QStringLiteral("1"));
+	void load(int stage_id, const QString &start_code = QStringLiteral(""));
 	void save();
 	QString startCode() const { return m_startCode; }
 
