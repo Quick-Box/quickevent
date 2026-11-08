@@ -163,7 +163,7 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 			int serial_ix = -1;
 			bool serial_ix_explicitly_set = false;
 			int primary_ix = -1;
-			QVariantMap qx_record;
+			// QVariantMap qx_record;
 			for (const auto &fld : row_ref.fields()) {
 				i++;
 				if(fld.tableId() != table_id)
@@ -196,9 +196,9 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					//if(v.isNull() && fld.isSerial())
 					//	v = 0;
 					new_fld.setValue(v);
-					//qfInfo() << "\t\t" << "val is QString:" << (v.metaType().id() == QMetaType::QString);
+					// qfInfo() << "append field:" << new_fld.name() << "-->" << new_fld.value().toString();
 					rec.append(new_fld);
-					qx_record[fld.shortName().toLower()] = v;
+					// qx_record[fld.shortName().toLower()] = v;
 				}
 			}
 
@@ -233,7 +233,8 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 						row_ref.setValue(serial_ix, insert_id);
 						row_ref.setDirty(serial_ix, false);
 						if (auto *app = qobject_cast<qf::gui::framework::Application*>(QApplication::instance()); app) {
-							app->qxSql()->emitRecInserted(table_id, insert_id.value<qint64>(), record_to_map(rec), this);
+							auto recmap = record_to_map(rec);
+							app->qxSql()->emitRecInserted(table_id, insert_id.value<qint64>(), recmap, this);
 						}
 					}
 					else {
@@ -253,7 +254,7 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 				}
 			}
 			else {
-				QString errs = tr("Error executing query: %1\n %2").arg(qs).arg(q.lastError().text());
+				QString errs = tr("Error executing query: %1\n %2").arg(qs, q.lastError().text());
 				if(throw_exc)
 					QF_EXCEPTION(errs);
 				else
@@ -267,7 +268,7 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 		QSqlDriver *sqldrv = sql_conn.driver();
 		for (const auto &table_id : tableIds(m_table.fields())) {
 			qfDebug() << "\ttableid:" << table_id;
-			QVariantMap qx_record;
+			// QVariantMap qx_record;
 			QSqlRecord edit_rec;
 			int i = -1;
 			for (const auto &fld : row_ref.fields()) {
@@ -291,7 +292,7 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 				//	has_blob_field = true;
 				qfDebug() << "\tfield is null: " << sqlfld.isNull();
 				edit_rec.append(sqlfld);
-				qx_record[fld.shortName()] = v;
+				// qx_record[fld.shortName()] = v;
 			}
 			if(!edit_rec.isEmpty()) {
 				qfDebug() << "updating table edits:" << table_id;
@@ -906,4 +907,3 @@ QStringList SqlTableModel::tableIdsSortedAccordingToForeignKeys()
 }
 
 }
-

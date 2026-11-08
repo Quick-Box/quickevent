@@ -51,7 +51,7 @@ private:
 	Ui::LateEntryDialog *ui;
 	int m_changeId = 0;
 	int m_stageId = 0;
-	LateEntryForeignId m_lateEntryId = RunId{};
+	LateEntryKind m_lateEntryId = Update{};
 	int m_competitorId = 0;
 	int m_lockNumber = 0;
 	QxChangeStatus m_status = QxChangeStatus::Rejected;

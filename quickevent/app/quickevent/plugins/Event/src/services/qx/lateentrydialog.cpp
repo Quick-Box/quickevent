@@ -32,7 +32,7 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 	, ui(new Ui::LateEntryDialog)
 	, m_changeId(change_id)
 	, m_stageId(stage_id)
-	, m_lateEntryId(late_entry.id)
+	, m_lateEntryId(late_entry.kind)
 	, m_status(qxChangeStatusFromString(status))
 {
 	Q_ASSERT(change_id > 0);
@@ -101,14 +101,14 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 
 	connect(ui->edStartTime, &QLineEdit::textEdited, this, &LateEntryDialog::checkStartTimeIsValid);
 
-	if (auto *run_id = std::get_if<RunId>(&late_entry.id)) {
-		auto id = run_id->id;
+	if (auto *run_id = std::get_if<Update>(&late_entry.kind)) {
+		auto id = run_id->runId;
 		ui->edRunId->setValue(id);
 		loadOrigValues(id);
 		checkStartTimeIsValid();
 	}
-	else if (auto *id = std::get_if<ClassId>(&late_entry.id)) {
-		auto class_id = id->id;
+	else if (auto *id = std::get_if<NewEntry>(&late_entry.kind)) {
+		auto class_id = id->classId;
 		loadClassName(class_id);
 	}
 
@@ -393,16 +393,16 @@ void LateEntryDialog::done(int result)
 
 std::optional<int> LateEntryDialog::runId() const
 {
-	if (auto *id = std::get_if<RunId>(&m_lateEntryId)) {
-		return id->id;
+	if (auto *id = std::get_if<Update>(&m_lateEntryId)) {
+		return id->runId;
 	}
 	return std::nullopt;
 }
 
 std::optional<int> LateEntryDialog::classId() const
 {
-	if (auto *id = std::get_if<ClassId>(&m_lateEntryId)) {
-		return id->id;
+	if (auto *id = std::get_if<NewEntry>(&m_lateEntryId)) {
+		return id->classId;
 	}
 	return std::nullopt;
 }
