@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="65" height="297" hinset="0" vinset="5" textStyle="default">
+	<styleSheet>
+		<StyleSheet>
+			<include src="../../shared/reports/ReportStyleCommon.qrepi"/>
+			<Brush name="none" color="#00000000"/>
+			<Brush name="error" color="salmon"/>
+		</StyleSheet>
+	</styleSheet>
+	<Frame width="%" hinset="2" vinset="2" border="blue05">
+		<Band modelData="card" width="%">
+			<Frame width="%" borderTop="black2" borderBottom="black1" hinset="1" vinset="1" htmlExportAttributes='{"lpt_textAlign": "left", "lpt_borderTop": "=", "lpt_borderBottom": "-"}'>
+				<fill><Brush color="powderblue"/></fill>
+				<Para>{{select(gt(stageCount, 1), currentStageId, '')|prefix:${'E'|tr}|suffix: - }}{{event.name}}</Para>
+				<Para>{{event.date|date}} {{event.place}}</Para>
+			</Frame>
+			<Frame fill="error">
+				<Para width="%" textStyle="bold" textHAlign="AlignHCenter" borderTop="black2" htmlExportAttributes='{"lpt_textStyle": "bold", "lpt_textAlign": "center", "lpt_textWidth": "%"}'>${'Unassigned card !!!'|tr}</Para>
+				<Para width="%" textHAlign="AlignHCenter" borderBottom="black2" htmlExportAttributes='{"lpt_textAlign": "center", "lpt_borderBottom": "=", "lpt_textWidth": "%"}'>${'It will not be included in the results.'|tr}</Para>
+			</Frame>
+			<Frame hinset="1" width="%" borderBottom="black1" htmlExportAttributes='{"lpt_borderBottom": "-"}'>
+				<Frame width="%" layout="LayoutHorizontal">
+					<Para width="15" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>Check:</Para>
+					<Para textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{mul(checkTime, 1000)|siTime}}</Para>
+					<Para hinset="1" width="15" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>SI:</Para>
+					<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{cardNumber}}</Para>
+				</Frame>
+				<Frame width="%" layout="LayoutHorizontal">
+					<Para width="15" htmlExportAttributes='{"lpt_textWidth": "7", "lpt_textAlign": "left"}'>Start:</Para>
+					<Para width="%" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{mul(startTime, 1000)|siTime}}</Para>
+					<Para hinset="1" width="15" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>Finish:</Para>
+					<Para width="%" htmlExportAttributes='{"lpt_textWidth": "9", "lpt_textAlign": "right"}'>{{add(mul(finishTime, 1000), finishTimeMs)|siTime}}</Para>
+				</Frame>
+			</Frame>
+			<Detail width="%" layout="LayoutHorizontal" expandChildFrames="true"
+				borderTop="{{select($lastRow, 'black1', '')}}"
+				textStyle="{{select($lastRow, 'bold', '')}}"
+				htmlExportAttributes="{{select(lt($row, sub($rowCount, 2)), '{}', '{&quot;lpt_textStyle&quot;: &quot;underline2&quot;}')}}">
+				<Para hinset="1" width="8" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "4", "lpt_textAlign": "right"}'>{{select($lastRow, '', position)|nonzero|suffix:.}}</Para>
+				<Para width="8" htmlExportAttributes='{"lpt_textWidth": "5", "lpt_textAlign": "right"}'>{{select($lastRow, '${'FI'|tr}', code)}}</Para>
+				<Para width="40%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{punchTimeMs|hhmmss}}</Para>
+				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{stpTimeMs|ogTimeSec}}</Para>
+				<Para width="%" textHAlign="AlignRight" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "right"}'>{{lapTimeMs|ogTimeSec}}</Para>
+			</Detail>
+			<Frame width="%" borderTop="black2"/>
+			<Frame width="%" hinset="1" layout="LayoutHorizontal">
+				<Para>{{data|key:batteryStatus|key:voltage|number:2|prefix:${'Siac battery: '|tr}|suffix:V - }}{{select(data|key:batteryStatus, data|key:batteryStatus|key:low|if:LOW:Ok, '')}}</Para>
+			</Frame>
+		</Band>
+	</Frame>
+</Report>

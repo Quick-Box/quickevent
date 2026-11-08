@@ -10,9 +10,7 @@
 #include "reportitemframe.h"
 #include "../../guiglobal.h"
 
-namespace qf {
-namespace gui {
-namespace reports {
+namespace qf::gui::reports {
 
 class BandDataModel;
 class ReportItemDetail;
@@ -46,8 +44,6 @@ public:
 public:
 	BandDataModel* model();
 	bool isModelLoaded();
-	// modelLoaded cannot be used in QML, it was bad pattern, ReportItem has NULL parentBand when Component.onCompleted is called
-	//Q_SIGNAL void modelLoadedChanged(bool is_loaded);
 
 	Q_INVOKABLE QVariant data(const QString &field_name, int role = Qt::DisplayRole);
 public:
@@ -66,7 +62,7 @@ private:
 	QVariant m_data;
 };
 
-#if 0
+#if WITH_DETAIL
 
 class QFGUI_DECL_EXPORT ReportItemDetail : public ReportItemFrame
 {
@@ -136,6 +132,6 @@ protected:
 };
 #endif
 
-}}}
+}
 
 #endif // QF_GUI_REPORTS_REPORTITEMBAND_H

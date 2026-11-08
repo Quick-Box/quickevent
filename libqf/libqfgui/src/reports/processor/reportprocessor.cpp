@@ -1,9 +1,7 @@
 #include "reportprocessor.h"
 #include "reportitemreport.h"
 #include "reportpainter.h"
-//#include "../../framework/application.h"
-#include "../../framework/plugin.h"
-#include "../../framework/reportfilecache.h"
+#include "xmlreportdocument.h"
 
 #include <qf/core/utils/fileutils.h>
 #include <qf/core/log.h>
@@ -11,9 +9,7 @@
 
 #include <QSet>
 #include <QJsonDocument>
-#include <QQmlEngine>
 #include <QDomElement>
-#include <QQmlContext>
 
 //#define QF_TIMESCOPE_ENABLED
 #include <qf/core/utils/timescope.h>
@@ -26,15 +22,6 @@ using namespace qf::gui::reports;
 // ReportProcessor
 //===================================================
 
-namespace {
-QList<ReportProcessor::QmlEngineInitializer> s_engineInitializers;
-}
-
-void ReportProcessor::addQmlEngineInitializer(const QmlEngineInitializer &fn)
-{
-	s_engineInitializers.append(fn);
-}
-
 QString ReportProcessor::HTML_ATTRIBUTE_ITEM = QStringLiteral("__qf_qml_report_item");
 QString ReportProcessor::HTML_ATTRIBUTE_LAYOUT = QStringLiteral("__qf_qml_report_layout");
 
@@ -43,7 +30,6 @@ ReportProcessor::ReportProcessor(QObject *parent)
 {
 	qfLogFuncFrame();
 
-	m_qmlEngine = nullptr;
 	//--f_searchDirs = search_dirs;
 	m_designMode = false;
 	setProcessedPageNo(0);
@@ -66,31 +52,29 @@ void ReportProcessor::reset()
 bool ReportProcessor::setReport(const QString &rep_file_name, const QVariantMap &report_init_properties)
 {
 	QF_TIME_SCOPE("ReportProcessor::setReport()");
-	m_reportInitProperties = report_init_properties;
-	QF_SAFE_DELETE(m_reportDocumentComponent)
-	m_reportDocumentComponent = new ReportDocument(qmlEngine(), this);
-	//QString fn = rep_file_name;
-	//if(fn.startsWith(QLatin1String("qrc://")))
-	//	fn = fn.mid(3);
-	m_reportDocumentComponent->setFileName(rep_file_name);
-	if(m_reportDocumentComponent->isError()) {
-		qfError() << "Erorr loading report component:" << rep_file_name << m_reportDocumentComponent->errorString();
+	reset();
+	m_reportDocument.reset();
+	if(!rep_file_name.endsWith(QLatin1String(".qrep"), Qt::CaseInsensitive)) {
+		qfError() << "Unsupported report file:" << rep_file_name << ", only .qrep reports are supported.";
 		return false;
 	}
-	if(!m_reportDocumentComponent->isReady()) {
-		qfError() << tr("QML component") << m_reportDocumentComponent->url().toString() << "cannot be loaded asynchronously";
+	auto doc = std::make_unique<XmlReportDocument>();
+	if(!doc->load(rep_file_name))
 		return false;
-	}
+	setReport(std::move(doc), report_init_properties);
 	return true;
+}
+
+void ReportProcessor::setReport(std::unique_ptr<ReportDocument> doc, const QVariantMap &report_init_properties)
+{
+	reset();
+	m_reportDocument = std::move(doc);
+	m_reportInitProperties = report_init_properties;
 }
 
 QUrl ReportProcessor::reportUrl() const
 {
-	QUrl ret;
-	if(m_reportDocumentComponent) {
-		ret = m_reportDocumentComponent->url();
-	}
-	return ret;
+	return m_reportDocument? m_reportDocument->url(): QUrl();
 }
 
 void ReportProcessor::setTableData(const QString &key, const QVariant &table_data)
@@ -115,31 +99,10 @@ void ReportProcessor::setData(const QString &key, const QVariant &data)
 ReportItemReport* ReportProcessor::documentInstanceRoot()
 {
 	QF_TIME_SCOPE("ReportProcessor::documentInstanceRoot()");
-	if(!m_documentInstanceRoot) {
-		QObject *o;
-		{
-			QF_TIME_SCOPE("ReportProcessor::documentInstanceRoot() - creating report object begin");
-			o = m_reportDocumentComponent->beginCreate(qmlEngine()->rootContext());
-			m_documentInstanceRoot = qobject_cast<ReportItemReport*>(o);
-		}
-		if(!m_documentInstanceRoot) {
-			qfError() << "Error creating root object from component:" << m_reportDocumentComponent << m_reportDocumentComponent->url().toString();
-			qfError() << "Created object:" << o;
-			Q_FOREACH(auto err, m_reportDocumentComponent->errors())
-				qfError() << err.toString();
-			QF_SAFE_DELETE(o)
-		}
-		else {
-			QF_TIME_SCOPE("ReportProcessor::documentInstanceRoot() - creating report object finish");
-			QMapIterator<QString, QVariant> it(m_reportInitProperties);
-			while(it.hasNext()) {
-				it.next();
-				QByteArray ba = it.key().toLatin1();
-				if(!m_documentInstanceRoot->setProperty(ba.constData(), it.value())) {
-					qfWarning() << "Cannot set report root property" << it.key() << ", root element should have this property defined explicitly.";
-				}
-			}
-			m_reportDocumentComponent->completeCreate();
+	if(!m_documentInstanceRoot && m_reportDocument) {
+		m_documentInstanceRoot = m_reportDocument->createReport(m_reportInitProperties);
+		if(m_documentInstanceRoot) {
+			m_documentInstanceRoot->complete();
 			m_documentInstanceRoot->setReportProcessor(this);
 			style::Text *st = m_documentInstanceRoot->textStyle();
 			if(!st) {
@@ -340,36 +303,6 @@ QDomElement ReportProcessor::convertHorizontalDivToTableRow(QDomElement &el_div)
 		}
 	}
 	return el_table_row;
-}
-
-QStringList ReportProcessor::qmlEngineImportPaths()
-{
-	QStringList lst;
-#ifdef Q_OS_UNIX
-	lst << QCoreApplication::applicationDirPath() + "/../lib/qml";
-#endif
-	lst << QCoreApplication::applicationDirPath() + "/qml";
-	if(const auto reports_dir = framework::Plugin::reportFileCache()->localReportsDir(); !reports_dir.isEmpty())
-		lst << reports_dir;
-	lst << ":/quickevent";
-	return lst;
-}
-
-QQmlEngine *ReportProcessor::qmlEngine()
-{
-	if(!m_qmlEngine) {
-		qfMessage() << "Creating report processor QML engine";
-		m_qmlEngine = new QQmlEngine(this);
-		m_qmlEngine->rootContext()->setContextProperty("reportProcessor", this);
-		m_qmlEngine->rootContext()->setContextProperty("application", QCoreApplication::instance());
-		Q_FOREACH(auto path, qmlEngineImportPaths()) {
-			qfMessage() << "Adding ReportProcessor QML engine import path:" << path;
-			m_qmlEngine->addImportPath(path);
-		}
-		for (const auto &init : s_engineInitializers)
-			init(m_qmlEngine);
-	}
-	return m_qmlEngine;
 }
 
 void ReportProcessor::dump()

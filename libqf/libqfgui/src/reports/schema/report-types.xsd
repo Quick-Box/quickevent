@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Types shared by qrep.xsd (report files) and qrepi.xsd (report include files).
+	The format is loaded by qf::gui::reports::XmlReportDocument, see xmlreportdocument.h
+	and doc/src/quickevent/reports.md.
+
+	Element names are report item and style types, attributes are their Q_PROPERTYs.
+	Any attribute value can contain load time ${expression}, report item attributes can contain
+	print time {{expression}} too, so typed attributes accept expressions as well.
+	Keep in sync with Q_PROPERTYs of report items and style objects.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+
+	<!-- ===================== simple types ===================== -->
+
+	<xs:simpleType name="Expression">
+		<xs:annotation><xs:documentation>Value containing ${load time} or {{print time}} expression.</xs:documentation></xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[\s\S]*([$]\{|\{\{)[\s\S]*"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="Bool">
+		<xs:union memberTypes="xs:boolean Expression"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="Int">
+		<xs:union memberTypes="xs:int Expression"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="Number">
+		<xs:union memberTypes="xs:double Expression"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="Percent">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9]+(\.[0-9]*)?)?%"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="Size">
+		<xs:annotation><xs:documentation>Size in mm, n% of the parent remainder or % for the equal part of the remainder.</xs:documentation></xs:annotation>
+		<xs:union memberTypes="xs:double Percent Expression"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="StyleRef">
+		<xs:annotation><xs:documentation>Name of a style object from the report style sheet, empty value sets no style object.</xs:documentation></xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="Json">
+		<xs:annotation><xs:documentation>JSON object, for example {"class":"name"}.</xs:documentation></xs:annotation>
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+
+	<xs:simpleType name="LayoutKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LayoutHorizontal"/>
+			<xs:enumeration value="LayoutVertical"/>
+			<xs:enumeration value="LayoutStacked"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="Layout"><xs:union memberTypes="LayoutKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="HAlignmentKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AlignLeft"/>
+			<xs:enumeration value="AlignRight"/>
+			<xs:enumeration value="AlignHCenter"/>
+			<xs:enumeration value="AlignJustify"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HAlignment"><xs:union memberTypes="HAlignmentKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="VAlignmentKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AlignTop"/>
+			<xs:enumeration value="AlignBottom"/>
+			<xs:enumeration value="AlignVCenter"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="VAlignment"><xs:union memberTypes="VAlignmentKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="BreakTypeKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Column"/>
+			<xs:enumeration value="Page"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BreakType"><xs:union memberTypes="BreakTypeKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="DataFormatKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FormatAuto"/>
+			<xs:enumeration value="FormatSvg"/>
+			<xs:enumeration value="FormatQPicture"/>
+			<xs:enumeration value="FormatPng"/>
+			<xs:enumeration value="FormatJpg"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DataFormat"><xs:union memberTypes="DataFormatKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="DataEncodingKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EncodingRaw"/>
+			<xs:enumeration value="EncodingBase64"/>
+			<xs:enumeration value="EncodingHex"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DataEncoding"><xs:union memberTypes="DataEncodingKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="DataCompressionKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CompressionNone"/>
+			<xs:enumeration value="CompressionQCompress"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DataCompression"><xs:union memberTypes="DataCompressionKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="AspectRatioKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AspectRatioIgnore"/>
+			<xs:enumeration value="AspectRatioKeep"/>
+			<xs:enumeration value="AspectRatioKeepExpanding"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="AspectRatio"><xs:union memberTypes="AspectRatioKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="FontStyleKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="StyleNormal"/>
+			<xs:enumeration value="StyleItalic"/>
+			<xs:enumeration value="StyleOblique"/>
+			<xs:enumeration value="StyleInherited"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FontStyle"><xs:union memberTypes="FontStyleKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="FontStyleHintKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="HintAnyStyle"/>
+			<xs:enumeration value="HintSansSerif"/>
+			<xs:enumeration value="HintHelvetica"/>
+			<xs:enumeration value="HintSerif"/>
+			<xs:enumeration value="HintTimes"/>
+			<xs:enumeration value="HintTypeWriter"/>
+			<xs:enumeration value="HintCourier"/>
+			<xs:enumeration value="HintOldEnglish"/>
+			<xs:enumeration value="HintDecorative"/>
+			<xs:enumeration value="HintMonospace"/>
+			<xs:enumeration value="HintFantasy"/>
+			<xs:enumeration value="HintCursive"/>
+			<xs:enumeration value="HintSystem"/>
+			<xs:enumeration value="HintInherited"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FontStyleHint"><xs:union memberTypes="FontStyleHintKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="FontWeightKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="WeightLight"/>
+			<xs:enumeration value="WeightNormal"/>
+			<xs:enumeration value="WeightDemiBold"/>
+			<xs:enumeration value="WeightBold"/>
+			<xs:enumeration value="WeightBlack"/>
+			<xs:enumeration value="WeightInherited"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FontWeight"><xs:union memberTypes="FontWeightKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="StrikeOutKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="StrikeOutFalse"/>
+			<xs:enumeration value="StrikeOutTrue"/>
+			<xs:enumeration value="StrikeOutInherited"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="StrikeOut"><xs:union memberTypes="StrikeOutKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="PenStyleKey">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NoPen"/>
+			<xs:enumeration value="SolidLine"/>
+			<xs:enumeration value="DashLine"/>
+			<xs:enumeration value="DotLine"/>
+			<xs:enumeration value="DashDotLine"/>
+			<xs:enumeration value="DashDotDotLine"/>
+			<xs:enumeration value="CustomDashLine"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PenStyle"><xs:union memberTypes="PenStyleKey Expression"/></xs:simpleType>
+
+	<xs:simpleType name="BrushStyleKey">
+		<!-- key names as declared in style::Brush::BrushStyle -->
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NoBrush"/>
+			<xs:enumeration value="SolidPattern"/>
+			<xs:enumeration value="HorPattern"/>
+			<xs:enumeration value="DotLine"/>
+			<xs:enumeration value="VerPattern"/>
+			<xs:enumeration value="BDiagPattern"/>
+			<xs:enumeration value="FDiagPattern"/>
+			<xs:enumeration value="DiagCrossPattern"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BrushStyle"><xs:union memberTypes="BrushStyleKey Expression"/></xs:simpleType>
+
+	<!-- ===================== special elements ===================== -->
+
+	<xs:complexType name="Parameter">
+		<xs:annotation><xs:documentation>Report parameter with default value, used when the parameter is not passed to the report or included file.</xs:documentation></xs:annotation>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="default" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:complexType name="Include">
+		<xs:annotation><xs:documentation>Includes root element of other report file. Attributes, which are properties of the included root element, override them, others are passed as parameters to the included file.</xs:documentation></xs:annotation>
+		<xs:attribute name="src" type="xs:string" use="required"/>
+		<xs:anyAttribute processContents="skip"/>
+	</xs:complexType>
+
+	<xs:attributeGroup name="RepeatAttributes">
+		<xs:attribute name="var" type="xs:string" default="i"/>
+		<xs:attribute name="from" type="Int" default="1"/>
+		<xs:attribute name="to" type="Int" use="required"/>
+	</xs:attributeGroup>
+
+	<xs:complexType name="ItemRepeat">
+		<xs:annotation><xs:documentation>Creates its children repeatedly with parameter var set to from, from + 1, ..., to.</xs:documentation></xs:annotation>
+		<xs:group ref="FrameContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attributeGroup ref="RepeatAttributes"/>
+	</xs:complexType>
+
+	<xs:complexType name="StyleRepeat">
+		<xs:group ref="StyleSheetContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attributeGroup ref="RepeatAttributes"/>
+	</xs:complexType>
+
+	<!-- ===================== property elements ===================== -->
+	<!-- property element contains exactly one object element -->
+
+	<xs:complexType name="PenProperty">
+		<xs:choice>
+			<xs:element name="Pen" type="Pen"/>
+			<xs:element name="include" type="Include"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="BrushProperty">
+		<xs:choice>
+			<xs:element name="Brush" type="Brush"/>
+			<xs:element name="include" type="Include"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="ColorProperty">
+		<xs:choice>
+			<xs:element name="Color" type="Color"/>
+			<xs:element name="include" type="Include"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="FontProperty">
+		<xs:choice>
+			<xs:element name="Font" type="Font"/>
+			<xs:element name="include" type="Include"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="TextStyleProperty">
+		<xs:choice>
+			<xs:element name="TextStyle" type="TextStyle"/>
+			<xs:element name="include" type="Include"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="StyleSheetProperty">
+		<xs:choice>
+			<xs:element name="StyleSheet" type="StyleSheet"/>
+			<xs:element name="include" type="Include"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<!-- ===================== report items ===================== -->
+
+	<xs:group name="FrameProperties">
+		<xs:choice>
+			<xs:element name="border" type="PenProperty"/>
+			<xs:element name="borderTop" type="PenProperty"/>
+			<xs:element name="borderBottom" type="PenProperty"/>
+			<xs:element name="borderLeft" type="PenProperty"/>
+			<xs:element name="borderRight" type="PenProperty"/>
+			<xs:element name="fill" type="BrushProperty"/>
+			<xs:element name="textStyle" type="TextStyleProperty"/>
+		</xs:choice>
+	</xs:group>
+
+	<xs:group name="FrameContent">
+		<xs:choice>
+			<xs:element name="Frame" type="Frame"/>
+			<xs:element name="Space" type="Frame"/>
+			<xs:element name="Band" type="Band"/>
+			<xs:element name="Detail" type="Detail"/>
+			<xs:element name="Para" type="Para"/>
+			<xs:element name="Image" type="Image"/>
+			<xs:element name="Break" type="Break"/>
+			<xs:element name="include" type="Include"/>
+			<xs:element name="Repeat" type="ItemRepeat"/>
+			<xs:element name="Parameter" type="Parameter"/>
+			<xs:group ref="FrameProperties"/>
+		</xs:choice>
+	</xs:group>
+
+	<xs:attributeGroup name="ItemAttributes">
+		<xs:attribute name="objectName" type="xs:string"/>
+		<xs:attribute name="keepAll" type="Bool"/>
+		<xs:attribute name="keepWithPrev" type="Bool"/>
+		<xs:attribute name="visible" type="Bool"/>
+		<xs:attribute name="htmlExportAttributes" type="Json"/>
+	</xs:attributeGroup>
+
+	<xs:attributeGroup name="FrameAttributes">
+		<xs:attributeGroup ref="ItemAttributes"/>
+		<xs:attribute name="width" type="Size"/>
+		<xs:attribute name="height" type="Size"/>
+		<xs:attribute name="hinset" type="Number"/>
+		<xs:attribute name="vinset" type="Number"/>
+		<xs:attribute name="layout" type="Layout"/>
+		<xs:attribute name="halign" type="HAlignment"/>
+		<xs:attribute name="valign" type="VAlignment"/>
+		<xs:attribute name="columns" type="xs:string">
+			<xs:annotation><xs:documentation>Column widths separated by comma, for example "%,%" for two equal columns.</xs:documentation></xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="columnsGap" type="Number"/>
+		<xs:attribute name="expandVerticalSprings" type="Bool"/>
+		<xs:attribute name="expandChildFrames" type="Bool"/>
+		<xs:attribute name="border" type="StyleRef"/>
+		<xs:attribute name="borderTop" type="StyleRef"/>
+		<xs:attribute name="borderBottom" type="StyleRef"/>
+		<xs:attribute name="borderLeft" type="StyleRef"/>
+		<xs:attribute name="borderRight" type="StyleRef"/>
+		<xs:attribute name="fill" type="StyleRef"/>
+		<xs:attribute name="textStyle" type="StyleRef"/>
+	</xs:attributeGroup>
+
+	<xs:complexType name="Frame">
+		<xs:group ref="FrameContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attributeGroup ref="FrameAttributes"/>
+	</xs:complexType>
+
+	<xs:complexType name="Report">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:group ref="FrameContent"/>
+			<xs:element name="styleSheet" type="StyleSheetProperty"/>
+		</xs:choice>
+		<xs:attributeGroup ref="FrameAttributes"/>
+		<xs:attribute name="debugLevel" type="Int"/>
+	</xs:complexType>
+
+	<xs:complexType name="Band">
+		<xs:group ref="FrameContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attributeGroup ref="FrameAttributes"/>
+		<xs:attribute name="modelData" type="xs:string">
+			<xs:annotation><xs:documentation>Band data, usually ${$parameter} with a TreeTable.</xs:documentation></xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="headerOnBreak" type="Bool"/>
+		<xs:attribute name="createFromData" type="Bool"/>
+		<xs:attribute name="keepFirst" type="Int"/>
+		<xs:attribute name="htmlExportAsTable" type="Bool"/>
+	</xs:complexType>
+
+	<xs:complexType name="Detail">
+		<xs:group ref="FrameContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attributeGroup ref="FrameAttributes"/>
+		<xs:attribute name="currentIndex" type="Int"/>
+	</xs:complexType>
+
+	<xs:complexType name="Para" mixed="true">
+		<xs:annotation><xs:documentation>Text paragraph, text can be element content or text attribute.</xs:documentation></xs:annotation>
+		<xs:group ref="FrameContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attributeGroup ref="FrameAttributes"/>
+		<xs:attribute name="text" type="xs:string"/>
+		<xs:attribute name="omitEmptyText" type="Bool"/>
+		<xs:attribute name="sqlId" type="xs:string"/>
+		<xs:attribute name="textHAlign" type="HAlignment"/>
+		<xs:attribute name="textVAlign" type="VAlignment"/>
+		<xs:attribute name="textWrap" type="Bool"/>
+	</xs:complexType>
+
+	<xs:complexType name="Image">
+		<xs:group ref="FrameContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attributeGroup ref="FrameAttributes"/>
+		<xs:attribute name="dataSource" type="xs:string"/>
+		<xs:attribute name="data" type="xs:string"/>
+		<xs:attribute name="dataFormat" type="DataFormat"/>
+		<xs:attribute name="dataEncoding" type="DataEncoding"/>
+		<xs:attribute name="dataCompression" type="DataCompression"/>
+		<xs:attribute name="aspectRatio" type="AspectRatio"/>
+		<xs:attribute name="suppressPrintout" type="Bool"/>
+	</xs:complexType>
+
+	<xs:complexType name="Break">
+		<xs:sequence>
+			<xs:element name="Parameter" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="ItemAttributes"/>
+		<xs:attribute name="breakType" type="BreakType"/>
+		<xs:attribute name="skipFirst" type="Bool"/>
+	</xs:complexType>
+
+	<!-- ===================== style objects ===================== -->
+
+	<xs:group name="StyleSheetContent">
+		<xs:choice>
+			<xs:element name="Color" type="Color"/>
+			<xs:element name="Pen" type="Pen"/>
+			<xs:element name="Brush" type="Brush"/>
+			<xs:element name="Font" type="Font"/>
+			<xs:element name="TextStyle" type="TextStyle"/>
+			<xs:element name="StyleSheet" type="StyleSheet"/>
+			<xs:element name="include" type="Include"/>
+			<xs:element name="Repeat" type="StyleRepeat"/>
+			<xs:element name="Parameter" type="Parameter"/>
+		</xs:choice>
+	</xs:group>
+
+	<xs:complexType name="StyleSheet">
+		<xs:group ref="StyleSheetContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attribute name="objectName" type="xs:string"/>
+		<xs:attribute name="basedOn" type="xs:string"/>
+	</xs:complexType>
+
+	<xs:attributeGroup name="StyleObjectAttributes">
+		<xs:attribute name="objectName" type="xs:string"/>
+		<xs:attribute name="name" type="xs:string">
+			<xs:annotation><xs:documentation>Name used to refer to the style object from style attributes.</xs:documentation></xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+	<xs:complexType name="Color">
+		<xs:sequence>
+			<xs:element name="Parameter" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="StyleObjectAttributes"/>
+		<xs:attribute name="def" type="xs:string">
+			<xs:annotation><xs:documentation>Color name (black, khaki, ...), #RRGGBB, or name of other color.</xs:documentation></xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Pen">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="color" type="ColorProperty"/>
+			<xs:element name="Parameter" type="Parameter"/>
+		</xs:choice>
+		<xs:attributeGroup ref="StyleObjectAttributes"/>
+		<xs:attribute name="basedOn" type="StyleRef"/>
+		<xs:attribute name="color" type="StyleRef"/>
+		<xs:attribute name="style" type="PenStyle"/>
+		<xs:attribute name="width" type="Number">
+			<xs:annotation><xs:documentation>Pen width in points (1/72 inch), 0 is cosmetic pen.</xs:documentation></xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Brush">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="color" type="ColorProperty"/>
+			<xs:element name="Parameter" type="Parameter"/>
+		</xs:choice>
+		<xs:attributeGroup ref="StyleObjectAttributes"/>
+		<xs:attribute name="basedOn" type="StyleRef"/>
+		<xs:attribute name="color" type="StyleRef"/>
+		<xs:attribute name="style" type="BrushStyle"/>
+	</xs:complexType>
+
+	<xs:complexType name="Font">
+		<xs:sequence>
+			<xs:element name="Parameter" type="Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="StyleObjectAttributes"/>
+		<xs:attribute name="basedOn" type="StyleRef"/>
+		<xs:attribute name="family" type="xs:string"/>
+		<xs:attribute name="style" type="FontStyle"/>
+		<xs:attribute name="hint" type="FontStyleHint"/>
+		<xs:attribute name="weight" type="FontWeight"/>
+		<xs:attribute name="pointSize" type="Number"/>
+		<xs:attribute name="strikeOut" type="StrikeOut"/>
+	</xs:complexType>
+
+	<xs:complexType name="TextStyle">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="pen" type="PenProperty"/>
+			<xs:element name="font" type="FontProperty"/>
+			<xs:element name="Parameter" type="Parameter"/>
+		</xs:choice>
+		<xs:attributeGroup ref="StyleObjectAttributes"/>
+		<xs:attribute name="basedOn" type="StyleRef"/>
+		<xs:attribute name="pen" type="StyleRef"/>
+		<xs:attribute name="font" type="StyleRef"/>
+	</xs:complexType>
+
+</xs:schema>

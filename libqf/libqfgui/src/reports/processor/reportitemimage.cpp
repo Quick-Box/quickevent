@@ -215,6 +215,8 @@ void ReportItemImage::updateResolvedDataSource()
 
 ReportItem::PrintResult ReportItemImage::printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint* out, const ReportItem::Rect& bounding_rect)
 {
+	// data source can be set by print binding
+	updatePrintBindings();
 	updateResolvedDataSource();
 	ReportItem::PrintResult ret = Super::printMetaPaint(paint_device, out, bounding_rect);
 	/*--
@@ -256,7 +258,7 @@ ReportItemImage::PrintResult ReportItemImage::printMetaPaintChildren(QPaintDevic
 		ReportItem::Image im = processor()->images().value(src);
 		if(src.isEmpty()) {
 			/// muze byt jeste v datech, zkus ho nahrat pro aktualni radek
-			QString data_s = m_dataFn.isCallable() ? m_dataFn.call().toString() : data();
+			QString data_s = m_getDataFn ? m_getDataFn() : data();
 			QByteArray img_data;
 			{
 				DataEncoding encoding = dataEncoding();
@@ -372,12 +374,4 @@ ReportItemImage::PrintResult ReportItemImage::printMetaPaintChildren(QPaintDevic
 	}
 
 	return res;
-}
-
-void ReportItemImage::setDataFn(const QJSValue &val)
-{
-	if (val.isCallable())
-		m_dataFn = val;
-	else
-		qfError() << "JavaScript callable value (aka function) must be set to dataFn property.";
 }

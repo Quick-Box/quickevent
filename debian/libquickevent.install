@@ -1,5 +1,4 @@
 #! /usr/bin/dh-exec
-lib/qml/quickevent /opt/quickevent/lib/qml
 lib/libquickeventcore.so.1 /opt/quickevent/lib/
 lib/libquickeventcore.so.1.0 /opt/quickevent/lib/
 lib/libquickeventcore.so.1.0.0 /opt/quickevent/lib/

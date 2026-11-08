@@ -20,7 +20,6 @@
 #include <plugins/Event/src/eventplugin.h>
 #include "partwidget.h"
 
-#include <QQmlEngine>
 
 namespace qff = qf::gui::framework;
 //namespace qfd = qf::gui::dialogs;

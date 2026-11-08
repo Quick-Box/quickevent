@@ -3,9 +3,7 @@
 DIR=`dirname "$(readlink -f "$0")"`
 #echo $DIR
 export LD_LIBRARY_PATH=$DIR/lib
-export QML2_IMPORT_PATH=$DIR/qml
 # export QT_DEBUG_PLUGINS=1
-#export QML_IMPORT_TRACE=1
 unset QTDIR
 unset QT_PLUGIN_PATH
 $DIR/bin/quickevent

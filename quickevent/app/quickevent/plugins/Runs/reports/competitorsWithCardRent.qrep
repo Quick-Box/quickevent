@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="${options.pageWidth|nonzero|default:210}" height="${options.pageHeight|nonzero|default:297}"
+		hinset="${options.horizontalMargin|nonzero|default:10}" vinset="${options.verticalMargin|nonzero|default:5}"
+		textStyle="default">
+	<Parameter name="reportTitle" default="${'Competitors with rented cards in stage %1'|tr|arg:$stageId}"/>
+	<styleSheet><include src="../../shared/reports/ReportStyleCommon.qrepi"/></styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="../../shared/reports/QuickEventHeaderFooter.qrepi"/>
+		<Frame width="%" height="%" vinset="10">
+			<Frame>
+				<Para textStyle="big">${reportTitle}</Para>
+			</Frame>
+			<Band width="%" height="%" columns="%,%">
+				<Detail width="%" layout="LayoutVertical">
+					<Frame fill="khaki" textStyle="bold" layout="LayoutHorizontal">
+						<Para width="36">{{classes.name}}</Para>
+						<Para hinset="1" width="%"/>
+						<Para hinset="1" width="12">${'Off'|tr}</Para>
+						<Para hinset="1" width="12">${'Ret'|tr}</Para>
+					</Frame>
+					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
+						<Detail width="%" layout="LayoutHorizontal">
+							<Para width="18">{{runs.siid}}</Para>
+							<Para width="18">{{registration}}</Para>
+							<Para hinset="1" width="%">{{competitorName}}</Para>
+							<Para hinset="1" width="12">{{isRunning|if::${'Y'|tr}}}</Para>
+							<Para hinset="1" width="12">{{cardReturned|if:${'Y'|tr}:}}</Para>
+						</Detail>
+					</Band>
+				</Detail>
+			</Band>
+		</Frame>
+	</Frame>
+</Report>

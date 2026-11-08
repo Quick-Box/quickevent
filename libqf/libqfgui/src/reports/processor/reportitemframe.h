@@ -20,8 +20,6 @@ class QFGUI_DECL_EXPORT ReportItemFrame : public ReportItem
 private:
 	typedef ReportItem Super;
 public:
-	Q_CLASSINFO("DefaultProperty", "items")
-	Q_PROPERTY(QQmlListProperty<qf::gui::reports::ReportItem> items READ items)
 	Q_PROPERTY(qreal hinset READ hinset WRITE setHinset NOTIFY hinsetChanged)
 	Q_PROPERTY(qreal vinset READ vinset WRITE setVinset NOTIFY vinsetChanged)
 	//Q_PROPERTY(qreal inset READ inset WRITE setInset NOTIFY insetChanged)
@@ -57,10 +55,10 @@ public:
 	Q_PROPERTY(QString columns READ columns WRITE setColumns NOTIFY columnsChanged)
 	Q_PROPERTY(double columnsGap READ columnsGap WRITE setColumnsGap NOTIFY columnsGapChanged)
 	Q_PROPERTY(qf::gui::reports::style::Pen* border READ border WRITE setBorder NOTIFY borderChanged)
-	Q_PROPERTY(qf::gui::reports::style::Pen* topBorder READ topBorder WRITE setTopBorder NOTIFY topBorderChanged)
-	Q_PROPERTY(qf::gui::reports::style::Pen* bottomBorder READ bottomBorder WRITE setBottomBorder NOTIFY bottomBorderChanged)
-	Q_PROPERTY(qf::gui::reports::style::Pen* leftBorder READ leftBorder WRITE setLeftBorder NOTIFY leftBorderChanged)
-	Q_PROPERTY(qf::gui::reports::style::Pen* rightBorder READ rightBorder WRITE setRightBorder NOTIFY rightBorderChanged)
+	Q_PROPERTY(qf::gui::reports::style::Pen* borderTop READ borderTop WRITE setBorderTop NOTIFY borderTopChanged)
+	Q_PROPERTY(qf::gui::reports::style::Pen* borderBottom READ borderBottom WRITE setBorderBottom NOTIFY borderBottomChanged)
+	Q_PROPERTY(qf::gui::reports::style::Pen* borderLeft READ borderLeft WRITE setBorderLeft NOTIFY borderLeftChanged)
+	Q_PROPERTY(qf::gui::reports::style::Pen* borderRight READ borderRight WRITE setBorderRight NOTIFY borderRightChanged)
 	Q_PROPERTY(qf::gui::reports::style::Brush* fill READ fill WRITE setFill NOTIFY fillChanged)
 	Q_CLASSINFO("property.textStyle.doc",
 				"Set text style for this frame and all the children recursively"
@@ -88,10 +86,10 @@ public:
 	QF_PROPERTY_IMPL2(VAlignment, v, V, erticalAlignment, AlignTop)
 	QF_PROPERTY_IMPL2(QString, c, C, olumns, QStringLiteral("%"))
 	QF_PROPERTY_IMPL2(double, c, C, olumnsGap, 3)
-	QF_PROPERTY_OBJECT_IMPL(style::Pen*, t, T, opBorder)
-	QF_PROPERTY_OBJECT_IMPL(style::Pen*, b, B, ottomBorder)
-	QF_PROPERTY_OBJECT_IMPL(style::Pen*, l, L, eftBorder)
-	QF_PROPERTY_OBJECT_IMPL(style::Pen*, r, R, ightBorder)
+	QF_PROPERTY_OBJECT_IMPL(style::Pen*, b, B, orderTop)
+	QF_PROPERTY_OBJECT_IMPL(style::Pen*, b, B, orderBottom)
+	QF_PROPERTY_OBJECT_IMPL(style::Pen*, b, B, orderLeft)
+	QF_PROPERTY_OBJECT_IMPL(style::Pen*, b, B, orderRight)
 	QF_PROPERTY_OBJECT_IMPL(style::Brush*, f, F, ill)
 	QF_PROPERTY_OBJECT_IMPL(style::Text*, t, T, extStyle)
 
@@ -173,9 +171,11 @@ protected:
 	}
 
 	void initDesignedRect();
-
-	void componentComplete() override;
 public:
+	void complete() override;
+	/// children bindings are updated too, because they can change children size used in frame layout
+	void updatePrintBindings() override;
+
 	PrintResult printMetaPaint(QPaintDevice *paint_device, ReportItemMetaPaint *out, const Rect &bounding_rect) override;
 	PrintResult printHtml(HTMLElement &out) override;
 
@@ -184,25 +184,14 @@ public:
 
 	Q_INVOKABLE void insertItem(int ix, QObject *item_object);
 	Q_INVOKABLE void addItem(QObject *item_object);
+	int itemCount() const;
+	ReportItem* itemAt(int index);
+	void removeAllItems();
 
 	QString toString(int indent = 2, int indent_offset = 0) override;
-private:
-#if QT_VERSION_MAJOR < 6
-	using WidgetIndexType = int;
-#else
-	using WidgetIndexType = long long;
-#endif
-	static void addItemFunction(QQmlListProperty<ReportItem> *list_property, ReportItem *item);
-	static ReportItem* itemAtFunction(QQmlListProperty<ReportItem> *list_property, WidgetIndexType index);
-	static void removeAllItemsFunction(QQmlListProperty<ReportItem> *list_property);
-	static WidgetIndexType countItemsFunction(QQmlListProperty<ReportItem> *list_property);
 protected:
 	virtual int itemsToPrintCount() {return itemCount();}
 	virtual ReportItem* itemToPrintAt(int ix) {return itemAt(ix);}
-private:
-	QQmlListProperty<ReportItem> items();
-	int itemCount() const;
-	ReportItem* itemAt(int index);
 protected:
 	//! children, kterym se ma zacit pri tisku
 	int m_indexToPrint;

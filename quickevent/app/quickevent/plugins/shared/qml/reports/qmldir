@@ -1,9 +1,0 @@
-module quickevent.shared.qml.reports
-
-ReportStyleCommon 1.0 ReportStyleCommon.qml
-Space 1.0 Space.qml
-Cell 1.0 Cell.qml
-HeaderCell 1.0 HeaderCell.qml
-QuickEventHeaderFooter 1.0 QuickEventHeaderFooter.qml
-QuickEventReportHeader 1.0 QuickEventReportHeader.qml
-QfObject 1.0 QfObject.qml

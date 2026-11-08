@@ -24,10 +24,6 @@ namespace gui {
 
 class MenuBar;
 
-namespace dialogs {
-class QmlDialog;
-}
-
 namespace framework {
 
 class Application;
@@ -73,8 +69,6 @@ public:
 
 	Q_INVOKABLE qf::gui::framework::Plugin* plugin(const QString &feature_id, bool throw_exc = false);
 	Q_INVOKABLE qf::gui::framework::Plugin* pluginForObject(QObject *qml_object);
-
-	Q_INVOKABLE qf::gui::dialogs::QmlDialog* createQmlDialog(QWidget *parent = nullptr);
 
 	Q_SLOT void loadPersistentSettings();
 

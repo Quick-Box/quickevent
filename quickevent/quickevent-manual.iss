@@ -41,8 +41,6 @@ Source: {#QT_DIR}\plugins\multimedia\*; DestDir: {app}\multimedia; Flags: ignore
 Source: {#QT_DIR}\plugins\tls\*; DestDir: {app}\tls; Flags: ignoreversion recursesubdirs
 Source: {#QT_DIR}\plugins\styles\*; DestDir: {app}\styles; Flags: ignoreversion recursesubdirs
 
-Source: {#QT_DIR}\qml\QtQml\*; DestDir: {app}/qml\QtQml; Flags: ignoreversion recursesubdirs
-
 Source: {#MINGW_DIR}\bin\libstdc++-6.dll; DestDir: {app}; Flags: ignoreversion recursesubdirs
 Source: {#MINGW_DIR}\bin\libgcc_s_seh-1.dll; DestDir: {app}; Flags: ignoreversion recursesubdirs
 Source: {#MINGW_DIR}\bin\libwinpthread-1.dll; DestDir: {app}; Flags: ignoreversion recursesubdirs
