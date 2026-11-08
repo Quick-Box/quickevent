@@ -39,7 +39,7 @@ runs:
       run: |
         BASE_REF="${{github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before}}"
         git fetch --depth=1 origin "$BASE_REF"
-        readarray -t CHANGED_FILES < <(git diff --name-only "$BASE_REF" | grep 'cpp$')
+        readarray -t CHANGED_FILES < <(git diff --name-only --diff-filter=d "$BASE_REF" | grep 'cpp$')
         if [[ -n "${{ inputs.exclude_files_pattern }}" ]]; then
           readarray -t CHANGED_FILES < <(printf '%s\n' "${CHANGED_FILES[@]}" | grep -Ev "${{ inputs.exclude_files_pattern }}" || true)
         fi

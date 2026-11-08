@@ -9,7 +9,7 @@
    <size><width>800</width><height>600</height></size>
   </property>
   <property name="windowTitle">
-   <string>Designer diplomů</string>
+   <string>Award Designer</string>
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
 
@@ -18,27 +18,27 @@
     <layout class="QHBoxLayout" name="topBarLayout">
      <item>
       <widget class="QLabel">
-       <property name="text"><string>Název návrhu:</string></property>
+       <property name="text"><string>Design name:</string></property>
       </widget>
      </item>
      <item>
       <widget class="QLineEdit" name="edDesignName">
-       <property name="placeholderText"><string>Název návrhu diplomu</string></property>
+       <property name="placeholderText"><string>Award design name</string></property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnNew">
-       <property name="text"><string>Nový</string></property>
+       <property name="text"><string>New</string></property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnLoad">
-       <property name="text"><string>Načíst...</string></property>
+       <property name="text"><string>Load...</string></property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnSave">
-       <property name="text"><string>Uložit</string></property>
+       <property name="text"><string>Save</string></property>
       </widget>
      </item>
      <item>
@@ -51,20 +51,20 @@
       <widget class="QPushButton" name="btnZoomIn">
        <property name="text"><string>+</string></property>
        <property name="maximumWidth"><number>28</number></property>
-       <property name="toolTip"><string>Přiblížit (Ctrl+kolečko)</string></property>
+       <property name="toolTip"><string>Zoom in (Ctrl+wheel)</string></property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnZoomOut">
        <property name="text"><string>−</string></property>
        <property name="maximumWidth"><number>28</number></property>
-       <property name="toolTip"><string>Oddálit (Ctrl+kolečko)</string></property>
+       <property name="toolTip"><string>Zoom out (Ctrl+wheel)</string></property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btnFitView">
-       <property name="text"><string>Přizpůsobit</string></property>
-       <property name="toolTip"><string>Přizpůsobit pohled ploše</string></property>
+       <property name="text"><string>Fit</string></property>
+       <property name="toolTip"><string>Fit view to page</string></property>
       </widget>
      </item>
     </layout>
@@ -94,22 +94,22 @@
        <!-- Page group -->
        <item>
         <widget class="QGroupBox" name="grpPage">
-         <property name="title"><string>Stránka</string></property>
+         <property name="title"><string>Page</string></property>
          <layout class="QFormLayout">
           <item row="0" column="0">
-           <widget class="QLabel"><property name="text"><string>Velikost:</string></property></widget>
+           <widget class="QLabel"><property name="text"><string>Size:</string></property></widget>
           </item>
           <item row="0" column="1">
            <widget class="QComboBox" name="cbxPaper"/>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel"><property name="text"><string>Orientace:</string></property></widget>
+           <widget class="QLabel"><property name="text"><string>Orientation:</string></property></widget>
           </item>
           <item row="1" column="1">
            <widget class="QComboBox" name="cbxOrientation"/>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel"><property name="text"><string>Pozadí:</string></property></widget>
+           <widget class="QLabel"><property name="text"><string>Background:</string></property></widget>
           </item>
           <item row="2" column="1">
            <layout class="QHBoxLayout">
@@ -128,7 +128,7 @@
              <widget class="QPushButton" name="btnClearBg">
               <property name="text"><string>×</string></property>
               <property name="maximumWidth"><number>28</number></property>
-              <property name="toolTip"><string>Odstranit podkladový obrázek</string></property>
+              <property name="toolTip"><string>Remove background image</string></property>
              </widget>
             </item>
            </layout>
@@ -140,18 +140,18 @@
        <!-- Add item group -->
        <item>
         <widget class="QGroupBox" name="grpAddItem">
-         <property name="title"><string>Přidat položku</string></property>
+         <property name="title"><string>Add item</string></property>
          <layout class="QHBoxLayout">
           <item>
            <widget class="QPushButton" name="btnAddField">
-            <property name="text"><string>+ Textové pole</string></property>
-            <property name="toolTip"><string>Přidat datové textové pole</string></property>
+            <property name="text"><string>+ Text field</string></property>
+            <property name="toolTip"><string>Add data text field</string></property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="btnAddImage">
-            <property name="text"><string>+ Obrázek</string></property>
-            <property name="toolTip"><string>Přidat obrázek (PNG, JPG, SVG)</string></property>
+            <property name="text"><string>+ Image</string></property>
+            <property name="toolTip"><string>Add image (PNG, JPG, SVG)</string></property>
            </widget>
           </item>
          </layout>
@@ -161,7 +161,7 @@
        <!-- Properties group -->
        <item>
         <widget class="QGroupBox" name="grpProperties">
-         <property name="title"><string>Vlastnosti vybrané položky</string></property>
+         <property name="title"><string>Selected item properties</string></property>
          <property name="enabled"><bool>false</bool></property>
          <layout class="QVBoxLayout">
           <property name="spacing"><number>4</number></property>
@@ -177,7 +177,7 @@
              <item row="0" column="1">
               <widget class="QPlainTextEdit" name="edText">
                <property name="maximumSize"><size><width>16777215</width><height>70</height></size></property>
-               <property name="placeholderText"><string>Text, např. Získává $(competitorName)</string></property>
+               <property name="placeholderText"><string>Text, e.g. Awarded to $(competitorName)</string></property>
               </widget>
              </item>
              <item row="1" column="1">
@@ -193,7 +193,7 @@
             <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
             <layout class="QFormLayout">
              <item row="0" column="0">
-              <widget class="QLabel"><property name="text"><string>Soubor:</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>File:</string></property></widget>
              </item>
              <item row="0" column="1">
               <layout class="QHBoxLayout">
@@ -212,9 +212,9 @@
              </item>
              <item row="1" column="0" colspan="2">
               <widget class="QCheckBox" name="chkScaleProportional">
-               <property name="text"><string>Zachovat poměr stran</string></property>
+               <property name="text"><string>Keep aspect ratio</string></property>
                <property name="checked"><bool>true</bool></property>
-               <property name="toolTip"><string>Při změně velikosti zachovat poměr stran obrázku</string></property>
+               <property name="toolTip"><string>Keep image aspect ratio when resizing</string></property>
               </widget>
              </item>
             </layout>
@@ -254,7 +254,7 @@
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QLabel"><property name="text"><string>Šířka (mm):</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>Width (mm):</string></property></widget>
              </item>
              <item row="2" column="1">
               <widget class="QDoubleSpinBox" name="spW">
@@ -266,7 +266,7 @@
               </widget>
              </item>
              <item row="3" column="0">
-              <widget class="QLabel"><property name="text"><string>Výška (mm):</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>Height (mm):</string></property></widget>
              </item>
              <item row="3" column="1">
               <widget class="QDoubleSpinBox" name="spH">
@@ -287,13 +287,13 @@
             <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
             <layout class="QFormLayout">
              <item row="0" column="0">
-              <widget class="QLabel"><property name="text"><string>Písmo:</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>Font:</string></property></widget>
              </item>
              <item row="0" column="1">
               <widget class="QFontComboBox" name="cbxFont"/>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel"><property name="text"><string>Velikost (pt):</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>Size (pt):</string></property></widget>
              </item>
              <item row="1" column="1">
               <widget class="QSpinBox" name="spFontSize">
@@ -306,26 +306,26 @@
               <layout class="QHBoxLayout">
                <item>
                 <widget class="QCheckBox" name="chkBold">
-                 <property name="text"><string>Tučné</string></property>
+                 <property name="text"><string>Bold</string></property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="chkItalic">
-                 <property name="text"><string>Kurzíva</string></property>
+                 <property name="text"><string>Italic</string></property>
                 </widget>
                </item>
               </layout>
              </item>
              <item row="3" column="0">
-              <widget class="QLabel"><property name="text"><string>Barva:</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>Color:</string></property></widget>
              </item>
              <item row="3" column="1">
               <widget class="QPushButton" name="btnColor">
-               <property name="text"><string>■ Zvolit barvu</string></property>
+               <property name="text"><string>■ Choose color</string></property>
               </widget>
              </item>
              <item row="4" column="0">
-              <widget class="QLabel"><property name="text"><string>Zarovnání:</string></property></widget>
+              <widget class="QLabel"><property name="text"><string>Alignment:</string></property></widget>
              </item>
              <item row="4" column="1">
               <widget class="QComboBox" name="cbxAlign"/>
@@ -337,7 +337,7 @@
           <!-- Delete -->
           <item>
            <widget class="QPushButton" name="btnDelete">
-            <property name="text"><string>Smazat položku</string></property>
+            <property name="text"><string>Delete item</string></property>
            </widget>
           </item>
 

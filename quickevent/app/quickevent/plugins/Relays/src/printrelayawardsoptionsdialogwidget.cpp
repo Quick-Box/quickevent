@@ -94,7 +94,7 @@ void PrintRelayAwardsOptionsDialogWidget::setPrintOptions(const QVariantMap &opt
 
 void PrintRelayAwardsOptionsDialogWidget::onDesignerClicked()
 {
-	AwardDesignerDialog dlg(AwardDesigner::relayFields(), AwardDesigner::Design::defaultRelayDesign(), AWARDS_PATH, this);
+	AwardDesignerDialog dlg(AwardDesigner::Design::relayFields(), AwardDesigner::Design::defaultRelayDesign(), AWARDS_PATH, this);
 	QString file_name = ui->edReportPath->currentText();
 	dlg.loadDesign(file_name);
 	dlg.exec();

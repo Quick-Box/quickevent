@@ -28,6 +28,11 @@ RadioSenderService::RadioSenderService(QObject *parent)
 	connect(m_server, &QTcpServer::newConnection, this, &RadioSenderService::onNewConnection);
 }
 
+QString RadioSenderService::serviceDescription() const
+{
+	return tr("TCP service broadcasting run data, with start/stop controls in the UI (start gate use case).");
+}
+
 QString RadioSenderService::serviceName()
 {
 	return QStringLiteral("RadioSender");

@@ -37,8 +37,6 @@ quickevent::core::si::CheckedCard CardCheckerFreeOrderCpp::checkCard(const quick
 	checked_card.setRunId(run_id);
 	int stage_id = stageIdForRun(run_id);
 
-	bool error_mis_punch = false;
-
 	QList<quickevent::core::si::CheckedPunch> checked_punches;
 	QVariantList course_codes = course.value(QStringLiteral("codes")).toList();
 	QVariantMap finish_code = course.value(QStringLiteral("finishCode")).toMap();
@@ -66,10 +64,8 @@ quickevent::core::si::CheckedCard CardCheckerFreeOrderCpp::checkCard(const quick
 		checked_card.setStartTimeMs(msecIntervalAM(start00sec * 1000, read_card.startTime() * 1000));
 	}
 
-	if(read_card.finishTime() == 0xEEEE) {
-		error_mis_punch = true;
-	}
-	else {
+	bool is_finish_missing = read_card.finishTime() == 0xEEEE;
+	if(!is_finish_missing) {
 		checked_card.setFinishTimeMs(msecIntervalAM(start00sec * 1000, read_card.finishTime() * 1000));
 		if(read_card.finishTimeMs()) {
 			// add msec part of finish time
@@ -127,13 +123,15 @@ quickevent::core::si::CheckedCard CardCheckerFreeOrderCpp::checkCard(const quick
 
 	}
 
-	checked_card.setMisPunch(error_mis_punch || !map_of_control_codes.isEmpty());
+	// missing controls are MP, missing finish is DNF, both can be set
+	checked_card.setMisPunch(!map_of_control_codes.isEmpty());
+	checked_card.setNotFinish(is_finish_missing);
 
 	quickevent::core::si::CheckedPunch finish_punch;
 	if(!finish_code.isEmpty())
 		finish_punch = quickevent::core::si::CheckedPunch::fromCodeDef(finish_code);
 	// no finish split time when finish is not punched, interval to the not set finish time is nonsense
-	if(read_card.finishTime() != 0xEEEE) {
+	if(!is_finish_missing) {
 		finish_punch.setStpTimeMs(msecIntervalAM(checked_card.startTimeMs(), checked_card.finishTimeMs()));
 	}
 	checked_punches << finish_punch;

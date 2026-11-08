@@ -944,22 +944,6 @@ bool EventPlugin::createEvent(const QString &event_name, const EventConfig &even
 			ok = run_sql_script(q, create_script);
 			if(!ok)
 				break;
-			qfDebug() << "creating stages:" << stage_count;
-			QString stage_table_name = "stages";
-			if(connection_type == ConnectionType::SqlServer) {
-				stage_table_name = event_id + '.' + stage_table_name;
-			}
-			// Stage details are stored in config, but stage rows are still required by foreign keys.
-			q.prepare("INSERT INTO " + stage_table_name + " (id) VALUES (:id)");
-			for(int i=0; i<stage_count; i++) {
-				q.bindValue(":id", i+1);
-				ok = q.exec();
-				if(!ok) {
-					break;
-				}
-			}
-			if(!ok)
-				break;
 			conn.setCurrentSchema(event_id);
 			transaction.commit();
 		} while(false);

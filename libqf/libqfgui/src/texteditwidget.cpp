@@ -67,7 +67,7 @@ void TextEditWidget::save()
 void TextEditWidget::saveAs()
 {
 	QString fn = qfu::FileUtils::file(fileName());
-	QString filter = tr("textove soubory (*.txt)");
+	QString filter = tr("Text files (*.txt)");
 	QString ext = qfu::FileUtils::extension(fn);
 	if(!ext.isEmpty() && ext != "txt") {
 		filter = "(*.%1);;" + filter;
@@ -76,7 +76,7 @@ void TextEditWidget::saveAs()
 	else if(ext.isEmpty()) {
 		fn += ".txt";
 	}
-	fn = dialogs::FileDialog::getSaveFileName(this, tr("Uložit jako ..."), fn, filter);
+	fn = dialogs::FileDialog::getSaveFileName(this, tr("Save as"), fn, filter);
 	if(fn.isEmpty())
 		return;
 	save_helper(fn);
@@ -212,12 +212,12 @@ void TextEditWidget::setUrl(QFile &url, const QString &codec_name)
 	QFile &f = url;
 	suggestedFileName = f.fileName();
 	if(!f.open(QIODevice::ReadOnly)) {
-		QFMessage::information(this, tr("Soubor %1 nelze otevrit pro cteni.").arg(f.fileName()));
+		QFMessage::information(this, tr("Cannot open file %1 for reading.").arg(f.fileName()));
 		return;
 	}
 	QTextCodec *tc = QTextCodec::codecForName(codecName().toLatin1());
 	if(!tc) {
-		QFMessage::error(this, tr("Nelze nahrát kodek pro kódování %1.").arg(codecName()));
+		QFMessage::error(this, tr("Cannot load text codec %1.").arg(codecName()));
 		return;
 	}
 	QTextStream ts(&f);

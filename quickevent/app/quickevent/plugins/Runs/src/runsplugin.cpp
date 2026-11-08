@@ -86,16 +86,25 @@ RunsPlugin::~RunsPlugin() = default;
 const qf::core::utils::Table &RunsPlugin::runnersTable(int stage_id)
 {
 	if(m_runnersTableCacheStageId != stage_id) {
+		bool is_relays = getPlugin<EventPlugin>()->eventConfig().isRelays();
 		qfs::QueryBuilder qb;
-		qb.select2("competitors", "registration, startNumber")
+		qb.select2("competitors", "registration")
 				.select("COALESCE(lastName, '') || ' ' || COALESCE(firstName, '') AS competitorName")
-				.select2("runs", "id, siId, competitorId")
+				.select2("runs", "id, siId, competitorId, leg")
 				.select("runs.id AS runId")
 				.select2("classes", "name")
 				.from("competitors")
-				.join("competitors.classId", "classes.id")
 				.joinRestricted("competitors.id", "runs.competitorId", "runs.stageId=" QF_IARG(stage_id), "JOIN")
 				.orderBy("classes.name, lastName, firstName");
+		if(is_relays) {
+			qb.select("relays.number AS startNumber")
+					.join("runs.relayId", "relays.id")
+					.join("relays.classId", "classes.id");
+		}
+		else {
+			qb.select("competitors.startNumber AS startNumber")
+					.join("competitors.classId", "classes.id");
+		}
 		qf::gui::model::SqlTableModel m;
 		m.setQueryBuilder(qb, false);
 		m.reload();
@@ -1324,7 +1333,10 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 					ix += 4;
 				}
 			}
-			result.insert(result.count(), QVariantList{"ControlCard", tt2_row.value(QStringLiteral("runs.siId"))});
+			int si_id = tt2_row.value(QStringLiteral("runs.siId")).toInt();
+			if (si_id > 0) {
+				result.insert(result.count(), QVariantList{"ControlCard", si_id});
+			}
 			person_result.insert(person_result.count(), result);
 			class_result.insert(class_result.count(), person_result);
 		}
@@ -3234,9 +3246,9 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 				int stime_msec = tt2_row.value(QStringLiteral("startTimeMs")).toInt();
 				append_list(xml_start, QVariantList{"StartTime", datetime_to_string(start00.addMSecs(stime_msec))});
 			}
-			QVariant siId = tt2_row.value(QStringLiteral("runs.siId"));
-			if (siId.toBool()) {
-				append_list(xml_start, QVariantList{"ControlCard", siId.toInt()});
+			int si_id = tt2_row.value(QStringLiteral("runs.siId")).toInt();
+			if (si_id > 0) {
+				append_list(xml_start, QVariantList{"ControlCard", si_id});
 			}
 
 			if (!is_vacant) {

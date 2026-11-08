@@ -44,6 +44,7 @@ public:
 	PunchingTestServiceSettings settings() const { return PunchingTestServiceSettings(m_settings); }
 	static QString serviceName();
 	QString serviceDisplayName() const override;
+	QString serviceDescription() const override;
 
 private:
 	void onTimerTick();

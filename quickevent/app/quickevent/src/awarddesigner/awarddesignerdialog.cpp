@@ -53,7 +53,7 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 	ui->graphicsView->installEventFilter(this);
 
 	// Populate placeholder selector in properties panel (item 0 is the idle caption)
-	ui->cbxItemField->addItem(tr("Vložit zástupný znak…"), QString());
+	ui->cbxItemField->addItem(tr("Insert placeholder…"), QString());
 	for (const auto &fd : m_availableFields) {
 		ui->cbxItemField->addItem(fd.label, fd.id);
 	}
@@ -65,8 +65,8 @@ AwardDesignerDialog::AwardDesignerDialog(const QList<AwardDesigner::FieldDef> &a
 
 	ui->cbxPaper->addItem(QStringLiteral("A4"), 210);
 	ui->cbxPaper->addItem(QStringLiteral("A5"), 148);
-	ui->cbxOrientation->addItem(tr("Na výšku"), false);
-	ui->cbxOrientation->addItem(tr("Na šířku"), true);
+	ui->cbxOrientation->addItem(tr("Portrait"), false);
+	ui->cbxOrientation->addItem(tr("Landscape"), true);
 	connect(ui->cbxPaper, qOverload<int>(&QComboBox::currentIndexChanged), this, &AwardDesignerDialog::onPageChanged);
 	connect(ui->cbxOrientation, qOverload<int>(&QComboBox::currentIndexChanged), this, &AwardDesignerDialog::onPageChanged);
 	connect(ui->btnBrowseBg, &QPushButton::clicked, this, &AwardDesignerDialog::onBrowseBgClicked);

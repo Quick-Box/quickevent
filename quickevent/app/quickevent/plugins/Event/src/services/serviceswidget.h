@@ -2,6 +2,8 @@
 
 #include <QWidget>
 
+class QToolButton;
+
 namespace Event {
 namespace services {
 
@@ -13,7 +15,13 @@ public:
 
 	void reload();
 private:
+	void updateVisibility();
+	void setServiceHidden(const QString &service_id, bool hidden);
+private:
 	QWidget *m_centralWidget = nullptr;
+	QToolButton *m_btEditVisibility = nullptr;
+	// hidden list instead of visible one, so that newly added services are shown by default
+	QStringList m_hiddenServices;
 };
 
 }}

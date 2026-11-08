@@ -53,6 +53,7 @@ public:
 
 	static QString serviceId();
 	QString serviceDisplayName() const override;
+	QString serviceDescription() const override;
 
 	void run() override;
 	void stop() override;

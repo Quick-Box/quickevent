@@ -30,6 +30,7 @@ private:
 	QF_VARIANTMAP_FIELD(QVariantList, p, setP, unches)
 	QF_VARIANTMAP_FIELD(bool, is, set, BadCheck)
 	QF_VARIANTMAP_FIELD(bool, is, set, MisPunch)
+	QF_VARIANTMAP_FIELD(bool, is, set, NotFinish)
 	QF_VARIANTMAP_FIELD(QVariantMap, d, setD, ata)
 	QF_VARIANTMAP_FIELD(QVariantList, m, setM, issingCodes)
 public:
@@ -41,7 +42,7 @@ public:
 	int timeMs() const;
 	QString toString() const;
 
-	bool isOk() const {return !isBadCheck() && !isMisPunch();}
+	bool isOk() const {return !isBadCheck() && !isMisPunch() && !isNotFinish();}
 };
 
 }}}

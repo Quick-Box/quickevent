@@ -37,6 +37,7 @@ public:
 	QrOPunchSettings settings() const {return QrOPunchSettings(m_settings);}
 
 	static QString serviceName();
+	QString serviceDescription() const override;
 private:
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 	void init();

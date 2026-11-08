@@ -299,22 +299,22 @@
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1651"/>
-        <source>Zobrazit ve formulari</source>
+        <source>View in form</source>
         <translation>Mostrar en el formulario</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1653"/>
-        <source>Zobrazit radek v formulari pro cteni</source>
+        <source>View row in read-only form</source>
         <translation>Mostrar la fila en el formulario de solo lectura</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1660"/>
-        <source>Upravit ve formulari</source>
+        <source>Edit in form</source>
         <translation>Editar en el formulario</translation>
     </message>
     <message>
         <location filename="src/tableview.cpp" line="1662"/>
-        <source>Upravit radek ve formulari</source>
+        <source>Edit row in form</source>
         <translation>Editar la fila en el formulario</translation>
     </message>
     <message>
@@ -491,7 +491,7 @@
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="70"/>
-        <source>textove soubory (*.txt)</source>
+        <source>Text files (*.txt)</source>
         <translation>Archivo de texto (*.txt)</translation>
     </message>
     <message>
@@ -542,7 +542,7 @@
     </message>
     <message>
         <location filename="src/texteditwidget.cpp" line="215"/>
-        <source>Soubor %1 nelze otevrit pro cteni.</source>
+        <source>Cannot open file %1 for reading.</source>
         <translation>No se puede abrir el archivo &quot;%1&quot; para su lectura.</translation>
     </message>
     <message>
@@ -1006,7 +1006,7 @@
     </message>
     <message>
         <location filename="src/reports/widgets/itemvalueeditorwidget.ui" line="20"/>
-        <source>Nová hodnota textu</source>
+        <source>New text value</source>
         <translation>Nuevo valor de texto</translation>
     </message>
 </context>
@@ -1203,7 +1203,7 @@
     </message>
     <message>
         <location filename="src/reports/widgets/reportviewwidget.cpp" line="296"/>
-        <source>Editovat text</source>
+        <source>Edit text</source>
         <translation>Editar texto</translation>
     </message>
 </context>

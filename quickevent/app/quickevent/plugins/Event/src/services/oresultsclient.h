@@ -31,6 +31,7 @@ public:
 	OResultsClientSettings settings() const {return OResultsClientSettings(m_settings);}
 
 	static QString serviceName();
+	QString serviceDescription() const override;
 
 	void exportResultsIofXml3();
 	void exportStartListIofXml3(std::function<void()> on_success = nullptr);
