@@ -1390,6 +1390,26 @@ If you continue, this flag will be removed</source>
         <source>Station backup memory</source>
         <translation>Резервна пам’ять станції</translation>
     </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="97"/>
+        <source>Print receipts for all cards in the current stage which have not been printed yet. When &apos;This reader only&apos; is enabled in the settings, only cards read by this client are printed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
+        <source>Print new</source>
+        <translation>Друк нового</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
+        <source>Printer</source>
+        <translation>принтер</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="372"/>
+        <source>Print receipts for selected rows</source>
+        <translation>Друкувати чеки для вибраних рядків</translation>
+    </message>
 </context>
 <context>
     <name>ChooseOrisEventDialog</name>
@@ -4842,14 +4862,6 @@ https://qxqx.org</source>
 https://qxqx.org</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="49"/>
-        <source>Run ID </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="68"/>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="97"/>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="223"/>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="259"/>
         <source>None</source>
         <translation type="unfinished">Немає</translation>
@@ -4865,13 +4877,18 @@ https://qxqx.org</translation>
         <translation type="unfinished">Ім’я</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="125"/>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="157"/>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="189"/>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="240"/>
-        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="295"/>
-        <source>-&gt;</source>
-        <translation type="unfinished"></translation>
+        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="259"/>
+        <source>None</source>
+        <translation type="unfinished">Немає</translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="78"/>
+        <source>Change ID </source>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="109"/>
+        <source>First name</source>
+        <translation type="unfinished">Ім’я</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="141"/>
@@ -4963,7 +4980,17 @@ https://qxqx.org</translation>
     </message>
 </context>
 <context>
-    <name>Event::services::qx::QxClientServiceWidget</name>
+    <name>Event::services::qx::QxEventService</name>
+    <message>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="62"/>
+        <source>Electronic late entries.
+https://qxqx.org</source>
+        <translation>Електронні пізні заявки.
+https://qxqx.org</translation>
+    </message>
+</context>
+<context>
+    <name>Event::services::qx::QxLateRegistrationsWidget</name>
     <message>
         <source>Current stage</source>
         <translation type="obsolete">Поточний забіг</translation>
@@ -4972,6 +4999,9 @@ https://qxqx.org</translation>
         <source>Event ID</source>
         <translation type="obsolete">ІД події</translation>
     </message>
+</context>
+<context>
+    <name>Event::services::qx::QxEventService</name>
     <message>
         <source>Test connection</source>
         <translation type="obsolete">Перевірити з’єднання</translation>
@@ -5004,6 +5034,9 @@ https://qxqx.org</translation>
         <source>Broker socket error: %1</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>Event::services::qx::QxEventServiceWidget</name>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="517"/>
         <source>Broker login error: %1</source>
@@ -5040,18 +5073,6 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="67"/>
         <source>Export database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="83"/>
-        <source>Not loaded</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="93"/>
-        <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="128"/>
-        <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="138"/>
-        <source>Fill this url into HTTP POST synchonization method in O-CheckList</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6479,10 +6500,6 @@ Imported: %1 of %2 clubs.</source>
     <name>Receipts::ReceiptsPlugin</name>
     <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="305"/>
-        <source>Receipts</source>
-        <translation>Чеки</translation>
-    </message>
-    <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="705"/>
         <source>Card</source>
         <translation>Картка</translation>
@@ -6849,69 +6866,6 @@ Please choose a receipt template first.</source>
         <location filename="plugins/Receipts/src/receiptssettings.cpp" line="75"/>
         <source>Character</source>
         <translation>Символьний</translation>
-    </message>
-</context>
-<context>
-    <name>ReceiptsWidget</name>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="14"/>
-        <source>Form</source>
-        <translation>Форма</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="66"/>
-        <source>Print new</source>
-        <translation>Друк нового</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="67"/>
-        <source>SI</source>
-        <translation>ЧИП</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="68"/>
-        <source>Class</source>
-        <translation>Група</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="69"/>
-        <source>Name</source>
-        <translation>Ім’я</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="70"/>
-        <source>Reg</source>
-        <translation>Реє</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="71"/>
-        <source>Start</source>
-        <translation>Старт</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="72"/>
-        <source>Time</source>
-        <translation>Час</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="79"/>
-        <source>printer</source>
-        <translation>принтер</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="212"/>
-        <source>Print receipts for selected rows</source>
-        <translation>Друкувати чеки для вибраних рядків</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="213"/>
-        <source>Show receipt</source>
-        <translation>Показати чек</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="215"/>
-        <source>Show card data</source>
-        <translation type="unfinished">Показати дані картки</translation>
     </message>
 </context>
 <context>

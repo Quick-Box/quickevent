@@ -72,6 +72,7 @@ void ServiceWidget::setService(Service *service)
 	setMessage(service->statusMessage());
 	connect(service, &Service::statusMessageChanged, this, &ServiceWidget::setMessage);
 	connect(this, &ServiceWidget::setRunningRequest, service, &Service::setRunning);
+	setDescription(service->serviceDescription());
 }
 
 QString ServiceWidget::serviceId() const

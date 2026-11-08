@@ -1342,6 +1342,26 @@ If you continue, this flag will be removed</source>
         <oldsource>Test punch</oldsource>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="97"/>
+        <source>Print receipts for all cards in the current stage which have not been printed yet. When &apos;This reader only&apos; is enabled in the settings, only cards read by this client are printed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
+        <source>Print new</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
+        <source>Printer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="372"/>
+        <source>Print receipts for selected rows</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ChooseOrisEventDialog</name>
@@ -2509,6 +2529,11 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="100"/>
         <source>Database hash</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="210"/>
+        <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="234"/>
+        <source>The report is not stored in the database.</source>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="210"/>
@@ -5989,14 +6014,14 @@ Imported: %1 of %2 clubs.</source>
         <source>Unnamed device</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="305"/>
+        <source>Unnamed device</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Receipts::ReceiptsPlugin</name>
-    <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="305"/>
-        <source>Receipts</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="705"/>
         <source>Card</source>
@@ -6359,69 +6384,6 @@ Please choose a receipt template first.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettings.cpp" line="75"/>
         <source>Character</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ReceiptsWidget</name>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="67"/>
-        <source>SI</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="68"/>
-        <source>Class</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="69"/>
-        <source>Name</source>
-        <translation type="unfinished">Nazwa</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="70"/>
-        <source>Reg</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="71"/>
-        <source>Start</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="72"/>
-        <source>Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="79"/>
-        <source>printer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="212"/>
-        <source>Print receipts for selected rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="213"/>
-        <source>Show receipt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="215"/>
-        <source>Show card data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="66"/>
-        <source>Print new</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

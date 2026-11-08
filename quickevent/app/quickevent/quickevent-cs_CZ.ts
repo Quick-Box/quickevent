@@ -1392,6 +1392,26 @@ Pokud budete pokračovat, toto označení bude odebráno</translation>
         <source>SI: %1 class %2 - Number of punches (%3) and number of codes including finish (%4) should be the same! Remove or comment invalid line by #.</source>
         <translation>SI: %1 Kategorie %2 – Počet ražení (%3) a počet kontrol i s cílem (%4) musí být stejný! Odeberte nebo zakomentujte neplatné řádky pomocí #.</translation>
     </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="97"/>
+        <source>Print receipts for all cards in the current stage which have not been printed yet. When &apos;This reader only&apos; is enabled in the settings, only cards read by this client are printed.</source>
+        <translation>Vytiskne mezičasy všech čipů v aktuální etapě, které ještě nebyly vytištěny. Je-li v nastavení zapnuto &apos;Pouze tato tiskárna&apos;, tiskne jen čipy vyčtené tímto klientem.</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
+        <source>Print new</source>
+        <translation>Vytisknout nové</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
+        <source>Printer</source>
+        <translation>Tiskárna</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="372"/>
+        <source>Print receipts for selected rows</source>
+        <translation>Vytisknout mezičasy pro vybrané řádky</translation>
+    </message>
 </context>
 <context>
     <name>ChooseOrisEventDialog</name>
@@ -5193,6 +5213,16 @@ https://qxqx.org</translation>
         <source>API token is not set.</source>
         <translation type="unfinished"></translation>
     </message>
+    <name>Event::services::qx::QxEventService</name>
+    <message>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="62"/>
+        <source>Electronic late entries.
+https://qxqx.org</source>
+        <translation>Elektronické dohlášky.
+https://qxqx.org</translation>
+    </message>
+</context>
+<context>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="490"/>
         <source>Client info discovery error: %1</source>
@@ -7172,70 +7202,6 @@ Nejprve si prosím vyberte šablonu lístečku.</translatorcomment>
         <location filename="plugins/Receipts/src/receiptssettings.cpp" line="75"/>
         <source>Character</source>
         <translation>Znakově</translation>
-    </message>
-</context>
-<context>
-    <name>ReceiptsWidget</name>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="14"/>
-        <source>Form</source>
-        <translation>Formulář</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="66"/>
-        <source>Print new</source>
-        <translation>Vytisknout nové</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="67"/>
-        <source>SI</source>
-        <translation>SI</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="68"/>
-        <source>Class</source>
-        <translation>Kategorie</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="69"/>
-        <source>Name</source>
-        <translation>Jméno</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="70"/>
-        <source>Reg</source>
-        <translation>Reg. č.</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="71"/>
-        <source>Start</source>
-        <translation>Start</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="72"/>
-        <source>Time</source>
-        <translation>Čas</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="79"/>
-        <source>printer</source>
-        <translation>Tiskárna</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="212"/>
-        <source>Print receipts for selected rows</source>
-        <oldsource>Print selected cards</oldsource>
-        <translation>Vytisknout mezičasy pro vybrané řádky</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="213"/>
-        <source>Show receipt</source>
-        <translation>Zobrazit mezičasy</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="215"/>
-        <source>Show card data</source>
-        <translation>Ukázat data čipu</translation>
     </message>
 </context>
 <context>
@@ -9677,6 +9643,40 @@ editing is disabled.</oldsource>
         <location filename="plugins/Receipts/qml/reports/errorlong.qml" line="48"/>
         <source>!!! Error !!!</source>
         <translation>!!! Chyba !!!</translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <location filename="src/main.cpp" line="134"/>
+        <source>QuickEvent did not exit correctly last time.
+If you are going to report a problem, please attach the log.
+
+Log file: %1</source>
+        <translation>QuickEvent nebyl minule správně ukončen.
+Pokud budete hlásit problém, přiložte prosím log.
+
+Soubor s logem: %1</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="137"/>
+        <source>QuickEvent</source>
+        <translation>QuickEvent</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="139"/>
+        <source>Copy log to clipboard</source>
+        <translation>Kopírovat log do schránky</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="140"/>
+        <source>Open log folder</source>
+        <translation>Otevřít složku s logy</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="141"/>
+        <source>Report issue on GitHub</source>
+        <translation>Nahlásit problém na GitHubu</translation>
     </message>
 </context>
 <context>
