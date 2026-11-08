@@ -317,4 +317,4 @@ CREATE TABLE {{eventId}}.reports (
 ;
 -- insert into table: {{eventId}}.config;
 INSERT INTO {{eventId}}.config (ckey, cname, cvalue, ctype) VALUES
-('db.version', 'Data version', '30800', 'int');
+('db.version', 'Data version', '30900', 'int');

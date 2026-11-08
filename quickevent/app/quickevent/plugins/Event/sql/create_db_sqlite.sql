@@ -347,4 +347,4 @@ CREATE TABLE reports (
 ;
 -- insert into table: config;
 INSERT INTO config (ckey, cname, cvalue, ctype) VALUES
-('db.version', 'Data version', '30800', 'int');
+('db.version', 'Data version', '30900', 'int');
