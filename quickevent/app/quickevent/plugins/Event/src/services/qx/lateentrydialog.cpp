@@ -27,7 +27,7 @@ using namespace quickevent::core::og;
 
 namespace Event::services::qx {
 
-LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent)
+LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, bool paid, QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::LateEntryDialog)
 	, m_changeId(change_id)
@@ -112,7 +112,7 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 		loadClassName(class_id);
 	}
 
-	if (late_entry.paid.value_or(false)) {
+	if (paid) {
 		ui->lblPaid->setText(tr("Paid"));
 		ui->lblPaid->setStyleSheet("background:green;color:white");
 	} else {

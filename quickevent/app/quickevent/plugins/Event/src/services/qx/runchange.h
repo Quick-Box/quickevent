@@ -27,7 +27,6 @@ struct LateEntry
 	std::optional<int> start_time_ms;
 	// std::optional<bool> si_id_rent;
 	std::optional<QString> note;
-	std::optional<bool> paid;
 
 	// static LateEntry fromJsonString(const QString &json);
 	static std::optional<LateEntry> fromVariantMap(const QVariantMap &map);

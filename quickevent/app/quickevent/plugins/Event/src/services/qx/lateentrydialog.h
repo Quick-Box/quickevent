@@ -21,7 +21,7 @@ class LateEntryDialog : public QDialog
 	Q_OBJECT
 	using Super = QDialog;
 public:
-	explicit LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent = nullptr);
+	explicit LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, bool paid, QWidget *parent = nullptr);
 	~LateEntryDialog() override;
 
 	Q_SIGNAL void editCompetitor(int competitor_id);

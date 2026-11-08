@@ -37,7 +37,7 @@ enum Columns {
 	col_foreign_id,
 	col_foreign_table,
 	col_data,
-	col_orig_data,
+	col_paid,
 	col_status,
 	col_status_message,
 	col_user_id,
@@ -52,7 +52,7 @@ constexpr auto COL_DATA_TYPE = "data_type";
 constexpr auto COL_FOREIGN_ID = "foreign_id";
 constexpr auto COL_FOREIGN_TABLE = "foreign_table";
 constexpr auto COL_DATA = "data";
-constexpr auto COL_ORIG_DATA = "orig_data";
+constexpr auto COL_PAID = "paid";
 constexpr auto COL_STATUS = "status";
 constexpr auto COL_STATUS_MESSAGE = "status_message";
 constexpr auto COL_USER_ID = "user_id";
@@ -67,16 +67,7 @@ public:
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override
 	{
 		if (role == Qt::BackgroundRole) {
-			if (index.column() == col_data) {
-				auto data = index.data().toString();
-				auto qxdata = QxChangeData::fromJson(data);
-				if (auto le = qxdata.lateEntry; le.has_value()) {
-					if (le.value().paid.value_or(false)) {
-						return QColor("lightgreen");
-					}
-				}
-			}
-			else if (index.column() == col_status) {
+			if (index.column() == col_status) {
 				auto status = qxChangeStatusFromString(index.data().toString());
 				switch (status) {
 				case QxChangeStatus::Pending: return {};
@@ -118,7 +109,7 @@ QxLateEntriesWidget::QxLateEntriesWidget(QWidget *parent) :
 	m_model->setColumn(col_foreign_id, qf::gui::model::SqlTableModel::ColumnDefinition(COL_FOREIGN_ID).setReadOnly(true).setAlignment(Qt::AlignRight));
 	m_model->setColumn(col_foreign_table, qf::gui::model::SqlTableModel::ColumnDefinition(COL_FOREIGN_TABLE).setReadOnly(true));
 	m_model->setColumn(col_data, qf::gui::model::SqlTableModel::ColumnDefinition(COL_DATA).setReadOnly(true));
-	m_model->setColumn(col_orig_data, qf::gui::model::SqlTableModel::ColumnDefinition(COL_ORIG_DATA).setReadOnly(true));
+	m_model->setColumn(col_paid, qf::gui::model::SqlTableModel::ColumnDefinition(COL_PAID).setReadOnly(true));
 	m_model->setColumn(col_status, qf::gui::model::SqlTableModel::ColumnDefinition(COL_STATUS).setReadOnly(true));
 	m_model->setColumn(col_status_message, qf::gui::model::SqlTableModel::ColumnDefinition(COL_STATUS_MESSAGE).setReadOnly(true));
 	m_model->setColumn(col_user_id, qf::gui::model::SqlTableModel::ColumnDefinition(COL_USER_ID).setReadOnly(true));
@@ -303,9 +294,10 @@ void QxLateEntriesWidget::onTableDoubleClicked(const QModelIndex &ix)
 	if (qxdata.lateEntry.has_value()) {
 		auto status = m_model->value(row, COL_STATUS).toString();
 		auto status_message = m_model->value(row, COL_STATUS_MESSAGE).toString();
+		auto paid = m_model->value(row, COL_PAID).toBool();
 		auto change_id = m_model->value(row, COL_ID).toInt();
 		auto stage_id = m_model->value(row, COL_STAGE_ID).toInt();
-		LateEntryDialog dlg(change_id, stage_id, qxdata.lateEntry.value(), status, status_message, this);
+		LateEntryDialog dlg(change_id, stage_id, qxdata.lateEntry.value(), status, status_message, paid, this);
 		connect(&dlg, &LateEntryDialog::editCompetitor, this, [this](int competitor_id) {
 			RunsWidget::showEditCompetitorDialog(competitor_id, this);
 		}, Qt::QueuedConnection);

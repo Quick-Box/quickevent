@@ -37,7 +37,6 @@ std::optional<LateEntry> LateEntry::fromVariantMap(const QVariantMap &map)
 	if (auto v = map.value("siid"); v.isValid()) { ret.si_id = v.toInt(); }
 	// if (auto v = map.value("si_id_rent"); v.isValid()) { ret.si_id_rent = v.toBool(); }
 	if (auto v = map.value("note"); v.isValid()) { ret.note = v.toString(); }
-	if (auto v = map.value("paid"); v.isValid()) { ret.paid = v.toBool(); }
 
 	return ret;
 }
