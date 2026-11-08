@@ -371,21 +371,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="lblPaid">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::Box</enum>
-     </property>
+    <widget class="QCheckBox" name="chkPaid">
      <property name="text">
-      <string>Not Paid</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+      <string>Paid</string>
      </property>
     </widget>
    </item>

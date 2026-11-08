@@ -112,13 +112,24 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 		loadClassName(class_id);
 	}
 
-	if (paid) {
-		ui->lblPaid->setText(tr("Paid"));
-		ui->lblPaid->setStyleSheet("background:green;color:white");
-	} else {
-		ui->lblPaid->setText(tr("Not Paid"));
-		ui->lblPaid->setStyleSheet("background:red;color:white");
-	}
+	auto update_paid_style = [this]() {
+		if (ui->chkPaid->isChecked()) {
+			ui->chkPaid->setText(tr("Paid"));
+			ui->chkPaid->setStyleSheet("background:green;color:white");
+		} else {
+			ui->chkPaid->setText(tr("Not Paid"));
+			ui->chkPaid->setStyleSheet("background:red;color:white");
+		}
+	};
+	ui->chkPaid->setChecked(paid);
+	update_paid_style();
+	connect(ui->chkPaid, &QCheckBox::toggled, this, [this, update_paid_style](bool is_paid) {
+		update_paid_style();
+		qf::core::sql::Record rec {
+			{ "paid", is_paid },
+		};
+		qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
+	});
 
 	checkDuplicitRegistration();
 	checkDuplicitName();
