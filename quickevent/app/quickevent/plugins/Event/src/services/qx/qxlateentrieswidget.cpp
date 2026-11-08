@@ -1,4 +1,5 @@
 #include "qxlateentrieswidget.h"
+#include "shv/chainpack/rpcvalue.h"
 #include "ui_qxlateentrieswidget.h"
 
 #include "qxeventservice.h"
@@ -21,6 +22,8 @@
 #include <QBrush>
 #include <QColor>
 #include <qmessagebox.h>
+#include <qnamespace.h>
+#include <qobject.h>
 
 namespace qfm = qf::gui::model;
 namespace qfs = qf::core::sql;
@@ -43,7 +46,7 @@ enum Columns {
 	col_user_id,
 	col_created,
 	col_lock_number,
-	col_COUNT
+	col_COUNT,
 };
 
 constexpr auto COL_ID = "id";
@@ -74,6 +77,16 @@ public:
 				case QxChangeStatus::Accepted: return QColor("lightgreen");
 				case QxChangeStatus::Rejected: return QColor("salmon");
 				}
+			}
+		}
+		else if (role == Qt::ToolTipRole) {
+			if (index.column() == col_data) {
+				auto data_str = index.data().toString();
+				if (data_str.isEmpty()) {
+					return {};
+				}
+				auto data = shv::chainpack::RpcValue::fromCpon(data_str.toStdString());
+				return QString::fromStdString(data.toCpon("  "));
 			}
 		}
 		return qfm::SqlTableModel::data(index, role);
