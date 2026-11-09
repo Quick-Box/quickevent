@@ -506,6 +506,17 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 				setStatus(Status::Running);
 				setStatusMessage(tr("Event ID: %1").arg(m_eventId));
 				subscribeChanges();
+				auto *rpc_call2 = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
+						->setShvPath(eventctlShvPath(settings().isLocalBroker()))
+						->setMethod("eventData")
+						->setParams(RpcValue::Map{{"event_id", m_eventId}});
+				connect(rpc_call2, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+					QString db_mode = error.isValid()
+							? tr("error: %1").arg(error.message())
+							: result.asMap().value("db_mode").to<QString>();
+					setStatusMessage(tr("Event ID: %1 %2").arg(m_eventId).arg(db_mode));
+				});
+				rpc_call2->start();
 			}
 		});
 		rpc_call->start();
