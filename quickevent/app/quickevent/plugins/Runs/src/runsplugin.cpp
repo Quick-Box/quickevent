@@ -2217,7 +2217,13 @@ void RunsPlugin::report_startListStarters()
 	dlg.setStartersOptionsVisible(true);
 	if(dlg.exec()) {
 		int stage_id = selectedStageId();
-		auto tt = startListStartersTable(stage_id, dlg.sqlWhereExpression(stage_id), dlg.startListPrintVacantsOption());
+		QString where_expr = dlg.sqlWhereExpression(stage_id);
+		if(const QString start_mode = dlg.options().startMode(); !start_mode.isEmpty()) {
+			// effective start mode, classes with Auto mode are filtered by the derived one
+			const QString start_mode_cond = '(' + getPlugin<EventPlugin>()->startModeSqlExpression() + " = '" + start_mode + "')";
+			where_expr = where_expr.isEmpty()? start_mode_cond: where_expr + " AND " + start_mode_cond;
+		}
+		auto tt = startListStartersTable(stage_id, where_expr, dlg.startListPrintVacantsOption());
 		auto opts = dlg.optionsMap();
 		QVariantMap props;
 		props["options"] = opts;

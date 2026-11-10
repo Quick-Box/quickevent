@@ -384,6 +384,16 @@
       <item row="0" column="2">
        <widget class="QComboBox" name="cbxStartNumber"/>
       </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="lblStartMode">
+        <property name="text">
+         <string>Start mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QComboBox" name="cbxStartMode"/>
+      </item>
      </layout>
     </widget>
    </item>

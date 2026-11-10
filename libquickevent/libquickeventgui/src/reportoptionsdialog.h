@@ -79,6 +79,7 @@ public:
 		QF_VARIANTMAP_FIELD2(int, s, setS, tartTimeFormat, 0)
 		QF_VARIANTMAP_FIELD2(int, s, setS, tartlistOrderFirstBy, 0)
 		QF_VARIANTMAP_FIELD2(int, s, setS, tartNumber, 0)
+		QF_VARIANTMAP_FIELD(QString, s, setS, tartMode)
 		QF_VARIANTMAP_FIELD2(bool, isR, setR, elayShowLegsDetails, true)
 		public:
 			Options(const QVariantMap &o = QVariantMap()) : QVariantMap(o) {}
