@@ -669,7 +669,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="432"/>
+        <location filename="plugins/CardReader/src/cardreaderplugin.cpp" line="433"/>
         <source>Missing codes: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -915,6 +915,15 @@
     </message>
 </context>
 <context>
+    <name>CardReader::services::QrOPunch</name>
+    <message>
+        <location filename="plugins/CardReader/src/services/qropunch.cpp" line="51"/>
+        <source>Receives punches over TCP from the QR-O-Punch mobile app.
+https://github.com/sakhnik/qr-o-punch</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CardReader::services::QrOPunchWidget</name>
     <message>
         <location filename="plugins/CardReader/src/services/qropunchwidget.ui" line="14"/>
@@ -949,6 +958,14 @@
     <message>
         <location filename="plugins/CardReader/src/services/qropunchwidget.cpp" line="74"/>
         <source>Choose file to log requests</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CardReader::services::RacomClient</name>
+    <message>
+        <location filename="plugins/CardReader/src/services/racomclient.cpp" line="227"/>
+        <source>Connects to Racom radio controls.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1029,7 +1046,7 @@
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="22"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="653"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="681"/>
         <source>Runners on the start list who have not started yet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1040,7 +1057,7 @@
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="36"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="654"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="682"/>
         <source>Started runners who have not finished yet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1050,299 +1067,299 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="97"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="113"/>
         <source>Connect USB SI reader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="116"/>
         <source>USB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="120"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="142"/>
         <source>Connect BT SI reader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="123"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="145"/>
         <source>BT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="153"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="187"/>
         <source>Test sound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="160"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="194"/>
         <source>Test</source>
         <oldsource>Test punch</oldsource>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="352"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="368"/>
         <source>Show receipt</source>
         <translation type="unfinished">Afficher le reçu</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="354"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="370"/>
         <source>Print receipt</source>
         <translation type="unfinished">Afficher le reçu</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="364"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="381"/>
         <source>Show card data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="365"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="382"/>
         <source>Print card data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="999"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1027"/>
         <source>Assign card to runner</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="367"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="384"/>
         <source>Recalculate times in selected rows</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="400"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="426"/>
         <source>Recalculating times for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="429"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="455"/>
         <source>&amp;Station</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="433"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="459"/>
         <source>Station info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="450"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="476"/>
         <source>Read station memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="477"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="503"/>
         <source>&amp;Tools</source>
         <translation type="unfinished">&amp;Outils</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="479"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="505"/>
         <source>Import cards</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="481"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="507"/>
         <source>Laps only CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="486"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="512"/>
         <source>SI reader backup memory CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="493"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="519"/>
         <source>Test audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="358"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="375"/>
         <source>Show error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="360"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="377"/>
         <source>Show error long</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="678"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="706"/>
         <source>Assign card to runner	Ctrl + Enter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="235"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="751"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="251"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="779"/>
         <source>Not connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="645"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="673"/>
         <source>... and %1 more</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="649"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="677"/>
         <source>At start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="650"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="678"/>
         <source>Started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="651"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="679"/>
         <source>On track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="652"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="680"/>
         <source>Finished</source>
         <translation type="unfinished">Terminée</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="745"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="773"/>
         <source>USB: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="749"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="777"/>
         <source>BT: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="794"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="822"/>
         <source>Error open device %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="813"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="841"/>
         <source>Connecting to BT SI Reader %1 …</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="817"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="845"/>
         <source>BT SI Reader: no device address configured.
 Please set it in Settings Card reader.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="864"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="892"/>
         <source>DriverInfo: &lt;%1&gt; %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="872"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="900"/>
         <source>DriverRawData: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="883"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="911"/>
         <source>card: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="951"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="979"/>
         <source>Cannot find run for punch record SI: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="958"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="986"/>
         <source>Saved punch: %1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1026"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1054"/>
         <source>Competitor off-race</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1027"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1055"/>
         <source>Runner to which you are assinging SI card
 is currently flagged &quot;not running&quot; for this stage (race).
 If you continue, this flag will be removed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1147"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1175"/>
         <source>&lt;p&gt;CSV record must have format:&lt;/p&gt;&lt;p&gt;7203463,&quot;2,28&quot;,&quot;3,34&quot;,&quot;2,42&quot;,&quot;3,29&quot;,&quot;3,12&quot;,&quot;1,38&quot;,&quot;1,13&quot;,&quot;3,18&quot;,&quot;1,17&quot;,&quot;0,15&quot;&lt;/p&gt;&lt;p&gt;Any row can be commented by leading #&lt;/p&gt;&lt;p&gt;Decimal point is also supported, the quotes can be omited than.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1151"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1179"/>
         <source>Import CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1156"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1342"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1184"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1370"/>
         <source>Cannot open file &apos;%1&apos; for reading.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1175"/>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1346"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1203"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1374"/>
         <source>Bad stage!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1197"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1225"/>
         <source>Cannot find runs record for SI %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1198"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1226"/>
         <source>Cannot find class for SI %1!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1211"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1239"/>
         <source>SI: %1 class %2 - Number of punches (%3) and number of codes including finish (%4) should be the same! Remove or comment invalid line by #.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1337"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1365"/>
         <source>Import TXT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1426"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1454"/>
         <source>Downloading station backup ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1428"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1456"/>
         <source>Cancelled by user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1458"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1486"/>
         <source>No.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1458"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1486"/>
         <source>SI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1458"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1486"/>
         <source>DateTime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1458"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1486"/>
         <source>Card error</source>
         <translation type="unfinished">Erreur de carte</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1461"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1489"/>
         <source>Station %1 backup memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1463"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1491"/>
         <source>Station backup memory</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1354,11 +1371,6 @@ If you continue, this flag will be removed</source>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
         <source>Print new</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
-        <source>Printer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2545,7 +2557,12 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="62"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="49"/>
+        <source>Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="59"/>
         <source>Clear local changes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2559,63 +2576,63 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="68"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="71"/>
         <source>Save to DB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="70"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="73"/>
         <source>Clear DB entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="72"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="75"/>
         <source>Restore from DB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="74"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="77"/>
         <source>Restore from resources</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="80"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="83"/>
         <source>Save report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="80"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="83"/>
         <source>Failed to save report &apos;%1&apos; to the database:\n%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="87"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="90"/>
         <source>Clear report database entry</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="87"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="90"/>
         <source>Failed to clear database entry for report &apos;%1&apos;:\n%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="94"/>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="101"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="97"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="104"/>
         <source>Restore report</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="94"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="97"/>
         <source>Failed to restore report &apos;%1&apos; from the database:\n%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="101"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="104"/>
         <source>Failed to restore report &apos;%1&apos; from resources:\n%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="118"/>
+        <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="121"/>
         <source>No event open</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3193,145 +3210,145 @@ Enter a valid path to the working directory.</source>
     </message>
     <message>
         <location filename="plugins/Event/src/eventplugin.cpp" line="928"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1120"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1306"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1395"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1406"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1436"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1445"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1104"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1290"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1379"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1390"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1420"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1429"/>
         <source>Open Database Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="967"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1323"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1479"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="951"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1307"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1463"/>
         <source>Create Database Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="971"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="955"/>
         <source>Cannot create event, database is not open: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="993"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="977"/>
         <source>Edit event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1039"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1023"/>
         <source>Connected to an empty database.
 Start by creating or importing an event.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1043"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1027"/>
         <source>Working directory does not contain any event files.
 Start by creating or importing an event.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1125"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1109"/>
         <source>Database file %1 doesn&apos;t exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1135"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1119"/>
         <source>Event data version (%1) is too low, minimal version is (%2).
 Use: File --&gt; Import --&gt; Event (*.qbe) to convert event to current version.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1142"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1126"/>
         <source>Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1288"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1272"/>
         <source>Export as Quick Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1288"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1505"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1272"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1489"/>
         <source>Quick Event files *%1 (*%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1298"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1282"/>
         <source>Cannot delete existing file %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1316"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1471"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1300"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1455"/>
         <source>Creating database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1331"/>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1486"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1315"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1470"/>
         <source>Copying table %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1361"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1345"/>
         <source>Cannot delete event file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1367"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1351"/>
         <source>Cannot delete event schema &apos;%1&apos;: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1505"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1489"/>
         <source>Import as Quick Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1509"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1493"/>
         <source>Query</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1509"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1493"/>
         <source>Event will be imported as ID:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1514"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1498"/>
         <source>PostgreSQL schema must start with small letter and it may contain small letters, digits and underscores only.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1519"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1503"/>
         <source>Event ID &apos;%1&apos; exists already!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1523"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1507"/>
         <source>Open imported event &apos;%1&apos;?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1574"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1558"/>
         <source>Name</source>
         <translation type="unfinished">Nom</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1575"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1559"/>
         <source>Reg</source>
         <translation type="unfinished">Ins</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1576"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1560"/>
         <source>Lic</source>
         <translation type="unfinished">Lic</translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/eventplugin.cpp" line="1577"/>
+        <location filename="plugins/Event/src/eventplugin.cpp" line="1561"/>
         <source>SI</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3438,17 +3455,23 @@ Use: File --&gt; Import --&gt; Event (*.qbe) to convert event to current version
 <context>
     <name>Event::services::EmmaClient</name>
     <message>
-        <location filename="plugins/Event/src/services/emmaclient.cpp" line="393"/>
+        <location filename="plugins/Event/src/services/emmaclient.cpp" line="52"/>
+        <source>Uploads results and radio control data to liveresultat.
+https://liveresultat.orientering.se</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/emmaclient.cpp" line="398"/>
         <source>EmmaClient export finish txt done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/emmaclient.cpp" line="515"/>
+        <location filename="plugins/Event/src/services/emmaclient.cpp" line="520"/>
         <source>EmmaClient export start txt done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/emmaclient.cpp" line="663"/>
+        <location filename="plugins/Event/src/services/emmaclient.cpp" line="668"/>
         <source>EmmaClient export start csv done.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3558,12 +3581,12 @@ Use: File --&gt; Import --&gt; Event (*.qbe) to convert event to current version
 <context>
     <name>Event::services::OFeedClient</name>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="155"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="160"/>
         <source>OFeed event ID or password is not set.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="195"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="200"/>
         <source>The service cannot be started, OFeed credentials check has not passed.
 
 %1
@@ -3572,236 +3595,243 @@ Please open OFeed service settings and update your credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="207"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="212"/>
         <source>Do you really want to start the service without processing any changes from OFeed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="208"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="213"/>
         <source>Neither start changes from O Checklist nor late entries and changes from the office will be processed. Choose No to switch both of them on before the service starts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="212"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="217"/>
         <source>Do you really want to start the service without processing start changes from O Checklist?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="213"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="218"/>
         <source>Late entries and changes from the office will be processed. Choose No to switch the start changes processing on as well.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="217"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="222"/>
         <source>Do you really want to start the service without processing late entries and changes from the office?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="218"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="223"/>
         <source>Start changes from O Checklist will be processed. Choose No to switch the office changes processing on as well.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="274"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="279"/>
         <source>results upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="303"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="308"/>
         <source>start list upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="513"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="518"/>
         <source>Reading of the rental cards failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="522"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="527"/>
         <source>There are too many rental cards, OFeed accepts the file up to 200 kB.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="569"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="574"/>
         <source>Lookup of the rental card failed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="855"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="860"/>
         <source>Missing OFeed event credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="862"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1084"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="867"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1089"/>
         <source>Invalid OFeed URL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="885"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="890"/>
         <source>No event image is available in OFeed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="887"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="892"/>
         <source>Event image download failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="892"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="897"/>
         <source>No event image payload received from OFeed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="902"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="907"/>
         <source>Event image cached as SVG.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="921"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="926"/>
         <source>Unsupported image format received from OFeed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="933"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="938"/>
         <source>Cannot encode cached event image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="939"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="944"/>
         <source>Cached image encoding produced empty payload.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="944"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="949"/>
         <source>Event image cached (%1x%2).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1078"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1083"/>
         <source>Please fill URL, event id, and password.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1118"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1123"/>
         <source>Unexpected HTTP response</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1126"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1131"/>
         <source>Invalid JSON response.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1138"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1143"/>
         <source>Password has expired.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1140"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1145"/>
         <source>Event ID mismatch.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1142"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1147"/>
         <source>Authentication required.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1144"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1149"/>
         <source>Invalid credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1152"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1157"/>
         <source>Event not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1236"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1241"/>
         <source>OFeed — Invalid Credentials</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1237"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1242"/>
         <source>OFeed password is invalid or has expired.
 
 Please open OFeed service settings and update your credentials.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1629"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1634"/>
         <source>Exception occurred while getting changes by origin: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1789"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1815"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1840"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1866"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1794"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1820"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1845"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1871"/>
         <source>Database query failed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1886"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1891"/>
         <source>Start time of the run %1 is not valid, not set: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1904"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1909"/>
         <source>Change %1 skipped, run %2 is not in the current stage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1912"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1917"/>
         <source>Change %1 skipped, competitor of the run %2 not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1929"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1934"/>
         <source>Class change skipped, class %1 does not exist in QE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1949"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1954"/>
         <source>Changelog entry %1 failed %2 times, giving up, it stays unprocessed in OFeed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1981"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1986"/>
         <source>Lookup of the existing runner failed: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1987"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1992"/>
         <source>Runner (OFeed id) %1 exists in QE already (run id %2), only the externalId is sent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="2006"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="2011"/>
         <source>Failed to store new runner (OFeed id): </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="2031"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="2036"/>
         <source>Failed to set externalId at OFeed, changelog entry %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1776"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1794"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1820"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1845"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1870"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1934"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1781"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1799"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1825"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1850"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1875"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1939"/>
         <source>Exception occurred while executing query: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1798"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1824"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1849"/>
-        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1874"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="143"/>
+        <source>Platform for sharing data during a race, e.g. integration with OChecklist or the OFB visualization.
+https://orienteerfeed.com
+Docs: https://docs.orienteerfeed.com</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1803"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1829"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1854"/>
+        <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1879"/>
         <source>Unknown exception occurred while executing query.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4297,6 +4327,15 @@ Please open OFeed service settings and update your credentials.</source>
     </message>
 </context>
 <context>
+    <name>Event::services::OResultsClient</name>
+    <message>
+        <location filename="plugins/Event/src/services/oresultsclient.cpp" line="46"/>
+        <source>Uploads start lists and results to the OResults online results service.
+https://oresults.eu</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Event::services::OResultsClientWidget</name>
     <message>
         <location filename="plugins/Event/src/services/oresultsclientwidget.ui" line="14"/>
@@ -4370,52 +4409,58 @@ In case of unexpected errors, contact support@oresults.eu</source>
 <context>
     <name>Event::services::PunchingTestService</name>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="42"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="37"/>
+        <source>For learning the program and testing. Generates random punch data simulating situations that can occur during a real race. Generated data has TEST written in the last column.
+Do not run it in a live race!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="47"/>
         <source>Punching Test</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="51"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="56"/>
         <source>Do you really want to start the %1 service?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="54"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="59"/>
         <source>The service generates test readout data into the currently open event. It is dedicated for testing and development purposes only and must not be started for a real event.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="73"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="78"/>
         <source>Running, interval: %1 s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="132"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="137"/>
         <source>No event open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="203"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="208"/>
         <source>Waiting for handover, %1 legs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="204"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="209"/>
         <source>No eligible runners left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="248"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="253"/>
         <source>TEST</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="250"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="255"/>
         <source>TEST, data for: %1, SI %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="365"/>
+        <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="370"/>
         <source>Card SI %1, %2 controls</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4516,27 +4561,32 @@ In case of unexpected errors, contact support@oresults.eu</source>
 <context>
     <name>Event::services::RadioSenderService</name>
     <message>
-        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="38"/>
+        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="33"/>
+        <source>TCP service broadcasting run data, with start/stop controls in the UI (start gate use case).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="43"/>
         <source>Radio Sender</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="71"/>
+        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="76"/>
         <source>Invalid listen address or port</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="75"/>
+        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="80"/>
         <source>Cannot listen on %1:%2: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="79"/>
+        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="84"/>
         <source>Listening on %1:%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="101"/>
+        <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="106"/>
         <source>Listening, %1 sender(s) connected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4622,8 +4672,21 @@ In case of unexpected errors, contact support@oresults.eu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/servicewidget.ui" line="88"/>
+        <location filename="plugins/Event/src/services/servicewidget.ui" line="102"/>
         <source>neco neco</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/servicewidget.cpp" line="25"/>
+        <source>Show / hide service in the list</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Event::services::ServicesWidget</name>
+    <message>
+        <location filename="plugins/Event/src/services/serviceswidget.cpp" line="29"/>
+        <source>Choose visible services</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4771,31 +4834,37 @@ In case of unexpected errors, contact support@oresults.eu</source>
     <name>Event::services::qx::QxEventService</name>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="62"/>
+        <source>Electronic late entries.
+https://qxqx.org</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="67"/>
         <source>QX Event</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="81"/>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="86"/>
         <source>API token is not set.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="490"/>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="495"/>
         <source>Client info discovery error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="497"/>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="502"/>
         <source>Event ID: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="511"/>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="516"/>
         <source>Broker socket error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="517"/>
+        <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="522"/>
         <source>Broker login error: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5636,67 +5705,67 @@ In case of unexpected errors, contact support@oresults.eu</source>
 <context>
     <name>Model</name>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="127"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="128"/>
         <source>SI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="128"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="129"/>
         <source>Class</source>
         <translation type="unfinished">Classe</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="129"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="130"/>
         <source>Name</source>
         <translation type="unfinished">Nom</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="130"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="131"/>
         <source>Reg</source>
         <translation type="unfinished">Ins</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="131"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="132"/>
         <source>Bib</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="132"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="133"/>
         <source>Start</source>
         <translation type="unfinished">Départ</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="133"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="134"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="134"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="135"/>
         <source>Finish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="135"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="136"/>
         <source>Run flags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="136"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="137"/>
         <source>CR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="136"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="137"/>
         <source>Card rent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="137"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="138"/>
         <source>CRT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="142"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="143"/>
         <source>Error</source>
         <translation type="unfinished">Erreur</translation>
     </message>
@@ -5709,99 +5778,104 @@ In case of unexpected errors, contact support@oresults.eu</source>
         <translation type="obsolete">Disqualifié</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="137"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="138"/>
         <source>Card in rent table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="138"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="139"/>
         <source>Card returned</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="138"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="139"/>
         <source>CRET</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="139"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="140"/>
         <source>CTIME</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="139"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="140"/>
         <source>Card check time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="140"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="141"/>
         <source>STIME</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="140"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="141"/>
         <source>Card start time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="141"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="142"/>
         <source>FTIME</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="141"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="142"/>
         <source>Card finish time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="142"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="143"/>
         <source>Assign card to runner error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="194"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
+        <source>Printer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="207"/>
         <source>NC</source>
         <comment>NotCompeting</comment>
         <translation type="unfinished">NP</translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="196"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="209"/>
         <source>MP</source>
         <comment>MisPunch</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="198"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="211"/>
         <source>BC</source>
         <comment>BadCheck</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="200"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="213"/>
         <source>DNS</source>
         <comment>DidNotStart</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="202"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="215"/>
         <source>DNF</source>
         <comment>DidNotFinish</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="204"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="217"/>
         <source>DO</source>
         <comment>disqualifiedByOrganizer</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="206"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="219"/>
         <source>OT</source>
         <comment>OverTime</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="208"/>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="221"/>
         <source>DSQ</source>
         <comment>Disqualified</comment>
         <translation type="unfinished"></translation>
@@ -6215,30 +6289,30 @@ Imported: %1 of %2 clubs.</source>
 <context>
     <name>Receipts::ReceiptsPlugin</name>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="705"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="706"/>
         <source>Card</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="753"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="754"/>
         <source>Error</source>
         <translation type="unfinished">Erreur</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="787"/>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="811"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="788"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="812"/>
         <source>Warning</source>
         <translation type="unfinished">Avertissement</translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="787"/>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="811"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="788"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="812"/>
         <source>Receipt report type is not defined.
 Please go to Settings-&gt;Receipts and set receipt type.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="791"/>
+        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="792"/>
         <source>Receipt</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7148,39 +7222,39 @@ Press refresh button to show imported data.</source>
 <context>
     <name>Runs::RunsPlugin</name>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="145"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="154"/>
         <source>&amp;Runs</source>
         <translation type="unfinished">&amp;Courses</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="162"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="171"/>
         <source>Event statistics</source>
         <translation>Statistiques de l&apos;évènement</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="1338"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="1347"/>
         <source>E%1 IOF XML stage results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2113"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2577"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2122"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2586"/>
         <source>Start list by classes</source>
         <translation>Démarrer la liste par les classes</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2146"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2676"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2155"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2685"/>
         <source>Start list by clubs</source>
         <translation>Démarrer la liste par les clubs</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2176"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2185"/>
         <source>Start list for starters</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2213"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2222"/>
         <source>Start list by classes for %n stage(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -7188,7 +7262,7 @@ Press refresh button to show imported data.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2249"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2258"/>
         <source>Start list by clubs for %n stage(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -7196,8 +7270,8 @@ Press refresh button to show imported data.</source>
         </translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2277"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2307"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2286"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2316"/>
         <source>Results by classes</source>
         <translation>Résultats par classe</translation>
     </message>
@@ -7206,8 +7280,8 @@ Press refresh button to show imported data.</source>
         <translation type="vanished">Prix d&apos;étape</translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2362"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2388"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2371"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2397"/>
         <source>Results after %n stage(s)</source>
         <translation>
             <numerusform>Résultats après %n étape</numerusform>
@@ -7219,7 +7293,7 @@ Press refresh button to show imported data.</source>
         <translation type="vanished">Prix après %1 étapes</translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2447"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2456"/>
         <source>Points after %n stage(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -7227,7 +7301,7 @@ Press refresh button to show imported data.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2477"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2486"/>
         <source>Results by points after %n stage(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -7235,169 +7309,169 @@ Press refresh button to show imported data.</source>
         </translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2528"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2734"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2537"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2743"/>
         <source>length:</source>
         <translation>longueur :</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2530"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2736"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2539"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2745"/>
         <source>climb:</source>
         <translation>dénivelé :</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2533"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2631"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2740"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2864"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2542"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2640"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2749"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2873"/>
         <source>Top</source>
         <translation>Haut</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2546"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2644"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2555"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2653"/>
         <source>St. Num</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2547"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2646"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2748"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2872"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2973"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2556"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2655"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2757"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2881"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2982"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2548"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2647"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2749"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2873"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2987"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2557"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2656"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2758"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2882"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2996"/>
         <source>Registration</source>
         <translation>Inscription</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2549"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2648"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2558"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2657"/>
         <source>SI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2550"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2649"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2559"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2658"/>
         <source>Start</source>
         <translation>Départ</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2645"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2654"/>
         <source>Class</source>
         <translation>Classe</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2691"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2700"/>
         <source>Preparing data</source>
         <translation>Préparation des données</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2720"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2850"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2729"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2859"/>
         <source>Procesing class %1</source>
         <translation>Traitement de la classe %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2739"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2748"/>
         <source>Laps</source>
         <translation>Délais</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2747"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2871"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2972"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2756"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2880"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2981"/>
         <source>Place</source>
         <translation>Place</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2750"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2874"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2759"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2883"/>
         <source>Club</source>
         <translation>Club</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2751"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2882"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2974"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2760"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2891"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2983"/>
         <source>Time</source>
         <translation>Heure</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2752"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2883"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2975"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2761"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2892"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2984"/>
         <source>Loss</source>
         <translation>Perte</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2922"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2931"/>
         <source>NC</source>
         <comment>Not Competing</comment>
         <translation>NP</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2925"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2934"/>
         <source>DISQ</source>
         <translation type="unfinished">DISQ</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="3243"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="3252"/>
         <source>E%1 IOF XML stage startlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2788"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2939"/>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="3066"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2797"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2948"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="3075"/>
         <source>Stage results</source>
         <translation>Résultats de l&apos;étape</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="180"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="189"/>
         <source>Late entries</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2807"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2816"/>
         <source>Warning</source>
         <translation>Avertissement</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2807"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2816"/>
         <source>Export error</source>
         <translation>Erreur d&apos;exportation</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2809"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2818"/>
         <source>Information</source>
         <translation>Information</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2809"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2818"/>
         <source>Results exported to %1</source>
         <translation>Résultats exportés vers %1</translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2829"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2838"/>
         <source>Overall results after stage %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2879"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2888"/>
         <source>Stage %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Runs/src/runsplugin.cpp" line="2980"/>
+        <location filename="plugins/Runs/src/runsplugin.cpp" line="2989"/>
         <source>FIN</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7408,6 +7482,14 @@ Press refresh button to show imported data.</source>
         <location filename="plugins/Runs/src/runssettingspage.cpp" line="35"/>
         <source>Runs</source>
         <translation type="unfinished">Courses</translation>
+    </message>
+</context>
+<context>
+    <name>Runs::services::ResultsExporter</name>
+    <message>
+        <location filename="plugins/Runs/src/services/resultsexporter.cpp" line="42"/>
+        <source>Exports results in the selected format (XML, HTML, ...) at the selected interval to the selected directory.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -8655,9 +8737,13 @@ Click to exclude this slot&apos;s classes from start time clash checks.</source>
 <context>
     <name>drawing::DrawingGanttWidget</name>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished">Formulaire</translation>
+        <translation type="obsolete">Formulaire</translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.ui" line="14"/>
+        <source>Classes layout editor</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.ui" line="47"/>
@@ -8670,108 +8756,149 @@ Click to exclude this slot&apos;s classes from start time clash checks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="25"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="33"/>
         <source>Draw tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="35"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="43"/>
         <source>Write start times and start slots of all classes back to the Classes table
 according to the current layout.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="36"/>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="64"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="44"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="74"/>
         <source>Find class by name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="47"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="55"/>
         <source>Click a conflict to highlight it in the layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="63"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="70"/>
+        <source>Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="73"/>
         <source>Class</source>
         <translation type="unfinished">Classe</translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="69"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="79"/>
+        <source>Show classes for</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="81"/>
+        <source>Select the start number for class draw preparation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="85"/>
+        <source>Lock intervals</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="86"/>
+        <source>Prevent changing start intervals with the mouse wheel or interval arrows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="91"/>
         <source>Runners clash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="70"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="92"/>
         <source>Highlight classes overlapping in time which share the first control
 and whose start intervals would let two runners punch it at the same moment.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="71"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="93"/>
         <source>Courses clash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="72"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="94"/>
         <source>Highlight classes overlapping in time which run on the same course.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="110"/>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="213"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="117"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="267"/>
         <source>Show all conflicts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="112"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="119"/>
         <source>Show the list of start time conflicts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="128"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="132"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="183"/>
         <source>Unsaved changes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="129"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="133"/>
         <source>The start times layout has unsaved changes.
 Do you want to save them before closing?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="143"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="148"/>
         <source>E%1 Draw tool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="149"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="163"/>
+        <source>Start %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="167"/>
+        <source>Start</source>
+        <translation type="unfinished">Départ</translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="184"/>
+        <source>The current start layout has unsaved changes. Save them before switching starts?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="203"/>
         <source>Save classes start times</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="150"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="204"/>
         <source>All the user edited classes start times and start intervals will be overridden.
 Do you want to save your changes?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="190"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="244"/>
         <source>%1 × %2 — same course %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="192"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="246"/>
         <source>%1 × %2 — first control %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="196"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="250"/>
         <source>No conflicts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="213"/>
+        <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="267"/>
         <source>Show all conflicts (%1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8864,6 +8991,37 @@ editing is disabled.</source>
     <message>
         <location filename="plugins/Receipts/qml/reports/errorlong.qml" line="48"/>
         <source>!!! Error !!!</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <location filename="src/main.cpp" line="134"/>
+        <source>QuickEvent did not exit correctly last time.
+If you are going to report a problem, please attach the log.
+
+Log file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="137"/>
+        <source>QuickEvent</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="139"/>
+        <source>Copy log to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="140"/>
+        <source>Open log folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="141"/>
+        <source>Report issue on GitHub</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
