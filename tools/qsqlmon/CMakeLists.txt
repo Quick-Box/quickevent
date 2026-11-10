@@ -54,7 +54,7 @@ qt6_add_lupdate(qsqlmon TS_FILES
 	)
 
 target_sources(qsqlmon PRIVATE ${QM_FILES})
-target_link_libraries(qsqlmon PRIVATE libqfgui)
+target_link_libraries(qsqlmon PRIVATE libqfgui Qt::Network)
 target_include_directories(qsqlmon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 if(APPLE)

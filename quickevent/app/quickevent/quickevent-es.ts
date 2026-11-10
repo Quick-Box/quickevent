@@ -1393,6 +1393,26 @@ Si continúas, se eliminará esta distinción</translation>
         <source>SI: %1 class %2 - Number of punches (%3) and number of codes including finish (%4) should be the same! Remove or comment invalid line by #.</source>
         <translation>SportIdent %1 categoría %2 - ¡Número de picadas %3 y el número de controles incluyendo la meta (%4) tienen que ser el mismo! Elimine o comente la línea invalida con #.</translation>
     </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="97"/>
+        <source>Print receipts for all cards in the current stage which have not been printed yet. When &apos;This reader only&apos; is enabled in the settings, only cards read by this client are printed.</source>
+        <translation>Imprime los tickets de todas las tarjetas de la etapa actual que aún no se han impreso. Si &apos;Esta estación de lectura únicamente&apos; está activado en la configuración, solo se imprimen las tarjetas leídas por este cliente.</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="100"/>
+        <source>Print new</source>
+        <translation>Imprimir nuevo</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
+        <source>Printer</source>
+        <translation>Impresora</translation>
+    </message>
+    <message>
+        <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="372"/>
+        <source>Print receipts for selected rows</source>
+        <translation>Imprimir tickets para las filas seleccionadas</translation>
+    </message>
 </context>
 <context>
     <name>ChooseOrisEventDialog</name>
@@ -6583,11 +6603,6 @@ Imported: %1 of %2 clubs.</source>
 <context>
     <name>Receipts::ReceiptsPlugin</name>
     <message>
-        <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="305"/>
-        <source>Receipts</source>
-        <translation>Tickets</translation>
-    </message>
-    <message>
         <location filename="plugins/Receipts/src/receiptsplugin.cpp" line="705"/>
         <source>Card</source>
         <translation>Chip</translation>
@@ -6956,70 +6971,6 @@ Por favor, elija una plantilla primero.</translation>
         <location filename="plugins/Receipts/src/receiptssettings.cpp" line="75"/>
         <source>Character</source>
         <translation>Caracter</translation>
-    </message>
-</context>
-<context>
-    <name>ReceiptsWidget</name>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="14"/>
-        <source>Form</source>
-        <translation>Formulario</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.ui" line="66"/>
-        <source>Print new</source>
-        <translation>Imprimir nuevo</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="67"/>
-        <source>SI</source>
-        <translation>SI</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="68"/>
-        <source>Class</source>
-        <translation>Categoría</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="69"/>
-        <source>Name</source>
-        <translation>Nombre</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="70"/>
-        <source>Reg</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="71"/>
-        <source>Start</source>
-        <translation>Salida</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="72"/>
-        <source>Time</source>
-        <translation>Tiempo</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="79"/>
-        <source>printer</source>
-        <translation>Impresora</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="212"/>
-        <source>Print receipts for selected rows</source>
-        <oldsource>Print selected cards</oldsource>
-        <translation>Imprimir tickets para las filas seleccionadas</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="213"/>
-        <source>Show receipt</source>
-        <translation>Mostrar ticket</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/src/receiptswidget.cpp" line="215"/>
-        <source>Show card data</source>
-        <translation type="unfinished">Mostrar datos de la pinza</translation>
     </message>
 </context>
 <context>
@@ -9414,6 +9365,40 @@ editing is disabled.</source>
         <location filename="plugins/Receipts/qml/reports/errorlong.qml" line="48"/>
         <source>!!! Error !!!</source>
         <translation type="unfinished">¡¡¡ Error !!!</translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <location filename="src/main.cpp" line="134"/>
+        <source>QuickEvent did not exit correctly last time.
+If you are going to report a problem, please attach the log.
+
+Log file: %1</source>
+        <translation>QuickEvent no se cerró correctamente la última vez.
+Si va a informar de un problema, adjunte el registro.
+
+Archivo de registro: %1</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="137"/>
+        <source>QuickEvent</source>
+        <translation>QuickEvent</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="139"/>
+        <source>Copy log to clipboard</source>
+        <translation>Copiar registro al portapapeles</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="140"/>
+        <source>Open log folder</source>
+        <translation>Abrir carpeta de registros</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="141"/>
+        <source>Report issue on GitHub</source>
+        <translation>Informar del problema en GitHub</translation>
     </message>
 </context>
 <context>

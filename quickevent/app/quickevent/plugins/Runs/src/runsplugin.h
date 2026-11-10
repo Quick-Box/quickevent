@@ -108,6 +108,8 @@ public:
 	qf::core::sql::QueryBuilder startListQuery();
 	QVariantMap startListRecord(int run_id);
 
+	/// classes with competitors having rented card in stage
+	qf::core::utils::TreeTable competitorsWithCardRentTable(int stage_id);
 	qf::core::utils::TreeTable startListClassesTable(int stage_id, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	qf::core::utils::TreeTable startListClubsTable(int stage_id, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format, const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by);
 	qf::core::utils::TreeTable startListStartersTable(int stage_id, const QString &where_expr, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);

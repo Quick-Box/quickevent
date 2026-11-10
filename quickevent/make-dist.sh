@@ -131,7 +131,7 @@ BUILD_DIR=$WORK_DIR/_build
 DIST_DIR=$WORK_DIR/$DISTRO_NAME
 DIST_LIB_DIR=$DIST_DIR/lib
 DIST_BIN_DIR=$DIST_DIR/bin
-DIST_QML_DIR=$DIST_DIR/qml
+# DIST_QML_DIR=$DIST_DIR/qml
 
 if [ -z $NO_CLEAN ]; then
 	echo removing directory $WORK_DIR
@@ -163,12 +163,12 @@ $RSYNC $QT_LIB_DIR/libQt5XmlPatterns.so* $DIST_LIB_DIR
 $RSYNC $QT_LIB_DIR/libQt5Network.so* $DIST_LIB_DIR
 $RSYNC $QT_LIB_DIR/libQt5Sql.so* $DIST_LIB_DIR
 $RSYNC $QT_LIB_DIR/libQt5Xml.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Qml.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Quick.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5QmlModels.so* $DIST_LIB_DIR
+# $RSYNC $QT_LIB_DIR/libQt5Qml.so* $DIST_LIB_DIR
+# $RSYNC $QT_LIB_DIR/libQt5Quick.so* $DIST_LIB_DIR
+# $RSYNC $QT_LIB_DIR/libQt5QmlModels.so* $DIST_LIB_DIR
 $RSYNC $QT_LIB_DIR/libQt5Svg.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5Script.so* $DIST_LIB_DIR
-$RSYNC $QT_LIB_DIR/libQt5ScriptTools.so* $DIST_LIB_DIR
+# $RSYNC $QT_LIB_DIR/libQt5Script.so* $DIST_LIB_DIR
+# $RSYNC $QT_LIB_DIR/libQt5ScriptTools.so* $DIST_LIB_DIR
 $RSYNC $QT_LIB_DIR/libQt5PrintSupport.so* $DIST_LIB_DIR
 $RSYNC $QT_LIB_DIR/libQt5SerialPort.so* $DIST_LIB_DIR
 $RSYNC $QT_LIB_DIR/libQt5DBus.so* $DIST_LIB_DIR
@@ -191,8 +191,8 @@ $RSYNC $QT_DIR/plugins/sqldrivers/libqsqlpsql.so $DIST_BIN_DIR/sqldrivers/
 mkdir -p $DIST_BIN_DIR/audio
 $RSYNC $QT_DIR/plugins/audio/ $DIST_BIN_DIR/audio/
 
-mkdir -p $DIST_QML_DIR
-$RSYNC $QT_DIR/qml/QtQml $DIST_BIN_DIR/
+# mkdir -p $DIST_QML_DIR
+# $RSYNC $QT_DIR/qml/QtQml $DIST_BIN_DIR/
 
 ARTIFACTS_DIR=$WORK_DIR/artifacts
 mkdir -p $ARTIFACTS_DIR
@@ -201,4 +201,3 @@ tar -cvzf $ARTIFACTS_DIR/$DISTRO_NAME.tgz  -C $WORK_DIR ./$DISTRO_NAME
 
 rsync -av $SRC_DIR/$APP_NAME/distro/QuickEvent.AppDir/* $DIST_DIR/
 ARCH=x86_64 $APP_IMAGE_TOOL $DIST_DIR $ARTIFACTS_DIR/$APP_NAME-${APP_VER}-linux64.AppImage
-

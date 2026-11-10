@@ -92,6 +92,22 @@
          <number>0</number>
         </property>
         <item>
+         <widget class="QPushButton" name="btPrintNew">
+          <property name="toolTip">
+           <string>Print receipts for all cards in the current stage which have not been printed yet. When 'This reader only' is enabled in the settings, only cards read by this client are printed.</string>
+          </property>
+          <property name="text">
+           <string>Print new</string>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btUsbReader">
           <property name="toolTip">
            <string>Connect USB SI reader</string>
@@ -112,6 +128,12 @@
           <property name="checkable">
            <bool>true</bool>
           </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
          </widget>
         </item>
         <item>
@@ -124,6 +146,18 @@
           </property>
           <property name="checkable">
            <bool>true</bool>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
          </widget>
         </item>

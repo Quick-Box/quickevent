@@ -1,5 +1,4 @@
 #include "receiptsplugin.h"
-#include "receiptswidget.h"
 #include "receiptsprinter.h"
 #include "receiptssettings.h"
 #include "receiptssettingspage.h"
@@ -13,10 +12,14 @@
 
 #include <qf/core/utils/settings.h>
 #include <qf/core/utils/treetable.h>
+#include <qf/core/assert.h>
+#include <qf/core/sql/connection.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/query.h>
 #include <qf/core/sql/querybuilder.h>
 #include <qf/gui/model/sqltablemodel.h>
 
+#include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/dialog.h>
 #include <qf/gui/reports/widgets/reportviewwidget.h>
@@ -25,7 +28,6 @@
 #include <qf/gui/reports/processor/reportpainter.h>
 #include <plugins/CardReader/src/cardreaderplugin.h>
 #include <plugins/Event/src/eventplugin.h>
-#include "partwidget.h"
 
 #include <QDomDocument>
 #include <QCryptographicHash>
@@ -47,7 +49,6 @@
 
 namespace qfu = qf::core::utils;
 namespace qff = qf::gui::framework;
-using ::PartWidget;
 using qff::getPlugin;
 using Event::EventPlugin;
 using CardReader::CardReaderPlugin;
@@ -300,9 +301,9 @@ ReceiptsPlugin::ReceiptsPlugin(QObject *parent)
 	connect(this, &ReceiptsPlugin::installed, this, &ReceiptsPlugin::onInstalled);
 }
 
-void ReceiptsPlugin::onInstalled()
+void ReceiptsPlugin::onInstalled() const
 {
-	qff::initPluginWidget<ReceiptsWidget, PartWidget>(tr("Receipts"), featureId());
+	connect(getPlugin<EventPlugin>(), &EventPlugin::dbEventNotify, this, &ReceiptsPlugin::onDbEventNotify, Qt::QueuedConnection);
 	auto core_plugin = qf::gui::framework::getPlugin<Core::CorePlugin>();
 	core_plugin->settingsDialog()->addPage(new ReceiptsSettingsPage());
 }
@@ -404,6 +405,7 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 	bool is_card_lent = getPlugin<CardReaderPlugin>()->isCardLent(read_card.cardNumber(), read_card.finishTime(), run_id);
 	int stage_id = 0;
 	int course_id = checked_card.courseId();
+	int course_length = 0;
 	int leg = 0;
 	int relay_num = 0;
 	int current_standings = 1;
@@ -586,6 +588,7 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 					QString fld_name = rec.fieldName(i);
 					tt.setValue(fld_name, rec.value(i));
 				}
+				course_length = q.value("length").toInt();
 			}
 		}
 		{
@@ -663,7 +666,16 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 				}
 			}
 			tt.setValue("extraCodes", xc);
+			QStringList xcs;
+			for(const auto &v : xc) {
+				auto xca = v.toList();
+				xcs << QStringLiteral("%1-%2").arg(xca.value(0).toInt()).arg(xca.value(1).toInt());
+			}
+			tt.setValue("extraCodesText", xcs.join(", "));
 		}
+		tt.setValue("courses.length", course_length);
+		if(course_length > 0)
+			tt.setValue("paceMsPerKm", (checked_card.timeMs() / course_length) * 1000);
 		tt.setValue("currentStandings", current_standings);
 		tt.setValue("competitorsFinished", competitors_finished);
 		tt.setValue("timeMs", checked_card.timeMs());
@@ -703,7 +715,7 @@ void ReceiptsPlugin::previewCard(int card_id)
 	auto *w = new qf::gui::reports::ReportViewWidget();
 	w->setPersistentSettingsId("cardPreview");
 	w->setWindowTitle(tr("Card"));
-	w->setReport(findReportFile("sicard.qml"));
+	w->setReport(findReportFile("sicard.qrep"));
 	QVariantMap dt = readCardTablesData(card_id);
 	for(const auto &[k, v] : dt.asKeyValueRange()) {
 		w->setTableData(k, v);
@@ -720,7 +732,7 @@ bool ReceiptsPlugin::printCard(int card_id)
 	QF_TIME_SCOPE("ReceiptsPlugin::printCard()");
 	try {
 		QVariantMap dt = readCardTablesData(card_id);
-		return receiptsPrinter()->printReceipt("sicard.qml", dt, card_id);
+		return receiptsPrinter()->printReceipt("sicard.qrep", dt, card_id);
 	}
 	catch(const qf::core::Exception &e) {
 		qfError() << e.toString();
@@ -789,7 +801,7 @@ void ReceiptsPlugin::previewReceipt(int card_id)
 	}
 	w->setPersistentSettingsId("cardPreview");
 	w->setWindowTitle(tr("Receipt"));
-	w->setReport(findReportFile(settings.receiptPath()));
+	w->setReport(findReportFile(settings.receiptReportPath()));
 	QVariantMap dt = receiptTablesData(card_id);
 	for(const auto &[k, v] : dt.asKeyValueRange()) {
 		w->setTableData(k, v);
@@ -812,7 +824,7 @@ bool ReceiptsPlugin::printReceipt(int card_id)
 			return false;
 		}
 		QVariantMap dt = receiptTablesData(card_id);
-		return receiptsPrinter()->printReceipt(settings.receiptPath(), dt, card_id);
+		return receiptsPrinter()->printReceipt(settings.receiptReportPath(), dt, card_id);
 	}
 	catch(const qf::core::Exception &e) {
 		qfError() << e.toString();
@@ -822,13 +834,107 @@ bool ReceiptsPlugin::printReceipt(int card_id)
 
 bool ReceiptsPlugin::isAutoPrintEnabled()
 {
-	return qff::MainWindow::frameWork()->findChild<ReceiptsWidget *>("ReceiptsWidget")->isAutoPrintEnabled();
+	return ReceiptsSettings().isAutoPrint();
 }
 
 void ReceiptsPlugin::printOnAutoPrintEnabled(int card_id)
 {
-	if(isAutoPrintEnabled())
-		printReceipt(card_id);
+	if(isAutoPrintEnabled()) {
+		printReceiptsAndMark({card_id});
+	}
+}
+
+void ReceiptsPlugin::onDbEventNotify(const QString &domain, int connection_id, const QVariant &data)
+{
+	if(domain != QLatin1String(EventPlugin::DBEVENT_CARD_READ)) {
+		return;
+	}
+	if(!isAutoPrintEnabled()) {
+		return;
+	}
+	int this_connection_id = qf::core::sql::Connection::forName().connectionId();
+	if(ReceiptsSettings().isThisReaderOnly() && connection_id != this_connection_id) {
+		return;
+	}
+	printReceiptAndMark(data.toInt(), this_connection_id);
+}
+
+void ReceiptsPlugin::printReceiptsAndMark(const QList<int> &card_ids)
+{
+	int connection_id = qf::core::sql::Connection::forName().connectionId();
+	for(int card_id : card_ids) {
+		if(!printReceiptAndMark(card_id, connection_id)) {
+			break;
+		}
+	}
+}
+
+bool ReceiptsPlugin::printReceiptAndMark(int card_id, int connection_id)
+{
+	try {
+		bool ok = false;
+		qf::core::sql::Query q;
+		if(q.execThrow("SELECT runId FROM cards WHERE id=" QF_IARG(card_id))) {
+			if(q.next()) {
+				int run_id = q.value(0).toInt();
+				if(run_id > 0) {
+					ok = printReceipt(card_id);
+				}
+				else {
+					ReceiptsSettings settings;
+					auto runner_not_found = settings.whenRunnerNotFoundPrintEnum();
+					if(runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfo) {
+						ok = printError(card_id, "error.qml");
+					}
+					else if(runner_not_found == ReceiptsSettings::WhenRunnerNotFoundPrint::ErrorInfoLong) {
+						ok = printError(card_id, "errorlong.qml");
+					}
+					else {
+						ok = printCard(card_id);
+					}
+				}
+			}
+		}
+		if(ok) {
+			if(connection_id > 0) {
+				qff::Application::instance()->qxSql()->updateRecord("cards", card_id, {{"printerConnectionId", connection_id}}, this);
+			}
+			else {
+				qfWarning() << "Cannot get SQL connection id, card:" << card_id << "not marked as printed";
+			}
+		}
+		return ok;
+	}
+	catch(const qf::core::Exception &e) {
+		qfError() << e.toString();
+	}
+	return false;
+}
+
+void ReceiptsPlugin::printNewCards()
+{
+	int connection_id = qf::core::sql::Connection::forName().connectionId();
+	QF_ASSERT(connection_id > 0, "Cannot get SQL connection id", return);
+	int current_stage = getPlugin<EventPlugin>()->currentStageId();
+	QString qs = "SELECT id FROM cards"
+			" WHERE printerConnectionId IS NULL"
+			" AND stageId=" QF_IARG(current_stage);
+	if(ReceiptsSettings().isThisReaderOnly()) {
+		qs += " AND readerConnectionId=" QF_IARG(connection_id);
+	}
+	qs += " ORDER BY id DESC";
+	try {
+		qf::core::sql::Query q;
+		q.execThrow(qs);
+		while(q.next()) {
+			if(!printReceiptAndMark(q.value(0).toInt(), connection_id)) {
+				break;
+			}
+		}
+	}
+	catch(const qf::core::Exception &e) {
+		qfError() << e.toString();
+	}
 }
 
 

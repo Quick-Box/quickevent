@@ -38,8 +38,6 @@ PartWidget::~PartWidget()
 {
 	qfLogFuncFrame() << this << "title:" << title();
 	//savePersistentSettingsRecursively();
-	qDeleteAll(m_attachedObjects);
-	m_attachedObjects.clear();
 }
 
 void PartWidget::setTitle(QString arg)
@@ -142,15 +140,6 @@ QIcon PartWidget::createIcon()
 	return ico;
 }
 
-QQmlListProperty<QObject> PartWidget::attachedObjects()
-{
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-	return QQmlListProperty<QObject>(this, m_attachedObjects);
-#else
-	return QQmlListProperty<QObject>(this, &m_attachedObjects);
-#endif
-}
-
 /*
 bool PartWidget::canActivate(bool active_on)
 {
@@ -159,11 +148,6 @@ bool PartWidget::canActivate(bool active_on)
 	return true;
 }
 */
-QQmlListProperty<QWidget> PartWidget::widgets()
-{
-	return m_centralFrame->widgets();
-}
-
 qf::gui::Frame *PartWidget::centralFrame()
 {
 	QF_ASSERT_EX(m_centralFrame != nullptr, "Centralframe is NULL");
@@ -195,10 +179,3 @@ void PartWidget::savePersistentSettings()
 {
 }
 
-void PartWidget::classBegin()
-{
-}
-
-void PartWidget::componentComplete()
-{
-}

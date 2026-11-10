@@ -106,16 +106,6 @@ void ReportItem::createHtmlExportAttributes(ReportItem::HTMLElement &out) const
 	}
 }
 
-void ReportItem::classBegin()
-{
-	qfLogFuncFrame();
-}
-
-void ReportItem::componentComplete()
-{
-	qfLogFuncFrame();
-}
-
 QString ReportItem::toString(int indent, int indent_offset)
 {
 	Q_UNUSED(indent);

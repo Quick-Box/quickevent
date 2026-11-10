@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report width="210" height="297" hinset="5" vinset="5" textStyle="default">
+	<styleSheet>
+		<include src="style.qrepi"/>
+	</styleSheet>
+	<Frame width="%" height="%" layout="LayoutStacked">
+		<include src="HeaderFooter.qrepi"/>
+		<Band vinset="5" width="%" height="%" createFromData="true">
+			<Frame width="%" vinset="5">
+				<Para textStyle="big">{{title}}</Para>
+				<Para>{{note}}</Para>
+			</Frame>
+		</Band>
+	</Frame>
+</Report>

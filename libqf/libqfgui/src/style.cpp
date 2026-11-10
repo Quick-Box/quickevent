@@ -114,7 +114,7 @@ Style *Style::instance()
 		}
 		return style;
 	}
-	qfError() << "qf::qmlwidget::Style::instance is available only when QCoreApplication instance exists.";
+	qfError() << "Style::instance is available only when QCoreApplication instance exists.";
 	return nullptr;
 }
 

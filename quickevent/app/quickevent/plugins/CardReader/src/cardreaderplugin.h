@@ -4,7 +4,6 @@
 #include <qf/core/utils.h>
 #include <qf/gui/framework/plugin.h>
 
-#include <QQmlListProperty>
 
 namespace quickevent { namespace core { namespace si { class PunchRecord; class ReadCard; class CheckedCard; }}}
 
@@ -17,7 +16,6 @@ class CardChecker;
 class CardReaderPlugin : public qf::gui::framework::Plugin
 {
 	Q_OBJECT
-	//Q_PROPERTY(QQmlListProperty<CardReader::CardChecker> cardCheckers READ cardCheckersListProperty)
 	//Q_PROPERTY(int currentCardCheckerIndex READ currentCardCheckerIndex WRITE setCurrentCardCheckerIndex NOTIFY currentCardCheckerIndexChanged)
 private:
 	typedef qf::gui::framework::Plugin Super;
@@ -47,7 +45,6 @@ public:
 	Q_SIGNAL void siTaskFinished(int task_type, QVariant result, QString reader_message = QString());
 private:
 	void onInstalled();
-	QQmlListProperty<CardChecker> cardCheckersListProperty();
 
 	void updateCardToRunAssignmentInPunches(int stage_id, int card_id, int run_id);
 	bool saveCardAssignedRunnerIdSql(int card_id, int run_id);

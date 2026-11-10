@@ -9,8 +9,6 @@
 #include <qf/core/utils.h>
 
 #include <QDialog>
-#include <QQmlListProperty>
-#include <QQmlParserStatus>
 #include <QDialogButtonBox>
 
 class QLabel;

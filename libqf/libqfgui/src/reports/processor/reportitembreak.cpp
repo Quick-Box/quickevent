@@ -27,6 +27,7 @@ ReportItem::PrintResult ReportItemBreak::printMetaPaint(QPaintDevice *paint_devi
 	Q_UNUSED(paint_device);
 	Q_UNUSED(bounding_rect);
 	Q_UNUSED(out);
+	updatePrintBindings();
 	if(!isVisible()) {
 		return PrintResult::createPrintFinished();
 	}

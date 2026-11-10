@@ -44,6 +44,7 @@ QDomText setElementText(QDomElement &el, const QString &str)
 ReportItem::PrintResult ReportItemFrame::printHtml(HTMLElement & out)
 {
 	qfLogFuncFrame();
+	updatePrintBindings();
 	PrintResult res = Super::printHtml(out);
 	if(!isVisible())
 		return res;

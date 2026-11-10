@@ -11,6 +11,18 @@ namespace qfu = qf::core::utils;
 
 using namespace qf::gui::reports;
 
+namespace {
+// built-in reports were QML files before
+QString builtInReportFileName(const QString &file_name)
+{
+	if(file_name == QLatin1String(":/qf/gui/reports/portrait.qml"))
+		return QStringLiteral(":/qf/gui/reports/portrait.qrep");
+	if(file_name == QLatin1String(":/qf/gui/reports/landscape.qml"))
+		return QStringLiteral(":/qf/gui/reports/landscape.qrep");
+	return file_name;
+}
+}
+
 PrintTableViewWidget::PrintTableViewWidget(TableView *table_view, QWidget *parent) :
 	Super(parent),
 	IPersistentOptions(this),
@@ -20,8 +32,8 @@ PrintTableViewWidget::PrintTableViewWidget(TableView *table_view, QWidget *paren
 	connect(ui->btChooseReportFileName, &QPushButton::clicked, this, &PrintTableViewWidget::chooseReporFileName);
 	{
 		QComboBox *cbx = ui->lstQrcReports;
-		cbx->addItem(tr("portrait"), ":/qf/gui/reports/portrait.qml");
-		cbx->addItem(tr("landscape"), ":/qf/gui/reports/landscape.qml");
+		cbx->addItem(tr("portrait"), ":/qf/gui/reports/portrait.qrep");
+		cbx->addItem(tr("landscape"), ":/qf/gui/reports/landscape.qrep");
 		cbx->setCurrentIndex(-1);
 		connect(cbx, &QComboBox::activated, this, &PrintTableViewWidget::onLstQrcReportsActivated);
 	}
@@ -55,7 +67,7 @@ void PrintTableViewWidget::chooseReporFileName()
 		if(report_dir.isEmpty())
 			report_dir = qfu::FileUtils::homeDir();
 	}
-	QString fn = QFileDialog::getOpenFileName(this, tr("Open report file"), report_dir, tr("QML reports (*.qml)"));
+	QString fn = QFileDialog::getOpenFileName(this, tr("Open report file"), report_dir, tr("Reports (*.qrep)"));
 	if(!fn.isEmpty()) {
 		recently_used_report_dir = qfu::FileUtils::dir(fn);
 		ui->edReportFileName->setText(fn);
@@ -111,7 +123,7 @@ void PrintTableViewWidget::setExportOptions(const QVariant& opts) const
 	QVariantMap m = opts.toMap();
 	ui->edReportTitle->setText(m.value("report").toMap().value("title").toString());
 	ui->edNote->setText(m.value("report").toMap().value("note").toString());
-	ui->edReportFileName->setText(m.value("report").toMap().value("fileName").toString());
+	ui->edReportFileName->setText(builtInReportFileName(m.value("report").toMap().value("fileName").toString()));
 	ui->chkSelectedRowsOnly->setChecked(m.value("options").toMap().value("selectedRowsOnly").toBool());
 }
 

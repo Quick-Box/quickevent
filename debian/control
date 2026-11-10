@@ -85,12 +85,6 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libsiut (= ${binary:Version})
 Description: SI chip read library.
  SPORTident SI chip read library.
 
-Package: qsicli
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: SI chip command line utilities.
- SPORTident SI chip command line utilities.
-
 Package: quickhttpd
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}

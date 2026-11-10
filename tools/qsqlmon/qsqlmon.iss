@@ -44,13 +44,13 @@ Name: quicklaunchicon; Description: {cm:CreateQuickLaunchIcon}; GroupDescription
 [Files]
 Source: {#BUILD_DIR}\bin\{#APP_NAME_LOWER}.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#BUILD_DIR}\bin\qfcore.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#BUILD_DIR}\bin\qfqmlwidgets.dll; DestDir: {app}; Flags: ignoreversion
+Source: {#BUILD_DIR}\bin\qfgui.dll; DestDir: {app}; Flags: ignoreversion
 ;Source: .\{#APP_NAME_LOWER}global-{#COMPANY}.conf.xml; DestDir: {app}; DestName: {#APP_NAME_LOWER}global.conf.xml; Flags: ignoreversion
 
 ;Source: {#BUILD_DIR}\bin\designer\qfwidgets.dll; DestDir: {app}\designer; Flags: ignoreversion
 ;Source: {#BUILD_DIR}\bin\designer\qfsqlwidgets.dll; DestDir: {app}\designer; Flags: ignoreversion
 
-Source: {#BUILD_DIR}\bin\qml\*; DestDir: {app}\qml; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: {#BUILD_DIR}\bin\qml\*; DestDir: {app}\qml; Flags: ignoreversion recursesubdirs createallsubdirs
 ;Source: {#BUILD_DIR}\bin\quickevent-data\*; DestDir: {app}\quickevent-data; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -63,7 +63,7 @@ Source: {#QT_DIR}\bin\Qt5XmlPatterns.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#QT_DIR}\bin\Qt5Network.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#QT_DIR}\bin\Qt5Sql.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#QT_DIR}\bin\Qt5Xml.dll; DestDir: {app}; Flags: ignoreversion
-Source: {#QT_DIR}\bin\Qt5Qml.dll; DestDir: {app}; Flags: ignoreversion
+;Source: {#QT_DIR}\bin\Qt5Qml.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#QT_DIR}\bin\Qt5Svg.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#QT_DIR}\bin\Qt5Script.dll; DestDir: {app}; Flags: ignoreversion
 Source: {#QT_DIR}\bin\Qt5ScriptTools.dll; DestDir: {app}; Flags: ignoreversion
@@ -71,7 +71,7 @@ Source: {#QT_DIR}\bin\Qt5PrintSupport.dll; DestDir: {app}; Flags: ignoreversion
 ;Source: {#QT_DIR}\bin\Qt5SerialPort.dll; DestDir: {app}; Flags: ignoreversion
 
 Source: {#QT_DIR}\plugins\platforms\qwindows.dll; DestDir: {app}\platforms; Flags: ignoreversion
- 
+
 Source: {#QT_DIR}\plugins\printsupport\windowsprintersupport.dll; DestDir: {app}\printsupport; Flags: ignoreversion
 
 Source: {#QT_DIR}\plugins\imageformats\qjpeg.dll; DestDir: {app}\imageformats; Flags: ignoreversion
@@ -107,71 +107,3 @@ Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\{#APP_NAME}; Filena
 
 [Run]
 Filename: {app}\{#APP_NAME_LOWER}.exe; Description: {cm:LaunchProgram,{#APP_NAME}}; Flags: nowait postinstall skipifsilent
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

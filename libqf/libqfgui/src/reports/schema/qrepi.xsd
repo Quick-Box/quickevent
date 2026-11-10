@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Schema of report include files (*.qrepi).
+	Root element can be any report item or style object, it cannot be include.
+	Validate with xmllint, options: noout, schema qrepi.xsd
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+	<xs:include schemaLocation="report-types.xsd"/>
+
+	<xs:element name="Report" type="Report"/>
+	<xs:element name="Frame" type="Frame"/>
+	<xs:element name="Space" type="Frame"/>
+	<xs:element name="Band" type="Band"/>
+	<xs:element name="Detail" type="Detail"/>
+	<xs:element name="Para" type="Para"/>
+	<xs:element name="Image" type="Image"/>
+	<xs:element name="Break" type="Break"/>
+	<xs:element name="StyleSheet" type="StyleSheet"/>
+	<xs:element name="Color" type="Color"/>
+	<xs:element name="Pen" type="Pen"/>
+	<xs:element name="Brush" type="Brush"/>
+	<xs:element name="Font" type="Font"/>
+	<xs:element name="TextStyle" type="TextStyle"/>
+</xs:schema>

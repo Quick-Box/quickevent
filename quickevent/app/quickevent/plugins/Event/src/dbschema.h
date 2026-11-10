@@ -2,17 +2,17 @@
 
 #include <qf/core/utils.h>
 
-#include <QList>
+#include <QObject>
 #include <QVariantMap>
 
 namespace Event {
 class EventPlugin;
 }
+namespace qf::core::sql {
+class Connection;
+}
 
-class QObject;
 class QSqlRecord;
-class QQmlComponent;
-class QQmlEngine;
 
 class DbSchema : public QObject
 {
@@ -28,18 +28,13 @@ public:
 public:
 	DbSchema(Event::EventPlugin *event_plugin);
 
-	QStringList createDbSqlScriptQml(const CreateDbSqlScriptOptions &create_options);
 	QStringList loadCreateDbSqlScript(const CreateDbSqlScriptOptions &create_options);
-	QList<QObject*> tables();
-	QObject* table(const QString &table_name);
-	QSqlRecord sqlRecord(QObject *table, bool lowercase_field_names = false);
+	/// event tables in order of creation, so referenced tables are listed before referencing ones
+	const QStringList& tableNames();
+	/// table record as it exists in database of connection
+	QSqlRecord sqlRecord(const qf::core::sql::Connection &conn, const QString &table_name);
 private:
-	QQmlEngine *qmlEngine();
-	QObject* dbSchemaRoot();
+	static QString loadCreateDbSqlFile(const QString &driver_name);
 private:
-	Event::EventPlugin *m_eventPlugin;
-	QQmlComponent *m_dbschemaComponent = nullptr;
-	QObject *m_dbSchemaRoot = nullptr;
-	QQmlEngine *m_qmlEngine = nullptr;
+	QStringList m_tableNames;
 };
-
