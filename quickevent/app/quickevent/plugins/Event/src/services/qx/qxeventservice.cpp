@@ -84,10 +84,10 @@ void QxEventService::run() {
 	auto api_token = apiToken();
 	if (api_token.isEmpty()) {
 		setStatus(Status::Stopped);
-		setServiceMessage(tr("API token is not set."), MessageLevel::Error);
+		setStatusMessage(tr("API token is not set."), NecroLogLevel::Error);
 		return;
 	}
-	setServiceMessage(tr("Connecting to broker"));
+	setStatusMessage(tr("Connecting to broker"));
 
 	m_rpcConnection = new DeviceConnection("QuickEvent", this);
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
@@ -118,7 +118,7 @@ void QxEventService::stop()
 		m_pollChangesTimer->stop();
 	}
 	Super::stop();
-	setServiceMessage({});
+	setStatusMessage({});
 }
 
 qf::gui::framework::DialogWidget *QxEventService::createDetailWidget()
@@ -323,7 +323,7 @@ void QxEventService::postFileCompressed(std::optional<QString> path, std::option
 		if(reply->error()) {
 			err = reply->errorString();
 			qfWarning() << "Post file:" << name.value_or("SPEC") << "error:" << err;
-			setServiceMessage(tr("Post file %1 error: %2").arg(name.value_or("SPEC"), err), MessageLevel::Warning);
+			setStatusMessage(tr("Post file %1 error: %2").arg(name.value_or("SPEC"), err), NecroLogLevel::Warning);
 		}
 		if (call_back) {
 			call_back(err);
@@ -376,7 +376,7 @@ void QxEventService::httpPostJson(const QString &path, const QString &query, QVa
 			if(reply->error()) {
 				err = reply->errorString();
 				qfWarning() << "HTTP POST:" << url.toString() << "error:" << err;
-				setServiceMessage(tr("HTTP POST %1 error: %2").arg(url.path(), err), MessageLevel::Warning);
+				setStatusMessage(tr("HTTP POST %1 error: %2").arg(url.path(), err), NecroLogLevel::Warning);
 			}
 			if (call_back) {
 				call_back(err);
@@ -388,7 +388,7 @@ void QxEventService::httpPostJson(const QString &path, const QString &query, QVa
 		connect(reply, &QNetworkReply::finished, this, [this, reply, url]() {
 			if(reply->error()) {
 				qfWarning() << "HTTP POST:" << url.toString() << "error:" << reply->errorString();
-				setServiceMessage(tr("HTTP POST %1 error: %2").arg(url.path(), reply->errorString()), MessageLevel::Warning);
+				setStatusMessage(tr("HTTP POST %1 error: %2").arg(url.path(), reply->errorString()), NecroLogLevel::Warning);
 			}
 			reply->deleteLater();
 		});
@@ -504,14 +504,14 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 		connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 			if (error.isValid()) {
 				setStatus(Status::Stopped);
-				setServiceMessage(tr("Open event error: %1").arg(error.toString()), MessageLevel::Error);
+				setStatusMessage(tr("Open event error: %1").arg(error.toString()), NecroLogLevel::Error);
 			}
 			else {
 				const auto &info = result.asMap();
 				m_eventId = info.value("event_id").toInt();
 				m_eventMountPoint = info.value("mount_point").to<QString>();
 				setStatus(Status::Running);
-				setServiceMessage(tr("Event ID: %1").arg(m_eventId));
+				setStatusMessage(tr("Event ID: %1").arg(m_eventId));
 				subscribeChanges();
 				auto *rpc_call2 = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
 						->setShvPath(eventctlShvPath(settings().isLocalBroker()))
@@ -519,10 +519,10 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 						->setParams(RpcValue::Map{{"event_id", m_eventId}});
 				connect(rpc_call2, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 					if (error.isValid()) {
-						setServiceMessage(tr("Event ID: %1, event data error: %2").arg(m_eventId).arg(error.message()), MessageLevel::Warning);
+						setStatusMessage(tr("Event ID: %1, event data error: %2").arg(m_eventId).arg(error.message()), NecroLogLevel::Warning);
 					}
 					else {
-						setServiceMessage(tr("Event ID: %1 %2").arg(m_eventId).arg(result.asMap().value("db_mode").to<QString>()));
+						setStatusMessage(tr("Event ID: %1 %2").arg(m_eventId).arg(result.asMap().value("db_mode").to<QString>()));
 					}
 				});
 				rpc_call2->start();
@@ -538,22 +538,13 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 void QxEventService::onBrokerSocketError(const QString &err)
 {
 	qfWarning() << "onBrokerSocketError:" << err;
-	setServiceMessage(tr("Broker socket error: %1").arg(err), MessageLevel::Error);
+	setStatusMessage(tr("Broker socket error: %1").arg(err), NecroLogLevel::Error);
 }
 
 void QxEventService::onBrokerLoginError(const shv::chainpack::RpcError &err)
 {
 	qfWarning() << "onBrokerLoginError:" << err.toString();
-	setServiceMessage(tr("Broker login error: %1").arg(err.toString()), MessageLevel::Error);
-}
-
-void QxEventService::setServiceMessage(const QString &msg, MessageLevel level)
-{
-	bool level_changed = m_statusMessageLevel != level;
-	m_statusMessageLevel = level;
-	if (!setStatusMessage(msg) && level_changed) {
-		emit statusMessageChanged(msg);
-	}
+	setStatusMessage(tr("Broker login error: %1").arg(err.toString()), NecroLogLevel::Error);
 }
 
 void QxEventService::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)

@@ -171,13 +171,14 @@ void QxEventServiceWidget::updateServiceStatus()
 	}
 	ui->lblServiceStatus->setText(text);
 	switch (svc->statusMessageLevel()) {
-	case QxEventService::MessageLevel::Error:
+	case NecroLogLevel::Fatal:
+	case NecroLogLevel::Error:
 		ui->lblServiceStatus->setStyleSheet("background: salmon");
 		break;
-	case QxEventService::MessageLevel::Warning:
+	case NecroLogLevel::Warning:
 		ui->lblServiceStatus->setStyleSheet("background: orange");
 		break;
-	case QxEventService::MessageLevel::Info:
+	default:
 		ui->lblServiceStatus->setStyleSheet(svc->isRunning()? "background: lightgreen": "");
 		break;
 	}
