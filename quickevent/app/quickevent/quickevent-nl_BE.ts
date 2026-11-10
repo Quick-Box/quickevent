@@ -8399,6 +8399,7 @@ Press refresh button to show imported data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="plugins/Classes/src/drawing/classitem.cpp" line="485"/>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="490"/>
         <source>Edit class</source>
         <translation type="unfinished"></translation>

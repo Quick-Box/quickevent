@@ -482,7 +482,7 @@ void ClassItem::dropEvent(QGraphicsSceneDragDropEvent *event)
 void ClassItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
 	QMenu menu;
-	menu.addAction("Edit class");
+	menu.addAction(tr("Edit class"));
 	QAction *a = menu.exec(event->screenPos());
 	if(a) {
 		auto *parent_w = qfc::Utils::findParent<drawing::DrawingGanttWidget*>(scene());

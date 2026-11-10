@@ -9142,6 +9142,7 @@ Pulsa el botón de actualizar para mostrar los datos importados.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="plugins/Classes/src/drawing/classitem.cpp" line="485"/>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="490"/>
         <source>Edit class</source>
         <oldsource>Edit Competitor</oldsource>

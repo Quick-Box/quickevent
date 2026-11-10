@@ -697,7 +697,7 @@
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="26"/>
         <source>Serial (RS232/USB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Sériová linka (RS232/USB)</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="35"/>
@@ -797,12 +797,12 @@
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="198"/>
         <source>BT SI Reader (Bluetooth LE)</source>
-        <translation type="unfinished"></translation>
+        <translation>SI čtečka BT (Bluetooth LE)</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="207"/>
         <source>BT device address</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresa BT zařízení</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="221"/>
@@ -810,7 +810,7 @@
         <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="252"/>
         <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="253"/>
         <source>Scan</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyhledat</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.ui" line="279"/>
@@ -870,12 +870,12 @@
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="214"/>
         <source>Scanning...</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyhledávání...</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="253"/>
         <source>Bluetooth scan error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba vyhledávání Bluetooth: %1</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="268"/>
@@ -962,7 +962,7 @@ https://github.com/sakhnik/qr-o-punch</translation>
     <message>
         <location filename="plugins/CardReader/src/services/qropunchwidget.ui" line="81"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This service will listen for HTTP requests for integration with web services.&lt;/p&gt;&lt;p&gt;For example, &lt;a href=&quot;https://github.com/sakhnik/qr-o-punch&quot;&gt;qr-o-punch&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Supported methods and endpoints:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;POST /card&lt;/code&gt; — upload a card readout&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tato služba naslouchá požadavkům HTTP pro integraci s webovými službami.&lt;/p&gt;&lt;p&gt;Například &lt;a href=&quot;https://github.com/sakhnik/qr-o-punch&quot;&gt;qr-o-punch&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Podporované metody a koncové body:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;code&gt;POST /card&lt;/code&gt; — nahrání vyčtených dat čipu&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/services/qropunchwidget.cpp" line="74"/>
@@ -1103,22 +1103,22 @@ https://github.com/sakhnik/qr-o-punch</translation>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="113"/>
         <source>Connect USB SI reader</source>
-        <translation type="unfinished"></translation>
+        <translation>Připojit USB SI čtečku</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="116"/>
         <source>USB</source>
-        <translation type="unfinished"></translation>
+        <translation>USB</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="142"/>
         <source>Connect BT SI reader</source>
-        <translation type="unfinished"></translation>
+        <translation>Připojit BT SI čtečku</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="145"/>
         <source>BT</source>
-        <translation type="unfinished"></translation>
+        <translation>BT</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.ui" line="187"/>
@@ -1247,13 +1247,14 @@ https://github.com/sakhnik/qr-o-punch</translation>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="841"/>
         <source>Connecting to BT SI Reader %1 …</source>
-        <translation type="unfinished"></translation>
+        <translation>Připojování k BT SI čtečce %1 …</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="845"/>
         <source>BT SI Reader: no device address configured.
 Please set it in Settings Card reader.</source>
-        <translation type="unfinished"></translation>
+        <translation>BT SI čtečka: není nastavena adresa zařízení.
+Nastavte ji prosím v Nastavení – Vyčítání čipů.</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="892"/>
@@ -1343,17 +1344,17 @@ Pokud budete pokračovat, toto označení bude odebráno</translation>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="251"/>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="779"/>
         <source>Not connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepřipojeno</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="773"/>
         <source>USB: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>USB: %1</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="777"/>
         <source>BT: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>BT: %1</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="1175"/>
@@ -2642,22 +2643,22 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="20"/>
         <source>&amp;Local reports directory</source>
         <oldsource>&amp;Reports directory</oldsource>
-        <translation type="unfinished">Adresář &amp;reportů</translation>
+        <translation>Adresář &amp;reportů</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="30"/>
         <source>Reports directory is an directory, where QuickEvent is looking for reports definition QML files. It is populated during application start if not exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresář reportů obsahuje definice reportů ve formátu QML, které QuickEvent používá. Pokud adresář neexistuje, vytvoří se při spuštění aplikace.</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="49"/>
         <source>Filter</source>
-        <translation type="unfinished">Filtr</translation>
+        <translation>Filtr</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.ui" line="59"/>
         <source>Clear local changes</source>
-        <translation type="unfinished"></translation>
+        <translation>Zahodit místní změny</translation>
     </message>
     <message>
         <source>Set default reports directory</source>
@@ -2691,63 +2692,67 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="71"/>
         <source>Save to DB</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit do databáze</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="73"/>
         <source>Clear DB entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit záznam z databáze</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="75"/>
         <source>Restore from DB</source>
-        <translation type="unfinished"></translation>
+        <translation>Obnovit z databáze</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="77"/>
         <source>Restore from resources</source>
-        <translation type="unfinished"></translation>
+        <translation>Obnovit ze zdrojů</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="83"/>
         <source>Save report</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit report</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="83"/>
         <source>Failed to save report &apos;%1&apos; to the database:\n%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se uložit report &apos;%1&apos; do databáze:
+%2</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="90"/>
         <source>Clear report database entry</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranit záznam reportu z databáze</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="90"/>
         <source>Failed to clear database entry for report &apos;%1&apos;:\n%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se odstranit záznam reportu &apos;%1&apos; z databáze:
+%2</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="97"/>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="104"/>
         <source>Restore report</source>
-        <translation type="unfinished"></translation>
+        <translation>Obnovit report</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="97"/>
         <source>Failed to restore report &apos;%1&apos; from the database:\n%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se obnovit report &apos;%1&apos; z databáze:
+%2</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="104"/>
         <source>Failed to restore report &apos;%1&apos; from resources:\n%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se obnovit report &apos;%1&apos; ze zdrojů:
+%2</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportssettingspage.cpp" line="121"/>
         <source>No event open</source>
-        <translation type="unfinished">Není otevřený závod</translation>
+        <translation>Není otevřený závod</translation>
     </message>
     <message>
         <source>Open Directory</source>
@@ -2759,33 +2764,33 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
     <message>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="96"/>
         <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Název</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="97"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Velikost</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="98"/>
         <source>Resources hash</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontrolní součet zdrojů</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="99"/>
         <source>Local hash</source>
-        <translation type="unfinished"></translation>
+        <translation>Místní kontrolní součet</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="100"/>
         <source>Database hash</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontrolní součet databáze</translation>
     </message>
     <message>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="210"/>
         <location filename="plugins/Core/src/widgets/reportstablemodel.cpp" line="234"/>
         <source>The report is not stored in the database.</source>
-        <translation type="unfinished"></translation>
+        <translation>Report není uložen v databázi.</translation>
     </message>
 </context>
 <context>
@@ -3654,22 +3659,23 @@ Použij: Soubor --&gt; Importovat --&gt; Závod (*.qbe) pro konverzi dat do aktu
         <location filename="plugins/Event/src/services/emmaclient.cpp" line="52"/>
         <source>Uploads results and radio control data to liveresultat.
 https://liveresultat.orientering.se</source>
-        <translation type="unfinished"></translation>
+        <translation>Odesílá výsledky a data z rádiových kontrol na liveresultat.
+https://liveresultat.orientering.se</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/emmaclient.cpp" line="398"/>
         <source>EmmaClient export finish txt done.</source>
-        <translation type="unfinished"></translation>
+        <translation>Export cílových časů do TXT dokončen.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/emmaclient.cpp" line="520"/>
         <source>EmmaClient export start txt done.</source>
-        <translation type="unfinished"></translation>
+        <translation>Export startovních časů do TXT dokončen.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/emmaclient.cpp" line="668"/>
         <source>EmmaClient export start csv done.</source>
-        <translation type="unfinished"></translation>
+        <translation>Export startovních časů do CSV dokončen.</translation>
     </message>
 </context>
 <context>
@@ -3787,7 +3793,7 @@ https://liveresultat.orientering.se</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="160"/>
         <source>OFeed event ID or password is not set.</source>
-        <translation type="unfinished">Není nastaveno ID akce nebo heslo pro OFeed.</translation>
+        <translation>Není nastaveno ID akce nebo heslo pro OFeed.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="200"/>
@@ -3796,7 +3802,7 @@ https://liveresultat.orientering.se</source>
 %1
 
 Please open OFeed service settings and update your credentials.</source>
-        <translation type="unfinished">Službu nelze spustit, kontrola přihlašovacích údajů OFeedu neproběhla úspěšně.
+        <translation>Službu nelze spustit, kontrola přihlašovacích údajů OFeedu neproběhla úspěšně.
 
 %1
 
@@ -3805,167 +3811,167 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="212"/>
         <source>Do you really want to start the service without processing any changes from OFeed?</source>
-        <translation type="unfinished">Opravdu chceš spustit službu bez zpracování jakýchkoli změn z OFeedu?</translation>
+        <translation>Opravdu chceš spustit službu bez zpracování jakýchkoli změn z OFeedu?</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="213"/>
         <source>Neither start changes from O Checklist nor late entries and changes from the office will be processed. Choose No to switch both of them on before the service starts.</source>
-        <translation type="unfinished">Nebudou se zpracovávat změny ze startu z O Checklistu ani dohlášky a změny z kanceláře. Kliknutím na Ne zapneš obojí ještě před spuštěním služby.</translation>
+        <translation>Nebudou se zpracovávat změny ze startu z O Checklistu ani dohlášky a změny z kanceláře. Kliknutím na Ne zapneš obojí ještě před spuštěním služby.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="217"/>
         <source>Do you really want to start the service without processing start changes from O Checklist?</source>
-        <translation type="unfinished">Opravdu chceš spustit službu bez zpracování změn ze startu z O Checklistu?</translation>
+        <translation>Opravdu chceš spustit službu bez zpracování změn ze startu z O Checklistu?</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="218"/>
         <source>Late entries and changes from the office will be processed. Choose No to switch the start changes processing on as well.</source>
-        <translation type="unfinished">Dohlášky a změny z kanceláře se zpracovávat budou. Kliknutím na Ne zapneš i zpracování změn ze startu.</translation>
+        <translation>Dohlášky a změny z kanceláře se zpracovávat budou. Kliknutím na Ne zapneš i zpracování změn ze startu.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="222"/>
         <source>Do you really want to start the service without processing late entries and changes from the office?</source>
-        <translation type="unfinished">Opravdu chceš spustit službu bez zpracování dohlášek a změn z kanceláře?</translation>
+        <translation>Opravdu chceš spustit službu bez zpracování dohlášek a změn z kanceláře?</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="223"/>
         <source>Start changes from O Checklist will be processed. Choose No to switch the office changes processing on as well.</source>
-        <translation type="unfinished">Změny ze startu z O Checklistu se zpracovávat budou. Kliknutím na Ne zapneš i zpracování změn z kanceláře.</translation>
+        <translation>Změny ze startu z O Checklistu se zpracovávat budou. Kliknutím na Ne zapneš i zpracování změn z kanceláře.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="279"/>
         <source>results upload</source>
-        <translation type="unfinished">nahrání výsledků</translation>
+        <translation>nahrání výsledků</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="308"/>
         <source>start list upload</source>
-        <translation type="unfinished">nahrání startovky</translation>
+        <translation>nahrání startovky</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="518"/>
         <source>Reading of the rental cards failed: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Načtení zapůjčených čipů se nezdařilo: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="527"/>
         <source>There are too many rental cards, OFeed accepts the file up to 200 kB.</source>
-        <translation type="unfinished"></translation>
+        <translation>Je příliš mnoho zapůjčených čipů. OFeed přijímá soubor o velikosti maximálně 200 kB.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="574"/>
         <source>Lookup of the rental card failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>Vyhledání zapůjčeného čipu se nezdařilo: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="860"/>
         <source>Missing OFeed event credentials.</source>
-        <translation type="unfinished">Chybí přihlašovací údaje k události v OFeedu.</translation>
+        <translation>Chybí přihlašovací údaje k události v OFeedu.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="867"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1089"/>
         <source>Invalid OFeed URL.</source>
-        <translation type="unfinished">Neplatné URL OFeedu.</translation>
+        <translation>Neplatné URL OFeedu.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="890"/>
         <source>No event image is available in OFeed.</source>
-        <translation type="unfinished">V OFeedu není k dispozici žádný obrázek k akci.</translation>
+        <translation>V OFeedu není k dispozici žádný obrázek k akci.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="892"/>
         <source>Event image download failed: %1</source>
-        <translation type="unfinished">Stažení obrázku akce se nezdařilo: %1</translation>
+        <translation>Stažení obrázku akce se nezdařilo: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="897"/>
         <source>No event image payload received from OFeed.</source>
-        <translation type="unfinished">Z OFeedu nebyla přijata žádná data obrázku k akci.</translation>
+        <translation>Z OFeedu nebyla přijata žádná data obrázku k akci.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="907"/>
         <source>Event image cached as SVG.</source>
-        <translation type="unfinished">Obrázek akce uložen do mezipaměti jako SVG.</translation>
+        <translation>Obrázek akce uložen do mezipaměti jako SVG.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="926"/>
         <source>Unsupported image format received from OFeed.</source>
-        <translation type="unfinished">Z OFeedu byl přijat nepodporovaný formát obrázku.</translation>
+        <translation>Z OFeedu byl přijat nepodporovaný formát obrázku.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="938"/>
         <source>Cannot encode cached event image.</source>
-        <translation type="unfinished">Nelze zakódovat uložený obrázek akce.</translation>
+        <translation>Nelze zakódovat uložený obrázek akce.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="944"/>
         <source>Cached image encoding produced empty payload.</source>
-        <translation type="unfinished">Kódování uloženého obrázku vytvořilo prázdná data.</translation>
+        <translation>Kódování uloženého obrázku vytvořilo prázdná data.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="949"/>
         <source>Event image cached (%1x%2).</source>
-        <translation type="unfinished">Obrázek akce uložen do mezipaměti (%1×%2).</translation>
+        <translation>Obrázek akce uložen do mezipaměti (%1×%2).</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1083"/>
         <source>Please fill URL, event id, and password.</source>
-        <translation type="unfinished">Vyplň prosím URL, ID akce a heslo.</translation>
+        <translation>Vyplň prosím URL, ID akce a heslo.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1123"/>
         <source>Unexpected HTTP response</source>
-        <translation type="unfinished">Neočekávaná odpověď HTTP</translation>
+        <translation>Neočekávaná odpověď HTTP</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1131"/>
         <source>Invalid JSON response.</source>
-        <translation type="unfinished">Neplatná odpověď JSON.</translation>
+        <translation>Neplatná odpověď JSON.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1143"/>
         <source>Password has expired.</source>
-        <translation type="unfinished">Platnost hesla vypršela.</translation>
+        <translation>Platnost hesla vypršela.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1145"/>
         <source>Event ID mismatch.</source>
-        <translation type="unfinished">Neshoda ID akce.</translation>
+        <translation>Neshoda ID akce.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1147"/>
         <source>Authentication required.</source>
-        <translation type="unfinished">Vyžadováno ověření.</translation>
+        <translation>Vyžadováno ověření.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1149"/>
         <source>Invalid credentials.</source>
-        <translation type="unfinished">Neplatné přihlašovací údaje.</translation>
+        <translation>Neplatné přihlašovací údaje.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1157"/>
         <source>Event not found.</source>
-        <translation type="unfinished">Akce nenalezena.</translation>
+        <translation>Akce nenalezena.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1241"/>
         <source>OFeed — Invalid Credentials</source>
-        <translation type="unfinished">OFeed — Neplatné přihlašovací údaje</translation>
+        <translation>OFeed — Neplatné přihlašovací údaje</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1242"/>
         <source>OFeed password is invalid or has expired.
 
 Please open OFeed service settings and update your credentials.</source>
-        <translation type="unfinished">OFeed heslo je neplatné nebo mu vypršela platnost.
+        <translation>OFeed heslo je neplatné nebo mu vypršela platnost.
 
 Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1634"/>
         <source>Exception occurred while getting changes by origin: </source>
-        <translation type="unfinished">Došlo k výjimce při načítání změn podle původu: </translation>
+        <translation>Došlo k výjimce při načítání změn podle původu: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1794"/>
@@ -3973,52 +3979,52 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1845"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1871"/>
         <source>Database query failed: </source>
-        <translation type="unfinished">Dotaz do databáze se nezdařil: </translation>
+        <translation>Dotaz do databáze se nezdařil: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1891"/>
         <source>Start time of the run %1 is not valid, not set: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Startovní čas běhu %1 není platný, nebyl nastaven: %2</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1909"/>
         <source>Change %1 skipped, run %2 is not in the current stage</source>
-        <translation type="unfinished"></translation>
+        <translation>Změna %1 byla přeskočena, běh %2 není v aktuální fázi</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1917"/>
         <source>Change %1 skipped, competitor of the run %2 not found</source>
-        <translation type="unfinished"></translation>
+        <translation>Změna %1 byla přeskočena, závodník běhu %2 nebyl nalezen</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1934"/>
         <source>Class change skipped, class %1 does not exist in QE</source>
-        <translation type="unfinished"></translation>
+        <translation>Změna kategorie byla přeskočena, kategorie %1 v QE neexistuje</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1954"/>
         <source>Changelog entry %1 failed %2 times, giving up, it stays unprocessed in OFeed</source>
-        <translation type="unfinished"></translation>
+        <translation>Zpracování záznamu změn %1 selhalo %2krát. Další pokusy se ruší; záznam zůstává v OFeed nezpracovaný.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1986"/>
         <source>Lookup of the existing runner failed: </source>
-        <translation type="unfinished"></translation>
+        <translation>Vyhledání existujícího závodníka se nezdařilo: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1992"/>
         <source>Runner (OFeed id) %1 exists in QE already (run id %2), only the externalId is sent</source>
-        <translation type="unfinished"></translation>
+        <translation>Závodník (OFeed ID) %1 již v QE existuje (ID běhu %2), odesílá se pouze externalId</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="2011"/>
         <source>Failed to store new runner (OFeed id): </source>
-        <translation type="unfinished"></translation>
+        <translation>Uložení nového závodníka (OFeed ID) se nezdařilo: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="2036"/>
         <source>Failed to set externalId at OFeed, changelog entry %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení externalId v OFeed se nezdařilo, záznam změn %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1781"/>
@@ -4028,7 +4034,7 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1875"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1939"/>
         <source>Exception occurred while executing query: </source>
-        <translation type="unfinished">Došlo k výjimce při provádění dotazu: </translation>
+        <translation>Došlo k výjimce při provádění dotazu: </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1803"/>
@@ -4036,7 +4042,7 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1854"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1879"/>
         <source>Unknown exception occurred while executing query.</source>
-        <translation type="unfinished">Došlo k neznámé výjimce při provádění dotazu.</translation>
+        <translation>Došlo k neznámé výjimce při provádění dotazu.</translation>
     </message>
     <message>
         <source>No data received or an error occurred.</source>
@@ -4083,7 +4089,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="34"/>
         <source>1 · Connection</source>
-        <translation type="unfinished">1 · Připojení</translation>
+        <translation>1 · Připojení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="80"/>
@@ -4095,7 +4101,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="86"/>
         <source>https://orienteerfeed.com</source>
         <oldsource>https://api.orienteerfeed.com</oldsource>
-        <translation type="unfinished">https://orienteerfeed.com</translation>
+        <translation>https://orienteerfeed.com</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="93"/>
@@ -4183,12 +4189,12 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="918"/>
         <source>Credential check interval</source>
-        <translation type="unfinished">Interval kontroly přihlašovacích údajů</translation>
+        <translation>Interval kontroly přihlašovacích údajů</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="932"/>
         <source>How often to verify OFeed credentials in the background</source>
-        <translation type="unfinished">Jak často se mají ověřovat přihlašovací údaje na pozadí</translation>
+        <translation>Jak často se mají ověřovat přihlašovací údaje na pozadí</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="938"/>
@@ -4212,69 +4218,69 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="46"/>
         <source>⚠ OFeed password is invalid or has expired. Please update your credentials.</source>
-        <translation type="unfinished">⚠ OFeed heslo vypršelo nebo je neplatné. Uprav přihlašovací údaje.</translation>
+        <translation>⚠ OFeed heslo vypršelo nebo je neplatné. Uprav přihlašovací údaje.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="234"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="560"/>
         <source>Fill in the credentials to continue with the synchronization setup</source>
-        <translation type="unfinished">Vyplň přihlašovací údaje pro pokračování v nastavení synchronizace</translation>
+        <translation>Vyplň přihlašovací údaje pro pokračování v nastavení synchronizace</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="237"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="636"/>
         <source>Continue →</source>
-        <translation type="unfinished">Pokračovat →</translation>
+        <translation>Pokračovat →</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="247"/>
         <source>2 · Synchronization</source>
-        <translation type="unfinished">2 · Synchronizace</translation>
+        <translation>2 · Synchronizace</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="253"/>
         <source>Start list and results upload setup</source>
-        <translation type="unfinished">Nastavení nahrávání startovky a výsledků</translation>
+        <translation>Nastavení nahrávání startovky a výsledků</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="387"/>
         <source>Start list and results are uploaded automatically in this interval. The buttons below upload them immediately.</source>
-        <translation type="unfinished">Startovka a výsledky se v tomto intervalu nahrávají automaticky. Tlačítky níže je nahraješ okamžitě.</translation>
+        <translation>Startovka a výsledky se v tomto intervalu nahrávají automaticky. Tlačítky níže je nahraješ okamžitě.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="456"/>
         <source>How often to download changes from OFeed, independent of the export interval</source>
-        <translation type="unfinished">Jak často stahovat změny z OFeedu, nezávisle na intervalu exportu</translation>
+        <translation>Jak často stahovat změny z OFeedu, nezávisle na intervalu exportu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="568"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When one of the options is enabled, the changes are automatically downloaded in this interval, processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module. The button below processes them immediately.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Když je jedna z možností povolena, změny se v tomto intervalu automaticky stahují, zpracují a zobrazí v modulu &lt;span style=&quot; font-weight:700;&quot;&gt;Pozdní registrace&lt;/span&gt;. Tlačítkem níže je zpracuješ okamžitě.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Když je jedna z možností povolena, změny se v tomto intervalu automaticky stahují, zpracují a zobrazí v modulu &lt;span style=&quot; font-weight:700;&quot;&gt;Pozdní registrace&lt;/span&gt;. Tlačítkem níže je zpracuješ okamžitě.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="593"/>
         <source>Fetch and process pending changes from OFeed</source>
-        <translation type="unfinished">Načíst a zpracovat čekající změny z OFeedu</translation>
+        <translation>Načíst a zpracovat čekající změny z OFeedu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="596"/>
         <source>Process changes</source>
-        <translation type="unfinished">Zpracovat změny</translation>
+        <translation>Zpracovat změny</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="502"/>
         <source>Enable or disable automatic processing of changes from the start</source>
-        <translation type="unfinished">Zapnout nebo vypnout automatické zpracování změn ze startu</translation>
+        <translation>Zapnout nebo vypnout automatické zpracování změn ze startu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="512"/>
         <source>Process changes from start (O Checklist)</source>
-        <translation type="unfinished">Zpracovat změny ze startu (O Checklistu)</translation>
+        <translation>Zpracovat změny ze startu (O Checklistu)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="536"/>
         <source>Enable or disable automatic processing of late entries and changes from the OFeed office</source>
-        <translation type="unfinished">Zapnout nebo vypnout automatické zpracování dohlášek a změn z kanceláře OFeedu</translation>
+        <translation>Zapnout nebo vypnout automatické zpracování dohlášek a změn z kanceláře OFeedu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="331"/>
@@ -4299,7 +4305,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="546"/>
         <source>Process late entries and changes from OFeed</source>
-        <translation type="unfinished">Zpracovat dohlášky a změny z OFeedu</translation>
+        <translation>Zpracovat dohlášky a změny z OFeedu</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When one of the options is enabled, the changes are automatically processed and visualized in the &lt;span style=&quot; font-weight:700;&quot;&gt;Late registrations&lt;/span&gt; module.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -4312,12 +4318,12 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="646"/>
         <source>3 · Receipt</source>
-        <translation type="unfinished">3 · Lísteček</translation>
+        <translation>3 · Lísteček</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="652"/>
         <source>Event image</source>
-        <translation type="unfinished">Obrázek akce</translation>
+        <translation>Obrázek akce</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="699"/>
@@ -4347,7 +4353,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="769"/>
         <source>Preview of the cached event image</source>
-        <translation type="unfinished">Náhled uloženého obrázku akce</translation>
+        <translation>Náhled uloženého obrázku akce</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="782"/>
@@ -4358,7 +4364,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="799"/>
         <source>QR code</source>
-        <translation type="unfinished">QR kód</translation>
+        <translation>QR kód</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="814"/>
@@ -4398,17 +4404,17 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="901"/>
         <source>Advanced</source>
-        <translation type="unfinished">Rozšířené</translation>
+        <translation>Rozšířené</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="1012"/>
         <source>One-time upload of the cards from &quot;Cards to rent&quot; in the settings to OFeed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jednorázové nahrání čipů z položky &quot;Čipy k zapůjčení&quot; v nastavení do OFeed.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="1015"/>
         <source>Upload rental cards</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrát zapůjčené čipy</translation>
     </message>
     <message>
         <source>Upload Data</source>
@@ -4421,12 +4427,12 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="412"/>
         <source>Export start list</source>
-        <translation type="unfinished">Nahrát startovku</translation>
+        <translation>Nahrát startovku</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="419"/>
         <source>Export results</source>
-        <translation type="unfinished">Nahrát výsledky</translation>
+        <translation>Nahrát výsledky</translation>
     </message>
     <message>
         <source>Processing Changes</source>
@@ -4469,47 +4475,47 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="181"/>
         <source>About</source>
-        <translation type="unfinished">Přestavení</translation>
+        <translation>Představení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="182"/>
         <source>Getting started</source>
-        <translation type="unfinished">Jak na to</translation>
+        <translation>Jak na to</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="183"/>
         <source>Best practices</source>
-        <translation type="unfinished">Doporučená nastavení</translation>
+        <translation>Doporučená nastavení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="184"/>
         <source>Tutorials</source>
-        <translation type="unfinished">Návody</translation>
+        <translation>Návody</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="185"/>
         <source>How it works</source>
-        <translation type="unfinished">Jak to funguje</translation>
+        <translation>Jak to funguje</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="186"/>
         <source>Support</source>
-        <translation type="unfinished">Podpora</translation>
+        <translation>Podpora</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="223"/>
         <source>Time until next automatic export</source>
-        <translation type="unfinished">Čas do dalšího automatického exportu</translation>
+        <translation>Čas do dalšího automatického exportu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="227"/>
         <source>Time until next changes download</source>
-        <translation type="unfinished">Čas do dalšího stažení změn</translation>
+        <translation>Čas do dalšího stažení změn</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="231"/>
         <source>Time until next credential check</source>
-        <translation type="unfinished">Čas do další kontroly přihlašovacích údajů</translation>
+        <translation>Čas do další kontroly přihlašovacích údajů</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="291"/>
@@ -4524,7 +4530,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="409"/>
         <source>No changes processing is switched on. Enable processing of requested changes in the settings.</source>
-        <translation type="unfinished">Není zapnuto zpracování žádných změn. Povolte v nastavení zpracování požadovaných změn.</translation>
+        <translation>Není zapnuto zpracování žádných změn. Povolte v nastavení zpracování požadovaných změn.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="434"/>
@@ -4534,12 +4540,12 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="446"/>
         <source>Uploading...</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrávání...</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="454"/>
         <source>Uploaded rental cards: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrané zapůjčené čipy: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="466"/>
@@ -4564,7 +4570,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="559"/>
         <source>Continue with the synchronization setup</source>
-        <translation type="unfinished">Pokračovat v nastavení synchronizace</translation>
+        <translation>Pokračovat v nastavení synchronizace</translation>
     </message>
     <message>
         <source>Processing changes is deactivated</source>
@@ -4576,42 +4582,42 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="14"/>
         <source>OFeed – Getting started</source>
-        <translation type="unfinished">OFeed - Jak na to</translation>
+        <translation>OFeed - Jak na to</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="41"/>
         <source>New to OFeed?</source>
-        <translation type="unfinished">Slyšíš o OFeedu poprvé?</translation>
+        <translation>Slyšíš o OFeedu poprvé?</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="48"/>
         <source>OFeed is an online platform for orienteering race data. Connect QuickEvent to enable handling start lists and results in real time.</source>
-        <translation type="unfinished">OFeed je datová platforma primárně pro pořadatele. Její využití umožňuje synchronizovat data závodu v reálném čase, hlavně mezi závodní kanceláří a startem.</translation>
+        <translation>OFeed je datová platforma primárně pro pořadatele. Její využití umožňuje synchronizovat data závodu v reálném čase, hlavně mezi závodní kanceláří a startem.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="68"/>
         <source>&lt;html&gt;&lt;body&gt;&lt;ul style=&quot;margin:0; padding-left:20px;&quot;&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Smooth readout&lt;/b&gt; – no unknown cards that slow down read-out.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Actual card numbers&lt;/b&gt; – card numbers changed at the start are processed within a minute; radio controls work for all competitors.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Real-time data&lt;/b&gt; – O Checklist stays up-to-date even with late entries and other changes before the first corridor.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Instant DNS&lt;/b&gt; – competitors who didn&apos;t start can be processed quickly; DNS is reversed to Active if a late start occurs.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Central Data Hub&lt;/b&gt; – all orienteering data in one secure place, accessible to other integrated applications.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;body&gt;&lt;ul style=&quot;margin:0; padding-left:20px;&quot;&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Hladký průběh vyčítání&lt;/b&gt; – víš, kdo s jakým čipem vystartoval a tak vyčítací frontu neznámý čip již nezpomalí.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Skutečná čísla čipů&lt;/b&gt; – změny čísel čipů na startu se snadno dostanou zpět do pořádacího programu a tak se nenastane, že by nefungovaly radiokontroly. Práce s instalací radiokontrol nepřijde nazmar.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Aktuální data&lt;/b&gt; – O Checklist si sám stáhne provedené změny před závodem i dohlášky během závodu. Data jsou na startu dřív, než samotný závodník vstoupí do prvního koridoru.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Okamžité DNS&lt;/b&gt; – závodníky co nedorazí na start je možné okamžitě označit jako nestartující. Případný pozdní start změnu zruší. Máš tak jasný přehled, kdo je ještě na trati.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Centrální úložiště dat&lt;/b&gt; – měj všechna orienťácká data k pořádání na jednom bezpečném místě, odkud jsou jednoduše dostupná dalším integrujícím aplikacím.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;body&gt;&lt;ul style=&quot;margin:0; padding-left:20px;&quot;&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Hladký průběh vyčítání&lt;/b&gt; – víš, kdo s jakým čipem vystartoval a tak vyčítací frontu neznámý čip již nezpomalí.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Skutečná čísla čipů&lt;/b&gt; – změny čísel čipů na startu se snadno dostanou zpět do pořádacího programu a tak se nenastane, že by nefungovaly radiokontroly. Práce s instalací radiokontrol nepřijde nazmar.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Aktuální data&lt;/b&gt; – O Checklist si sám stáhne provedené změny před závodem i dohlášky během závodu. Data jsou na startu dřív, než samotný závodník vstoupí do prvního koridoru.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Okamžité DNS&lt;/b&gt; – závodníky co nedorazí na start je možné okamžitě označit jako nestartující. Případný pozdní start změnu zruší. Máš tak jasný přehled, kdo je ještě na trati.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Centrální úložiště dat&lt;/b&gt; – měj všechna orienťácká data k pořádání na jednom bezpečném místě, odkud jsou jednoduše dostupná dalším integrujícím aplikacím.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="106"/>
         <source>Got it</source>
-        <translation type="unfinished">Super, chápu</translation>
+        <translation>Super, chápu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.cpp" line="34"/>
         <source>About</source>
-        <translation type="unfinished">Představení</translation>
+        <translation>Představení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.cpp" line="35"/>
         <source>Getting started</source>
-        <translation type="unfinished">Jak na to</translation>
+        <translation>Jak na to</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.cpp" line="36"/>
         <source>Best practices</source>
-        <translation type="unfinished">Doporučená nastavení</translation>
+        <translation>Doporučená nastavení</translation>
     </message>
 </context>
 <context>
@@ -4705,52 +4711,52 @@ V případě chyb neváhejte napsat na support@oresults.eu</translation>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="47"/>
         <source>Punching Test</source>
-        <translation type="unfinished">Generátor ražení</translation>
+        <translation>Generátor ražení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="56"/>
         <source>Do you really want to start the %1 service?</source>
-        <translation type="unfinished">Chceš službu %1 opravdu spustit?</translation>
+        <translation>Chceš službu %1 opravdu spustit?</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="59"/>
         <source>The service generates test readout data into the currently open event. It is dedicated for testing and development purposes only and must not be started for a real event.</source>
-        <translation type="unfinished">Tahle služba generuje testovací readout data do právě otevřeného závodu. Je určená jen pro testování a vývoj – pro reálný závod ji nespouštěj.</translation>
+        <translation>Tahle služba generuje testovací readout data do právě otevřeného závodu. Je určená jen pro testování a vývoj – pro reálný závod ji nespouštěj.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="78"/>
         <source>Running, interval: %1 s</source>
-        <translation type="unfinished">Běží, interval: %1 s</translation>
+        <translation>Běží, interval: %1 s</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="137"/>
         <source>No event open</source>
-        <translation type="unfinished">Není otevřený závod</translation>
+        <translation>Není otevřený závod</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="209"/>
         <source>No eligible runners left</source>
-        <translation type="unfinished">Žádní vhodní závodníci</translation>
+        <translation>Žádní vhodní závodníci</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="208"/>
         <source>Waiting for handover, %1 legs</source>
-        <translation type="unfinished">Čeká se na předávku, %1 úseků</translation>
+        <translation>Čeká se na předávku, %1 úseků</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="253"/>
         <source>TEST</source>
-        <translation type="unfinished">TEST</translation>
+        <translation>TEST</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="255"/>
         <source>TEST, data for: %1, SI %2</source>
-        <translation type="unfinished">TEST, data pro: %1, SI %2</translation>
+        <translation>TEST, data pro: %1, SI %2</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="370"/>
         <source>Card SI %1, %2 controls</source>
-        <translation type="unfinished">Čip SI %1, %2 kontrol</translation>
+        <translation>Čip SI %1, %2 kontrol</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="37"/>
@@ -4765,94 +4771,94 @@ Nespouštějte během ostrého závodu!</translation>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="14"/>
         <source>Punching Test</source>
-        <translation type="unfinished">Generátor ražení</translation>
+        <translation>Generátor ražení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="20"/>
         <source>Generates fake SI card readouts for registered runners at a fixed interval. Each readout simulates realistic imperfections — missing punches, extra controls, unknown card numbers, and bad check times — to stress-test results processing without physical SI cards.</source>
-        <translation type="unfinished">Generuje falešná vyčítání SI čipů pro přihlášené závodníky v pravidelném intervalu. Každé vyčtení simuluje dle nastavené pravděpodobnosti realistické situace — chybějící ražení, kontroly navíc, neznámá čísla čipů a chybné časy kontroly čipu.
+        <translation>Generuje falešná vyčítání SI čipů pro přihlášené závodníky v pravidelném intervalu. Každé vyčtení simuluje dle nastavené pravděpodobnosti realistické situace — chybějící ražení, kontroly navíc, neznámá čísla čipů a chybné časy kontroly čipu.
 
 Slouží pro testování zpracování výsledků bez fyzických SI čipů.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="42"/>
         <source>Punch interval</source>
-        <translation type="unfinished">Interval generování</translation>
+        <translation>Interval generování</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="52"/>
         <source> s</source>
-        <translation type="unfinished"> s</translation>
+        <translation> s</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="70"/>
         <source>Per-card imperfections (1 in N probability)</source>
-        <translation type="unfinished">Chybové situace (pravděpodobnost 1 z N)</translation>
+        <translation>Chybové situace (pravděpodobnost 1 z N)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="76"/>
         <source>Unknown card number (1 in)</source>
-        <translation type="unfinished">Neznámé číslo čip</translation>
+        <translation>Neznámé číslo čip (1 z)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="99"/>
         <source>Missing start punch (1 in)</source>
-        <translation type="unfinished">Neoražená startovací krabička</translation>
+        <translation>Neoražená startovací krabička (1 z)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="122"/>
         <source>Missing finish punch (1 in)</source>
-        <translation type="unfinished">Neoražená cílová krabička</translation>
+        <translation>Neoražená cílová krabička  (1 z)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="145"/>
         <source>Extra wrong control (1 in)</source>
-        <translation type="unfinished">Oražená cizí kontrola navíc</translation>
+        <translation>Oražená cizí kontrola navíc (1 z)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="168"/>
         <source>Bad check time (1 in)</source>
-        <translation type="unfinished">Špatný čas kontroly čipu</translation>
+        <translation>Špatný čas kontroly čipu (1 z)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="194"/>
         <source>Per-control imperfections (1 in N probability)</source>
-        <translation type="unfinished">Chyby na kontrolách (pravděpodobnost 1 z N)</translation>
+        <translation>Chyby na kontrolách (pravděpodobnost 1 z N)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="200"/>
         <source>Mispunch / missed control (1 in)</source>
-        <translation type="unfinished">Chybné/chybějící ražení</translation>
+        <translation>Chybné / chybějící ražení  (1 z)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="226"/>
         <source>Relays</source>
-        <translation type="unfinished">Štafety</translation>
+        <translation>Štafety</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="232"/>
         <source>Shame start of the legs waiting for a handover</source>
-        <translation type="unfinished">Start hanby pro úseky čekající na předávku</translation>
+        <translation>Start hanby pro úseky čekající na předávku</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="235"/>
         <source>Announced for the whole event once the top 3 positions are decided in every class</source>
-        <translation type="unfinished">Vyhlásí se pro celý závod, jakmile je ve všech kategoriích rozhodnuto o prvních třech místech</translation>
+        <translation>Vyhlásí se pro celý závod, jakmile je ve všech kategoriích rozhodnuto o prvních třech místech</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="242"/>
         <source>Shame start offset against the decided top 3</source>
-        <translation type="unfinished">Posun startu hanby oproti rozhodnutým prvním třem místům</translation>
+        <translation>Posun startu hanby oproti rozhodnutým prvním třem místům</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="252"/>
         <source>Shifts the shame start against the moment the top 3 positions are decided: 0 announces it right at that moment, a positive value later, a negative value earlier.</source>
-        <translation type="unfinished">Posune start hanby oproti okamžiku, kdy je rozhodnuto o prvních třech místech ve všech kategoriích: 0 znamená přesně v tom okamžiku, kladná hodnota později, záporná dříve.</translation>
+        <translation>Posune start hanby oproti okamžiku, kdy je rozhodnuto o prvních třech místech ve všech kategoriích: 0 znamená přesně v tom okamžiku, kladná hodnota později, záporná dříve.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="255"/>
         <source> min</source>
-        <translation type="unfinished"> min</translation>
+        <translation> min</translation>
     </message>
 </context>
 <context>
@@ -4865,22 +4871,22 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="76"/>
         <source>Invalid listen address or port</source>
-        <translation type="unfinished"></translation>
+        <translation>Neplatná naslouchací adresa nebo port</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="80"/>
         <source>Cannot listen on %1:%2: %3</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze naslouchat na %1:%2: %3</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="84"/>
         <source>Listening on %1:%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Naslouchání na %1:%2</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="106"/>
         <source>Listening, %1 sender(s) connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Naslouchání, připojeno odesílačů: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservice.cpp" line="33"/>
@@ -4898,62 +4904,62 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="49"/>
         <source>Listen address</source>
-        <translation type="unfinished"></translation>
+        <translation>Naslouchací adresa</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="73"/>
         <source>0.0.0.0</source>
-        <translation type="unfinished"></translation>
+        <translation>0.0.0.0</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="87"/>
         <source>Port</source>
-        <translation type="unfinished"></translation>
+        <translation>Port</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="80"/>
         <source>Start control</source>
-        <translation type="unfinished"></translation>
+        <translation>Startovní kontrola</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="94"/>
         <source>Finish control</source>
-        <translation type="unfinished"></translation>
+        <translation>Cílová kontrola</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="22"/>
         <source>Service</source>
-        <translation type="unfinished"></translation>
+        <translation>Služba</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="42"/>
         <source>Start</source>
-        <translation type="unfinished">Start</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="56"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="128"/>
         <source>Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Formát</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="135"/>
         <source>{Control};{Bib};{Time:HH:mm:ss.fff};{Status};{Cancellation};{CRLF}</source>
-        <translation type="unfinished"></translation>
+        <translation>{Control};{Bib};{Time:HH:mm:ss.fff};{Status};{Cancellation};{CRLF}</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="165"/>
         <source>Test</source>
-        <translation type="unfinished">Test oražení</translation>
+        <translation>Test</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="174"/>
         <source>Last 20 received lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Posledních 20 přijatých řádků</translation>
     </message>
 </context>
 <context>
@@ -4992,17 +4998,17 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished">Dialog</translation>
+        <translation>Dialog</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="22"/>
         <source>Class</source>
-        <translation type="unfinished">Kategorie</translation>
+        <translation>Kategorie</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="49"/>
         <source>Run ID </source>
-        <translation type="unfinished"></translation>
+        <translation>Run ID </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="68"/>
@@ -5010,17 +5016,17 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="223"/>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="259"/>
         <source>None</source>
-        <translation type="unfinished">Žádná</translation>
+        <translation>Žádná</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="78"/>
         <source>Change ID </source>
-        <translation type="unfinished"></translation>
+        <translation>Change ID </translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="109"/>
         <source>First name</source>
-        <translation type="unfinished">Jméno</translation>
+        <translation>Jméno</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="125"/>
@@ -5029,95 +5035,95 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="240"/>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="295"/>
         <source>-&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>-&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="141"/>
         <source>Last name</source>
-        <translation type="unfinished">Příjmení</translation>
+        <translation>Příjmení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="173"/>
         <source>Registration</source>
-        <translation type="unfinished">Registrace</translation>
+        <translation>Registrace</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="205"/>
         <source>SI Card</source>
-        <translation type="unfinished"></translation>
+        <translation>SI čip</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="233"/>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="269"/>
         <source>Rent</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapůjčit</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="279"/>
         <source>Start time</source>
-        <translation type="unfinished"></translation>
+        <translation>Startovní čas</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="313"/>
         <source>Note</source>
-        <translation type="unfinished">Poznámka</translation>
+        <translation>Poznámka</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="331"/>
         <source>Message</source>
-        <translation type="unfinished"></translation>
+        <translation>Zpráva</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="351"/>
         <source>Send</source>
-        <translation type="unfinished"></translation>
+        <translation>Odeslat</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="385"/>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.cpp" line="119"/>
         <source>Not Paid</source>
-        <translation type="unfinished"></translation>
+        <translation>Nezaplaceno</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="397"/>
         <source>Force</source>
-        <translation type="unfinished"></translation>
+        <translation>Vynutit</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="417"/>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="424"/>
         <source>Reject</source>
-        <translation type="unfinished"></translation>
+        <translation>Odmítnout</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="431"/>
         <source>Accept</source>
-        <translation type="unfinished"></translation>
+        <translation>Přijmout</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.ui" line="438"/>
         <source>Accept and Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Přijmout a upravit</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.cpp" line="116"/>
         <source>Paid</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaplaceno</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.cpp" line="225"/>
         <source>Change is already locked by other user.</source>
-        <translation type="unfinished"></translation>
+        <translation>Změna je již uzamčena jiným uživatelem.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.cpp" line="323"/>
         <location filename="plugins/Event/src/services/qx/lateentrydialog.cpp" line="348"/>
         <source>Competitor %1 %2 %3 is registered in this class already, run will be updated.</source>
-        <translation type="unfinished"></translation>
+        <translation>Závodník %1 %2 %3 je již v této kategorii registrován, běh bude aktualizován.</translation>
     </message>
 </context>
 <context>
@@ -5209,32 +5215,32 @@ Slouží pro testování zpracování výsledků bez fyzických SI čipů.</tran
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="67"/>
         <source>QX Event</source>
-        <translation type="unfinished"></translation>
+        <translation>QX Event</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="86"/>
         <source>API token is not set.</source>
-        <translation type="unfinished"></translation>
+        <translation>Není nastaven token API.</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="495"/>
         <source>Client info discovery error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při zjišťování informací o klientovi: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="502"/>
         <source>Event ID: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>ID závodu: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="516"/>
         <source>Broker socket error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba socketu brokeru: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="522"/>
         <source>Broker login error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba přihlášení k brokeru: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservice.cpp" line="62"/>
@@ -5249,74 +5255,74 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="14"/>
         <source>SHV API service</source>
-        <translation type="unfinished">Služba SVH API</translation>
+        <translation>Služba SVH API</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="20"/>
         <source>SHV broker connection</source>
-        <translation type="unfinished"></translation>
+        <translation>Připojení k SHV brokeru</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="32"/>
         <source>Url</source>
-        <translation type="unfinished">Url</translation>
+        <translation>Url</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="39"/>
         <source>localhost</source>
-        <translation type="unfinished"></translation>
+        <translation>localhost</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="49"/>
         <source>qxqx.org</source>
-        <translation type="unfinished"></translation>
+        <translation>qxqx.org</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="67"/>
         <source>Export database</source>
-        <translation type="unfinished"></translation>
+        <translation>Exportovat databázi</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="83"/>
         <source>Not loaded</source>
-        <translation type="unfinished">Není načteno</translation>
+        <translation>Není načteno</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="93"/>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="128"/>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="138"/>
         <source>Fill this url into HTTP POST synchonization method in O-CheckList</source>
-        <translation type="unfinished">Vypňte toto url do HTTP POST synchronizační metody v O-CheckList</translation>
+        <translation>Vypňte toto url do HTTP POST synchronizační metody v O-CheckList</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="96"/>
         <source>Event ID</source>
-        <translation type="unfinished">ID závodu</translation>
+        <translation>ID závodu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="115"/>
         <source>Not defined</source>
-        <translation type="unfinished"></translation>
+        <translation>Není definováno</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="131"/>
         <source>API token</source>
-        <translation type="unfinished">API token</translation>
+        <translation>API token</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="141"/>
         <source>Current stage</source>
-        <translation type="unfinished">Aktuální etapa</translation>
+        <translation>Aktuální etapa</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="165"/>
         <source>Test connection</source>
-        <translation type="unfinished">Otestovat připojení</translation>
+        <translation>Otestovat připojení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="172"/>
         <source>Archive event</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivovat závod</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.ui" line="181"/>
@@ -5326,27 +5332,27 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.cpp" line="138"/>
         <source>Broker connected OK</source>
-        <translation type="unfinished"></translation>
+        <translation>Připojení k brokeru bylo úspěšné</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.cpp" line="144"/>
         <source>Client info discovery error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při zjišťování informací o klientovi: %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.cpp" line="151"/>
         <source>Event mounted at: %1, event id: %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Závod připojen v: %1, ID závodu: %2</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.cpp" line="158"/>
         <source>Connection error: %1</source>
-        <translation type="unfinished">Chyba připojení : %1</translation>
+        <translation>Chyba připojení : %1</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxeventservicewidget.cpp" line="161"/>
         <source>Login error: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba přihlášení: %1</translation>
     </message>
 </context>
 <context>
@@ -5354,7 +5360,7 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.ui" line="14"/>
         <source>Late entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozdní přihlášky</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.ui" line="23"/>
@@ -5364,38 +5370,38 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.ui" line="35"/>
         <source>All</source>
-        <translation type="unfinished">Vše</translation>
+        <translation>Vše</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.ui" line="42"/>
         <source>Type</source>
-        <translation type="unfinished">Typ</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.ui" line="52"/>
         <source>Pending</source>
-        <translation type="unfinished"></translation>
+        <translation>Čekající</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.ui" line="83"/>
         <source>Accepted</source>
-        <translation type="unfinished"></translation>
+        <translation>Přijaté</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.ui" line="93"/>
         <source>Rejected</source>
-        <translation type="unfinished"></translation>
+        <translation>Odmítnuté</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.cpp" line="275"/>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.cpp" line="294"/>
         <source>Edit competitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Upravit závodníka</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/qx/qxlateentrieswidget.cpp" line="294"/>
         <source>No competitor found for this run.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pro tento běh nebyl nalezen žádný závodník.</translation>
     </message>
 </context>
 <context>
@@ -5512,7 +5518,7 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="24"/>
         <source>Event</source>
-        <translation type="unfinished">Závod</translation>
+        <translation>Závod</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="49"/>
@@ -5538,104 +5544,104 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="416"/>
         <source>data from Eventor - eventor.orienteering.org</source>
-        <translation type="unfinished"></translation>
+        <translation>data z Eventoru - eventor.orienteering.org</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="432"/>
         <source>IOF Race</source>
-        <translation type="unfinished"></translation>
+        <translation>Závod IOF</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="439"/>
         <source>ORIS Race</source>
-        <translation type="unfinished"></translation>
+        <translation>Závod ORIS</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="473"/>
         <source>Results</source>
-        <translation type="unfinished">Výsledky</translation>
+        <translation>Výsledky</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="481"/>
         <source>Time precission</source>
-        <translation type="unfinished"></translation>
+        <translation>Přesnost času</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="489"/>
         <source>1 sec</source>
-        <translation type="unfinished"></translation>
+        <translation>1 sek</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="494"/>
         <source>1/10 sec</source>
-        <translation type="unfinished"></translation>
+        <translation>1/10 sek</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="499"/>
         <source>1/100 sec</source>
-        <translation type="unfinished"></translation>
+        <translation>1/100 sek</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="504"/>
         <source>1/1000 sec</source>
-        <translation type="unfinished"></translation>
+        <translation>1/1000 sek</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="527"/>
         <source>Point results</source>
-        <translation type="unfinished"></translation>
+        <translation>Bodové výsledky</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="552"/>
         <source>All</source>
-        <translation type="unfinished">Vše</translation>
+        <translation>Vše</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="590"/>
         <source>Count only</source>
-        <translation type="unfinished"></translation>
+        <translation>Pouze započítat</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="597"/>
         <source>Max points</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximum bodů</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="604"/>
         <source>best stage times to overall results</source>
-        <translation type="unfinished"></translation>
+        <translation>nejlepší časy etap do celkových výsledků</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="614"/>
         <source>Photocell gate</source>
-        <translation type="unfinished"></translation>
+        <translation>Cílová fotobuňka</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="620"/>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="647"/>
         <source> ms</source>
-        <translation type="unfinished"></translation>
+        <translation> ms</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="633"/>
         <source>Finish tolerance</source>
-        <translation type="unfinished"></translation>
+        <translation>Tolerance cíle</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="640"/>
         <source>Start tolerance</source>
-        <translation type="unfinished"></translation>
+        <translation>Tolerance startu</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="546"/>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="568"/>
         <source>Maximum points for the winner (1000-points formula: max_points * best_time / runner_time)</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximální počet bodů pro vítěze (vzorec 1000 bodů: max_points * best_time / runner_time)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="152"/>
         <source>#</source>
-        <translation></translation>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="157"/>
@@ -5654,8 +5660,7 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="344"/>
         <source>Used to select race number in XML format (for XML import/export)</source>
-        <translatorcomment>Používá se k výběru čísla závodu ve formátu XML (pro import/export XML)</translatorcomment>
-        <translation></translation>
+        <translation>Používá se k výběru čísla závodu ve formátu XML (pro import/export XML)</translation>
     </message>
     <message>
         <source>ORIS</source>
@@ -5809,12 +5814,12 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="325"/>
         <source>Import/Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Import/Export</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="363"/>
         <source>data from ORIS - oris.orientacnisporty.cz</source>
-        <translation type="unfinished"></translation>
+        <translation>data z ORISu - oris.orientacnisporty.cz</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="397"/>
@@ -5844,7 +5849,7 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.cpp" line="196"/>
         <source>Knock-out sprint</source>
-        <translation></translation>
+        <translation>Vyřazovací sprint</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.cpp" line="197"/>
@@ -6312,7 +6317,7 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="144"/>
         <source>Printer</source>
-        <translation type="unfinished">Tiskárna</translation>
+        <translation>Tiskárna</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreaderwidget.cpp" line="207"/>
@@ -6607,7 +6612,9 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
         <source>Import of one-time clubs finished.
 
 Imported: %1 of %2 clubs.</source>
-        <translation type="unfinished"></translation>
+        <translation>Import jednorázových klubů dokončen.
+
+Importováno: %1 z %2 klubů.</translation>
     </message>
     <message>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="105"/>
@@ -6786,12 +6793,12 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="33"/>
         <source>Stored image (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložený obrázek (%1)</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="269"/>
         <source>Test Runner</source>
-        <translation type="unfinished"></translation>
+        <translation>Testovací závodník</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="275"/>
@@ -6801,27 +6808,27 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="289"/>
         <source>Cannot open image file &apos;%1&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze otevřít soubor s obrázkem &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="295"/>
         <source>Selected image file is empty.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybraný soubor s obrázkem je prázdný.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="313"/>
         <source>Selected file is not a supported image.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybraný soubor není podporovaným obrázkovým formátem.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="320"/>
         <source>Cannot prepare selected image for printing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybraný obrázek nelze připravit pro tisk.</translation>
     </message>
     <message>
         <location filename="plugins/CardReader/src/cardreadersettingspage.cpp" line="96"/>
         <source>Unnamed device</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepojmenované zařízení</translation>
     </message>
 </context>
 <context>
@@ -7029,9 +7036,8 @@ Přejděte do Nastavení -&gt; Mezičasy a nastavte typ mezičasů.</translation
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="655"/>
         <source>Receipt report type is not defined.
 Please choose a receipt template first.</source>
-        <translatorcomment>Typ šablony lístečku není definován.
-Nejprve si prosím vyberte šablonu lístečku.</translatorcomment>
-        <translation></translation>
+        <translation>Typ šablony lístečku není definován.
+Nejprve si prosím vyberte šablonu lístečku.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="659"/>
@@ -7500,7 +7506,7 @@ Nejprve si prosím vyberte šablonu lístečku.</translatorcomment>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="203"/>
         <source>A&amp;wards</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Diplomy</translation>
     </message>
     <message>
         <location filename="plugins/Relays/src/relayswidget.cpp" line="282"/>
@@ -7875,19 +7881,19 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     <message numerus="yes">
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2456"/>
         <source>Points after %n stage(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Body po %n etapě</numerusform>
+            <numerusform>Body po %n etapách</numerusform>
+            <numerusform>Body po %n etapách</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2486"/>
         <source>Results by points after %n stage(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Výsledky podle bodů po %n etapě</numerusform>
+            <numerusform>Výsledky podle bodů po %n etapách</numerusform>
+            <numerusform>Výsledky podle bodů po %n etapách</numerusform>
         </translation>
     </message>
     <message>
@@ -8020,7 +8026,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="189"/>
         <source>Late entries</source>
-        <translation type="unfinished"></translation>
+        <translation>Pozdní přihlášky</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runsplugin.cpp" line="2816"/>
@@ -8347,7 +8353,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     <message>
         <location filename="plugins/Runs/src/runstablemodel.cpp" line="40"/>
         <source>SI reg</source>
-        <translation></translation>
+        <translation>SI reg</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runstablemodel.cpp" line="44"/>
@@ -8841,12 +8847,12 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="225"/>
         <source>Points after n stages condensed</source>
-        <translation type="unfinished"></translation>
+        <translation>Body po n etapách – zkráceně</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="230"/>
         <source>Points after n stages</source>
-        <translation type="unfinished"></translation>
+        <translation>Body po n etapách</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="238"/>
@@ -8951,7 +8957,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="436"/>
         <source>Show only runners who have started and are not finished yet. The list is not refreshed automatically, reload it to update.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit pouze závodníky, kteří odstartovali a ještě nedokončili závod. Seznam se neaktualizuje automaticky; pro aktualizaci jej znovu načtěte.</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runswidget.cpp" line="1097"/>
@@ -9355,7 +9361,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="277"/>
         <source>class: &lt;b&gt;%1&lt;/b&gt;, %2 runners + %3 vacants = %4&lt;br/&gt;</source>
         <oldsource>class: &lt;b&gt;%1&lt;/b&gt;, %2 runners + %3 vacants&lt;br/&gt;</oldsource>
-        <translation>kategorie: &lt;b&gt;%1&lt;/b&gt;, %2 závodníků + %3 vakantů&lt;br/&gt;</translation>
+        <translation>kategorie: &lt;b&gt;%1&lt;/b&gt;, %2 závodníků + %3 vakantů = %4&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="282"/>
@@ -9384,6 +9390,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <translation>, koliduje s: %1&lt;br/&gt;</translation>
     </message>
     <message>
+        <location filename="plugins/Classes/src/drawing/classitem.cpp" line="485"/>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="490"/>
         <source>Edit class</source>
         <oldsource>Edit Competitor</oldsource>
@@ -9421,7 +9428,7 @@ Kliknutím vyloučíš kategorie v tomto řádku z kontroly kolizí startů.</tr
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.ui" line="14"/>
         <source>Classes layout editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor rozložení kategorií</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.ui" line="47"/>
@@ -9488,7 +9495,7 @@ podle aktuálního rozvržení.</translation>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="70"/>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Hledat</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="73"/>
@@ -9498,22 +9505,22 @@ podle aktuálního rozvržení.</translation>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="79"/>
         <source>Show classes for</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobrazit kategorie pro</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="81"/>
         <source>Select the start number for class draw preparation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte číslo startu pro přípravu rozlosování kategorií.</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="85"/>
         <source>Lock intervals</source>
-        <translation type="unfinished"></translation>
+        <translation>Uzamknout intervaly</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="86"/>
         <source>Prevent changing start intervals with the mouse wheel or interval arrows.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zabránit změně startovních intervalů pomocí kolečka myši nebo šipek ovládacího prvku.</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="92"/>
@@ -9549,17 +9556,17 @@ Přejete si je před zavřením uložit?</translation>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="163"/>
         <source>Start %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Start %1</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="167"/>
         <source>Start</source>
-        <translation type="unfinished">Start</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="184"/>
         <source>The current start layout has unsaved changes. Save them before switching starts?</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktuální rozložení startu obsahuje neuložené změny. Chcete je před přepnutím na jiný start uložit?</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/drawingganttwidget.cpp" line="267"/>
@@ -9816,31 +9823,31 @@ Soubor s logem: %1</translation>
     <message numerus="yes">
         <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="19"/>
         <source>Points after %n stage(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Body po %n etapě</numerusform>
+            <numerusform>Body po %n etapách</numerusform>
+            <numerusform>Body po %n etapách</numerusform>
         </translation>
     </message>
     <message>
         <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="158"/>
         <source>Reg</source>
-        <translation type="unfinished">Reg. č.</translation>
+        <translation>Reg. č.</translation>
     </message>
     <message>
         <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="162"/>
         <source>Stage </source>
-        <translation type="unfinished">Etapa </translation>
+        <translation>Etapa </translation>
     </message>
     <message>
         <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="165"/>
         <source>Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Body</translation>
     </message>
     <message>
         <location filename="plugins/Runs/qml/reports/results_nstages_points.qml" line="167"/>
         <source>Diff.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozdíl</translation>
     </message>
 </context>
 <context>
@@ -9848,26 +9855,26 @@ Soubor s logem: %1</translation>
     <message numerus="yes">
         <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="18"/>
         <source>Points after %n stage(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Body po %n etapě</numerusform>
+            <numerusform>Body po %n etapách</numerusform>
+            <numerusform>Body po %n etapách</numerusform>
         </translation>
     </message>
     <message>
         <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="92"/>
         <source>Reg</source>
-        <translation type="unfinished">Reg. č.</translation>
+        <translation>Reg. č.</translation>
     </message>
     <message>
         <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="98"/>
         <source>Result</source>
-        <translation type="unfinished"></translation>
+        <translation>Výsledek</translation>
     </message>
     <message>
         <location filename="plugins/Runs/qml/reports/results_nstages_points_condensed.qml" line="104"/>
         <source>Diff.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozdíl</translation>
     </message>
 </context>
 <context>
