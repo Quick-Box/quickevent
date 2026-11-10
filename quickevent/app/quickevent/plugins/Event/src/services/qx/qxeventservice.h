@@ -4,7 +4,7 @@
 
 namespace shv::iotqt::node { class ShvRootNode; }
 namespace shv::iotqt::rpc { class DeviceConnection; }
-namespace shv::chainpack { class RpcMessage; class RpcError; }
+namespace shv::chainpack { class RpcMessage; class RpcError; class RpcValue; }
 
 namespace Event::services::qx {
 
@@ -39,6 +39,7 @@ public:
 	static int currentConnectionId();
 
 	static QString eventctlShvPath(bool is_local_connection);
+	static QString eventApiShvPath(bool is_local_connection, int event_id);
 
 	int eventId() const;
 	shv::iotqt::rpc::DeviceConnection* rpcConnection() const { return m_rpcConnection; }
@@ -53,6 +54,8 @@ private: // shv
 	void onBrokerLoginError(const shv::chainpack::RpcError &err);
 
 	void subscribeChanges();
+	void onEventDbModeChanged(const shv::chainpack::RpcValue &params);
+	void setEventDbModeStatusMessage(const QString &db_mode);
 private: // shv
 	shv::iotqt::rpc::DeviceConnection *m_rpcConnection = nullptr;
 	shv::iotqt::node::ShvRootNode *m_rootNode;

@@ -33,6 +33,10 @@ using Event::EventPlugin;
 
 namespace Event::services::qx {
 
+namespace {
+constexpr auto SIG_EVENT_DB_MODE_CHANGED = "eventDbModeChanged";
+}
+
 //===============================================
 // QxClientService
 //===============================================
@@ -174,6 +178,11 @@ QString QxEventService::eventctlShvPath(bool is_local_connection)
 	return ret;
 }
 
+QString QxEventService::eventApiShvPath(bool is_local_connection, int event_id)
+{
+	return QxEventService::eventctlShvPath(is_local_connection) + "/" + QString::number(event_id);
+}
+
 void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
@@ -197,15 +206,14 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 				setStatusMessage(tr("Event ID: %1").arg(m_eventId));
 				subscribeChanges();
 				auto *rpc_call2 = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
-						->setShvPath(eventctlShvPath(settings().isLocalBroker()))
-						->setMethod("eventData")
-						->setParams(RpcValue::Map{{"event_id", m_eventId}});
+						->setShvPath(eventApiShvPath(settings().isLocalBroker(), m_eventId))
+						->setMethod("eventDbMode");
 				connect(rpc_call2, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 					if (error.isValid()) {
-						setStatusMessage(tr("Event ID: %1, event data error: %2").arg(m_eventId).arg(error.message()), NecroLogLevel::Warning);
+						setStatusMessage(tr("Event ID: %1, event DB mode error: %2").arg(m_eventId).arg(error.message()), NecroLogLevel::Warning);
 					}
 					else {
-						setStatusMessage(tr("Event ID: %1 %2").arg(m_eventId).arg(result.asMap().value("db_mode").to<QString>()));
+						onEventDbModeChanged(result);
 					}
 				});
 				rpc_call2->start();
@@ -249,6 +257,10 @@ void QxEventService::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)
 	else if(msg.isSignal()) {
 		RpcSignal nt(msg);
 		qfMessage() << "RPC signal received:" << nt.toPrettyString();
+		if (nt.signal() == SIG_EVENT_DB_MODE_CHANGED
+				&& nt.shvPath().asString() == eventctlShvPath(settings().isLocalBroker()).toStdString()) {
+			onEventDbModeChanged(nt.params());
+		}
 	}
 }
 
@@ -261,26 +273,42 @@ void QxEventService::sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg)
 
 void QxEventService::subscribeChanges()
 {
-	// Q_ASSERT(m_rpcConnection);
-	// QString shv_path = "test";
-	// QString signal_name = shv::chainpack::Rpc::SIG_VAL_CHANGED;
-	// auto *rpc_call = RpcCall::createSubscriptionRequest(m_rpcConnection, shv_path, signal_name);
-	// connect(rpc_call, &RpcCall::maybeResult, this, [shv_path, signal_name](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
-	// 	if(error.isValid()) {
-	// 		qfError() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribe error:" << error.toString();
-	// 	}
-	// 	else {
-	// 		qfMessage() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribed successfully" << result.toCpon();
-	// 	}
-	// });
-	// rpc_call->start();
+	Q_ASSERT(m_rpcConnection);
+	auto shv_path = eventctlShvPath(settings().isLocalBroker());
+	QString signal_name = SIG_EVENT_DB_MODE_CHANGED;
+	auto *rpc_call = RpcCall::createSubscriptionRequest(m_rpcConnection, shv_path, signal_name, {});
+	connect(rpc_call, &RpcCall::maybeResult, this, [this, shv_path, signal_name](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
+		Q_UNUSED(result)
+		if(error.isValid()) {
+			qfWarning() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribe error:" << error.toString();
+			setStatusMessage(tr("Event ID: %1, subscribe %2 error: %3").arg(m_eventId).arg(signal_name, QString::fromStdString(error.message())), NecroLogLevel::Warning);
+		}
+		else {
+			qfMessage() << "Signal:" << signal_name << "on SHV path:" << shv_path << "subscribed successfully";
+		}
+	});
+	rpc_call->start();
 }
 
-// void QxEventService::sendRecchgShvSignal(const qf::core::sql::QxRecChng &chng)
-// {
-// 	if (isRunning()) {
-// 		m_rpcConnection->sendShvSignal("sql", "recchng", ::qx::qxRecChngToRpcValue(chng));
-// 	}
-// }
+void QxEventService::onEventDbModeChanged(const shv::chainpack::RpcValue &params)
+{
+	QString db_mode;
+	if (params.isMap()) {
+		const auto &m = params.asMap();
+		if (m.hasKey("event_id") && m.value("event_id").toInt() != m_eventId) {
+			return;
+		}
+		db_mode = QString::fromStdString(m.value("db_mode").to<std::string>());
+	}
+	else {
+		db_mode = QString::fromStdString(params.to<std::string>());
+	}
+	setEventDbModeStatusMessage(db_mode);
+}
+
+void QxEventService::setEventDbModeStatusMessage(const QString &db_mode)
+{
+	setStatusMessage(tr("Event ID: %1 %2").arg(m_eventId).arg(db_mode));
+}
 
 } // namespace Event::services::qx
