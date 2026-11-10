@@ -30,7 +30,8 @@ private:
 	void setMessage(const QString &msg = {}, MessageType msg_type = MessageType::Ok);
 	QxEventService* service();
 	bool saveSettings();
-	void testConnection();
+	void startStopService();
+	void updateServiceStatus();
 	void setConnectionType();
 	QString brokerUrl() const;
 	struct DbTransfer;
@@ -47,6 +48,7 @@ private:
 	void savePulledEventDb(const std::shared_ptr<DbTransfer> &download);
 private:
 	Ui::QxEventServiceWidget *ui;
+	bool m_dbTransferRunning = false;
 };
 
 }

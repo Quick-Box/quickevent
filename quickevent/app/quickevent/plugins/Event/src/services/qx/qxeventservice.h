@@ -48,6 +48,7 @@ class QxEventService : public Service
 	using Super = Service;
 public:
 	static constexpr auto QX_API_TOKEN = "qx-api-token";
+	enum class MessageLevel { Info, Warning, Error };
 public:
 	QxEventService(QObject *parent);
 
@@ -79,6 +80,8 @@ public:
 
 	int eventId() const;
 	shv::iotqt::rpc::DeviceConnection* rpcConnection() const { return m_rpcConnection; }
+
+	MessageLevel statusMessageLevel() const { return m_statusMessageLevel; }
 protected:
 	void loadSettings() override;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
@@ -99,6 +102,7 @@ private:
 	void httpPostJson(const QString &path, const QString &query, QVariantMap json, QObject *context = nullptr, const std::function<void (QString)> &call_back = nullptr);
 
 	EventInfo eventInfo() const;
+	void setServiceMessage(const QString &msg, MessageLevel level = MessageLevel::Info);
 private: // shv
 	shv::iotqt::rpc::DeviceConnection *m_rpcConnection = nullptr;
 	shv::iotqt::node::ShvRootNode *m_rootNode;
@@ -108,6 +112,7 @@ private:
 	int m_eventId = 0;
 	QString m_eventMountPoint;
 	QTimer *m_pollChangesTimer = nullptr;
+	MessageLevel m_statusMessageLevel = MessageLevel::Info;
 };
 
 }

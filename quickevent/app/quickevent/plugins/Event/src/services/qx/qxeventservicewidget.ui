@@ -121,9 +121,12 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btTestConnection">
+      <widget class="QPushButton" name="btStartStopService">
+       <property name="toolTip">
+        <string>Apply connection settings and start the service, or stop the running service</string>
+       </property>
        <property name="text">
-        <string>Test connection</string>
+        <string>Start service</string>
        </property>
       </widget>
      </item>
@@ -142,6 +145,19 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblServiceStatus">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextInteractionFlag::TextSelectableByMouse</set>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="lblStatus">
