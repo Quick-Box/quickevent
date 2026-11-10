@@ -40,6 +40,7 @@ public:
 
 	static QString eventctlShvPath(bool is_local_connection);
 	static QString eventApiShvPath(bool is_local_connection, int event_id);
+	QString eventApiShvPath() const;
 
 	int eventId() const;
 	shv::iotqt::rpc::DeviceConnection* rpcConnection() const { return m_rpcConnection; }

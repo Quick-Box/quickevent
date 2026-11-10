@@ -34,7 +34,7 @@ using Event::EventPlugin;
 namespace Event::services::qx {
 
 namespace {
-constexpr auto SIG_EVENT_DB_MODE_CHANGED = "eventDbModeChanged";
+constexpr auto SIG_EVENT_DB_MODE_CHANGED = "eventDbModeChng";
 }
 
 //===============================================
@@ -83,6 +83,7 @@ void QxEventService::run() {
 	setStatusMessage(tr("Connecting to broker"));
 
 	m_rpcConnection = new DeviceConnection("QuickEvent", this);
+	m_rpcConnection->setShvApiVersion(shv::chainpack::IRpcConnection::ShvApiVersion::V3);
 	m_rpcConnection->setConnectionString(ss.shvBrokerUrl());
 	{
 		RpcValue::Map opts;
@@ -141,29 +142,6 @@ QString QxEventService::apiToken() const
 	return event_plugin->appDbConfig().qxConfig().apiToken;
 }
 
-//auto query_to_json_csv(QSqlQuery &q)
-//{
-//	QVariantList csv;
-//	{
-//		// QStringList columns{"name", "control_count", "length", "climb", "start_time", "interval", "start_slot_count"};
-//		QStringList columns;
-//		auto rec = q.record();
-//		for (auto i = 0; i < rec.count(); ++i) {
-//			columns << rec.field(i).name();
-//		}
-//		csv.insert(csv.length(), columns);
-//	}
-//	while (q.next()) {
-//		QVariantList values;
-//		auto rec = q.record();
-//		for (auto i = 0; i < rec.count(); ++i) {
-//			values << q.value(i);
-//		}
-//		csv.insert(csv.length(), values);
-//	}
-//	return csv;
-//}
-//}
 int QxEventService::currentConnectionId()
 {
 	return qf::core::sql::Connection::forName().connectionId();
@@ -181,6 +159,11 @@ QString QxEventService::eventctlShvPath(bool is_local_connection)
 QString QxEventService::eventApiShvPath(bool is_local_connection, int event_id)
 {
 	return QxEventService::eventctlShvPath(is_local_connection) + "/" + QString::number(event_id);
+}
+
+QString QxEventService::eventApiShvPath() const
+{
+	return QxEventService::eventApiShvPath(settings().isLocalBroker(), m_eventId);
 }
 
 void QxEventService::onBrokerConnectedChanged(bool is_connected)
@@ -206,7 +189,7 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 				setStatusMessage(tr("Event ID: %1").arg(m_eventId));
 				subscribeChanges();
 				auto *rpc_call2 = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
-						->setShvPath(eventApiShvPath(settings().isLocalBroker(), m_eventId))
+						->setShvPath(eventApiShvPath())
 						->setMethod("eventDbMode");
 				connect(rpc_call2, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 					if (error.isValid()) {
@@ -258,7 +241,7 @@ void QxEventService::onRpcMessageReceived(const shv::chainpack::RpcMessage &msg)
 		RpcSignal nt(msg);
 		qfMessage() << "RPC signal received:" << nt.toPrettyString();
 		if (nt.signal() == SIG_EVENT_DB_MODE_CHANGED
-				&& nt.shvPath().asString() == eventctlShvPath(settings().isLocalBroker()).toStdString()) {
+				&& nt.shvPath().asString() == eventApiShvPath().toStdString()) {
 			onEventDbModeChanged(nt.params());
 		}
 	}
@@ -274,9 +257,9 @@ void QxEventService::sendRpcMessage(const shv::chainpack::RpcMessage &rpc_msg)
 void QxEventService::subscribeChanges()
 {
 	Q_ASSERT(m_rpcConnection);
-	auto shv_path = eventctlShvPath(settings().isLocalBroker());
+	auto shv_path = eventApiShvPath();
 	QString signal_name = SIG_EVENT_DB_MODE_CHANGED;
-	auto *rpc_call = RpcCall::createSubscriptionRequest(m_rpcConnection, shv_path, signal_name, {});
+	auto *rpc_call = RpcCall::createSubscriptionRequestV3(m_rpcConnection, shv_path, signal_name, {});
 	connect(rpc_call, &RpcCall::maybeResult, this, [this, shv_path, signal_name](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 		Q_UNUSED(result)
 		if(error.isValid()) {
