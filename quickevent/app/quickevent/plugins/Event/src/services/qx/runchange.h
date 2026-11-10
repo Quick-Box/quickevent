@@ -11,14 +11,15 @@ namespace Event::services::qx {
 
 constexpr auto DATA_TYPE_LATE_ENTRY = "LateEntry";
 
-struct RunId { int id = 0; };
-struct ClassId { int id = 0; };
+struct Update { int runId = 0; };
+struct NewEntry { int classId = 0; };
+struct DeleteEntry { int runId = 0; };
 
-using LateEntryForeignId = std::variant<RunId, ClassId>;
+using LateEntryKind = std::variant<Update, NewEntry, DeleteEntry>;
 
 struct LateEntry
 {
-	LateEntryForeignId id = RunId{};
+	LateEntryKind kind = Update{};
 	std::optional<QString> first_name;
 	std::optional<QString> last_name;
 	std::optional<QString> registration;
@@ -26,10 +27,9 @@ struct LateEntry
 	std::optional<int> start_time_ms;
 	// std::optional<bool> si_id_rent;
 	std::optional<QString> note;
-	std::optional<bool> paid;
 
 	// static LateEntry fromJsonString(const QString &json);
-	static LateEntry fromVariantMap(const QVariantMap &map);
+	static std::optional<LateEntry> fromVariantMap(const QVariantMap &map);
 };
 
 struct QxChangeData
@@ -64,34 +64,5 @@ enum class QxChangeStatus {
 	Rejected,
 };
 QxChangeStatus qxChangeStatusFromString(const QString &status);
-
-// struct EventChange
-// {
-// 	int64_t id;
-// 	QString source;
-// 	DataType data_type;
-// 	int64_t data_id;
-// 	QVariant data;
-// 	QString user_id;
-// 	QxChangeStatus status;
-// 	QString status_message;
-// 	QDateTime created;
-// 	int64_t lock_number;
-
-// 	QVariantMap toVariantMap() const;
-// };
-
-// struct ChangeRecord
-// {
-// 	int64_t id;
-// 	QString source;
-// 	QString data_type,
-// 	int64_t data_id;
-// 	data: ChangeData,
-// 	user_id: Option<String>,
-// 	status: Option<ChangeStatus>,
-// 	created: QxDateTime,
-// 	lock_number: Option<i64>,
-// };
 
 } // namespace Event::services::qx

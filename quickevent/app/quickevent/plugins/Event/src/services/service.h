@@ -2,6 +2,8 @@
 
 #include <qf/core/utils.h>
 
+#include <necrolog/necrologlevel.h>
+
 #include <QObject>
 
 namespace qf { namespace gui { namespace framework { class DialogWidget; }}}
@@ -23,8 +25,6 @@ public:
 class Service : public QObject
 {
 	Q_OBJECT
-
-	QF_PROPERTY_IMPL(QString, s, S, tatusMessage)
 public:
 	enum class Status { Unknown, Stopped, Running};
 public:
@@ -58,6 +58,11 @@ public:
 	virtual void setRunning(bool on);
 	bool isRunning() const { return status() == Status::Running; }
 
+	QString statusMessage() const {return m_statusMessage;}
+	NecroLogLevel statusMessageLevel() const {return m_statusMessageLevel;}
+	void setStatusMessage(const QString &message, NecroLogLevel level = NecroLogLevel::Info);
+	Q_SIGNAL void statusMessageChanged(const QString &message, NecroLogLevel level);
+
 	static void addService(Service *service);
 	static int serviceCount() {return m_services.count();}
 	static Service* serviceAt(int ix);
@@ -80,6 +85,8 @@ protected:
 private:
 	QString m_eventName;
 	Status m_status = Status::Unknown;
+	QString m_statusMessage;
+	NecroLogLevel m_statusMessageLevel = NecroLogLevel::Info;
 	static QList<Service*> m_services;
 };
 

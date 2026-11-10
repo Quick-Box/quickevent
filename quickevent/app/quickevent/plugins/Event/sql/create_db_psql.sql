@@ -291,6 +291,7 @@ CREATE TABLE {{eventId}}.qxchanges (
 	user_id character varying,
 	status character varying,
 	status_message character varying,
+	paid boolean NOT NULL DEFAULT false,
 	created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	source character varying,
 	change_id integer,
@@ -315,5 +316,5 @@ CREATE TABLE {{eventId}}.reports (
 ------------------------------------;
 ;
 -- insert into table: {{eventId}}.config;
-INSERT INTO {{eventId}}.config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30800', 'int');
+INSERT INTO {{eventId}}.config (ckey, cname, cvalue, ctype) VALUES
+('db.version', 'Data version', '30900', 'int');

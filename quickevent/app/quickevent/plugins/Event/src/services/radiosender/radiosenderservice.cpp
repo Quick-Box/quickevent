@@ -73,12 +73,12 @@ void RadioSenderService::startServer()
 	const auto config = getPlugin<EventPlugin>()->appDbConfig().radioSenderConfig();
 	const QHostAddress address(config.listenAddress);
 	if (address.isNull() || config.port <= 0 || config.port > 65535) {
-		setStatusMessage(tr("Invalid listen address or port"));
+		setStatusMessage(tr("Invalid listen address or port"), NecroLogLevel::Error);
 		return;
 	}
 	if (!m_server->listen(address, static_cast<quint16>(config.port))) {
 		setStatusMessage(tr("Cannot listen on %1:%2: %3")
-			.arg(config.listenAddress).arg(config.port).arg(m_server->errorString()));
+			.arg(config.listenAddress).arg(config.port).arg(m_server->errorString()), NecroLogLevel::Error);
 		return;
 	}
 	setStatusMessage(tr("Listening on %1:%2").arg(config.listenAddress).arg(config.port));

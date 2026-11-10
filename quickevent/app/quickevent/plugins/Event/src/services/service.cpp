@@ -98,6 +98,16 @@ void Service::stop()
 	setStatus(Status::Stopped);
 }
 
+void Service::setStatusMessage(const QString &message, NecroLogLevel level)
+{
+	if (message == m_statusMessage && level == m_statusMessageLevel) {
+		return;
+	}
+	m_statusMessage = message;
+	m_statusMessageLevel = level;
+	emit statusMessageChanged(message, level);
+}
+
 void Service::loadSettingsForEvent(const QString &event_name)
 {
 	m_eventName = event_name;

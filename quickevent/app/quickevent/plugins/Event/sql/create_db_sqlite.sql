@@ -320,6 +320,7 @@ CREATE TABLE qxchanges (
 	user_id character varying,
 	status character varying,
 	status_message character varying,
+	paid boolean NOT NULL DEFAULT 0,
 	created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	source character varying,
 	change_id integer,
@@ -345,5 +346,5 @@ CREATE TABLE reports (
 ------------------------------------;
 ;
 -- insert into table: config;
-INSERT INTO config (ckey, cname, cvalue, ctype) VALUES 
-('db.version', 'Data version', '30800', 'int');
+INSERT INTO config (ckey, cname, cvalue, ctype) VALUES
+('db.version', 'Data version', '30900', 'int');

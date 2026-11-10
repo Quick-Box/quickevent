@@ -56,6 +56,7 @@ void ServicesWidget::reload()
 
 		auto *sw = new ServiceWidget();
 		sw->setService(svc);
+		sw->setDescription(svc->serviceDescription());
 		connect(sw, &ServiceWidget::serviceVisibleToggled, this, [this, id = svc->serviceId()](bool on) {
 			setServiceHidden(id, !on);
 		});

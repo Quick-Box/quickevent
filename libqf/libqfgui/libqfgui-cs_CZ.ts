@@ -707,7 +707,7 @@
 <context>
     <name>qf::gui::framework::MainWindow</name>
     <message>
-        <location filename="src/framework/mainwindow.cpp" line="301"/>
+        <location filename="src/framework/mainwindow.cpp" line="298"/>
         <source>Plugin for feature id: &apos;%1&apos; is not installed!</source>
         <translation>Plugin pro funkci ID: &apos;%1&apos; není nainstalován!</translation>
     </message>
@@ -923,7 +923,7 @@
 <context>
     <name>qf::gui::model::SqlTableModel</name>
     <message>
-        <location filename="src/model/sqltablemodel.cpp" line="228"/>
+        <location filename="src/model/sqltablemodel.cpp" line="227"/>
         <source>numRowsAffected() = %1, should be 1
 %2</source>
         <translation>numRowsAffected() = %1, mělo by být 1
@@ -1068,32 +1068,35 @@
         <translation>pouze vybrané řádky</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="23"/>
+        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="35"/>
         <source>portrait</source>
         <translation>na výšku</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="24"/>
+        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="36"/>
         <source>landscape</source>
         <translation>na šířku</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="58"/>
+        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="70"/>
         <source>Open report file</source>
         <translation>Otevřít soubor reportu</translation>
     </message>
     <message>
-        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="58"/>
+        <location filename="src/reports/widgets/printtableviewwidget/printtableviewwidget.cpp" line="70"/>
+        <source>Reports (*.qrep)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>QML reports (*.qml)</source>
-        <translation>QML reporty (*.qml)</translation>
+        <translation type="vanished">QML reporty (*.qml)</translation>
     </message>
 </context>
 <context>
     <name>qf::gui::reports::ReportProcessor</name>
     <message>
-        <location filename="src/reports/processor/reportprocessor.cpp" line="81"/>
         <source>QML component</source>
-        <translation>Komponenta QML</translation>
+        <translation type="vanished">Komponenta QML</translation>
     </message>
 </context>
 <context>
