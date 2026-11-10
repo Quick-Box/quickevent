@@ -73,25 +73,30 @@ const StartSlotConfig& DrawingConfig::startSlotConfig(int index) const
 }
 
 
-StartSlotConfig DrawingConfig::startSlotConfig(int index, const QString &startCode) const
+StartSlotConfig DrawingConfig::startSlotConfig(int index, const QString &start_code) const
 {
-	if (startCode.isEmpty() || startCode == QStringLiteral("S1") || startCode == QStringLiteral("1"))
+	if (start_code.isEmpty() || start_code == QStringLiteral("S1") || start_code == QStringLiteral("1")) {
 		return startSlotConfig(index);
-	const auto start_slots = startLayouts.value(startCode).toList();
-	if (index < 0 || index >= start_slots.size())
+	}
+	const auto start_slots = startLayouts.value(start_code).toList();
+	if (index < 0 || index >= start_slots.size()) {
 		return StartSlotConfig{};
+	}
 	return StartSlotConfig::fromVariantMap(start_slots[index].toMap());
 }
 
-void DrawingConfig::setStartSlots(const QString &startCode, const std::vector<StartSlotConfig> &slotsVec)
+void DrawingConfig::setStartSlots(const QString &start_code, const std::vector<StartSlotConfig> &slots_vec)
 {
 	QVariantList list;
-	for (const auto &slot : slotsVec)
+	for (const auto &slot : slots_vec) {
 		list.append(slot.toVariantMap());
-	if (startCode.isEmpty() || startCode == QStringLiteral("S1") || startCode == QStringLiteral("1"))
-		startSlots = slotsVec;
-	else
-		startLayouts[startCode] = list;
+	}
+	if (start_code.isEmpty() || start_code == QStringLiteral("S1") || start_code == QStringLiteral("1")) {
+		startSlots = slots_vec;
+	}
+	else {
+		startLayouts[start_code] = list;
+	}
 }
 
 StageConfig StageConfig::fromVariantMap(const QVariantMap& map)
