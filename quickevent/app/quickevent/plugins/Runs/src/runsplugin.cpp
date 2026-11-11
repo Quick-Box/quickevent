@@ -1889,7 +1889,7 @@ qf::core::utils::TreeTable RunsPlugin::startListClassesTable(int stage_id, const
 }
 
 qf::core::utils::TreeTable RunsPlugin::startListClubsTable(int stage_id, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format,
-														   const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by)
+														   const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by, const QString &where_expr)
 {
 	auto start00_epoch_sec = getPlugin<EventPlugin>()->stageStartDateTime(stage_id).toSecsSinceEpoch();
 
@@ -1942,6 +1942,10 @@ qf::core::utils::TreeTable RunsPlugin::startListClubsTable(int stage_id, const q
 		.join("competitors.classId", "classes.id")
 		.where("COALESCE(substr(competitors.registration, 1, 3), '')='{{club_abbr}}'")
 		.orderBy(order_sql_part);
+	if(!where_expr.isEmpty()) {
+		qb.joinRestricted("classes.id", "classdefs.classId", "classdefs.stageId={{stage_id}}")
+			.where(where_expr);
+	}
 	QVariantMap qpm;
 	qpm["stage_id"] = stage_id;
 	qf::gui::model::SqlTableModel m2;
@@ -1958,6 +1962,14 @@ qf::core::utils::TreeTable RunsPlugin::startListClubsTable(int stage_id, const q
 		auto tt2 = m2.toTreeTable();
 		addStartTimeTextToClass(tt2,start00_epoch_sec, start_time_format);
 		tt.appendTable(i, tt2);
+	}
+	if(!where_expr.isEmpty()) {
+		// filtered list, skip clubs without competitors
+		for(int i = tt.rowCount() - 1; i >= 0; i--) {
+			if(tt.row(i).table().rowCount() == 0) {
+				tt.removeRow(i);
+			}
+		}
 	}
 	return tt;
 }
@@ -2185,11 +2197,12 @@ void RunsPlugin::report_startListClasses()
 	dlg.loadPersistentSettings();
 	dlg.setCurrentStageId(getPlugin<EventPlugin>()->currentStageId());
 	dlg.setStartListOptionsVisible(true);
+	dlg.setStartModeVisible(true);
 	dlg.setPageLayoutVisible(true);
 	dlg.setStartTimeFormatVisible(true);
 	if(dlg.exec()) {
 		int stage_id = selectedStageId();
-		auto tt = startListClassesTable(stage_id, dlg.sqlWhereExpression(stage_id), dlg.startListPrintVacantsOption(), dlg.startTimeFormat());
+		auto tt = startListClassesTable(stage_id, addStartModeCondition(dlg.sqlWhereExpression(stage_id), dlg.options().startMode()), dlg.startListPrintVacantsOption(), dlg.startTimeFormat());
 		auto opts = dlg.optionsMap();
 		QVariantMap props;
 		props["options"] = opts;
@@ -2217,12 +2230,13 @@ void RunsPlugin::report_startListClubs()
 	dlg.setClassFilterVisible(false);
 	dlg.setStartListOptionsVisible(true);
 	dlg.setStartListPrintVacantsVisible(true);
+	dlg.setStartModeVisible(true);
 	dlg.setPageLayoutVisible(true);
 	dlg.setStartTimeFormatVisible(true);
 	dlg.setStartlistOrderFirstByVisible(true);
 	if(dlg.exec()) {
 		int stage_id = selectedStageId();
-		auto tt = startListClubsTable(stage_id, dlg.startTimeFormat(), dlg.startlistOrderFirstBy());
+		auto tt = startListClubsTable(stage_id, dlg.startTimeFormat(), dlg.startlistOrderFirstBy(), addStartModeCondition(QString(), dlg.options().startMode()));
 		auto opts = dlg.optionsMap();
 		QVariantMap props;
 		props["options"] = opts;
@@ -2250,15 +2264,10 @@ void RunsPlugin::report_startListStarters()
 	dlg.setStartListOptionsVisible(true);
 	dlg.setStartListPrintVacantsVisible(true);
 	dlg.setStartersOptionsVisible(true);
+	dlg.setStartModeVisible(true);
 	if(dlg.exec()) {
 		int stage_id = selectedStageId();
-		QString where_expr = dlg.sqlWhereExpression(stage_id);
-		if(const QString start_mode = dlg.options().startMode(); !start_mode.isEmpty()) {
-			// effective start mode, classes with Auto mode are filtered by the derived one
-			const QString start_mode_cond = '(' + getPlugin<EventPlugin>()->startModeSqlExpression() + " = '" + start_mode + "')";
-			where_expr = where_expr.isEmpty()? start_mode_cond: where_expr + " AND " + start_mode_cond;
-		}
-		auto tt = startListStartersTable(stage_id, where_expr, dlg.startListPrintVacantsOption());
+		auto tt = startListStartersTable(stage_id, addStartModeCondition(dlg.sqlWhereExpression(stage_id), dlg.options().startMode()), dlg.startListPrintVacantsOption());
 		auto opts = dlg.optionsMap();
 		QVariantMap props;
 		props["options"] = opts;
@@ -3363,6 +3372,15 @@ bool RunsPlugin::exportStartListStageIofXml30(int stage_id, const QString &file_
 	f.write(str.toUtf8());
 	qfInfo() << "exported:" << file_name;
 	return true;
+}
+
+QString RunsPlugin::addStartModeCondition(const QString &where_expr, const QString &start_mode) const
+{
+	if(start_mode.isEmpty()) {
+		return where_expr;
+	}
+	const QString start_mode_cond = '(' + getPlugin<EventPlugin>()->startModeSqlExpression() + " = '" + start_mode + "')";
+	return where_expr.isEmpty()? start_mode_cond: where_expr + " AND " + start_mode_cond;
 }
 
 void RunsPlugin::addStartTimeTextToClass(qf::core::utils::TreeTable &tt2, const qint64 start00_epoch_sec, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format)

@@ -67,8 +67,8 @@ ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 	connect(this, &ReportOptionsDialog::classFilterVisibleChanged, ui->grpClassFilter, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->lblStartersLineSpacing, &QLabel::setVisible);
 	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->edStartersOptionsLineSpacing, &QSpinBox::setVisible);
-	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->lblStartMode, &QLabel::setVisible);
-	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->cbxStartMode, &QComboBox::setVisible);
+	connect(this, &ReportOptionsDialog::startModeVisibleChanged, ui->lblStartMode, &QLabel::setVisible);
+	connect(this, &ReportOptionsDialog::startModeVisibleChanged, ui->cbxStartMode, &QComboBox::setVisible);
 	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->cbxStartOpts_PrintVacants, &QComboBox::setVisible);
 	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->lblPrintVacants, &QLabel::setVisible);
 	connect(this, &ReportOptionsDialog::stagesOptionVisibleChanged, ui->grpStages, &QGroupBox::setVisible);

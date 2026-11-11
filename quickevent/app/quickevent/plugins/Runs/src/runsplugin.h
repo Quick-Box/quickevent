@@ -111,7 +111,7 @@ public:
 	/// classes with competitors having rented card in stage
 	qf::core::utils::TreeTable competitorsWithCardRentTable(int stage_id);
 	qf::core::utils::TreeTable startListClassesTable(int stage_id, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
-	qf::core::utils::TreeTable startListClubsTable(int stage_id, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format, const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by);
+	qf::core::utils::TreeTable startListClubsTable(int stage_id, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format, const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by, const QString &where_expr = QString());
 	qf::core::utils::TreeTable startListStartersTable(int stage_id, const QString &where_expr, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);
 	qf::core::utils::TreeTable startListClassesNStagesTable(const int stages_count, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	qf::core::utils::TreeTable startListClubsNStagesTable(const int stages_count, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
@@ -160,6 +160,8 @@ private:
 	QString getClubAbbrFromName(QString name);
 
 	void writeCSOSHeader(QTextStream &ts) const;
+	// adds condition on effective classdefs start mode, classes with Auto mode are filtered by the derived one
+	QString addStartModeCondition(const QString &where_expr, const QString &start_mode) const;
 
 	void addStartTimeTextToClass(qf::core::utils::TreeTable &tt2, const qint64 start00_epoch_sec, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	void addStartTimeTextToClass(qf::core::utils::TreeTable &tt2, const int stages_count, const QVector<qint64> &start00_epoch_sec, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
