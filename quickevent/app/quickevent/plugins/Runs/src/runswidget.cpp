@@ -885,14 +885,14 @@ void RunsWidget::onDrawClicked()
 				runners_draw_ids = runsForClass(stage_id, class_id, "runs.leg=1");
 			}
 			else if(draw_method == DrawMethod::GroupedC) {
-				QList<int> group1 = runsForClass(stage_id, class_id, "licence='C' or licence is null");
+				QList<int> group1 = runsForClass(stage_id, class_id, "COALESCE(licence, '') NOT IN ('A', 'B')");
 				QList<int> group2 = runsForClass(stage_id, class_id, "licence='A' or licence='B'");
 				QMap<int, QString> runner_id_to_club;
 				runnersByClubSortedByCount(stage_id, class_id, runner_id_to_club);
 				runners_draw_ids = equidistantClubsOrderForGroups({group1, group2}, runner_id_to_club);
 			}
 			else if(draw_method == DrawMethod::GroupedCB) {
-				QList<int> group1 = runsForClass(stage_id, class_id, "licence='C' or licence is null");
+				QList<int> group1 = runsForClass(stage_id, class_id, "COALESCE(licence, '') NOT IN ('A', 'B', 'R', 'E')");
 				QList<int> group2 = runsForClass(stage_id, class_id, "licence='B'");
 				QList<int> group3 = runsForClass(stage_id, class_id, "licence='A' or licence='R' or licence='E'");
 				QMap<int, QString> runner_id_to_club;
