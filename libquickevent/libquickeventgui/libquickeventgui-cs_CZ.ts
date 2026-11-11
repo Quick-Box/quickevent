@@ -106,7 +106,7 @@
     </message>
     <message>
         <source>Print vacants</source>
-        <translation type="vanished">Tisknout vakanty</translation>
+        <translation>Tisknout vakanty</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="355"/>

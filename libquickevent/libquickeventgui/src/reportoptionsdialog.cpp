@@ -35,7 +35,8 @@ ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 
 	//ui->edFilter->setText("h1%");
 	ui->grpStartOptions->setVisible(false);
-	ui->grpStartersOptions->setVisible(false);
+	ui->lblStartersLineSpacing->setVisible(false);
+	ui->edStartersOptionsLineSpacing->setVisible(false);
 	ui->grpStages->setVisible(false);
 	ui->grpLegs->setVisible(false);
 	ui->grpResultOptions->setVisible(false);
@@ -64,10 +65,12 @@ ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 
 	connect(this, &ReportOptionsDialog::startListOptionsVisibleChanged, ui->grpStartOptions, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::classFilterVisibleChanged, ui->grpClassFilter, &QGroupBox::setVisible);
-	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->grpStartersOptions, &QGroupBox::setVisible);
+	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->lblStartersLineSpacing, &QLabel::setVisible);
+	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->edStartersOptionsLineSpacing, &QSpinBox::setVisible);
 	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->lblStartMode, &QLabel::setVisible);
 	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->cbxStartMode, &QComboBox::setVisible);
 	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->cbxStartOpts_PrintVacants, &QComboBox::setVisible);
+	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->lblPrintVacants, &QLabel::setVisible);
 	connect(this, &ReportOptionsDialog::stagesOptionVisibleChanged, ui->grpStages, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::legsOptionVisibleChanged, ui->grpLegs, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::pageLayoutVisibleChanged, ui->grpPageLayout, &QGroupBox::setVisible);
@@ -224,6 +227,7 @@ void ReportOptionsDialog::setStartListPrintVacantsVisible(bool b)
 	if(!b)
 		ui->cbxStartOpts_PrintVacants->setCurrentIndex(0);
 	ui->cbxStartOpts_PrintVacants->setVisible(b);
+	ui->lblPrintVacants->setVisible(b);
 }
 
 void ReportOptionsDialog::setOptions(const ReportOptionsDialog::Options &options)
