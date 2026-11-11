@@ -3,6 +3,8 @@
 #include <qf/core/utils.h>
 #include <qf/core/log.h>
 
+#include <quickevent/core/codedef.h>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -43,7 +45,7 @@ DrawingConfig DrawingConfig::fromString(const QString& str)
 DrawingConfig DrawingConfig::fromVariantMap(const QVariantMap& map)
 {
 	DrawingConfig config;
-	auto lst = map.value("startSlots").toList();
+	const auto lst = map.value("startSlots").toList();
 	for (const auto& slot : lst) {
 		config.startSlots.push_back(StartSlotConfig::fromVariantMap(slot.toMap()));
 	}
@@ -72,10 +74,18 @@ const StartSlotConfig& DrawingConfig::startSlotConfig(int index) const
 	return startSlots[index];
 }
 
+static bool isDefaultStartCode(const QString &start_code)
+{
+	// legacy start_slots belong to Start 1 (code 11); "S1" and "1" kept for backward compatibility
+	return start_code.isEmpty()
+		|| start_code == QString::number(quickevent::core::CodeDef::startNumberToCode(1))
+		|| start_code == QStringLiteral("S1")
+		|| start_code == QStringLiteral("1");
+}
 
 StartSlotConfig DrawingConfig::startSlotConfig(int index, const QString &start_code) const
 {
-	if (start_code.isEmpty() || start_code == QStringLiteral("S1") || start_code == QStringLiteral("1")) {
+	if (isDefaultStartCode(start_code)) {
 		return startSlotConfig(index);
 	}
 	const auto start_slots = startLayouts.value(start_code).toList();
@@ -91,7 +101,7 @@ void DrawingConfig::setStartSlots(const QString &start_code, const std::vector<S
 	for (const auto &slot : slots_vec) {
 		list.append(slot.toVariantMap());
 	}
-	if (start_code.isEmpty() || start_code == QStringLiteral("S1") || start_code == QStringLiteral("1")) {
+	if (isDefaultStartCode(start_code)) {
 		startSlots = slots_vec;
 	}
 	else {
