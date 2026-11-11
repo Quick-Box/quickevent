@@ -762,17 +762,7 @@ void RunsWidget::onDrawClicked()
 				shuffle(runners_draw_ids);
 			}
 			else if(draw_method == DrawMethod::KeepOrder) {
-				// keep order as displayed in runs table, runners not shown in table are appended by start time
-				QList<int> class_run_ids = runsForClass(stage_id, class_id, QString(), "runs.startTimeMs");
-				auto *table_view = ui->wRunsTableWidget->tableView();
-				auto *runs_model = ui->wRunsTableWidget->runsModel();
-				for (int i = 0; i < table_view->model()->rowCount(); ++i) {
-					int run_id = runs_model->value(table_view->toTableModelRowNo(i), RunsTableModel::col_runs_id).toInt();
-					if(class_run_ids.removeOne(run_id)) {
-						runners_draw_ids << run_id;
-					}
-				}
-				runners_draw_ids << class_run_ids;
+				runners_draw_ids = runsForClass(stage_id, class_id, QString(), "runs.startTimeMs");
 			}
 			else if(draw_method == DrawMethod::RelaysFirstLeg) {
 				runners_draw_ids = runsForClass(stage_id, class_id, "runs.leg=1");
