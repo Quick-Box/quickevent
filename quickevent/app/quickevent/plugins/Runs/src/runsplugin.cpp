@@ -2236,7 +2236,7 @@ void RunsPlugin::report_startListClubs()
 	dlg.setStartlistOrderFirstByVisible(true);
 	if(dlg.exec()) {
 		int stage_id = selectedStageId();
-		auto tt = startListClubsTable(stage_id, dlg.startTimeFormat(), dlg.startlistOrderFirstBy(), addStartModeCondition(QString(), dlg.options().startMode()));
+		auto tt = startListClubsTable(stage_id, dlg.startTimeFormat(), dlg.startlistOrderFirstBy(), addStartModeCondition(dlg.sqlWhereExpression(stage_id), dlg.options().startMode()));
 		auto opts = dlg.optionsMap();
 		QVariantMap props;
 		props["options"] = opts;
