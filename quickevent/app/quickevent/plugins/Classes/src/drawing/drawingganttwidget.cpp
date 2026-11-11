@@ -164,7 +164,7 @@ void DrawingGanttWidget::load(int stage_id)
 		}
 	}
 	if (m_cbStart->count() == 0) {
-		m_cbStart->addItem(tr("Start"), 0);
+		m_cbStart->addItem(tr("Start"));
 	}
 
 	if (m_cbStart->count() == 1) {
