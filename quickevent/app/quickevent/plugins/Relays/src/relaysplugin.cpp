@@ -7,6 +7,7 @@
 #include <quickevent/core/si/checkedcard.h>
 #include <quickevent/core/utils.h>
 #include <quickevent/core/runstatus.h>
+#include <quickevent/core/classdef.h>
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/stackedcentralwidget.h>
@@ -1085,7 +1086,8 @@ QString RelaysPlugin::startListIofXml30()
 		qf::core::utils::TreeTable tt_teams = tt_classes_row.table();
 		int max_competitors = class_capacity.value(tt_classes_row.value(QStringLiteral("classes.id")).toInt(), tt_teams.rowCount());
 		// WaveStart is the relays default when start mode is not set
-		QString start_mode = class_start_mode.value(tt_classes_row.value(QStringLiteral("classes.id")).toInt(), QStringLiteral("WaveStart"));
+		using quickevent::core::ClassDef;
+		QString start_mode = class_start_mode.value(tt_classes_row.value(QStringLiteral("classes.id")).toInt(), ClassDef::startModeToString(ClassDef::StartMode::WaveStart));
 		append_list(class_start,
 			QVariantList{"Class",
 				(max_competitors > 0) ? QVariantMap{{"maxNumberOfCompetitors", max_competitors}} : QVariantMap{},

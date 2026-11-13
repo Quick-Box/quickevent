@@ -23,6 +23,7 @@
 #include <quickevent/core/utils.h>
 #include <quickevent/core/si/punchrecord.h>
 #include <quickevent/core/runstatus.h>
+#include <quickevent/core/classdef.h>
 
 #include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
@@ -73,6 +74,7 @@ QString datetime_to_string(const QDateTime &dt)
 }
 using quickevent::core::og::quantizeDatetimeMsec;
 using quickevent::core::og::quantizeTimeMsec;
+using quickevent::core::ClassDef;
 const auto vacant_name_sentinel = QStringLiteral("---");
 }
 RunsPlugin::RunsPlugin(QObject *parent)
@@ -978,9 +980,9 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 			}
 		}
 		// IOF XML resultListMode: Unordered* modes sort by name and show no places, UnorderedNoTimes shows no times
-		const QString result_list_mode = apply_result_list_mode? tt_row.value("classdefs.resultListMode").toString(): QString();
-		const bool no_times = result_list_mode == QLatin1String("UnorderedNoTimes");
-		const bool unordered = no_times || result_list_mode == QLatin1String("Unordered");
+		const ClassDef::ResultListMode result_list_mode = apply_result_list_mode? ClassDef::resultListModeFromString(tt_row.value("classdefs.resultListMode").toString()): ClassDef::ResultListMode::Default;
+		const bool no_times = result_list_mode == ClassDef::ResultListMode::UnorderedNoTimes;
+		const bool unordered = no_times || result_list_mode == ClassDef::ResultListMode::Unordered;
 		// places limit makes sense for ordered results only
 		if(!unordered && max_competitors_in_class > 0) {
 			while(tt2.rowCount() > max_competitors_in_class) {
@@ -990,7 +992,7 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		tt2.appendColumn("resultListMode", QMetaType(QMetaType::QString));
 		for(int j=0; j<tt2.rowCount(); j++) {
 			auto tt2_row = tt2.row(j);
-			tt2_row.setValue(QStringLiteral("resultListMode"), result_list_mode);
+			tt2_row.setValue(QStringLiteral("resultListMode"), ClassDef::resultListModeToString(result_list_mode));
 			if(unordered) {
 				// finished competitors get a check mark instead of the place
 				const bool is_ok = quickevent::core::RunStatus::fromTreeTableRow(tt2_row).isOk();
@@ -1246,10 +1248,10 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 	for(int i=0; i<tt1.rowCount(); i++) {
 		QVariantList class_result{"ClassResult"};
 		const qf::core::utils::TreeTableRow tt1_row = tt1.row(i);
-		const QString result_list_mode = tt1_row.value(QStringLiteral("classdefs.resultListMode")).toString();
+		const ClassDef::ResultListMode result_list_mode = ClassDef::resultListModeFromString(tt1_row.value(QStringLiteral("classdefs.resultListMode")).toString());
 		class_result.insert(class_result.count(),
 			QVariantList{"Class",
-				QVariantMap{{"resultListMode", result_list_mode.isEmpty()? QStringLiteral("Default"): result_list_mode}},
+				QVariantMap{{"resultListMode", ClassDef::resultListModeToString(result_list_mode)}},
 				QVariantList{"Id", tt1_row.value(QStringLiteral("classes.id"))},
 				QVariantList{"Name", tt1_row.value(QStringLiteral("classes.name")) },
 			}
@@ -2426,7 +2428,7 @@ void RunsPlugin::report_resultsAwards()
 		return;
 
 	// no awards for classes with unordered results
-	QString class_filter = QStringLiteral("classdefs.resultListMode='Default'");
+	QString class_filter = QStringLiteral("classdefs.resultListMode='%1'").arg(ClassDef::resultListModeToString(ClassDef::ResultListMode::Default));
 	if(const QString opts_filter = opts.value("classFilter").toString(); !opts_filter.isEmpty()) {
 		class_filter = '(' + opts_filter + ") AND " + class_filter;
 	}
@@ -2829,7 +2831,7 @@ QString RunsPlugin::export_resultsHtmlStage(bool with_laps)
 		fwk->showProgress(tr("Procesing class %1").arg(class_name), progress_ix++, progress_cnt);
 		QString laps_file_name = file_dir + "/results_" + class_name + ".html";
 		// no laps for class without times
-		const bool class_laps = with_laps && tt1_row.value(QStringLiteral("classdefs.resultListMode")).toString() != QLatin1String("UnorderedNoTimes");
+		const bool class_laps = with_laps && ClassDef::resultListModeFromString(tt1_row.value(QStringLiteral("classdefs.resultListMode")).toString()) != ClassDef::ResultListMode::UnorderedNoTimes;
 		div1 = QVariantList{
 				"h2",
 				QVariantList{ "a", QVariantMap{{"name", "class_" + class_name}},
@@ -2872,9 +2874,9 @@ QString RunsPlugin::export_resultsHtmlStage(bool with_laps)
 			append_list(trr, QVariantList{"td", tt2_row.value(QStringLiteral("competitorName"))});
 			append_list(trr, QVariantList{"td", tt2_row.value(QStringLiteral("registration"))});
 			append_list(trr, QVariantList{"td", tt2_row.value(QStringLiteral("clubs.name"))});
-			const QString result_list_mode = tt2_row.value(QStringLiteral("resultListMode")).toString();
-			const bool no_times = result_list_mode == QLatin1String("UnorderedNoTimes");
-			const bool unordered = no_times || result_list_mode == QLatin1String("Unordered");
+			const ClassDef::ResultListMode result_list_mode = ClassDef::resultListModeFromString(tt2_row.value(QStringLiteral("resultListMode")).toString());
+			const bool no_times = result_list_mode == ClassDef::ResultListMode::UnorderedNoTimes;
+			const bool unordered = no_times || result_list_mode == ClassDef::ResultListMode::Unordered;
 			append_list(trr, QVariantList{"td", QVariantMap{{"align", "right"}}, no_times? QString(): quickevent::core::og::TimeMs::fromVariant(tt2_row.value("timeMs")).toString()});
 
 			auto run_status = quickevent::core::RunStatus::fromTreeTableRow(tt2_row);

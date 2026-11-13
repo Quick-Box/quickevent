@@ -12,6 +12,7 @@
 
 #include <quickevent/core/si/punchrecord.h>
 #include <quickevent/core/codedef.h>
+#include <quickevent/core/classdef.h>
 
 #include <qf/gui/action.h>
 #include <qf/gui/menubar.h>
@@ -186,18 +187,19 @@ ClassesWidget::ClassesWidget(QWidget *parent) :
 		m_courseItemDelegate = new CourseItemDelegate(this);
 		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.courseId"), m_courseItemDelegate);
 
+		using quickevent::core::ClassDef;
 		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.startMode"), new EnumItemDelegate({
-			{"", tr("Auto")},
-			{"StartList", tr("Start list")},
-			{"MassStart", tr("Mass start")},
-			{"PursuitStart", tr("Pursuit start")},
-			{"WaveStart", tr("Wave start")},
-			{"FreeStart", tr("Free start")},
+			{ClassDef::startModeToString(ClassDef::StartMode::Auto), tr("Auto")},
+			{ClassDef::startModeToString(ClassDef::StartMode::StartList), tr("Start list")},
+			{ClassDef::startModeToString(ClassDef::StartMode::MassStart), tr("Mass start")},
+			{ClassDef::startModeToString(ClassDef::StartMode::PursuitStart), tr("Pursuit start")},
+			{ClassDef::startModeToString(ClassDef::StartMode::WaveStart), tr("Wave start")},
+			{ClassDef::startModeToString(ClassDef::StartMode::FreeStart), tr("Free start")},
 		}, this));
 		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.resultListMode"), new EnumItemDelegate({
-			{"Default", tr("Default")},
-			{"Unordered", tr("Unordered")},
-			{"UnorderedNoTimes", tr("Unordered, no times")},
+			{ClassDef::resultListModeToString(ClassDef::ResultListMode::Default), tr("Default")},
+			{ClassDef::resultListModeToString(ClassDef::ResultListMode::Unordered), tr("Unordered")},
+			{ClassDef::resultListModeToString(ClassDef::ResultListMode::UnorderedNoTimes), tr("Unordered, no times")},
 		}, this));
 
 		connect(m_courseItemDelegate, &CourseItemDelegate::courseIdChanged, ui->tblClasses, &qfw::TableView::reloadCurrentRow, Qt::QueuedConnection);

@@ -24,6 +24,7 @@
 
 #include <qhashfunctions.h>
 #include <quickevent/core/og/timems.h>
+#include <quickevent/core/classdef.h>
 
 #include <qf/gui/framework/dockwidget.h>
 #include <qf/gui/framework/mainwindow.h>
@@ -619,15 +620,18 @@ QString EventPlugin::dbVersionString()
 
 QString EventPlugin::startModeSqlExpression() const
 {
+	using quickevent::core::ClassDef;
 	if(eventConfig().disciplineId == static_cast<int>(Event::EventConfig::Discipline::MassStart)) {
-		return QStringLiteral("COALESCE(classdefs.startMode, 'MassStart')");
+		return QStringLiteral("COALESCE(classdefs.startMode, '%1')").arg(ClassDef::startModeToString(ClassDef::StartMode::MassStart));
 	}
-	return QStringLiteral("COALESCE(classdefs.startMode, CASE WHEN COALESCE(classdefs.startIntervalMin, 0) = 0 THEN 'FreeStart' ELSE 'StartList' END)");
+	return QStringLiteral("COALESCE(classdefs.startMode, CASE WHEN COALESCE(classdefs.startIntervalMin, 0) = 0 THEN '%1' ELSE '%2' END)")
+			.arg(ClassDef::startModeToString(ClassDef::StartMode::FreeStart), ClassDef::startModeToString(ClassDef::StartMode::StartList));
 }
 
 QString EventPlugin::freeStartSqlCondition() const
 {
-	return '(' + startModeSqlExpression() + " = 'FreeStart')";
+	using quickevent::core::ClassDef;
+	return '(' + startModeSqlExpression() + " = '" + ClassDef::startModeToString(ClassDef::StartMode::FreeStart) + "')";
 }
 
 void EventPlugin::onDbEvent(const QString &name, QSqlDriver::NotificationSource source, const QVariant &payload)

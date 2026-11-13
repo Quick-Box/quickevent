@@ -9,6 +9,7 @@
 #include <qf/core/sql/query.h>
 
 #include <quickevent/core/codedef.h>
+#include <quickevent/core/classdef.h>
 
 #include <QSettings>
 #include <QShowEvent>
@@ -45,12 +46,13 @@ ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 	ui->grpRelayOptions->setVisible(false);
 	ui->btRegExp->setEnabled(QSqlDatabase::database().driverName().endsWith(QLatin1String("PSQL"), Qt::CaseInsensitive));
 	// filtered by effective start mode in RunsPlugin, so no Auto item
+	using core::ClassDef;
 	ui->cbxStartMode->addItem(tr("All"), QString());
-	ui->cbxStartMode->addItem(tr("Start list"), QStringLiteral("StartList"));
-	ui->cbxStartMode->addItem(tr("Mass start"), QStringLiteral("MassStart"));
-	ui->cbxStartMode->addItem(tr("Pursuit start"), QStringLiteral("PursuitStart"));
-	ui->cbxStartMode->addItem(tr("Wave start"), QStringLiteral("WaveStart"));
-	ui->cbxStartMode->addItem(tr("Free start"), QStringLiteral("FreeStart"));
+	ui->cbxStartMode->addItem(tr("Start list"), ClassDef::startModeToString(ClassDef::StartMode::StartList));
+	ui->cbxStartMode->addItem(tr("Mass start"), ClassDef::startModeToString(ClassDef::StartMode::MassStart));
+	ui->cbxStartMode->addItem(tr("Pursuit start"), ClassDef::startModeToString(ClassDef::StartMode::PursuitStart));
+	ui->cbxStartMode->addItem(tr("Wave start"), ClassDef::startModeToString(ClassDef::StartMode::WaveStart));
+	ui->cbxStartMode->addItem(tr("Free start"), ClassDef::startModeToString(ClassDef::StartMode::FreeStart));
 	ui->lblStartMode->setVisible(false);
 	ui->cbxStartMode->setVisible(false);
 
