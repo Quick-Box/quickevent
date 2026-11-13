@@ -60,7 +60,7 @@ StartSlotItem *GanttItem::addStartSlotItem()
 	return it;
 }
 
-void GanttItem::load(int stage_id)
+void GanttItem::load(int stage_id, const QString &start_code)
 {
 	qfLogFuncFrame();
 	const auto  &stage_data = getPlugin<EventPlugin>()->stageConfig(stage_id);
@@ -89,8 +89,13 @@ void GanttItem::load(int stage_id)
 			.join("coursecodes.codeId", "codes.id")
 			.joinQuery("classdefs.classId", qb1, "classId")
 			.where("classdefs.stageId=" QF_IARG(stage_id))
-			.where("COALESCE(classdefs.startIntervalMin, 0) > 0")
-			.orderBy("startSlotIndex, startTimeMin, firstCode, classdefs.courseId");
+			.where("COALESCE(classdefs.startIntervalMin, 0) > 0");
+	if (!start_code.isEmpty()) {
+		QString escaped_start_code = start_code;
+		escaped_start_code.replace("'", "''");
+		qb.where("classdefs.courseId IN (SELECT start_cc.courseId FROM coursecodes AS start_cc JOIN codes AS start_codes ON start_codes.id=start_cc.codeId WHERE start_cc.position=0 AND start_codes.code='" + escaped_start_code + "')");
+	}
+	qb.orderBy("startSlotIndex, startTimeMin, firstCode, classdefs.courseId");
 	int curr_course_id = -1;
 	int curr_slot_ix = -1;
 	bool curr_slot_is_drawn = false;
@@ -110,7 +115,7 @@ void GanttItem::load(int stage_id)
 			if(slot_ix > curr_slot_ix) {
 				slot_item = addStartSlotItem();
 				curr_slot_ix = slot_ix;
-				auto sd = stage_data.drawingConfig.startSlotConfig(slot_ix);
+				auto sd = stage_data.drawingConfig.startSlotConfig(slot_ix, start_code);
 				if(!cd.value(QStringLiteral("startTimeMin")).isNull())
 					sd.startOffset = start_time_min;
 				slot_item->setConfig(sd);
@@ -150,18 +155,19 @@ void GanttItem::load(int stage_id)
 	checkClassClash();
 }
 
-void GanttItem::save(int stage_id)
+void GanttItem::save(int stage_id, const QString &start_code)
 {
 	qfLogFuncFrame();
 	{
 		auto *event = getPlugin<EventPlugin>();
 		// auto event_config = config->eventConfig();
 		auto stage_config = event->stageConfig(stage_id);
-		stage_config.drawingConfig.startSlots.clear();
+		std::vector<Event::StartSlotConfig> start_slots;
 		for (int i = 0; i < startSlotItemCount(); ++i) {
 			StartSlotItem *slot_it = startSlotItemAt(i);
-			stage_config.drawingConfig.startSlots.push_back(slot_it->config());
+			 start_slots.push_back(slot_it->config());
 		}
+		stage_config.drawingConfig.setStartSlots(start_code,  start_slots);
 		event->appDbConfig().setStageConfig(stage_id, stage_config);
 	}
 	{

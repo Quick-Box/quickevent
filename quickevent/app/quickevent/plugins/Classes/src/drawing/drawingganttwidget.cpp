@@ -11,10 +11,18 @@
 #include <qf/gui/action.h>
 #include <qf/gui/dialogs/dialog.h>
 
+#include <quickevent/core/codedef.h>
+
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMessageBox>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QLabel>
+#include <qf/core/sql/query.h>
+#include <qf/core/sql/connection.h>
+
+namespace qfs = qf::core::sql;
 
 using namespace drawing;
 
@@ -58,6 +66,8 @@ void DrawingGanttWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 {
 	qf::gui::ToolBar *tb = dlg->toolBar("main", true);
 	tb->addAction(ui->actSave);
+	tb->addSeparator();
+	tb->addWidget(new QLabel(tr("Find")));
 	m_edFind = new QLineEdit();
 	m_edFind->setMaximumWidth(QFontMetrics(font()).horizontalAdvance('X') * 8);
 	m_edFind->setPlaceholderText(tr("Class"));
@@ -65,41 +75,38 @@ void DrawingGanttWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 	connect(m_edFind, &QLineEdit::textEdited, this, &DrawingGanttWidget::onActFindTriggered);
 	tb->addWidget(m_edFind);
 	tb->addAction(ui->actFind);
+	tb->addSeparator();
+	tb->addWidget(new QLabel(tr("Show classes for")));
+	m_cbStart = new QComboBox();
+	m_cbStart->setToolTip(tr("Select the start number for class draw preparation."));
+	tb->addWidget(m_cbStart);
+	connect(m_cbStart, qOverload<int>(&QComboBox::currentIndexChanged), this, &DrawingGanttWidget::reloadSelectedStart);
+	tb->addSeparator();
+	m_cbLockIntervals = new QCheckBox(tr("Lock intervals"));
+	m_cbLockIntervals->setToolTip(tr("Prevent changing start intervals with the mouse wheel or interval arrows."));
+	connect(m_cbLockIntervals, &QCheckBox::toggled, m_ganttScene, &GanttScene::setIntervalsLocked);
+	tb->addWidget(m_cbLockIntervals);
+	tb->addSeparator();
 
-	auto *cb_check_runners = new QCheckBox(tr("Runners clash"));
-	cb_check_runners->setToolTip(tr("Highlight classes overlapping in time which share the first control\nand whose start intervals would let two runners punch it at the same moment."));
-	auto *cb_check_courses = new QCheckBox(tr("Courses clash"));
-	cb_check_courses->setToolTip(tr("Highlight classes overlapping in time which run on the same course."));
-	auto update_class_check = [this, cb_check_runners, cb_check_courses]() {
-		QSet<ClassItem::ClashType> checks;
-		if (cb_check_runners->isChecked()) {
-			checks << ClassItem::ClashType::RunnersOverlap;
-		}
-		if (cb_check_courses->isChecked()) {
-			checks << ClassItem::ClashType::CourseOverlap;
-		}
-		m_ganttScene->ganttItem()->setClashTypesToCheck(checks);
-	};
-	{
-		auto *cb = cb_check_runners;
-		cb->setChecked(true);
-		tb->addWidget(cb);
+	m_cbCheckRunners = new QCheckBox(tr("Runners clash"));
+	m_cbCheckRunners->setToolTip(tr("Highlight classes overlapping in time which share the first control\nand whose start intervals would let two runners punch it at the same moment."));
+	m_cbCheckCourses = new QCheckBox(tr("Courses clash"));
+	m_cbCheckCourses->setToolTip(tr("Highlight classes overlapping in time which run on the same course."));
+
+	m_cbCheckRunners->setChecked(true);
+	tb->addWidget(m_cbCheckRunners);
 #if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
-		connect(cb, &QCheckBox::stateChanged, this, update_class_check);
+		connect(m_cbCheckRunners, &QCheckBox::stateChanged, this, &DrawingGanttWidget::onUpdateClassCheck);
 #else
-		connect(cb, &QCheckBox::checkStateChanged, this, update_class_check);
+		connect(m_cbCheckRunners, &QCheckBox::checkStateChanged, this, &DrawingGanttWidget::onUpdateClassCheck);
 #endif
-	}
-	{
-		auto *cb = cb_check_courses;
-		cb->setChecked(true);
-		tb->addWidget(cb);
+	m_cbCheckCourses->setChecked(true);
+	tb->addWidget(m_cbCheckCourses);
 #if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
-		connect(cb, &QCheckBox::stateChanged, this, update_class_check);
+		connect(m_cbCheckCourses, &QCheckBox::stateChanged, this, &DrawingGanttWidget::onUpdateClassCheck);
 #else
-		connect(cb, &QCheckBox::checkStateChanged, this, update_class_check);
+		connect(m_cbCheckCourses, &QCheckBox::checkStateChanged, this, &DrawingGanttWidget::onUpdateClassCheck);
 #endif
-	}
 	{
 		// QToolBar has no addStretch(), so an expanding empty widget is the
 		// idiomatic spacer that pushes the conflict checkbox to the right end,
@@ -113,12 +120,9 @@ void DrawingGanttWidget::settleDownInDialog(qf::gui::dialogs::Dialog *dlg)
 		connect(m_cbShowClashes, &QCheckBox::toggled, ui->lstClashes, &QWidget::setVisible);
 		tb->addWidget(m_cbShowClashes);
 	}
-	update_class_check();
-
-	//auto *menu = dlg->menuBar();
-	//auto *a_draw = menu->actionForPath("draw");
-	//a_draw->setText(tr("&Draw"));
-	//a_draw->addActionInto(ui->actSave);
+	if (m_stageId >= 0)
+		load(m_stageId);
+	onUpdateClassCheck();
 }
 
 bool DrawingGanttWidget::acceptDialogDone(int result)
@@ -140,9 +144,59 @@ bool DrawingGanttWidget::acceptDialogDone(int result)
 
 void DrawingGanttWidget::load(int stage_id)
 {
+	m_stageId = stage_id;
 	setTitle(tr("E%1 Draw tool").arg(stage_id));
-	m_ganttScene->load(stage_id);
+	if (!m_cbStart) {
+		m_ganttScene->load(stage_id);
+		return;
+	}
+	m_cbStart->blockSignals(true);
+	m_cbStart->clear();
+	qfs::Query q(qfs::Connection::forName());
+	q.exec(QStringLiteral("SELECT DISTINCT codes.code FROM codes, coursecodes, classdefs"
+							" WHERE coursecodes.codeId = codes.id AND classdefs.courseId = coursecodes.courseId"
+							" AND classdefs.stageId = %1"
+							" ORDER BY codes.code").arg(stage_id));
+	while (q.next()) {
+		const auto code = q.value(0).toInt();
+		if(auto n = quickevent::core::CodeDef::codeToStartNumber(code); n.has_value()) {
+			m_cbStart->addItem(tr("Start %1").arg(n.value()), code);
+		}
+	}
+	if (m_cbStart->count() == 0) {
+		m_cbStart->addItem(tr("Start"));
+	}
+
+	if (m_cbStart->count() == 1) {
+		m_cbStart->setEnabled(false);
+	}
+	m_cbStart->setCurrentIndex(0);
+	m_cbStart->blockSignals(false);
+	m_ganttScene->load(stage_id, m_cbStart->currentData().toString());
 }
+
+void DrawingGanttWidget::reloadSelectedStart()
+{
+	if (m_stageId < 0 || !m_cbStart || m_cbStart->currentIndex() < 0)
+		return;
+	if (m_ganttScene->isDirty()) {
+		auto answer = QMessageBox::question(this, tr("Unsaved changes"),
+			tr("The current start layout has unsaved changes. Save them before switching starts?"),
+			QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel, QMessageBox::Save);
+		if (answer == QMessageBox::Cancel) {
+			m_cbStart->blockSignals(true);
+			int old_ix = m_cbStart->findData(m_ganttScene->startCode());
+			if (old_ix >= 0) m_cbStart->setCurrentIndex(old_ix);
+			m_cbStart->blockSignals(false);
+			return;
+		}
+		if (answer == QMessageBox::Save)
+			m_ganttScene->save();
+	}
+	m_ganttScene->load(m_stageId, m_cbStart->currentData().toString());
+	onUpdateClassCheck();
+}
+
 
 void drawing::DrawingGanttWidget::onActSaveTriggered()
 {
@@ -235,5 +289,17 @@ void DrawingGanttWidget::onClashItemActivated(QListWidgetItem *item)
 	int margin = 2 * m_ganttScene->displayUnit();
 	QRectF r = c.class1->sceneBoundingRect() | c.class2->sceneBoundingRect();
 	ui->ganttView->ensureVisible(r, margin, margin);
+}
+
+void DrawingGanttWidget::onUpdateClassCheck()
+{
+	QSet<ClassItem::ClashType> checks;
+	if (m_cbCheckRunners && m_cbCheckRunners->isChecked()) {
+		checks << ClassItem::ClashType::RunnersOverlap;
+	}
+	if (m_cbCheckCourses && m_cbCheckCourses->isChecked()) {
+		checks << ClassItem::ClashType::CourseOverlap;
+	}
+	m_ganttScene->ganttItem()->setClashTypesToCheck(checks);
 }
 

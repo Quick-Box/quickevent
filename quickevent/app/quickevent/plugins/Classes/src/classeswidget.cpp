@@ -270,6 +270,7 @@ void ClassesWidget::edit_classes_layout()
 	}
 	auto *w = new drawing::DrawingGanttWidget;
 	qf::gui::dialogs::Dialog dlg(this);
+	dlg.setWindowFlag(Qt::WindowMaximizeButtonHint, true);
 	//dlg.setButtons(QDialogButtonBox::Save);
 	dlg.setCentralWidget(w);
 	w->load(selectedStageId());

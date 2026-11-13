@@ -3,6 +3,8 @@
 #include <qf/core/utils.h>
 #include <qf/core/log.h>
 
+#include <quickevent/core/codedef.h>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -11,87 +13,124 @@ namespace Event {
 
 StartSlotConfig StartSlotConfig::fromVariantMap(const QVariantMap& map)
 {
-    StartSlotConfig config;
-    config.startOffset = map.value("startOffset", 0).toInt();
-    config.ignoreClassClashCheck = map.value("ignoreClassClashCheck").toBool();
-    return config;
+	StartSlotConfig config;
+	config.startOffset = map.value("startOffset", 0).toInt();
+	config.ignoreClassClashCheck = map.value("ignoreClassClashCheck").toBool();
+	return config;
 }
 
 QVariantMap StartSlotConfig::toVariantMap() const
 {
-    QVariantMap map;
-    map["startOffset"] = startOffset;
-    map["ignoreClassClashCheck"] = ignoreClassClashCheck;
-    return map;
+	QVariantMap map;
+	map["startOffset"] = startOffset;
+	map["ignoreClassClashCheck"] = ignoreClassClashCheck;
+	return map;
 }
 
 DrawingConfig DrawingConfig::fromString(const QString& str)
 {
-    DrawingConfig config;
-    QJsonParseError parseError;
-    QJsonDocument doc = QJsonDocument::fromJson(str.toUtf8(), &parseError);
-    if (parseError.error == QJsonParseError::NoError) {
-        if (doc.isObject()) {
-            config = fromVariantMap(doc.object().toVariantMap());
-        }
-    } else {
-        qfWarning() << "Failed to parse drawing config JSON:" << parseError.errorString();
-    }
-    return config;
+	DrawingConfig config;
+	QJsonParseError parseError;
+	QJsonDocument doc = QJsonDocument::fromJson(str.toUtf8(), &parseError);
+	if (parseError.error == QJsonParseError::NoError) {
+		if (doc.isObject()) {
+			config = fromVariantMap(doc.object().toVariantMap());
+		}
+	} else {
+		qfWarning() << "Failed to parse drawing config JSON:" << parseError.errorString();
+	}
+	return config;
 }
 
 DrawingConfig DrawingConfig::fromVariantMap(const QVariantMap& map)
 {
-    DrawingConfig config;
-    auto lst = map.value("startSlots").toList();
-    for (const auto& slot : lst) {
-        config.startSlots.push_back(StartSlotConfig::fromVariantMap(slot.toMap()));
-    }
-    return config;
+	DrawingConfig config;
+	const auto lst = map.value("startSlots").toList();
+	for (const auto& slot : lst) {
+		config.startSlots.push_back(StartSlotConfig::fromVariantMap(slot.toMap()));
+	}
+	config.startLayouts = map.value("startLayouts").toMap();
+	return config;
 }
 
 QVariantMap DrawingConfig::toVariantMap() const
 {
-    QVariantMap map;
-    QVariantList lst;
-    for (const auto& slot : startSlots) {
-        lst.append(slot.toVariantMap());
-    }
-    map["startSlots"] = lst;
-    return map;
+	QVariantMap map;
+	QVariantList lst;
+	for (const auto& slot : startSlots) {
+		lst.append(slot.toVariantMap());
+	}
+	map["startSlots"] = lst;
+	map["startLayouts"] = startLayouts;
+	return map;
 }
 
 const StartSlotConfig& DrawingConfig::startSlotConfig(int index) const
 {
-    if (index < 0 || index >= static_cast<int>(startSlots.size())) {
-        static StartSlotConfig defaultSlot;
-        return defaultSlot;
-    }
-    return startSlots[index];
+	if (index < 0 || index >= static_cast<int>(startSlots.size())) {
+		static StartSlotConfig defaultSlot;
+		return defaultSlot;
+	}
+	return startSlots[index];
+}
+
+static bool isDefaultStartCode(const QString &start_code)
+{
+	// legacy start_slots belong to Start 1 (code 11); "S1" and "1" kept for backward compatibility
+	return start_code.isEmpty()
+		|| start_code == QString::number(quickevent::core::CodeDef::startNumberToCode(1))
+		|| start_code == QStringLiteral("S1")
+		|| start_code == QStringLiteral("1");
+}
+
+StartSlotConfig DrawingConfig::startSlotConfig(int index, const QString &start_code) const
+{
+	if (isDefaultStartCode(start_code)) {
+		return startSlotConfig(index);
+	}
+	const auto start_slots = startLayouts.value(start_code).toList();
+	if (index < 0 || index >= start_slots.size()) {
+		return StartSlotConfig{};
+	}
+	return StartSlotConfig::fromVariantMap(start_slots[index].toMap());
+}
+
+void DrawingConfig::setStartSlots(const QString &start_code, const std::vector<StartSlotConfig> &slots_vec)
+{
+	QVariantList list;
+	for (const auto &slot : slots_vec) {
+		list.append(slot.toVariantMap());
+	}
+	if (isDefaultStartCode(start_code)) {
+		startSlots = slots_vec;
+	}
+	else {
+		startLayouts[start_code] = list;
+	}
 }
 
 StageConfig StageConfig::fromVariantMap(const QVariantMap& map)
 {
-    StageConfig config;
-    config.startDateTime = map.value("startDateTime").toDateTime();
-    config.useAllMaps = map.value("useAllMaps").toBool();
-    auto v = map.value("drawingConfig");
-    if (v.userType() == QMetaType::QVariantMap) {
-        config.drawingConfig = DrawingConfig::fromVariantMap(v.toMap());
-    }
-    else if (v.userType() == QMetaType::QString) {
-        config.drawingConfig = DrawingConfig::fromString(v.toString());
-    }
-    return config;
+	StageConfig config;
+	config.startDateTime = map.value("startDateTime").toDateTime();
+	config.useAllMaps = map.value("useAllMaps").toBool();
+	auto v = map.value("drawingConfig");
+	if (v.userType() == QMetaType::QVariantMap) {
+		config.drawingConfig = DrawingConfig::fromVariantMap(v.toMap());
+	}
+	else if (v.userType() == QMetaType::QString) {
+		config.drawingConfig = DrawingConfig::fromString(v.toString());
+	}
+	return config;
 }
 
 QVariantMap StageConfig::toVariantMap() const
 {
-    QVariantMap map;
-    map["startDateTime"] = startDateTime;
-    map["useAllMaps"] = useAllMaps;
-    map["drawingConfig"] = drawingConfig.toVariantMap();
-    return map;
+	QVariantMap map;
+	map["startDateTime"] = startDateTime;
+	map["useAllMaps"] = useAllMaps;
+	map["drawingConfig"] = drawingConfig.toVariantMap();
+	return map;
 }
 
 }

@@ -18,12 +18,14 @@ struct StartSlotConfig
 
 struct DrawingConfig
 {
-    static DrawingConfig fromString(const QString& str);
+	static DrawingConfig fromString(const QString& str);
 	static DrawingConfig fromVariantMap(const QVariantMap &map);
 	QVariantMap toVariantMap() const;
 	const StartSlotConfig &startSlotConfig(int index) const;
-
+	StartSlotConfig startSlotConfig(int index, const QString &start_code) const;
+	void setStartSlots(const QString &start_code, const std::vector<StartSlotConfig> &slots_vec);
 	std::vector<StartSlotConfig> startSlots;
+	QVariantMap startLayouts;
 };
 
 struct StageConfig

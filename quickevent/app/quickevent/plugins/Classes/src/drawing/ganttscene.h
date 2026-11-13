@@ -19,8 +19,12 @@ signals:
 public:
 	GanttScene(QObject * parent = 0);
 
-	void load(int stage_id);
+	void load(int stage_id, const QString &start_code = QStringLiteral(""));
 	void save();
+	QString startCode() const { return m_startCode; }
+
+	bool areIntervalsLocked() const { return m_intervalsLocked; }
+	void setIntervalsLocked(bool locked);
 
 	GanttItem *ganttItem() { return m_ganttItem; }
 
@@ -47,10 +51,12 @@ public:
 	void setDirty(bool b) {m_dirty = b;}
 private:
 	int m_stageId = -1;
+	QString m_startCode = QStringLiteral("1");
 	int m_displayUnit;
 	GanttItem *m_ganttItem = nullptr;
 	bool m_useAllMaps = false;
 	bool m_dirty = false;
+	bool m_intervalsLocked = false;
 };
 
 }
