@@ -9,6 +9,7 @@
 #include <qf/core/sql/query.h>
 
 #include <quickevent/core/codedef.h>
+#include <quickevent/core/classdef.h>
 
 #include <QSettings>
 #include <QShowEvent>
@@ -35,7 +36,8 @@ ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 
 	//ui->edFilter->setText("h1%");
 	ui->grpStartOptions->setVisible(false);
-	ui->grpStartersOptions->setVisible(false);
+	ui->lblStartersLineSpacing->setVisible(false);
+	ui->edStartersOptionsLineSpacing->setVisible(false);
 	ui->grpStages->setVisible(false);
 	ui->grpLegs->setVisible(false);
 	ui->grpResultOptions->setVisible(false);
@@ -43,6 +45,16 @@ ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 	ui->grpStartlistOrderBy->setVisible(false);
 	ui->grpRelayOptions->setVisible(false);
 	ui->btRegExp->setEnabled(QSqlDatabase::database().driverName().endsWith(QLatin1String("PSQL"), Qt::CaseInsensitive));
+	// filtered by effective start mode in RunsPlugin, so no Auto item
+	using core::ClassDef;
+	ui->cbxStartMode->addItem(tr("All"), QString());
+	ui->cbxStartMode->addItem(tr("Start list"), ClassDef::startModeToString(ClassDef::StartMode::StartList));
+	ui->cbxStartMode->addItem(tr("Mass start"), ClassDef::startModeToString(ClassDef::StartMode::MassStart));
+	ui->cbxStartMode->addItem(tr("Pursuit start"), ClassDef::startModeToString(ClassDef::StartMode::PursuitStart));
+	ui->cbxStartMode->addItem(tr("Wave start"), ClassDef::startModeToString(ClassDef::StartMode::WaveStart));
+	ui->cbxStartMode->addItem(tr("Free start"), ClassDef::startModeToString(ClassDef::StartMode::FreeStart));
+	ui->lblStartMode->setVisible(false);
+	ui->cbxStartMode->setVisible(false);
 
 	setCurrentStageId(0);
 	connect(ui->btSaveAsDefault, &QPushButton::clicked, this, [this]() {
@@ -55,8 +67,12 @@ ReportOptionsDialog::ReportOptionsDialog(int max_stage_count, QWidget *parent)
 
 	connect(this, &ReportOptionsDialog::startListOptionsVisibleChanged, ui->grpStartOptions, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::classFilterVisibleChanged, ui->grpClassFilter, &QGroupBox::setVisible);
-	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->grpStartersOptions, &QGroupBox::setVisible);
+	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->lblStartersLineSpacing, &QLabel::setVisible);
+	connect(this, &ReportOptionsDialog::startersOptionsVisibleChanged, ui->edStartersOptionsLineSpacing, &QSpinBox::setVisible);
+	connect(this, &ReportOptionsDialog::startModeVisibleChanged, ui->lblStartMode, &QLabel::setVisible);
+	connect(this, &ReportOptionsDialog::startModeVisibleChanged, ui->cbxStartMode, &QComboBox::setVisible);
 	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->cbxStartOpts_PrintVacants, &QComboBox::setVisible);
+	connect(this, &ReportOptionsDialog::vacantsVisibleChanged, ui->lblPrintVacants, &QLabel::setVisible);
 	connect(this, &ReportOptionsDialog::stagesOptionVisibleChanged, ui->grpStages, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::legsOptionVisibleChanged, ui->grpLegs, &QGroupBox::setVisible);
 	connect(this, &ReportOptionsDialog::pageLayoutVisibleChanged, ui->grpPageLayout, &QGroupBox::setVisible);
@@ -213,6 +229,7 @@ void ReportOptionsDialog::setStartListPrintVacantsVisible(bool b)
 	if(!b)
 		ui->cbxStartOpts_PrintVacants->setCurrentIndex(0);
 	ui->cbxStartOpts_PrintVacants->setVisible(b);
+	ui->lblPrintVacants->setVisible(b);
 }
 
 void ReportOptionsDialog::setOptions(const ReportOptionsDialog::Options &options)
@@ -236,6 +253,7 @@ void ReportOptionsDialog::setOptions(const ReportOptionsDialog::Options &options
 	ui->btClassNames->setChecked(filter_type == FilterType::ClassName);
 	auto index = ui->cbxStartNumber->findData(options.startNumber());
 	ui->cbxStartNumber->setCurrentIndex(index);
+	ui->cbxStartMode->setCurrentIndex(std::max(ui->cbxStartMode->findData(options.startMode()), 0));
 	ui->cbxStartOpts_PrintVacants->setCurrentIndex(options.startListPrintVacantsOption());
 	ui->chkStartOpts_PrintStartNumbers->setChecked(options.isStartListPrintStartNumbers());
 	ui->edStartersOptionsLineSpacing->setValue(options.startersOptionsLineSpacing());
@@ -270,6 +288,7 @@ ReportOptionsDialog::Options ReportOptionsDialog::options() const
 	opts.setInvertClassFilter(ui->chkClassFilterDoesntMatch->isChecked());
 	opts.setClassFilter(ui->edFilter->text());
 	opts.setStartNumber(ui->cbxStartNumber->currentData().toInt());
+	opts.setStartMode(ui->cbxStartMode->currentData().toString());
 	FilterType filter_type =  ui->btWildCard->isChecked()? FilterType::WildCard: ui->btRegExp->isChecked()? FilterType::RegExp: FilterType::ClassName;
 	opts.setClassFilterType((int)filter_type);
 	opts.setStartListPrintVacantsOption((int)startListPrintVacantsOption());

@@ -106,7 +106,7 @@
     </message>
     <message>
         <source>Print vacants</source>
-        <translation type="vanished">Tisknout vakanty</translation>
+        <translation>Tisknout vakanty</translation>
     </message>
     <message>
         <location filename="src/reportoptionsdialog.ui" line="355"/>
@@ -265,6 +265,36 @@
         <location filename="src/reportoptionsdialog.cpp" line="401"/>
         <source>Start %1</source>
         <translation>Start %1</translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.ui"/>
+        <source>Start mode</source>
+        <translation>Režim startu</translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.cpp"/>
+        <source>Start list</source>
+        <translation>Startovní listina</translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.cpp"/>
+        <source>Mass start</source>
+        <translation>Hromadný start</translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.cpp"/>
+        <source>Pursuit start</source>
+        <translation>Stíhací start</translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.cpp"/>
+        <source>Wave start</source>
+        <translation>Vlnový start</translation>
+    </message>
+    <message>
+        <location filename="src/reportoptionsdialog.cpp"/>
+        <source>Free start</source>
+        <translation>Volný start</translation>
     </message>
 </context>
 </TS>
