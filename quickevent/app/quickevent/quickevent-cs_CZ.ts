@@ -6355,6 +6355,219 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
     </message>
 </context>
 <context>
+    <name>OChecklistImportDialog</name>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="206"/>
+        <source>O Checklist changes</source>
+        <translation>Změny z O Checklistu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="210"/>
+        <source>Event: %1</source>
+        <translation>Závod: %1</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="211"/>
+        <source>Created: %1</source>
+        <translation>Vytvořeno: %1</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="212"/>
+        <source>Creator: %1</source>
+        <translation>Aplikace: %1</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="213"/>
+        <source>Version: %1</source>
+        <translation>Verze: %1</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="214"/>
+        <source>Runners: %1</source>
+        <translation>Závodníků: %1</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="219"/>
+        <source>Report version %1 is newer than supported version %2.</source>
+        <translation>Verze reportu %1 je novější než podporovaná verze %2.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="222"/>
+        <source>Report declares %1 runners, %2 found, the file may be incomplete.</source>
+        <translation>Report uvádí %1 závodníků, nalezeno %2, soubor může být neúplný.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="225"/>
+        <source>Report declares %1 lines, %2 found, the file may be incomplete.</source>
+        <translation>Report uvádí %1 řádků, nalezeno %2, soubor může být neúplný.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="237"/>
+        <source>Apply</source>
+        <translation>Provést</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="238"/>
+        <source>State</source>
+        <translation>Stav</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="239"/>
+        <source>Change</source>
+        <translation>Změna</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="240"/>
+        <source>Runner</source>
+        <translation>Závodník</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="241"/>
+        <source>Class</source>
+        <translation>Kategorie</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="242"/>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="607"/>
+        <source>Card</source>
+        <translation>Čip</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="243"/>
+        <source>Original value</source>
+        <translation>Původní hodnota</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="244"/>
+        <source>New value</source>
+        <translation>Nová hodnota</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="245"/>
+        <source>Changed</source>
+        <translation>Čas změny</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="246"/>
+        <source>Matched by</source>
+        <translation>Spárováno podle</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="263"/>
+        <source>Only new changes</source>
+        <translation>Jen nové změny</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="281"/>
+        <source>Check visible</source>
+        <translation>Zaškrtnout zobrazené</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="283"/>
+        <source>Uncheck visible</source>
+        <translation>Odškrtnout zobrazené</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="293"/>
+        <source>Apply checked changes</source>
+        <translation>Provést zaškrtnuté změny</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="302"/>
+        <source>Unchecked new changes are stored as rejected and they are not offered by the next import.</source>
+        <translation>Nezaškrtnuté nové změny se uloží jako zamítnuté a další import je už nenabídne.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="373"/>
+        <source>Id</source>
+        <translation>Id</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="378"/>
+        <source>IOF ID</source>
+        <translation>IOF ID</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="384"/>
+        <source>%1, name differs: %2</source>
+        <translation>%1, jméno nesouhlasí: %2</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="391"/>
+        <source>Registration</source>
+        <translation>Registrace</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="397"/>
+        <source>Card and name</source>
+        <translation>Čip a jméno</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="403"/>
+        <source>Name and class</source>
+        <translation>Jméno a kategorie</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="407"/>
+        <source>Not found, added in O Checklist</source>
+        <translation>Nenalezen, přidán v O Checklistu</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="407"/>
+        <source>Not found</source>
+        <translation>Nenalezen</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="548"/>
+        <source>Some changes failed, they are not stored and the next import offers them again.
+
+%1</source>
+        <translation>Některé změny selhaly, nebyly uloženy a další import je nabídne znovu.
+
+%1</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="592"/>
+        <source>New</source>
+        <translation>Nová</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="593"/>
+        <source>Applied already</source>
+        <translation>Již provedeno</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="594"/>
+        <source>Rejected already</source>
+        <translation>Již zamítnuto</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="595"/>
+        <source>No difference</source>
+        <translation>Beze změny</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="596"/>
+        <source>Runner not found</source>
+        <translation>Závodník nenalezen</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="604"/>
+        <source>Status</source>
+        <translation>Status</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="610"/>
+        <source>Note</source>
+        <translation>Poznámka</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="613"/>
+        <source>Corridor time</source>
+        <translation>Vstup do koridoru</translation>
+    </message>
+</context>
+<context>
     <name>OpenEventDialog</name>
     <message>
         <source>Long</source>
@@ -9049,6 +9262,31 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <source>Reset all start times and unlock drawing for this class?</source>
         <oldsource>Reset all start times and unlock for drawing for this class?</oldsource>
         <translation>Odstranit všechny startovní časy v této kategorii a odemknout losování?</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="283"/>
+        <source>O Checklist start report (YAML)</source>
+        <translation>Startovní report O Checklist (YAML)</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="680"/>
+        <source>Import O Checklist start report</source>
+        <translation>Import startovního reportu O Checklist</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="680"/>
+        <source>YAML files (*.yaml *.yml)</source>
+        <translation>Soubory YAML (*.yaml *.yml)</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="686"/>
+        <source>Cannot open file &apos;%1&apos; for reading.</source>
+        <translation>Soubor &apos;%1&apos; nelze otevřít pro čtení.</translation>
+    </message>
+    <message>
+        <location filename="plugins/Runs/src/runswidget.cpp" line="691"/>
+        <source>No runners found in file &apos;%1&apos;.</source>
+        <translation>V souboru &apos;%1&apos; nebyli nalezeni žádní závodníci.</translation>
     </message>
 </context>
 <context>
