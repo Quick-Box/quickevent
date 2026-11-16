@@ -54,7 +54,7 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 
 	auto *svc = service();
 	Q_ASSERT(svc);
-	auto settings = svc->settings();
+	auto settings = svc->qxSettings();
 	ui->edServerUrl->setText(settings.shvBrokerUrl());
 	ui->edApiToken->setText(svc->apiToken());
 	ui->edEventId->setValue(svc->eventId());
@@ -119,7 +119,7 @@ bool QxEventServiceWidget::saveSettings()
 {
 	auto *svc = service();
 	if(svc) {
-		auto ss = svc->settings();
+		auto ss = svc->qxSettings();
 		bool is_localhost = ui->btLocalhost->isChecked();
 		if (is_localhost) {
 			ss.setShvBrokerUrl(ui->edServerUrl->text());
@@ -247,7 +247,7 @@ std::shared_ptr<QxEventServiceWidget::DbTransfer> QxEventServiceWidget::createDb
 	auto transfer = std::make_shared<DbTransfer>();
 	transfer->rpc = rpc;
 	transfer->eventId = event_id;
-	transfer->shvPath = QStringLiteral("%1/%2/%3").arg(QxEventService::eventctlShvPath(svc->settings().isLocalBroker())).arg(event_id).arg(QString::fromLatin1(node_name)).toStdString();
+	transfer->shvPath = QStringLiteral("%1/%2/%3").arg(QxEventService::eventctlShvPath(svc->qxSettings().isLocalBroker())).arg(event_id).arg(QString::fromLatin1(node_name)).toStdString();
 	transfer->metaData = RpcValue::Map{{QX_API_TOKEN_META_KEY, svc->apiToken().toStdString()}};
 	return transfer;
 }

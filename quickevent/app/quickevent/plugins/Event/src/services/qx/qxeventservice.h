@@ -33,7 +33,7 @@ public:
 
 	void run() override;
 	void stop() override;
-	QxEventServiceSettings settings() const {return QxEventServiceSettings(m_settings);}
+	QxEventServiceSettings qxSettings() const {return QxEventServiceSettings(m_settings);}
 
 	QString apiToken() const;
 	static int currentConnectionId();

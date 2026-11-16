@@ -68,7 +68,7 @@ QString QxEventService::serviceId()
 void QxEventService::run() {
 	using namespace shv::iotqt::rpc;
 
-	auto ss = settings();
+	auto ss = qxSettings();
 
 	delete m_rpcConnection;
 	m_rpcConnection = nullptr;
@@ -121,7 +121,7 @@ qf::gui::framework::DialogWidget *QxEventService::createDetailWidget()
 void QxEventService::loadSettings()
 {
 	Super::loadSettings();
-	auto ss = settings();
+	auto ss = qxSettings();
 	if (ss.shvBrokerUrl().isEmpty()) {
 		ss.setShvBrokerUrl("tcp://localhost?user=test&password=test");
 	}
@@ -163,13 +163,13 @@ QString QxEventService::eventApiShvPath(bool is_local_connection, int event_id)
 
 QString QxEventService::eventApiShvPath() const
 {
-	return QxEventService::eventApiShvPath(settings().isLocalBroker(), m_eventId);
+	return QxEventService::eventApiShvPath(qxSettings().isLocalBroker(), m_eventId);
 }
 
 void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
-		auto ss = settings();
+		auto ss = qxSettings();
 		auto *event_plugin = getPlugin<EventPlugin>();
 		const auto &app_config = event_plugin->appDbConfig();
 		auto api_token = app_config.qxConfig().apiToken.toStdString();
