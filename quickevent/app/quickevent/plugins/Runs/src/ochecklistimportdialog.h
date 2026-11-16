@@ -32,6 +32,7 @@ public:
 	void accept() override;
 private:
 	enum class State { New, Accepted, Rejected, NoDifference, NotFound };
+	enum class DataType { Status, Card, Note, CorridorTime };
 	struct Change
 	{
 		int runId = 0;
@@ -39,7 +40,7 @@ private:
 		QString runnerName;
 		QString className;
 		QString card;
-		QString dataType;
+		DataType dataType = DataType::Status;
 		QString origData;
 		QString data;
 		QDateTime created;
@@ -59,7 +60,9 @@ private:
 	void applyChange(const Change &change);
 	void storeChange(const Change &change, bool accepted);
 	static QString stateText(State state);
-	static QString dataTypeText(const QString &data_type);
+	/// qxchanges.data_type, the same as OFeed uses
+	static QString dataTypeName(DataType data_type);
+	static QString dataTypeText(DataType data_type);
 private:
 	int m_stageId = 0;
 	QList<Change> m_changes;

@@ -34,11 +34,6 @@ namespace {
 const QVersionNumber k_supported_version(1, 6);
 const auto k_source = QStringLiteral("OChecklist");
 
-const auto k_status_change = QStringLiteral("status_change");
-const auto k_card_change = QStringLiteral("si_card_change");
-const auto k_note_change = QStringLiteral("note_change");
-const auto k_corridor_time_change = QStringLiteral("corridor_time_change");
-
 const auto k_status_dns = QStringLiteral("DNS");
 const auto k_status_late_start = QStringLiteral("Late start");
 
@@ -407,7 +402,7 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 			match = changelog.contains("NewRunner")? tr("Not found, added in O Checklist"): tr("Not found");
 		}
 
-		auto add_change = [&](const QString &data_type, const QString &orig_data, const QString &data, const QVariant &created, bool no_difference) {
+		auto add_change = [&](DataType data_type, const QString &orig_data, const QString &data, const QVariant &created, bool no_difference) {
 			Change c;
 			c.runnerName = run? run->name(): name;
 			c.className = run? run->className: yaml_class;
@@ -424,8 +419,8 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 			else {
 				c.runId = run->runId;
 				c.competitorId = run->competitorId;
-				const QString run_type = QString::number(c.runId) + '|' + data_type;
-				const bool is_append = data_type == k_note_change || data_type == k_corridor_time_change;
+				const QString run_type = QString::number(c.runId) + '|' + dataTypeName(data_type);
+				const bool is_append = data_type == DataType::Note || data_type == DataType::CorridorTime;
 				if (is_append && imported.contains(run_type + '|' + data)) {
 					c.state = imported.value(run_type + '|' + data);
 				}
@@ -443,19 +438,19 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 		const QString status = runner.value("StartStatus").toString();
 		const bool is_dns = status == k_status_dns;
 		const bool is_late_start = status == k_status_late_start;
-		add_change(k_status_change, run && run->notStart? k_status_dns: QString(), status,
+		add_change(DataType::Status, run && run->notStart? k_status_dns: QString(), status,
 				   changelog.value(is_dns? "DNS": is_late_start? "LateStart": "TickedOff"),
 				   run && run->notStart == is_dns);
 		if (const QString card = runner.value("NewCard").toString(); !card.isEmpty()) {
-			add_change(k_card_change, run? run->siId: QString(), card, changelog.value("NewCard"), run && run->siId == card);
+			add_change(DataType::Card, run? run->siId: QString(), card, changelog.value("NewCard"), run && run->siId == card);
 		}
 		if (const QString comment = runner.value("Comment").toString(); !comment.isEmpty()) {
-			add_change(k_note_change, run? run->note: QString(), comment, changelog.value("Comment"), run && run->note.contains(comment));
+			add_change(DataType::Note, run? run->note: QString(), comment, changelog.value("Comment"), run && run->note.contains(comment));
 		}
 		if (!is_dns) {
 			// the corridor is entered by the tick off or by the late start
 			if (const QString corridor_time = changelog.value(is_late_start? "LateStart": "TickedOff").toString(); !corridor_time.isEmpty()) {
-				add_change(k_corridor_time_change, run? run->corridorTime: QString(), corridor_time, corridor_time, false);
+				add_change(DataType::CorridorTime, run? run->corridorTime: QString(), corridor_time, corridor_time, false);
 			}
 		}
 	}
@@ -553,17 +548,19 @@ void OChecklistImportDialog::accept()
 void OChecklistImportDialog::applyChange(const Change &change)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
-	if (change.dataType == k_status_change) {
+	switch (change.dataType) {
+	case DataType::Status:
 		qxsql->updateRecord("runs", change.runId, QVariantMap{{"notStart", change.data == k_status_dns}}, this);
-	}
-	else if (change.dataType == k_card_change) {
+		break;
+	case DataType::Card:
 		qxsql->updateRecord("runs", change.runId, QVariantMap{{"siId", change.data.toInt()}}, this);
-	}
-	else if (change.dataType == k_note_change) {
+		break;
+	case DataType::Note:
 		getPlugin<Runs::RunsPlugin>()->appendCompetitorNote(change.competitorId, change.data, this);
-	}
-	else if (change.dataType == k_corridor_time_change) {
+		break;
+	case DataType::CorridorTime:
 		getPlugin<Runs::RunsPlugin>()->setRunCorridorTimeIfEarlier(change.runId, change.created, this);
+		break;
 	}
 }
 
@@ -571,7 +568,7 @@ void OChecklistImportDialog::storeChange(const Change &change, bool accepted)
 {
 	// the same record as OFeed stores
 	QVariantMap rec {
-		{"data_type", change.dataType},
+		{"data_type", dataTypeName(change.dataType)},
 		{"data", change.data},
 		{"foreign_table", "runs"},
 		{"foreign_id", change.runId},
@@ -598,19 +595,24 @@ QString OChecklistImportDialog::stateText(State state)
 	return {};
 }
 
-QString OChecklistImportDialog::dataTypeText(const QString &data_type)
+QString OChecklistImportDialog::dataTypeName(DataType data_type)
 {
-	if (data_type == k_status_change) {
-		return tr("Status");
+	switch (data_type) {
+	case DataType::Status: return QStringLiteral("status_change");
+	case DataType::Card: return QStringLiteral("si_card_change");
+	case DataType::Note: return QStringLiteral("note_change");
+	case DataType::CorridorTime: return QStringLiteral("corridor_time_change");
 	}
-	if (data_type == k_card_change) {
-		return tr("Card");
+	return {};
+}
+
+QString OChecklistImportDialog::dataTypeText(DataType data_type)
+{
+	switch (data_type) {
+	case DataType::Status: return tr("Status");
+	case DataType::Card: return tr("Card");
+	case DataType::Note: return tr("Note");
+	case DataType::CorridorTime: return tr("Corridor time");
 	}
-	if (data_type == k_note_change) {
-		return tr("Note");
-	}
-	if (data_type == k_corridor_time_change) {
-		return tr("Corridor time");
-	}
-	return data_type;
+	return {};
 }
