@@ -1783,16 +1783,10 @@ void OFeedClient::processCardChange(int runs_id, const QString &new_value, bool 
 			return;
 		}
 	}
-	qf::core::sql::Query q;
 	try
 	{
-		q.prepare("UPDATE runs SET siId=:siId WHERE id=:runsId", qf::core::Exception::Throw);
-		q.bindValue(":runsId", runs_id);
-		q.bindValue(":siId", new_value.toInt());
-		if (!q.exec(qf::core::Exception::Throw))
-		{
-			qfError() << tr("Database query failed: ") << q.lastError().text();
-		}
+		// source == this, so the change is not sent back to OFeed
+		qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", runs_id, QVariantMap{{"siId", new_value.toInt()}}, this);
 	}
 	catch (const std::exception &e)
 	{
@@ -1809,16 +1803,10 @@ void OFeedClient::processStatusChange(int runs_id, const QString &new_value)
 	// entry cancellation comes as status Cancelled, the runner stays in QE but does not start
 	bool notStart = new_value == "DidNotStart" || new_value == "Cancelled";
 
-	qf::core::sql::Query q;
 	try
 	{
-		q.prepare("UPDATE runs SET notStart=:notStart WHERE id=:runsId", qf::core::Exception::Throw);
-		q.bindValue(":runsId", runs_id);
-		q.bindValue(":notStart", notStart);
-		if (!q.exec(qf::core::Exception::Throw))
-		{
-			qfError() << tr("Database query failed: ") << q.lastError().text();
-		}
+		// source == this, so the change is not sent back to OFeed
+		qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", runs_id, QVariantMap{{"notStart", notStart}}, this);
 	}
 	catch (const std::exception &e)
 	{
@@ -1832,51 +1820,26 @@ void OFeedClient::processStatusChange(int runs_id, const QString &new_value)
 
 void OFeedClient::processNoteChange(int runs_id, const QString &new_value)
 {
-	int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(runs_id);
-
-	qf::core::sql::Query q;
 	try
 	{
-		q.prepare("UPDATE competitors SET note = CASE WHEN note IS NULL OR note = '' THEN :newNote ELSE note || ', ' || :newNote END WHERE id = :competitorId", qf::core::Exception::Throw);
-		q.bindValue(":competitorId", competitor_id);
-		q.bindValue(":newNote", new_value);
-		if (!q.exec(qf::core::Exception::Throw))
-		{
-			qfError() << tr("Database query failed: ") << q.lastError().text();
-		}
+		// source == this, so the change is not sent back to OFeed
+		getPlugin<RunsPlugin>()->appendCompetitorNote(getPlugin<RunsPlugin>()->competitorForRun(runs_id), new_value, this);
 	}
 	catch (const std::exception &e)
 	{
 		qCritical() << tr("Exception occurred while executing query: ") << e.what();
-	}
-	catch (...)
-	{
-		qCritical() << tr("Unknown exception occurred while executing query.");
 	}
 }
 
 void OFeedClient::processCorridorTimeUpdate(int runs_id, const QDateTime &created_at)
 {
-	qf::core::sql::Query q;
 	try
 	{
-		q.prepare("UPDATE runs SET corridorTime = :createdAt "
-				  "WHERE id = :runsId "
-				  "AND (corridorTime IS NULL OR corridorTime > :createdAt2)",
-				  qf::core::Exception::Throw);
-		q.bindValue(":runsId", runs_id);
-		q.bindValue(":createdAt", created_at);
-		q.bindValue(":createdAt2", created_at);
-		if (!q.exec(qf::core::Exception::Throw))
-			qfError() << tr("Database query failed: ") << q.lastError().text();
+		getPlugin<RunsPlugin>()->setRunCorridorTimeIfEarlier(runs_id, created_at, this);
 	}
 	catch (const std::exception &e)
 	{
 		qCritical() << tr("Exception occurred while executing query: ") << e.what();
-	}
-	catch (...)
-	{
-		qCritical() << tr("Unknown exception occurred while executing query.");
 	}
 }
 

@@ -147,6 +147,35 @@ void RunsPlugin::setCompetitorRunsSiId(int competitor_id, int stage_id, int si_i
 	}
 }
 
+bool RunsPlugin::appendCompetitorNote(int competitor_id, const QString &note, QObject *source)
+{
+	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
+	auto rec = qxsql->readRecord("competitors", competitor_id, QStringList{"note"});
+	if (!rec.has_value()) {
+		qfWarning() << "Cannot append note, competitor not found, id:" << competitor_id;
+		return false;
+	}
+	// readRecord returns lower case field names
+	const QString old_note = rec->value("note").toString();
+	return qxsql->updateRecord("competitors", competitor_id, QVariantMap{{"note", old_note.isEmpty()? note: old_note + ", " + note}}, source);
+}
+
+bool RunsPlugin::setRunCorridorTimeIfEarlier(int run_id, const QDateTime &corridor_time, QObject *source)
+{
+	// conditional update in SQL, the stored corridorTime format differs between the DB drivers
+	qfs::Query q;
+	q.prepare("UPDATE runs SET corridorTime=:corridorTime WHERE id=:runId AND (corridorTime IS NULL OR corridorTime > :corridorTime2)", qf::core::Exception::Throw);
+	q.bindValue(":runId", run_id);
+	q.bindValue(":corridorTime", corridor_time);
+	q.bindValue(":corridorTime2", corridor_time);
+	q.exec(qf::core::Exception::Throw);
+	if (q.numRowsAffected() == 0) {
+		return false;
+	}
+	qf::gui::framework::Application::instance()->qxSql()->emitRecUpdated("runs", run_id, QVariantMap{{"corridorTime", corridor_time}}, source);
+	return true;
+}
+
 void RunsPlugin::onInstalled()
 {
 	qfLogFuncFrame();
