@@ -111,7 +111,6 @@ struct DbRun
 {
 	int runId = 0;
 	int competitorId = 0;
-	bool isRunning = false;
 	bool notStart = false;
 	QString siId;
 	QString firstName;
@@ -302,18 +301,18 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 {
 	QHash<int, DbRun> runs;
 	qf::core::sql::Query q;
-	q.execThrow(QStringLiteral("SELECT runs.id, runs.isRunning, runs.siId, runs.notStart, runs.corridorTime,"
+	// only running ones, the exported start list contains them only
+	q.execThrow(QStringLiteral("SELECT runs.id, runs.siId, runs.notStart, runs.corridorTime,"
 				" competitors.id AS competitorId, competitors.firstName, competitors.lastName, competitors.registration, competitors.iofId, competitors.note,"
 				" classes.name AS className"
 				" FROM runs"
 				" JOIN competitors ON competitors.id = runs.competitorId"
 				" LEFT JOIN classes ON classes.id = competitors.classId"
-				" WHERE runs.stageId=%1").arg(m_stageId));
+				" WHERE runs.stageId=%1 AND runs.isRunning").arg(m_stageId));
 	while (q.next()) {
 		DbRun r;
 		r.runId = q.value("id").toInt();
 		r.competitorId = q.value("competitorId").toInt();
-		r.isRunning = q.value("isRunning").toBool();
 		r.notStart = q.value("notStart").toBool();
 		r.siId = q.value("siId").toInt() > 0? q.value("siId").toString(): QString();
 		r.firstName = q.value("firstName").toString();
@@ -343,7 +342,7 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 	auto find_in_stage = [&runs](const std::function<bool (const DbRun &)> &pred) -> QList<const DbRun*> {
 		QList<const DbRun*> ret;
 		for (const auto &r : runs) {
-			if (r.isRunning && pred(r)) {
+			if (pred(r)) {
 				ret << &r;
 			}
 		}
