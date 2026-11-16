@@ -284,9 +284,10 @@ void QxEventServiceWidget::pushEventDb()
 	}
 
 	// Changes made from now on might be missing in the exported snapshot (tables are copied one by one)
-	// and the server would apply their recchng signals to the DB which is going to be replaced by the snapshot.
+	// and in Replica mode the server would apply their recchng signals to the DB which is going to be replaced by the snapshot.
 	// Postpone them until the push is finished, so the server applies them to the pushed DB.
-	setDbTransferRunning(true, true);
+	// In other modes the server ignores recchng signals of this QE, there is nothing to postpone.
+	setDbTransferRunning(true, service()->isEventDbModeReplica());
 	setMessage(tr("Exporting event database"), MessageType::Progress);
 	// repaint the message before the export, it blocks in single file mode
 	ui->lblStatus->repaint();

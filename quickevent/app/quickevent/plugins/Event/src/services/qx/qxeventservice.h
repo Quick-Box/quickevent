@@ -46,6 +46,8 @@ public:
 
 	int eventId() const;
 	QString eventDbMode() const { return m_eventDbMode; }
+	// the server applies recchng signals of this QE to its event DB only in Replica mode
+	bool isEventDbModeReplica() const { return m_eventDbMode == QLatin1String("Replica"); }
 	Q_SIGNAL void eventDbModeChanged(const QString &db_mode);
 
 	shv::iotqt::rpc::DeviceConnection* rpcConnection() const { return m_rpcConnection; }
