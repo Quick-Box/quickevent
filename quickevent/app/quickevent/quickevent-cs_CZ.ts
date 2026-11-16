@@ -6527,6 +6527,11 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
 %1</translation>
     </message>
     <message>
+        <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="569"/>
+        <source>Record not found, the change is not applied.</source>
+        <translation>Záznam nenalezen, změna nebyla provedena.</translation>
+    </message>
+    <message>
         <location filename="plugins/Runs/src/ochecklistimportdialog.cpp" line="592"/>
         <source>New</source>
         <translation>Nová</translation>

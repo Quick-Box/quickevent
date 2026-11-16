@@ -548,19 +548,25 @@ void OChecklistImportDialog::accept()
 void OChecklistImportDialog::applyChange(const Change &change)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
+	bool ok = true;
 	switch (change.dataType) {
 	case DataType::Status:
-		qxsql->updateRecord("runs", change.runId, QVariantMap{{"notStart", change.data == k_status_dns}}, this);
+		ok = qxsql->updateRecord("runs", change.runId, QVariantMap{{"notStart", change.data == k_status_dns}}, this);
 		break;
 	case DataType::Card:
-		qxsql->updateRecord("runs", change.runId, QVariantMap{{"siId", change.data.toInt()}}, this);
+		ok = qxsql->updateRecord("runs", change.runId, QVariantMap{{"siId", change.data.toInt()}}, this);
 		break;
 	case DataType::Note:
-		getPlugin<Runs::RunsPlugin>()->appendCompetitorNote(change.competitorId, change.data, this);
+		ok = getPlugin<Runs::RunsPlugin>()->appendCompetitorNote(change.competitorId, change.data, this);
 		break;
 	case DataType::CorridorTime:
+		// false means the stored corridor time is earlier, it is not an error
 		getPlugin<Runs::RunsPlugin>()->setRunCorridorTimeIfEarlier(change.runId, change.created, this);
 		break;
+	}
+	if (!ok) {
+		// the record was deleted meanwhile, the change is not stored and the next import offers it again
+		QF_EXCEPTION(tr("Record not found, the change is not applied."));
 	}
 }
 
