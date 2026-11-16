@@ -128,14 +128,9 @@ void QxEventService::loadSettings()
 	m_settings = ss;
 }
 
-void QxEventService::postponeRecChngSignals()
+void QxEventService::setRecChngSignalsPostponed(bool is_postponed)
 {
-	m_sqlApiNode->postponeRecChngSignals();
-}
-
-void QxEventService::releaseRecChngSignals()
-{
-	m_sqlApiNode->releaseRecChngSignals();
+	m_sqlApiNode->setRecChngSignalsPostponed(is_postponed);
 }
 
 int QxEventService::eventId() const

@@ -53,8 +53,7 @@ public:
 	// Event DB push replaces the server DB with a snapshot, recchng signals sent to the server
 	// while the snapshot is being created and uploaded would be applied to the replaced DB and lost.
 	// Postpone them and send them after the push is finished, the server applies them to the new DB then.
-	void postponeRecChngSignals();
-	void releaseRecChngSignals();
+	void setRecChngSignalsPostponed(bool is_postponed);
 protected:
 	void loadSettings() override;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;

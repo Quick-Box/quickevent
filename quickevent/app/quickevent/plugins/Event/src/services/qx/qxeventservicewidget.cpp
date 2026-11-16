@@ -87,14 +87,14 @@ void QxEventServiceWidget::setMessage(const QString &msg, MessageType msg_type)
 	else {
 		switch (msg_type) {
 		case MessageType::Ok:
-		ui->lblStatus->setStyleSheet("background: lightgreen");
-		break;
+			ui->lblStatus->setStyleSheet("background: lightgreen");
+			break;
 		case MessageType::Error:
-		ui->lblStatus->setStyleSheet("background: salmon");
-		break;
+			ui->lblStatus->setStyleSheet("background: salmon");
+			break;
 		case MessageType::Progress:
-		ui->lblStatus->setStyleSheet("background: orange");
-		break;
+			ui->lblStatus->setStyleSheet("background: orange");
+			break;
 		}
 	}
 	ui->lblStatus->setText(msg);
@@ -254,33 +254,20 @@ std::shared_ptr<QxEventServiceWidget::DbTransfer> QxEventServiceWidget::createDb
 	return transfer;
 }
 
-void QxEventServiceWidget::setDbTransferRunning(bool is_running)
+void QxEventServiceWidget::setDbTransferRunning(bool is_running, bool postpone_recchng_signals)
 {
 	ui->btPushEventDb->setDisabled(is_running);
 	ui->btPullEventDb->setDisabled(is_running);
 	m_dbTransferRunning = is_running;
 	ui->btStartStopService->setDisabled(is_running);
-	if (!is_running) {
-		// push finished, successfully or not, the server DB can accept recchng signals again
-		setRecChngSignalsPostponed(false);
-	}
+	// When transfer is finished, successfully or not, the server DB can accept recchng signals again
+	setRecChngSignalsPostponed(is_running && postpone_recchng_signals);
 }
 
 void QxEventServiceWidget::setRecChngSignalsPostponed(bool is_postponed)
 {
-	if (m_recChngSignalsPostponed == is_postponed) {
-		return;
-	}
-	auto *svc = service();
-	if (!svc) {
-		return;
-	}
-	m_recChngSignalsPostponed = is_postponed;
-	if (is_postponed) {
-		svc->postponeRecChngSignals();
-	}
-	else {
-		svc->releaseRecChngSignals();
+	if (auto *svc = service()) {
+		svc->setRecChngSignalsPostponed(is_postponed);
 	}
 }
 
@@ -296,11 +283,10 @@ void QxEventServiceWidget::pushEventDb()
 		return;
 	}
 
-	setDbTransferRunning(true);
 	// Changes made from now on might be missing in the exported snapshot (tables are copied one by one)
 	// and the server would apply their recchng signals to the DB which is going to be replaced by the snapshot.
-	// Send them after the push is finished, so the server applies them to the pushed DB.
-	setRecChngSignalsPostponed(true);
+	// Postpone them until the push is finished, so the server applies them to the pushed DB.
+	setDbTransferRunning(true, true);
 	setMessage(tr("Exporting event database"), MessageType::Progress);
 	// repaint the message before the export, it blocks in single file mode
 	ui->lblStatus->repaint();
@@ -314,7 +300,7 @@ void QxEventServiceWidget::pushEventDb()
 	fwk->hideProgress();
 	if (event_qbe_data.isEmpty()) {
 		setMessage(tr("Event database export error: %1").arg(err_str), MessageType::Error);
-		setDbTransferRunning(false);
+		setDbTransferRunning(false, false);
 		return;
 	}
 
@@ -326,7 +312,7 @@ void QxEventServiceWidget::pushEventDb()
 		upload->chunkSize = stat.asIMap().value(FILE_STAT_MAX_WRITE).toInt();
 		if (upload->chunkSize <= 0) {
 			setMessage(tr("Event database push error, invalid max write size in stat result: %1").arg(upload->chunkSize), MessageType::Error);
-			setDbTransferRunning(false);
+			setDbTransferRunning(false, false);
 			return;
 		}
 		// an unfinished previous upload might be left on the server
@@ -345,7 +331,7 @@ void QxEventServiceWidget::pushEventDbChunk(const std::shared_ptr<DbTransfer> &u
 		RpcValue sha1(reinterpret_cast<const uint8_t*>(upload->sha1.constData()), static_cast<size_t>(upload->sha1.size()));
 		callDbFileMethod(upload, "commit", sha1, [this](const RpcValue &) {
 			setMessage(tr("Event database pushed OK"));
-			setDbTransferRunning(false);
+			setDbTransferRunning(false, false);
 		}, PUSH_DB_COMMIT_TIMEOUT_MSEC);
 		return;
 	}
@@ -368,7 +354,7 @@ void QxEventServiceWidget::pullEventDb()
 	if (!download) {
 		return;
 	}
-	setDbTransferRunning(true);
+	setDbTransferRunning(true, false);
 	setMessage(tr("Creating event database snapshot"), MessageType::Progress);
 	callDbFileMethod(download, "snapshot", {}, [this, download](const RpcValue &) {
 		callDbFileMethod(download, "stat", {}, [this, download](const RpcValue &stat) {
@@ -377,7 +363,7 @@ void QxEventServiceWidget::pullEventDb()
 			download->chunkSize = stat_map.value(FILE_STAT_MAX_READ).toInt64();
 			if (download->size <= 0 || download->chunkSize <= 0) {
 				setMessage(tr("Event database pull error, invalid stat result: %1").arg(QString::fromStdString(stat.toCpon())), MessageType::Error);
-				setDbTransferRunning(false);
+				setDbTransferRunning(false, false);
 				return;
 			}
 			download->data.reserve(download->size);
@@ -403,7 +389,7 @@ void QxEventServiceWidget::pullEventDbChunk(const std::shared_ptr<DbTransfer> &d
 		// the server can return less data than requested, but no data means that the file got shorter
 		if (chunk.empty()) {
 			setMessage(tr("Event database pull error, unexpected end of data at offset %1 of %2").arg(download->offset).arg(download->size), MessageType::Error);
-			setDbTransferRunning(false);
+			setDbTransferRunning(false, false);
 			return;
 		}
 		download->data.append(reinterpret_cast<const char*>(chunk.data()), static_cast<qsizetype>(chunk.size()));
@@ -423,10 +409,10 @@ void QxEventServiceWidget::verifyPulledEventDb(const std::shared_ptr<DbTransfer>
 		// the snapshot can be replaced during the download by another client pulling the same event
 		if (sha1 != QByteArray(reinterpret_cast<const char*>(server_sha1.data()), static_cast<qsizetype>(server_sha1.size()))) {
 			setMessage(tr("Event database pull error, downloaded data does not match the server SHA-1"), MessageType::Error);
-			setDbTransferRunning(false);
+			setDbTransferRunning(false, false);
 			return;
 		}
-		setDbTransferRunning(false);
+		setDbTransferRunning(false, false);
 		// qUncompress() expects 4 bytes of uncompressed size before the zlib stream, the server sends the plain zlib stream.
 		// Zero size is just a hint, the output buffer grows as needed.
 		download->data = qUncompress(QByteArray(4, '\0') + download->data);
@@ -472,7 +458,7 @@ void QxEventServiceWidget::callDbFileMethod(const std::shared_ptr<DbTransfer> &t
 	connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this, method, on_success](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 		if (error.isValid()) {
 			setMessage(tr("Event database transfer error, method %1: %2").arg(method).arg(error.toString()), MessageType::Error);
-			setDbTransferRunning(false);
+			setDbTransferRunning(false, false);
 		}
 		else {
 			on_success(result);

@@ -36,7 +36,7 @@ private:
 	QString brokerUrl() const;
 	struct DbTransfer;
 	std::shared_ptr<DbTransfer> createDbTransfer(const char *node_name);
-	void setDbTransferRunning(bool is_running);
+	void setDbTransferRunning(bool is_running, bool postpone_recchng_signals);
 	void setRecChngSignalsPostponed(bool is_postponed);
 	void callDbFileMethod(const std::shared_ptr<DbTransfer> &transfer, const char *method, const shv::chainpack::RpcValue &param, const std::function<void (const shv::chainpack::RpcValue &)> &on_success, int timeout_msec = 0);
 
@@ -50,7 +50,6 @@ private:
 private:
 	Ui::QxEventServiceWidget *ui;
 	bool m_dbTransferRunning = false;
-	bool m_recChngSignalsPostponed = false;
 };
 
 }
