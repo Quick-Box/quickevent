@@ -1112,6 +1112,14 @@ QVariantMap RunsPlugin::editPrintAwardsOptionsInDialog(const QVariantMap &opts)
 	return ret;
 }
 
+QString RunsPlugin::iofResultListStatus(int stage_id)
+{
+	// same runs as Card reader statistics, not finished = "On track" + not started yet
+	qfs::Query q;
+	q.execThrow("SELECT COUNT(*)" + statisticsFromSql() + " WHERE " + statisticsRunsSqlCondition(stage_id) + " AND " + notFinishedSqlCondition());
+	return (q.next() && q.value(0).toInt() > 0)? QStringLiteral("Snapshot"): QStringLiteral("Complete");
+}
+
 QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 {
 	qf::core::utils::TreeTable tt1 = stageResultsTable(stage_id, QString(), 0, false, true);
@@ -1152,7 +1160,7 @@ QString RunsPlugin::resultsIofXml30Stage(int stage_id)
 		"ResultList",
 		QVariantMap{
 			{"xmlns", "http://www.orienteering.org/datastandard/3.0"},
-			{"status", "Complete"},
+			{"status", iofResultListStatus(stage_id)},
 			{"iofVersion", "3.0"},
 			{"creator", QStringLiteral("QuickEvent %1").arg(QCoreApplication::applicationVersion())},
 			{"createTime", datetime_to_string(QDateTime::currentDateTime())},

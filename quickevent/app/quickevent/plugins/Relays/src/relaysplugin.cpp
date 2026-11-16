@@ -704,7 +704,7 @@ QString RelaysPlugin::resultsIofXml30()
 		"ResultList",
 		QVariantMap{
 			{"xmlns", "http://www.orienteering.org/datastandard/3.0"},
-			{"status", "Complete"},
+			{"status", RunsPlugin::iofResultListStatus(1)}, // relays have a single stage
 			{"iofVersion", "3.0"},
 			{"creator", QStringLiteral("QuickEvent %1").arg(QCoreApplication::applicationVersion())},
 			{"createTime", datetime_to_string(QDateTime::currentDateTime())},
