@@ -72,7 +72,7 @@ void QxEventService::run() {
 
 	delete m_rpcConnection;
 	m_rpcConnection = nullptr;
-	m_eventId = 0;
+	resetEventState();
 
 	auto api_token = apiToken();
 	if (api_token.isEmpty()) {
@@ -107,7 +107,7 @@ void QxEventService::stop()
 {
 	delete m_rpcConnection;
 	m_rpcConnection = nullptr;
-	m_eventId = 0;
+	resetEventState();
 	Super::stop();
 	setStatusMessage({});
 }
@@ -179,6 +179,7 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 				->setParams(RpcValue::Map { {"api_token", RpcValue(api_token)} });
 		connect(rpc_call, &shv::iotqt::rpc::RpcCall::maybeResult, this, [this](const ::shv::chainpack::RpcValue &result, const shv::chainpack::RpcError &error) {
 			if (error.isValid()) {
+				resetEventState();
 				setStatus(Status::Stopped);
 				setStatusMessage(tr("Open event error: %1").arg(error.toString()), NecroLogLevel::Error);
 			}
@@ -204,6 +205,7 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 		});
 		rpc_call->start();
 	} else {
+		resetEventState();
 		setStatus(Status::Stopped);
 	}
 
@@ -286,12 +288,28 @@ void QxEventService::onEventDbModeChanged(const shv::chainpack::RpcValue &params
 	else {
 		db_mode = QString::fromStdString(params.to<std::string>());
 	}
-	setEventDbModeStatusMessage(db_mode);
+	setEventDbMode(db_mode);
 }
 
-void QxEventService::setEventDbModeStatusMessage(const QString &db_mode)
+void QxEventService::setEventDbMode(const QString &db_mode)
 {
-	setStatusMessage(tr("Event ID: %1 %2").arg(m_eventId).arg(db_mode));
+	if (m_eventDbMode != db_mode) {
+		m_eventDbMode = db_mode;
+		emit eventDbModeChanged(m_eventDbMode);
+	}
+	if (m_eventId > 0) {
+		// show DB mode in the services overview, but do not hide pending warnings / errors
+		auto level = statusMessageLevel();
+		if (level != NecroLogLevel::Warning && level != NecroLogLevel::Error && level != NecroLogLevel::Fatal) {
+			setStatusMessage(tr("Event ID: %1 %2").arg(m_eventId).arg(m_eventDbMode).trimmed());
+		}
+	}
+}
+
+void QxEventService::resetEventState()
+{
+	m_eventId = 0;
+	setEventDbMode({});
 }
 
 } // namespace Event::services::qx

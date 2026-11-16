@@ -61,6 +61,7 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 	connect(ui->btStartStopService, &QAbstractButton::clicked, this, &QxEventServiceWidget::startStopService);
 	connect(svc, &Service::statusChanged, this, &QxEventServiceWidget::updateServiceStatus);
 	connect(svc, &Service::statusMessageChanged, this, &QxEventServiceWidget::updateServiceStatus);
+	connect(svc, &QxEventService::eventDbModeChanged, this, &QxEventServiceWidget::updateServiceStatus);
 	updateServiceStatus();
 
 	connect(ui->btPushEventDb, &QAbstractButton::clicked, this, &QxEventServiceWidget::pushEventDb);
@@ -163,6 +164,7 @@ void QxEventServiceWidget::updateServiceStatus()
 	ui->btStartStopService->setText(is_started? tr("Stop service"): tr("Start service"));
 	ui->btStartStopService->setDisabled(m_dbTransferRunning);
 	ui->edEventId->setValue(svc->eventId());
+	ui->edEventDbMode->setText(svc->eventDbMode());
 
 	QString status = svc->isRunning()? tr("running"): is_started? tr("connecting"): tr("stopped");
 	QString text = tr("Service %1").arg(status);

@@ -43,6 +43,7 @@ public:
 	QString eventApiShvPath() const;
 
 	int eventId() const;
+	QString eventDbMode() const { return m_eventDbMode; }
 	shv::iotqt::rpc::DeviceConnection* rpcConnection() const { return m_rpcConnection; }
 protected:
 	void loadSettings() override;
@@ -56,12 +57,16 @@ private: // shv
 
 	void subscribeChanges();
 	void onEventDbModeChanged(const shv::chainpack::RpcValue &params);
-	void setEventDbModeStatusMessage(const QString &db_mode);
+	void setEventDbMode(const QString &db_mode);
+	void resetEventState();
+signals:
+	void eventDbModeChanged(const QString &db_mode);
 private: // shv
 	shv::iotqt::rpc::DeviceConnection *m_rpcConnection = nullptr;
 	shv::iotqt::node::ShvRootNode *m_rootNode;
 private:
 	int m_eventId = 0;
+	QString m_eventDbMode;
 };
 
 }

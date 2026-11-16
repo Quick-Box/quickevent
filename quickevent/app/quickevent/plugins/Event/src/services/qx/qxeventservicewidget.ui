@@ -61,18 +61,12 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="toolTip">
-        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
-       </property>
+     <item row="2" column="2">
+      <widget class="QLabel" name="lblEventDbMode">
        <property name="text">
-        <string>API token</string>
+        <string>Event DB mode</string>
        </property>
       </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLineEdit" name="edApiToken"/>
      </item>
      <item row="2" column="1">
       <widget class="QSpinBox" name="edEventId">
@@ -93,15 +87,29 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>API token</string>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_4">
-       <property name="toolTip">
-        <string>Fill this url into HTTP POST synchonization method in O-CheckList</string>
-       </property>
        <property name="text">
         <string>Event ID</string>
        </property>
       </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QLineEdit" name="edEventDbMode">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="3">
+      <widget class="QLineEdit" name="edApiToken"/>
      </item>
     </layout>
    </item>
