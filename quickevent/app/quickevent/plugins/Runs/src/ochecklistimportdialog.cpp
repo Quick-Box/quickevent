@@ -439,8 +439,8 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 		const bool is_dns = status == k_status_dns;
 		const bool is_late_start = status == k_status_late_start;
 		add_change(DataType::Status, run && run->notStart? k_status_dns: QString(), status,
-				   changelog.value(is_dns? "DNS": is_late_start? "LateStart": "TickedOff"),
-				   run && run->notStart == is_dns);
+				changelog.value(is_dns? "DNS": is_late_start? "LateStart": "TickedOff"),
+				run && run->notStart == is_dns);
 		if (const QString card = runner.value("NewCard").toString(); !card.isEmpty()) {
 			add_change(DataType::Card, run? run->siId: QString(), card, changelog.value("NewCard"), run && run->siId == card);
 		}
