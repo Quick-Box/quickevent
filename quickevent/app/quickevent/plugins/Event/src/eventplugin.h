@@ -88,7 +88,10 @@ public:
 	/// Exports the currently open event to a SQLite database and returns the file content.
 	/// Returns empty array on failure, the reason is stored to \a error if it is not null.
 	/// \a progress is called before each export step, it is up to the caller to display it.
-	QByteArray eventQbeData(QString *error = nullptr, const ProgressCallback &progress = {});
+	/// If \a consistent_snapshot is set, the tables cannot change while they are copied one by one.
+	/// On SQL server they are read in a REPEATABLE READ transaction, in single file mode the DB cannot change
+	/// while the app does not process events, so \a progress is not called then.
+	QByteArray eventQbeData(QString *error = nullptr, const ProgressCallback &progress = {}, bool consistent_snapshot = false);
 	void exportEvent_qbe();
 	void importEvent_qbe();
 

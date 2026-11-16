@@ -8,6 +8,8 @@ namespace shv::chainpack { class RpcMessage; class RpcError; class RpcValue; }
 
 namespace Event::services::qx {
 
+class SqlApiNode;
+
 class QxEventServiceSettings : public ServiceSettings
 {
 	using Super = ServiceSettings;
@@ -44,7 +46,15 @@ public:
 
 	int eventId() const;
 	QString eventDbMode() const { return m_eventDbMode; }
+	Q_SIGNAL void eventDbModeChanged(const QString &db_mode);
+
 	shv::iotqt::rpc::DeviceConnection* rpcConnection() const { return m_rpcConnection; }
+
+	// Event DB push replaces the server DB with a snapshot, recchng signals sent to the server
+	// while the snapshot is being created and uploaded would be applied to the replaced DB and lost.
+	// Postpone them and send them after the push is finished, the server applies them to the new DB then.
+	void postponeRecChngSignals();
+	void releaseRecChngSignals();
 protected:
 	void loadSettings() override;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
@@ -59,11 +69,10 @@ private: // shv
 	void onEventDbModeChanged(const shv::chainpack::RpcValue &params);
 	void setEventDbMode(const QString &db_mode);
 	void resetEventState();
-signals:
-	void eventDbModeChanged(const QString &db_mode);
 private: // shv
 	shv::iotqt::rpc::DeviceConnection *m_rpcConnection = nullptr;
 	shv::iotqt::node::ShvRootNode *m_rootNode;
+	SqlApiNode *m_sqlApiNode;
 private:
 	int m_eventId = 0;
 	QString m_eventDbMode;

@@ -74,6 +74,8 @@ QxEventServiceWidget::QxEventServiceWidget(QWidget *parent)
 
 QxEventServiceWidget::~QxEventServiceWidget()
 {
+	// pending push callbacks are bound to this widget, they will never finish the push
+	setRecChngSignalsPostponed(false);
 	delete ui;
 }
 
@@ -258,6 +260,28 @@ void QxEventServiceWidget::setDbTransferRunning(bool is_running)
 	ui->btPullEventDb->setDisabled(is_running);
 	m_dbTransferRunning = is_running;
 	ui->btStartStopService->setDisabled(is_running);
+	if (!is_running) {
+		// push finished, successfully or not, the server DB can accept recchng signals again
+		setRecChngSignalsPostponed(false);
+	}
+}
+
+void QxEventServiceWidget::setRecChngSignalsPostponed(bool is_postponed)
+{
+	if (m_recChngSignalsPostponed == is_postponed) {
+		return;
+	}
+	auto *svc = service();
+	if (!svc) {
+		return;
+	}
+	m_recChngSignalsPostponed = is_postponed;
+	if (is_postponed) {
+		svc->postponeRecChngSignals();
+	}
+	else {
+		svc->releaseRecChngSignals();
+	}
 }
 
 void QxEventServiceWidget::pushEventDb()
@@ -273,12 +297,20 @@ void QxEventServiceWidget::pushEventDb()
 	}
 
 	setDbTransferRunning(true);
+	// Changes made from now on might be missing in the exported snapshot (tables are copied one by one)
+	// and the server would apply their recchng signals to the DB which is going to be replaced by the snapshot.
+	// Send them after the push is finished, so the server applies them to the pushed DB.
+	setRecChngSignalsPostponed(true);
 	setMessage(tr("Exporting event database"), MessageType::Progress);
+	// repaint the message before the export, it blocks in single file mode
+	ui->lblStatus->repaint();
 	auto *fwk = qf::gui::framework::MainWindow::frameWork();
 	QString err_str;
+	// Consistent snapshot is required, changes made to already copied tables would be missing in the pushed DB.
+	// It is guaranteed even if the progress callback processes events.
 	const QByteArray event_qbe_data = getPlugin<EventPlugin>()->eventQbeData(&err_str, [fwk](const QString &msg, int completed, int total) {
 		fwk->showProgress(msg, completed, total);
-	});
+	}, true);
 	fwk->hideProgress();
 	if (event_qbe_data.isEmpty()) {
 		setMessage(tr("Event database export error: %1").arg(err_str), MessageType::Error);

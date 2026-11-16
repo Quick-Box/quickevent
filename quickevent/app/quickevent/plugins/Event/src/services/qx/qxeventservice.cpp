@@ -45,7 +45,7 @@ QxEventService::QxEventService(QObject *parent)
 	, m_rootNode(new shv::iotqt::node::ShvRootNode(this))
 {
 	new DotAppNode(m_rootNode);
-	new SqlApiNode(m_rootNode);
+	m_sqlApiNode = new SqlApiNode(m_rootNode);
 
 	connect(m_rootNode, &shv::iotqt::node::ShvNode::sendRpcMessage, this, &QxEventService::sendRpcMessage);
 }
@@ -126,6 +126,16 @@ void QxEventService::loadSettings()
 		ss.setShvBrokerUrl("tcp://localhost?user=test&password=test");
 	}
 	m_settings = ss;
+}
+
+void QxEventService::postponeRecChngSignals()
+{
+	m_sqlApiNode->postponeRecChngSignals();
+}
+
+void QxEventService::releaseRecChngSignals()
+{
+	m_sqlApiNode->releaseRecChngSignals();
 }
 
 int QxEventService::eventId() const

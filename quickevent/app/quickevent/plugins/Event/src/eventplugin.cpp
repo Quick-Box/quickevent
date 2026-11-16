@@ -1267,20 +1267,40 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	return QString();
 }
 }
-QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &progress)
+namespace {
+void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
+{
+	dst.setHostName(src.hostName());
+	dst.setPort(src.port());
+	dst.setUserName(src.userName());
+	dst.setPassword(src.password());
+	dst.setDatabaseName(src.databaseName());
+}
+}
+
+QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &progress, bool consistent_snapshot)
 {
 	qfLogFuncFrame();
 	QString err_str;
 	QByteArray data;
 	int step_cnt = 0;
 	int step_no = 0;
+	// Consistent snapshot: table rows cannot change while the tables are copied one by one.
+	// SQL server (POSTGRES): other clients can write anytime, copy tables using a dedicated connection in a REPEATABLE READ transaction,
+	// app event processing during the export (progress reporting) cannot interfere with the snapshot then.
+	// Single file (SQLITE): only this app instance writes to the DB, no event processing is the only way to keep the DB unchanged,
+	// because a long read transaction would lock the DB file for writing.
+	const bool is_sql_server = connectionType() == ConnectionType::SqlServer;
+	const bool use_snapshot_transaction = consistent_snapshot && is_sql_server;
+	const ProgressCallback progress_cb = (consistent_snapshot && !is_sql_server)? ProgressCallback{}: progress;
 	const auto report_step = [&](const QString &msg) {
-		if(progress)
-			progress(msg, ++step_no, step_cnt);
+		if(progress_cb)
+			progress_cb(msg, ++step_no, step_cnt);
 	};
 	QTemporaryDir tmp_dir;
 	const QString ex_fn = tmp_dir.filePath(QStringLiteral("event.qbe"));
 	QString export_connection_name = QStringLiteral("qe_export_connection");
+	QString source_connection_name = QStringLiteral("qe_export_source_connection");
 	do {
 		if(!tmp_dir.isValid()) {
 			err_str = tr("Cannot create temporary directory: %1").arg(tmp_dir.errorString());
@@ -1312,6 +1332,24 @@ QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &pro
 			}
 		}
 		qfs::Connection conn = qfs::Connection::forName();
+		if(use_snapshot_transaction) {
+			qfs::Connection current_conn = conn;
+			conn = qfs::Connection(QSqlDatabase::addDatabase(current_conn.driverName(), source_connection_name));
+			cloneDbConnection(conn, current_conn);
+			if(!conn.open()) {
+				err_str = tr("Open Database Error: %1").arg(conn.errorString());
+				break;
+			}
+			if(!conn.setCurrentSchema(eventDbName())) {
+				err_str = tr("Cannot set event schema '%1': %2").arg(eventDbName(), conn.errorString());
+				break;
+			}
+			qfs::Query q(conn);
+			if(!q.exec(QStringLiteral("BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"))) {
+				err_str = tr("Cannot start export transaction: %1").arg(q.lastErrorText());
+				break;
+			}
+		}
 		for(const QString &table_name : tables) {
 			qfDebug() << "Copying table" << table_name;
 			report_step(tr("Copying table %1").arg(table_name));
@@ -1330,6 +1368,13 @@ QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &pro
 			c.close();
 	}
 	QSqlDatabase::removeDatabase(export_connection_name);
+	{
+		// read only transaction, closing the connection rolls it back
+		QSqlDatabase c = QSqlDatabase::database(source_connection_name, false);
+		if(c.isOpen())
+			c.close();
+	}
+	QSqlDatabase::removeDatabase(source_connection_name);
 	if(err_str.isEmpty()) {
 		report_step(tr("Reading exported database"));
 		QFile f(ex_fn);
@@ -1390,16 +1435,6 @@ void EventPlugin::deleteEvent(const QString &event_name)
 			qfd::MessageBox::showError(fwk, tr("Cannot delete event schema '%1': %2")
 			                           .arg(event_name, q.lastErrorText()));
 	}
-}
-namespace {
-void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
-{
-	dst.setHostName(src.hostName());
-	dst.setPort(src.port());
-	dst.setUserName(src.userName());
-	dst.setPassword(src.password());
-	dst.setDatabaseName(src.databaseName());
-}
 }
 bool EventPlugin::importEventFromFile(const QString &src_file, const QString &dest_event_name)
 {
