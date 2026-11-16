@@ -202,6 +202,10 @@ ExecResult QxSqlApiImpl::exec(const QString &query, const QVariantMap &params)
 	}
 	ExecResult result;
 	result.numRowsAffected = q.numRowsAffected();
+	// QPSQL lastInsertId() runs SELECT lastval(), it fails when no sequence was used in the session yet and aborts the open transaction
+	if (!query.trimmed().startsWith(QLatin1String("INSERT"), Qt::CaseInsensitive)) {
+		return result;
+	}
 	if (auto id = q.lastInsertId().toLongLong(); id > 0) {
 		result.lastInsertId = id;
 	}
