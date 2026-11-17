@@ -7,9 +7,11 @@
 #include <qf/core/utils.h>
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/querybuilder.h>
 #include <qf/core/log.h>
 
+#include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/messagebox.h>
 
@@ -135,13 +137,14 @@ void AppDbConfig::save(const QString &prefix, int stage_id, const QVariantMap &d
 
 void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 {
-    if(data.isEmpty()) {
-        return;
-    }
+	if(data.isEmpty()) {
+		return;
+	}
 
 	using namespace qf::core::sql;
 	Connection conn = Connection::forName();
 
+	QVariantMap updates;
 	Query q_up(conn);
 	q_up.prepare("UPDATE config SET cvalue=:val WHERE ckey=:key", qf::core::Exception::Throw);
 	Query q_ins(conn);
@@ -168,6 +171,14 @@ void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 			q_ins.bindValue(":type", type);
 			q_ins.bindValue(":val", val_str);
 			q_ins.exec(qf::core::Exception::Throw);
+		} else {
+			updates[full_key] = val;
+		}
+	}
+	if (prefix == STAGE || prefix == EVENT) {
+		for (const auto &[k, v] : updates.asKeyValueRange()) {
+			auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
+			qxsql->emitRecUpdated("config", 0, QVariantMap{{k, v}}, nullptr);
 		}
 	}
 }

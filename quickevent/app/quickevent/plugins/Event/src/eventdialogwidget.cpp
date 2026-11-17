@@ -15,6 +15,8 @@ EventDialogWidget::EventDialogWidget(QWidget *parent) :
 	setPersistentSettingsId("EventDialogWidget");
 	ui->setupUi(this);
 
+	setWindowTitle(tr("Edit event"));
+
 	ui->stageStartTimesTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
 	ui->stageStartTimesTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 	ui->stageStartTimesTable->verticalHeader()->hide();

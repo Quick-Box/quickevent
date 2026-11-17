@@ -977,7 +977,6 @@ void EventPlugin::editEvent()
 	qfd::Dialog dlg(fwk);
 	dlg.setButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	auto *event_w = new EventDialogWidget();
-	event_w->setWindowTitle(tr("Edit event"));
 	event_w->setEventId(eventDbName());
 	event_w->setEventIdEditable(false);
 	EventDialogWidget::Params params;
