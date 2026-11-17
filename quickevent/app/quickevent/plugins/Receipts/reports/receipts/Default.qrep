@@ -99,6 +99,9 @@
 			<Frame hinset="2" fill="error" borderBottom="black1" textStyle="bold" visible="{{isCardLent|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
 				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "center", "lpt_textStyle": "bold"}'>${'!!! RENTED CARD !!!'|tr}</Para>
 			</Frame>
+			<Frame hinset="2" fill="error" borderBottom="black1" textStyle="bold" visible="{{isBadCheck|if:true:false}}" htmlExportAttributes='{"lpt_borderBottom": "="}'>
+				<Para width="%" textHAlign="AlignHCenter" htmlExportAttributes='{"lpt_textWidth": "%", "lpt_textAlign": "center", "lpt_textStyle": "bold"}'>${'BAD CHECK !!!'|tr}</Para>
+			</Frame>
 			<Frame width="%" vinset="1" hinset="2" layout="LayoutVertical" visible="{{isOk|if:true:false}}" htmlExportAttributes='{"lpt_textWidth": "%"}'>
 				<Para>{{select(and(currentStandings, competitorsFinished), currentStandings, '')|prefix:${'current placement = '|tr}|suffix:. / }}{{select(and(currentStandings, competitorsFinished), competitorsFinished, '')}}</Para>
 				<Para>{{'loss to leading runner = '|tr}}{{sub(timeMs, bestTime)|ogTimeSec}}</Para>
@@ -106,6 +109,7 @@
 				<Para>{{paceMsPerKm|ogTimeSec|prefix:${'average pace = '|tr}|suffix: min/km}}</Para>
 			</Frame>
 			<Para hinset="2">{{extraCodesText|prefix:${'extra punches = '|tr}}}</Para>
+			<Para hinset="2">{{data|key:batteryStatus|key:voltage|number:2|prefix:${'SIAC battery: '|tr}|suffix:V - }}{{select(data|key:batteryStatus, data|key:batteryStatus|key:low|if:LOW:Ok, '')}}</Para>
 			<Frame width="%" halign="AlignHCenter" hinset="2" vinset="2">
 				<Para/>
 				<Image visible="{{event.receiptQrCodePath|if:true:false}}" width="{{select(event.receiptQrCodePath, 24, 0)}}"

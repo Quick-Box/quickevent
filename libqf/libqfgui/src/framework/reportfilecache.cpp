@@ -10,6 +10,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QSaveFile>
+#include <QSet>
 #include <QStandardPaths>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -123,11 +124,13 @@ void ReportFileCache::syncWithResources() const
 			old_hashes = QJsonDocument::fromJson(file.readAll()).object();
 	}
 	QJsonObject new_hashes;
+	QSet<QString> resource_paths;
 
 	QDirIterator it(source_dir_path, QDir::Files, QDirIterator::Subdirectories);
 	while(it.hasNext()) {
 		const QString source_file_path = it.next();
 		const QString relative_path = source_dir.relativeFilePath(source_file_path);
+		resource_paths << relative_path;
 		const QString destination_file_path = cache_dir.filePath(relative_path);
 		const QString resources_hash = fileHash(source_file_path);
 		const QString local_hash = fileHash(destination_file_path);
@@ -152,6 +155,18 @@ void ReportFileCache::syncWithResources() const
 			continue;
 		}
 		new_hashes[relative_path] = resources_hash;
+	}
+
+	// remove cached copies of files removed from resources, keep the ones changed by user
+	for(auto old_it = old_hashes.constBegin(); old_it != old_hashes.constEnd(); ++old_it) {
+		if(resource_paths.contains(old_it.key()) || !isSafeReportPath(old_it.key())) {
+			continue;
+		}
+		const QString cached_file_path = cache_dir.filePath(old_it.key());
+		if(fileHash(cached_file_path) == old_it.value().toString()) {
+			qfInfo() << "Removing report file from cache:" << old_it.key();
+			QFile::remove(cached_file_path);
+		}
 	}
 
 	QFile file(resourceHashesFile());

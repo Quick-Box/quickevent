@@ -1837,60 +1837,6 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     </message>
 </context>
 <context>
-    <name>Classic</name>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="256"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="256"/>
-        <source>DISQ</source>
-        <translation>DSQ</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="270"/>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="282"/>
-        <source>-----</source>
-        <translation>-----</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="338"/>
-        <source>!!! RENTED CARD !!!</source>
-        <oldsource>!!! CARD LENT !!!</oldsource>
-        <translation>¡ CHIP ALQUILADO !</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="353"/>
-        <source>extra: </source>
-        <translation>extra: </translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="365"/>
-        <source>BAD CHECK !!!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="385"/>
-        <source>current overall loss: +</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="400"/>
-        <source>standings: </source>
-        <translation>Clasificación: </translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="426"/>
-        <source>Siac battery: </source>
-        <translation>Batería SIAC: </translation>
-    </message>
-</context>
-<context>
     <name>CodeClassResultsWidget</name>
     <message>
         <location filename="plugins/Speaker/src/codeclassresultswidget.ui" line="14"/>
@@ -3012,6 +2958,16 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
         <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="560"/>
         <source>extra punches = </source>
         <translation>Picadas adicionales = </translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>BAD CHECK !!!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>SIAC battery: </source>
+        <translation>Batería SIAC: </translation>
     </message>
 </context>
 <context>
@@ -9638,7 +9594,7 @@ Archivo de registro: %1</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/qml/reports/sicard.qml" line="219"/>
-        <source>Siac battery: </source>
+        <source>SIAC battery: </source>
         <translation type="unfinished">Batería SIAC: </translation>
     </message>
 </context>
