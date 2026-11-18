@@ -12,6 +12,7 @@
 
 #include <quickevent/core/si/punchrecord.h>
 #include <quickevent/core/codedef.h>
+#include <quickevent/core/classdef.h>
 
 #include <qf/gui/action.h>
 #include <qf/gui/menubar.h>
@@ -100,6 +101,46 @@ public:
 		return Super::data(index, role);
 	}
 };
+
+// combo box editor for a column holding one of a fixed set of string values
+class EnumItemDelegate : public QStyledItemDelegate
+{
+public:
+	using Items = QList<QPair<QString, QString>>; // value, display text
+	EnumItemDelegate(const Items &items, QObject *parent) : QStyledItemDelegate(parent), m_items(items) {}
+
+	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
+	{
+		auto *cbx = new QComboBox(parent);
+		cbx->setAutoFillBackground(true);
+		for(const auto &[value, text] : m_items) {
+			cbx->addItem(text, value);
+		}
+		return cbx;
+	}
+	void setEditorData(QWidget *editor, const QModelIndex &index) const override
+	{
+		auto *cbx = qobject_cast<QComboBox *>(editor);
+		cbx->setCurrentIndex(qMax(0, cbx->findData(index.data(Qt::EditRole).toString())));
+	}
+	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override
+	{
+		// empty value is stored as NULL
+		const QString value = qobject_cast<QComboBox *>(editor)->currentData().toString();
+		model->setData(index, value.isEmpty()? QVariant(): QVariant(value), Qt::EditRole);
+	}
+	QString displayText(const QVariant &value, const QLocale &) const override
+	{
+		for(const auto &[v, text] : m_items) {
+			if(v == value.toString()) {
+				return text;
+			}
+		}
+		return m_items.value(0).second;
+	}
+private:
+	Items m_items;
+};
 }
 
 ClassesWidget::ClassesWidget(QWidget *parent) :
@@ -134,6 +175,9 @@ ClassesWidget::ClassesWidget(QWidget *parent) :
 		m->addColumn("courses.length", tr("Length"));
 		m->addColumn("courses.climb", tr("Climb"));
 
+		m->addColumn("classdefs.startMode", tr("Start mode"));
+		m->addColumn("classdefs.resultListMode", tr("Result list"));
+
 		m->addColumn("relaysCount", tr("Rel. count")).setToolTip(tr("Relays count"));
 		m->addColumn("classdefs.relayStartNumber", tr("Rel. num")).setToolTip(tr("Relay start number"));
 		m->addColumn("classdefs.relayLegCount", tr("Legs")).setToolTip(tr("Relay leg count"));
@@ -142,6 +186,21 @@ ClassesWidget::ClassesWidget(QWidget *parent) :
 
 		m_courseItemDelegate = new CourseItemDelegate(this);
 		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.courseId"), m_courseItemDelegate);
+
+		using quickevent::core::ClassDef;
+		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.startMode"), new EnumItemDelegate({
+			{ClassDef::startModeToString(ClassDef::StartMode::Auto), tr("Auto")},
+			{ClassDef::startModeToString(ClassDef::StartMode::StartList), tr("Start list")},
+			{ClassDef::startModeToString(ClassDef::StartMode::MassStart), tr("Mass start")},
+			{ClassDef::startModeToString(ClassDef::StartMode::PursuitStart), tr("Pursuit start")},
+			{ClassDef::startModeToString(ClassDef::StartMode::WaveStart), tr("Wave start")},
+			{ClassDef::startModeToString(ClassDef::StartMode::FreeStart), tr("Free start")},
+		}, this));
+		ui->tblClasses->setItemDelegateForColumn(m->columnIndex("classdefs.resultListMode"), new EnumItemDelegate({
+			{ClassDef::resultListModeToString(ClassDef::ResultListMode::Default), tr("Default")},
+			{ClassDef::resultListModeToString(ClassDef::ResultListMode::Unordered), tr("Unordered")},
+			{ClassDef::resultListModeToString(ClassDef::ResultListMode::UnorderedNoTimes), tr("Unordered, no times")},
+		}, this));
 
 		connect(m_courseItemDelegate, &CourseItemDelegate::courseIdChanged, ui->tblClasses, &qfw::TableView::reloadCurrentRow, Qt::QueuedConnection);
 
