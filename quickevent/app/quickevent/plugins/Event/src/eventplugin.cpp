@@ -1132,6 +1132,12 @@ bool EventPlugin::openEvent(const QString &_event_name)
 	if(ok) {
 		m_appDbConfig = AppDbConfig();
 		m_appDbConfig.load();
+		if(m_appDbConfig.dbVersion() < dbVersion() && DbSchema::canMigrate(m_appDbConfig.dbVersion())) {
+			// on failure the version stays low and the check below offers import instead
+			DbSchema::migrate(qfs::Connection(QSqlDatabase::database()));
+			m_appDbConfig = AppDbConfig();
+			m_appDbConfig.load();
+		}
 		if(m_appDbConfig.dbVersion() < dbVersion()) {
 			qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
 									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion()))
