@@ -1,6 +1,9 @@
 #include "ochecklistimportdialog.h"
 #include "runsplugin.h"
 
+#include <plugins/Competitors/src/competitordocument.h>
+#include <plugins/Event/src/eventplugin.h>
+
 #include <qf/core/collator.h>
 #include <qf/core/exception.h>
 #include <qf/core/log.h>
@@ -20,6 +23,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QTimeZone>
 #include <QVBoxLayout>
 #include <QVersionNumber>
 
@@ -329,6 +333,8 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 	// status and card change only when they differ from the last imported one
 	QHash<QString, State> imported;
 	QHash<QString, QPair<QString, State>> last_imported;
+	// created runners by their data
+	QHash<QString, State> imported_new_runners;
 	q.execThrow(QStringLiteral("SELECT foreign_id, data_type, data, status FROM qxchanges WHERE source='%1' AND stage_id=%2 AND foreign_table='runs' ORDER BY id")
 				.arg(k_source).arg(m_stageId));
 	while (q.next()) {
@@ -337,6 +343,15 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 		const State state = q.value(3).toString() == QLatin1String("Accepted")? State::Accepted: State::Rejected;
 		imported[run_type + '|' + data] = state;
 		last_imported[run_type] = {data, state};
+		if (q.value(1).toString() == dataTypeName(DataType::NewRunner)) {
+			imported_new_runners[data] = state;
+		}
+	}
+
+	QHash<QString, int> class_ids;
+	q.execThrow(QStringLiteral("SELECT id, name FROM classes"));
+	while (q.next()) {
+		class_ids[q.value(1).toString()] = q.value(0).toInt();
 	}
 
 	auto find_in_stage = [&runs](const std::function<bool (const DbRun &)> &pred) -> QList<const DbRun*> {
@@ -397,8 +412,13 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 				match = tr("Name and class");
 			}
 		}
+		if (!run && changelog.contains("NewRunner")) {
+			// added in O Checklist, the runner is created with all its start data in one change
+			m_changes << newRunnerChange(runner, changelog, class_ids, imported_new_runners);
+			continue;
+		}
 		if (!run) {
-			match = changelog.contains("NewRunner")? tr("Not found, added in O Checklist"): tr("Not found");
+			match = tr("Not found");
 		}
 
 		auto add_change = [&](DataType data_type, const QString &orig_data, const QString &data, const QVariant &created, bool no_difference) {
@@ -459,6 +479,57 @@ void OChecklistImportDialog::loadChanges(const Report &report)
 	});
 }
 
+OChecklistImportDialog::Change OChecklistImportDialog::newRunnerChange(const QVariantMap &runner, const QVariantMap &changelog, const QHash<QString, int> &class_ids, const QHash<QString, State> &imported_new_runners) const
+{
+	const QString name = runner.value("Name").toString().simplified();
+	const QString class_name = runner.value("ClassName").toString();
+	const QString new_card = runner.value("NewCard").toString();
+	const QString card = new_card.isEmpty()? runner.value("Card").toString(): new_card;
+	const QString status = runner.value("StartStatus").toString();
+	const bool is_dns = status == k_status_dns;
+	// the last word is the last name, the rest is the first name
+	const int last_space = name.lastIndexOf(' ');
+
+	QString start_time;
+	if (runner.value("StartType").toString() == QLatin1String("Fixed")) {
+		start_time = runner.value("StartTime").toString();
+		if (!start_time.isEmpty() && !start_time.contains('T')) {
+			// time only (Excel import to O Checklist), it is the time of the stage day
+			const QDateTime stage_start = getPlugin<Event::EventPlugin>()->stageStartDateTime(m_stageId);
+			start_time = QDateTime(stage_start.date(), QTime::fromString(start_time, Qt::ISODate), stage_start.timeZone()).toString(Qt::ISODate);
+		}
+	}
+
+	Change c;
+	c.dataType = DataType::NewRunner;
+	c.runnerName = name;
+	c.className = class_name;
+	c.card = card;
+	c.data = QStringList{name, class_name, card}.join(QStringLiteral(", "));
+	c.created = QDateTime::fromString(changelog.value("NewRunner").toString(), Qt::ISODate);
+	c.newRunner = {
+		{"firstName", last_space < 0? QString(): name.left(last_space)},
+		{"lastName", name.mid(last_space + 1)},
+		{"classId", class_ids.value(class_name)},
+		{"siId", card.toInt() > 0? QVariant(card.toInt()): QVariant()},
+		{"club", runner.value("Org")},
+		{"note", runner.value("Comment")},
+		{"notStart", is_dns},
+		{"corridorTime", is_dns? QString(): changelog.value(status == k_status_late_start? "LateStart": "TickedOff").toString()},
+		{"startTime", start_time},
+	};
+	if (!class_ids.contains(class_name)) {
+		c.state = State::NotFound;
+		c.match = tr("Class %1 not found").arg(class_name);
+	}
+	else {
+		c.state = imported_new_runners.value(c.data, State::New);
+		c.match = tr("Added in O Checklist");
+	}
+	c.apply = c.state == State::New;
+	return c;
+}
+
 void OChecklistImportDialog::reloadTable()
 {
 	qf::core::utils::Table::FieldList fields;
@@ -517,7 +588,7 @@ void OChecklistImportDialog::accept()
 	int rejected = 0;
 	QStringList errors;
 	saveApplyFlags();
-	for (const Change &c : m_changes) {
+	for (Change &c : m_changes) {
 		if (!c.isCheckable()) {
 			continue;
 		}
@@ -544,7 +615,7 @@ void OChecklistImportDialog::accept()
 	Super::accept();
 }
 
-void OChecklistImportDialog::applyChange(const Change &change)
+void OChecklistImportDialog::applyChange(Change &change)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 	bool ok = true;
@@ -562,10 +633,49 @@ void OChecklistImportDialog::applyChange(const Change &change)
 		// false means the stored corridor time is earlier, it is not an error
 		getPlugin<Runs::RunsPlugin>()->setRunCorridorTimeIfEarlier(change.runId, change.created, this);
 		break;
+	case DataType::NewRunner:
+		createRunner(change);
+		break;
 	}
 	if (!ok) {
 		// the record was deleted meanwhile, the change is not stored and the next import offers it again
 		QF_EXCEPTION(tr("Record not found, the change is not applied."));
+	}
+}
+
+void OChecklistImportDialog::createRunner(Change &change)
+{
+	const QVariantMap &r = change.newRunner;
+	Competitors::CompetitorDocument doc;
+	doc.loadForInsert();
+	doc.setValue("firstName", r.value("firstName"));
+	doc.setValue("lastName", r.value("lastName"));
+	doc.setValue("classId", r.value("classId"));
+	doc.setValue("club", r.value("club"));
+	doc.setValue("note", r.value("note"));
+	doc.setSiid(r.value("siId"));
+	doc.save();
+	change.competitorId = doc.dataId().toInt();
+	change.runId = doc.runsIds().value(m_stageId - 1);
+	if (change.runId <= 0) {
+		QF_EXCEPTION(tr("Run of the new runner not found, start data are not set."));
+	}
+	auto *runs_plugin = getPlugin<Runs::RunsPlugin>();
+	if (r.value("notStart").toBool()) {
+		qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", change.runId, QVariantMap{{"notStart", true}}, this);
+	}
+	if (const QString start_time = r.value("startTime").toString(); !start_time.isEmpty()) {
+		runs_plugin->setRunStartTime(change.runId, start_time, this);
+	}
+	const QString corridor_time = r.value("corridorTime").toString();
+	if (const QDateTime dt = QDateTime::fromString(corridor_time, Qt::ISODate); dt.isValid()) {
+		runs_plugin->setRunCorridorTimeIfEarlier(change.runId, dt, this);
+		// the next import matches the created runner, it must not offer the corridor time again
+		Change corridor_change = change;
+		corridor_change.dataType = DataType::CorridorTime;
+		corridor_change.data = corridor_time;
+		corridor_change.created = dt;
+		storeChange(corridor_change, true);
 	}
 }
 
@@ -607,6 +717,7 @@ QString OChecklistImportDialog::dataTypeName(DataType data_type)
 	case DataType::Card: return QStringLiteral("si_card_change");
 	case DataType::Note: return QStringLiteral("note_change");
 	case DataType::CorridorTime: return QStringLiteral("corridor_time_change");
+	case DataType::NewRunner: return QStringLiteral("competitor_create");
 	}
 	return {};
 }
@@ -618,6 +729,7 @@ QString OChecklistImportDialog::dataTypeText(DataType data_type)
 	case DataType::Card: return tr("Card");
 	case DataType::Note: return tr("Note");
 	case DataType::CorridorTime: return tr("Corridor time");
+	case DataType::NewRunner: return tr("New runner");
 	}
 	return {};
 }

@@ -2,6 +2,7 @@
 
 #include <QDateTime>
 #include <QDialog>
+#include <QHash>
 #include <QList>
 #include <QVariantMap>
 
@@ -32,7 +33,7 @@ public:
 	void accept() override;
 private:
 	enum class State { New, Accepted, Rejected, NoDifference, NotFound };
-	enum class DataType { Status, Card, Note, CorridorTime };
+	enum class DataType { Status, Card, Note, CorridorTime, NewRunner };
 	struct Change
 	{
 		int runId = 0;
@@ -48,16 +49,21 @@ private:
 		State state = State::New;
 		bool nameMismatch = false;
 		bool apply = false;
+		/// competitor and run values of a runner added in O Checklist
+		QVariantMap newRunner;
 
 		bool isCheckable() const { return state != State::NotFound; }
 	};
 
 	void loadChanges(const Report &report);
+	Change newRunnerChange(const QVariantMap &runner, const QVariantMap &changelog, const QHash<QString, int> &class_ids, const QHash<QString, State> &imported_new_runners) const;
 	void reloadTable();
 	/// stores the Apply check boxes of the table rows to the changes
 	void saveApplyFlags();
 	const Change& changeForRow(int model_row) const;
-	void applyChange(const Change &change);
+	/// sets runId and competitorId of a created runner
+	void applyChange(Change &change);
+	void createRunner(Change &change);
 	void storeChange(const Change &change, bool accepted);
 	static QString stateText(State state);
 	/// qxchanges.data_type, the same as OFeed uses

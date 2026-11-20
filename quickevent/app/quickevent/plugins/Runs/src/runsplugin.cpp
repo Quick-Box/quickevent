@@ -176,6 +176,22 @@ bool RunsPlugin::setRunCorridorTimeIfEarlier(int run_id, const QDateTime &corrid
 	return true;
 }
 
+bool RunsPlugin::setRunStartTime(int run_id, const QString &start_time, QObject *source)
+{
+	QVariant start_time_ms; // NULL
+	if (!start_time.isEmpty()) {
+		const QDateTime dt = QDateTime::fromString(start_time, Qt::ISODate);
+		if (!dt.isValid()) {
+			qfWarning() << tr("Start time of the run %1 is not valid, not set: %2").arg(run_id).arg(start_time);
+			return false;
+		}
+		const int stage_id = getPlugin<EventPlugin>()->stageIdForRun(run_id);
+		start_time_ms = static_cast<int>(getPlugin<EventPlugin>()->stageStartDateTime(stage_id).msecsTo(dt));
+	}
+	qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", run_id, QVariantMap{{"startTimeMs", start_time_ms}}, source);
+	return true;
+}
+
 void RunsPlugin::onInstalled()
 {
 	qfLogFuncFrame();

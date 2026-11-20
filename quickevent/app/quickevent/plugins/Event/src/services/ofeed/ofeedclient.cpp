@@ -1843,25 +1843,6 @@ void OFeedClient::processCorridorTimeUpdate(int runs_id, const QDateTime &create
 	}
 }
 
-/// @param start_time ISO date time from OFeed, empty clears the start time
-/// @return false when the start time is not valid and nothing was changed
-bool OFeedClient::setRunStartTime(int run_id, const QString &start_time)
-{
-	QVariant start_time_ms; // NULL
-	if (!start_time.isEmpty()) {
-		const QDateTime dt = QDateTime::fromString(start_time, Qt::ISODate);
-		if (!dt.isValid()) {
-			qfWarning() << tr("Start time of the run %1 is not valid, not set: %2").arg(run_id).arg(start_time);
-			return false;
-		}
-		const int stage_id = getPlugin<EventPlugin>()->stageIdForRun(run_id);
-		start_time_ms = static_cast<int>(getPlugin<EventPlugin>()->stageStartDateTime(stage_id).msecsTo(dt));
-	}
-	// source == this, so the change is not sent back to OFeed
-	qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", run_id, QVariantMap{{"startTimeMs", start_time_ms}}, this);
-	return true;
-}
-
 /// Changes of the competitor data made at OFeed. The current values of the competitor are used (not the
 /// changelog newValue, which is a text of the value, class change has the OFeed class id there).
 /// @return false when the change was not applied (the changelog entry is left unprocessed and retried)
@@ -1872,8 +1853,9 @@ bool OFeedClient::processCompetitorChange(const QString &type, int runs_id, cons
 		qfWarning() << tr("Change %1 skipped, run %2 is not in the current stage").arg(type).arg(runs_id);
 		return false;
 	}
+	// source == this, so the change is not sent back to OFeed
 	if (type == QLatin1String("start_time_change"))
-		return setRunStartTime(runs_id, competitor.value("startTime").toString());
+		return getPlugin<RunsPlugin>()->setRunStartTime(runs_id, competitor.value("startTime").toString(), this);
 
 	const int competitor_id = getPlugin<RunsPlugin>()->competitorForRun(runs_id);
 	if (competitor_id <= 0) {
@@ -1981,7 +1963,7 @@ bool OFeedClient::processNewRunner(const QJsonObject &change)
 		m_runsInsertedFromOFeed.insert(run_id);
 
 		// start time matters in classes with a start list; source == this, so it is not sent back
-		setRunStartTime(run_id, competitor.value("startTime").toString());
+		getPlugin<RunsPlugin>()->setRunStartTime(run_id, competitor.value("startTime").toString(), this);
 	}
 
 	// Update externalId at OFeed
