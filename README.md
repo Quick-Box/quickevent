@@ -15,9 +15,9 @@ Single, multi-day events and relays can be organized. The program is stable for 
 The QuickBox is built upon the Qt framework, targeted for Linux and Windows and released under the GPL-2.0 License. The project is actively maintained by a collective of Czech orienteering runners in their free time.
 
 ### Components
-* QuickEvent - event organization
-* QuickShow - show start lists and results via application
-* QuickHttpd - show start lists and results via webserver
+* [QuickEvent](https://github.com/Quick-Box/quickevent/wiki/QuickEvent-Users-Guide) - event organization
+* [QuickShow](https://github.com/Quick-Box/quickevent/wiki/QuickShow-Users-Guide) - show start lists and results via application
+* [QuickHttpd](https://github.com/Quick-Box/quickevent/wiki/quickhttpd-Users-Guide) - show start lists and results via webserver
 
 ### Features
 * competitors management
@@ -34,7 +34,8 @@ The QuickBox is built upon the Qt framework, targeted for Linux and Windows and 
   * import clubs and registrations
 
 ### Documentation
-For now, most of the [documentation](https://github.com/Quick-Event/quickbox/wiki) is in Czech.
+Go to the [Wiki page](https://github.com/Quick-Box/quickevent/wiki), where both `Czech` and `English` pages are available for each component.
+
 * [Čipy, mezičasy a trocha základní filozofie programu](https://github.com/Quick-Event/quickbox/wiki/%C4%8Cipy%2C-mezi%C4%8Dasy-a-trocha-z%C3%A1kladn%C3%AD-filozofie-programu)
 * [Tipy a triky](https://github.com/Quick-Event/quickbox/wiki/Tipy-a-triky)
 * [Postup při pořádání závodů](https://github.com/Quick-Event/quickbox/wiki/Postup-p%C5%99i-po%C5%99%C3%A1d%C3%A1n%C3%AD-z%C3%A1vod%C5%AF)
@@ -187,8 +188,8 @@ Distributed under the GNU GPL v2.0 License. See `LICENSE` for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[build-shield]: https://github.com/Quick-Event/quickbox/actions/workflows/c-cpp.yml/badge.svg?branch=master
-[build-url]: https://github.com/Quick-Event/quickbox/actions?query=branch%3Amaster
+[build-shield]: https://github.com/Quick-Box/quickevent/actions/workflows/installer.yml/badge.svg?branch=main
+[build-url]: https://github.com/Quick-Box/quickevent/actions/workflows/installer.yml?query=branch%3Amain
 [weblate-shield]: https://hosted.weblate.org/widgets/quickbox/-/svg-badge.svg
 [weblate-url]: https://hosted.weblate.org/engage/quickbox/
 [contributors-shield]: https://img.shields.io/github/contributors/Quick-Event/quickbox
