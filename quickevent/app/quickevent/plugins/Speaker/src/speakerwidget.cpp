@@ -60,6 +60,7 @@ SpeakerWidget::SpeakerWidget(QWidget *parent) :
 	connect(ui->tblPunches, &PunchesTableView::codeClassActivated, this, &SpeakerWidget::onCodeClassActivated);
 
 	auto *m = new quickevent::gui::og::SqlTableModel(this);
+	m->setIdColumnName("punches.id");
 	m->addColumn("punches.id");//.setReadOnly(true);
 	m->addColumn("punches.code", tr("Code"));
 	m->addColumn("punches.siId", tr("SI")).setReadOnly(true).setCastType(qMetaTypeId<quickevent::core::si::SiId>());
