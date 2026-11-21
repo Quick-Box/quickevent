@@ -101,6 +101,7 @@ int PunchingTestService::shameStartTimeMs(int stage_id) const
 			" AND runs.isRunning"
 			" AND relays.isRunning"
 			" AND runs.siId>0"
+			" AND NOT runs.notStart"
 			" GROUP BY relays.classId, runs.relayId").arg(stage_id))) {
 		qfWarning() << "PunchingTestService: cannot query relay finish times";
 		return 0;
@@ -168,6 +169,7 @@ void PunchingTestService::onTimerTick()
 			" WHERE runs.stageId=%1"
 			" AND runs.isRunning"
 			" AND runs.siId>0"
+			" AND NOT runs.notStart"
 			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id).arg(relay_cols).arg(event_plugin->freeStartSqlCondition()))) {
 		qfWarning() << "PunchingTestService: cannot query runs";
 		return;
@@ -200,6 +202,12 @@ void PunchingTestService::onTimerTick()
 				continue;
 			}
 		}
+		// Relay first legs have a mass start in waves, their start time is always known,
+		// 0 means the stage start.
+		if (cand.start_time_ms <= 0 && !is_relays) {
+			// Runner has no drawn start — place randomly within the past 60 minutes
+			cand.start_time_ms = static_cast<int>(rng.bounded(60U * 60U * 1000U));
+		}
 		candidates << cand;
 	}
 
@@ -210,7 +218,14 @@ void PunchingTestService::onTimerTick()
 		return;
 	}
 
-	int ix = static_cast<int>(rng.bounded(static_cast<quint32>(candidates.size())));
+	// Cards are read out roughly in the start order, a random pick among the earliest
+	// starters simulates different running times.
+	std::sort(candidates.begin(), candidates.end(), [](const Candidate &a, const Candidate &b) {
+		return a.start_time_ms < b.start_time_ms;
+	});
+	static constexpr int START_ORDER_WINDOW = 5;
+	int window = qMin(START_ORDER_WINDOW, static_cast<int>(candidates.size()));
+	int ix = static_cast<int>(rng.bounded(static_cast<quint32>(window)));
 	const Candidate &cand = candidates[ix];
 	int run_id = cand.run_id;
 	int si_id = cand.si_id;
@@ -223,13 +238,6 @@ void PunchingTestService::onTimerTick()
 	QVariantList codes = course.codes();
 
 	int stage_start_ms = event_plugin->stageStartMsec(stage_id);
-
-	// Relay first legs have a mass start in waves, their start time is always known,
-	// 0 means the stage start.
-	if (start_time_ms <= 0 && !is_relays) {
-		// Runner has no drawn start — place randomly within the past 60 minutes
-		start_time_ms = static_cast<int>(rng.bounded(60U * 60U * 1000U));
-	}
 
 	int abs_start_ms = stage_start_ms + start_time_ms;
 	// Finish 20..30 minutes after start
