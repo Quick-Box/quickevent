@@ -3,6 +3,7 @@
 #include "eventplugin.h"
 #include "eventconfig.h"
 
+#include <cstdint>
 #include <qf/core/assert.h>
 #include <qf/core/utils.h>
 #include <qf/core/sql/connection.h>
@@ -155,12 +156,25 @@ void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 	using namespace qf::core::sql;
 	Connection conn = Connection::forName();
 
-	QVariantMap updates;
+	QMap<int64_t, std::tuple<QString, QVariant>> inserts;
+	QMap<int64_t, std::tuple<QString, QVariant>> updates;
+	Query q_id(conn);
+	q_id.prepare("SELECT id FROM config WHERE ckey = :key");
 	Query q_up(conn);
 	q_up.prepare("UPDATE config SET cvalue=:val WHERE ckey=:key", qf::core::Exception::Throw);
 	Query q_ins(conn);
-	q_ins.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :val, :type)", qf::core::Exception::Throw);
+	q_ins.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :val, :type) RETURNING id", qf::core::Exception::Throw);
 	for (const auto &[key, val] : data.asKeyValueRange()) {
+		auto full_key = prefix.isEmpty() ? key : prefix + "." + key;
+		int64_t id = 0;
+
+		q_id.bindValue(":key", full_key);
+		if(q_id.exec(qf::core::Exception::Throw)) {
+			if (q_id.next()) {
+				id = q_id.value(0).toLongLong();
+			}
+		}
+
 		QString val_str;
 		if(val.typeId() == qMetaTypeId<QDate>())
 			val_str = val.toDate().toString(Qt::ISODate);
@@ -172,22 +186,29 @@ void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 			val_str = qf::core::Utils::qvariantToJson(val);
 		else
 			val_str = val.toString();
-		auto full_key = prefix.isEmpty() ? key : prefix + "." + key;
-		q_up.bindValue(":key", full_key);
-		q_up.bindValue(":val", val_str);
-		q_up.exec(qf::core::Exception::Throw);
-		if(q_up.numRowsAffected() < 1) {
+
+		if (id == 0) {
 			QString type = val.typeName();
 			q_ins.bindValue(":key", full_key);
 			q_ins.bindValue(":type", type);
 			q_ins.bindValue(":val", val_str);
-			q_ins.exec(qf::core::Exception::Throw);
+			if(q_ins.exec(qf::core::Exception::Throw)) {
+				if (q_ins.next()) {
+					auto id = q_ins.value(0).toLongLong();
+					inserts[id] = std::make_tuple(full_key, val);
+				}
+			}
 		} else {
-			updates[full_key] = val;
+			q_up.bindValue(":key", full_key);
+			q_up.bindValue(":val", val_str);
+			q_up.exec(qf::core::Exception::Throw);
+			if(q_up.numRowsAffected() == 1) {
+				updates[id] = std::make_tuple(full_key, val);
+			}
 		}
 	}
 	if (prefix == STAGE || prefix == EVENT) {
-		for (const auto &[k, v] : updates.asKeyValueRange()) {
+		for (const auto &[k, v] : inserts.asKeyValueRange()) {
 			auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 			qxsql->emitRecUpdated("config", 0, QVariantMap{{k, v}}, nullptr);
 		}
