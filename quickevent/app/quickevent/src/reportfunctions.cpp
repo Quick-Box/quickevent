@@ -130,14 +130,12 @@ void registerReportFunctions()
 	});
 	// column width in mm designed for default 9pt font scaled to options.fontSize
 	XmlReportDocument::registerFunction("qeFontScaled", [](const XmlReportDocument::ExpressionContext &ctx, const QVariantList &args) -> QVariant {
+		// must match default font pointSize in plugins/shared/reports/ReportStyleCommon.qrepi
 		constexpr double default_font_size = 9;
 		double font_size = ctx.parameter("options.fontSize").toDouble();
-		if(font_size <= 0) {
-			font_size = default_font_size;
-		}
-		return args.value(0).toDouble() * font_size / default_font_size;
+		return args.value(0).toDouble() * (font_size > 0? font_size: default_font_size) / default_font_size;
 	});
-	XmlReportDocument::registerFunction("appVersion",[](const XmlReportDocument::ExpressionContext &, const QVariantList &) -> QVariant {
+	XmlReportDocument::registerFunction("appVersion", [](const XmlReportDocument::ExpressionContext &, const QVariantList &) -> QVariant {
 		auto *app = qobject_cast<qf::gui::framework::Application*>(QCoreApplication::instance());
 		return app? app->versionString(): QCoreApplication::applicationVersion();
 	});

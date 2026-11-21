@@ -254,7 +254,7 @@
          <number>5</number>
         </property>
         <property name="maximum">
-         <number>20</number>
+         <number>12</number>
         </property>
         <property name="value">
          <number>9</number>
@@ -605,6 +605,7 @@
   <tabstop>chkRelayOpts_ShowLegs</tabstop>
   <tabstop>edPageWidth</tabstop>
   <tabstop>edHorizontalMargin</tabstop>
+  <tabstop>edFontSize</tabstop>
   <tabstop>edColumnCount</tabstop>
   <tabstop>edPageHeight</tabstop>
   <tabstop>edVerticalMargin</tabstop>
