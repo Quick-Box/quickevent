@@ -159,6 +159,7 @@ add_executable(quickevent
 	plugins/Runs/src/findrunneredit.cpp
 	plugins/Runs/src/findrunnerwidget.cpp
 	plugins/Runs/src/findrunnerwidget.ui
+	plugins/Runs/src/ochecklistimportdialog.cpp
 
 	plugins/Runs/src/printawardsoptionsdialogwidget.cpp
 	plugins/Runs/src/printawardsoptionsdialogwidget.ui

@@ -48,8 +48,20 @@ public:
 	static QString plannedStartMsSqlExpression() { return QStringLiteral("CASE WHEN NOT (runs.relayId IS NULL AND COALESCE(classdefs.startIntervalMin, 0)=0) THEN runs.startTimeMs END"); }
 	/// SQL condition for started runs. A finished runner has started, even without a start time or a corridor entry.
 	static QString startedSqlCondition(qint64 started_until_ms) { return QStringLiteral("(%1 OR runs.notStart OR runs.corridorTime IS NOT NULL OR %2<=%3)").arg(finishedSqlCondition(), plannedStartMsSqlExpression()).arg(started_until_ms); }
+	/// NULL safe SQL condition for runs without final status yet (not started or on track)
+	static QString notFinishedSqlCondition() { return QStringLiteral("(CASE WHEN %1 THEN 1 ELSE 0 END)=0").arg(finishedSqlCondition()); }
 	/// NULL safe SQL condition for runs started and not finished yet
-	static QString onTrackSqlCondition(qint64 started_until_ms) { return QStringLiteral("(CASE WHEN %1 THEN 1 ELSE 0 END)=1 AND (CASE WHEN %2 THEN 1 ELSE 0 END)=0").arg(startedSqlCondition(started_until_ms), finishedSqlCondition()); }
+	static QString onTrackSqlCondition(qint64 started_until_ms) { return QStringLiteral("(CASE WHEN %1 THEN 1 ELSE 0 END)=1 AND %2").arg(startedSqlCondition(started_until_ms), notFinishedSqlCondition()); }
+	/// FROM clause for stage runs statistics, joins competitors, relays, classes and classdefs
+	static QString statisticsFromSql() { return QStringLiteral(" FROM runs"
+		" LEFT JOIN competitors ON competitors.id=runs.competitorId"
+		" LEFT JOIN relays ON relays.id=runs.relayId"
+		" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
+		" LEFT JOIN classdefs ON classdefs.classId=classes.id AND classdefs.stageId=runs.stageId"); }
+	/// runs counted in stage statistics, vacants have no competitor, relay legs have only relayId
+	static QString statisticsRunsSqlCondition(int stage_id) { return QStringLiteral("runs.stageId=%1 AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)").arg(stage_id); }
+	/// IOF XML 3.0 ResultList status: "Snapshot" until every runner is finished (finish time, DNS, DSQ, ...), "Complete" then
+	static QString iofResultListStatus(int stage_id);
 public:
 	RunsPlugin(QObject *parent = nullptr);
 	~RunsPlugin() Q_DECL_OVERRIDE;
@@ -61,6 +73,13 @@ public:
 	const qf::core::utils::Table& runnersTable(int stage_id);
 	Q_SLOT void clearRunnersTableCache();
 	void setCompetitorRunsSiId(int competitor_id, int stage_id, int si_id, bool use_in_next_stages, QObject *source);
+	/// appends the note to the competitor note, separated by a comma
+	bool appendCompetitorNote(int competitor_id, const QString &note, QObject *source);
+	/// sets the corridor time when it is not set yet or the new one is earlier
+	bool setRunCorridorTimeIfEarlier(int run_id, const QDateTime &corridor_time, QObject *source);
+	/// @param start_time ISO date time, empty clears the start time
+	/// @return false when the start time is not valid and nothing was changed
+	bool setRunStartTime(int run_id, const QString &start_time, QObject *source);
 
 	Q_INVOKABLE int courseForRun(int run_id);
 	int courseForRelay(int relay_number, int leg);
@@ -73,7 +92,7 @@ public:
 	Q_INVOKABLE QVariant currentStageResultsTableData(const QString &class_filter, int max_competitors_in_class = 0, bool exclude_disq = false);
 
 	Q_INVOKABLE QVariant stageResultsTableData(int stage_id, const QString &class_filter, int max_competitors_in_class = 0, bool exclude_disq = false);
-	qf::core::utils::TreeTable stageResultsTable(int stage_id, const QString &class_filter = QString(), int max_competitors_in_class = 0, bool exclude_disq = false, bool add_laps = false, int max_points = 0);
+	qf::core::utils::TreeTable stageResultsTable(int stage_id, const QString &class_filter = QString(), int max_competitors_in_class = 0, bool exclude_disq = false, bool add_laps = false, int max_points = 0, bool apply_result_list_mode = true);
 
 	qf::core::utils::Table nstagesClassResultsTable(int stages_count, int class_id, int places = -1, bool exclude_disq = true, int max_points = 0, int best_results_count = 0);
 	qf::core::utils::TreeTable nstagesResultsTable(const QString &class_filter, int stages_count, int places = -1, bool exclude_disq = true);
@@ -111,7 +130,7 @@ public:
 	/// classes with competitors having rented card in stage
 	qf::core::utils::TreeTable competitorsWithCardRentTable(int stage_id);
 	qf::core::utils::TreeTable startListClassesTable(int stage_id, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
-	qf::core::utils::TreeTable startListClubsTable(int stage_id, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format, const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by);
+	qf::core::utils::TreeTable startListClubsTable(int stage_id, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format, const quickevent::gui::ReportOptionsDialog::StartlistOrderFirstBy order_first_by, const QString &where_expr = QString());
 	qf::core::utils::TreeTable startListStartersTable(int stage_id, const QString &where_expr, quickevent::gui::ReportOptionsDialog::VacantsOption vacants_option);
 	qf::core::utils::TreeTable startListClassesNStagesTable(const int stages_count, const QString &where_expr, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	qf::core::utils::TreeTable startListClubsNStagesTable(const int stages_count, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
@@ -160,6 +179,8 @@ private:
 	QString getClubAbbrFromName(QString name);
 
 	void writeCSOSHeader(QTextStream &ts) const;
+	// adds condition on effective classdefs start mode, classes with Auto mode are filtered by the derived one
+	QString addStartModeCondition(const QString &where_expr, const QString &start_mode) const;
 
 	void addStartTimeTextToClass(qf::core::utils::TreeTable &tt2, const qint64 start00_epoch_sec, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
 	void addStartTimeTextToClass(qf::core::utils::TreeTable &tt2, const int stages_count, const QVector<qint64> &start00_epoch_sec, const quickevent::gui::ReportOptionsDialog::StartTimeFormat start_time_format);
