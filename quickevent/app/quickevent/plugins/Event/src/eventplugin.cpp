@@ -1148,6 +1148,7 @@ bool EventPlugin::openEvent(const QString &_event_name)
 			else {
 				if(!DbSchema::migrate(conn)) {
 					qfd::MessageBox::showError(fwk, tr("Event data upgrade failed, see application log for details."));
+					closeEvent();
 					ok = false;
 				}
 				current_db_version = dbVersion();
@@ -1251,7 +1252,7 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	bool has_id_int = false;
 	while(from_q.next()) {
 		if(table_name == QLatin1String("config")) {
-			if(from_q.value(0).toString() == QLatin1String("db.version"))
+			if(from_q.value("ckey").toString() == QLatin1String("db.version"))
 				continue;
 		}
 		for (int i = 0; i < rec.count(); ++i) {
