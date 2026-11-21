@@ -22,19 +22,19 @@
 						<Detail width="%" layout="LayoutVertical">
 							<Frame height="2"/>
 							<Frame width="%" layout="LayoutHorizontal" valign="AlignBottom" borderBottom="black1" textStyle="bold">
-								<Para width="9" halign="AlignRight">{{pos|nonzero|suffix:.}}</Para>
+								<Para width="${qeFontScaled(9)}" halign="AlignRight">{{pos|nonzero|suffix:.}}</Para>
 								<Para hinset="1" width="%">{{name}}</Para>
-								<Para width="15" halign="AlignRight">{{time|ogTimeStatus}}</Para>
-								<Para width="17" halign="AlignRight">{{loss|nonzero|ogTime|prefix:+}}</Para>
+								<Para width="${qeFontScaled(15)}" halign="AlignRight">{{time|ogTimeStatus}}</Para>
+								<Para width="${qeFontScaled(17)}" halign="AlignRight">{{loss|nonzero|ogTime|prefix:+}}</Para>
 							</Frame>
 							<Band width="%" keepFirst="10" keepWithPrev="true" htmlExportAsTable="true">
 								<Detail width="%" layout="LayoutHorizontal">
 									<Para hinset="1" width="%">{{competitorName}}</Para>
-									<Para width="16">{{registration}}</Para>
-									<Para width="13" halign="AlignRight">{{time|ogTimeStatus}}</Para>
-									<Para width="9" halign="AlignRight">{{pos|nonzero|prefix:(|suffix:)}}</Para>
-									<Para width="13" halign="AlignRight">{{stime|nonzero|ogTime}}</Para>
-									<Para width="9" halign="AlignRight">{{spos|nonzero|prefix:(|suffix:)}}</Para>
+									<Para width="${qeFontScaled(16)}">{{registration}}</Para>
+									<Para width="${qeFontScaled(13)}" halign="AlignRight">{{time|ogTimeStatus}}</Para>
+									<Para width="${qeFontScaled(9)}" halign="AlignRight">{{pos|nonzero|prefix:(|suffix:)}}</Para>
+									<Para width="${qeFontScaled(13)}" halign="AlignRight">{{stime|nonzero|ogTime}}</Para>
+									<Para width="${qeFontScaled(9)}" halign="AlignRight">{{spos|nonzero|prefix:(|suffix:)}}</Para>
 								</Detail>
 							</Band>
 						</Detail>

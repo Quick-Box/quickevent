@@ -20,12 +20,12 @@
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
-							<Para hinset="1" width="10" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="${qeFontScaled(10)}" halign="AlignRight">{{pos}}</Para>
 							<Para hinset="1" width="%">{{competitorName}}</Para>
 							<Para hinset="1" width="%">{{clubs.name}}</Para>
-							<Para width="15">{{registration}}</Para>
-							<Para hinset="1" width="${timeColumnWidth}" halign="AlignRight">{{select(eq(resultListMode, 'UnorderedNoTimes'), '', timeMs|ogTime)}}</Para>
-							<Para width="10">{{ogRunStatus()}}</Para>
+							<Para width="${qeFontScaled(15)}">{{registration}}</Para>
+							<Para hinset="1" width="${qeFontScaled(timeColumnWidth)}" halign="AlignRight">{{select(eq(resultListMode, 'UnorderedNoTimes'), '', timeMs|ogTime)}}</Para>
+							<Para width="${qeFontScaled(10)}">{{ogRunStatus()}}</Para>
 						</Detail>
 					</Band>
 				</Detail>

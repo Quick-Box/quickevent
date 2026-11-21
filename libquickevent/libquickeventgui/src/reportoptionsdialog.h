@@ -68,6 +68,7 @@ public:
 		QF_VARIANTMAP_FIELD2(int, c, setC, olumnCount, 2)
 		QF_VARIANTMAP_FIELD2(int, h, setH, orizontalMargin, 10)
 		QF_VARIANTMAP_FIELD2(int, v, setV, erticalMargin, 5)
+		QF_VARIANTMAP_FIELD2(int, f, setF, ontSize, 9)
 		QF_VARIANTMAP_FIELD(QString, c, setC, lassFilter)
 		QF_VARIANTMAP_FIELD2(int, c, setC, lassFilterType, 0)
 		QF_VARIANTMAP_FIELD(bool, is, set, UseClassFilter)

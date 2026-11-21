@@ -20,30 +20,30 @@
 					<Frame height="5"/>
 					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
 						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
-						<Para hinset="1" width="17" textStyle="bold">${'Reg'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(17)}" textStyle="bold">${'Reg'|tr}</Para>
 						<Repeat var="i" from="1" to="${stagesCount}">
-							<Para hinset="1" textStyle="bold" halign="AlignRight" width="${stageCellWidth}">${'Stage '|tr}${i}</Para>
+							<Para hinset="1" textStyle="bold" halign="AlignRight" width="${qeFontScaled(stageCellWidth)}">${'Stage '|tr}${i}</Para>
 						</Repeat>
-						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${totalCellWidth}">${'Points'|tr}</Para>
-						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${diffCellWidth}">${'Diff.'|tr}</Para>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${qeFontScaled(totalCellWidth)}">${'Points'|tr}</Para>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${qeFontScaled(diffCellWidth)}">${'Diff.'|tr}</Para>
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
-							<Para hinset="1" width="${posCellWidth}" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="${qeFontScaled(posCellWidth)}" halign="AlignRight">{{pos}}</Para>
 							<Para hinset="1" width="%">{{competitorName}}</Para>
-							<Para hinset="1" width="17">{{registration}}</Para>
+							<Para hinset="1" width="${qeFontScaled(17)}">{{registration}}</Para>
 							<Repeat var="i" from="1" to="${stagesCount}">
-								<Frame width="${pointsCellWidth}" halign="AlignRight" layout="LayoutVertical">
+								<Frame width="${qeFontScaled(pointsCellWidth)}" halign="AlignRight" layout="LayoutVertical">
 									<Para hinset="1" textStyle="{{dropped${i}|if:strikeOut:bold}}">{{points${i}|positive}}</Para>
 									<Para hinset="1">{{timems${i}|ogTime:-----}}</Para>
 								</Frame>
-								<Para hinset="1" width="${posCellWidth}" halign="AlignRight">{{pos${i}|nonzero|prefix:(|suffix:)}}</Para>
+								<Para hinset="1" width="${qeFontScaled(posCellWidth)}" halign="AlignRight">{{pos${i}|nonzero|prefix:(|suffix:)}}</Para>
 							</Repeat>
-							<Frame width="${totalCellWidth}" halign="AlignRight" layout="LayoutVertical">
+							<Frame width="${qeFontScaled(totalCellWidth)}" halign="AlignRight" layout="LayoutVertical">
 								<Para hinset="1" textStyle="bold">{{points|positive}}</Para>
 								<Para hinset="1">{{timems|ogTime:-----}}</Para>
 							</Frame>
-							<Para hinset="1" width="${diffCellWidth}" halign="AlignRight">{{pointsloss|nonzero|prefix:- }}</Para>
+							<Para hinset="1" width="${qeFontScaled(diffCellWidth)}" halign="AlignRight">{{pointsloss|nonzero|prefix:- }}</Para>
 						</Detail>
 					</Band>
 				</Detail>

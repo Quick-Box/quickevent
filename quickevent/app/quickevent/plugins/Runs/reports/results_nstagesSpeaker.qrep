@@ -16,17 +16,17 @@
 					<Frame height="5"/>
 					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
 						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
-						<Para hinset="1" width="100" textStyle="bold">${'Club'|tr}</Para>
-						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${timeCellWidth}">${'Time'|tr}</Para>
-						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${timeCellWidth}">${'Loss'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(100)}" textStyle="bold">${'Club'|tr}</Para>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${qeFontScaled(timeCellWidth)}">${'Time'|tr}</Para>
+						<Para hinset="1" textStyle="bold" halign="AlignRight" width="${qeFontScaled(timeCellWidth)}">${'Loss'|tr}</Para>
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
-							<Para hinset="1" width="${posCellWidth}" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="${qeFontScaled(posCellWidth)}" halign="AlignRight">{{pos}}</Para>
 							<Para hinset="1" width="%">{{competitorName}}</Para>
-							<Para hinset="1" width="100">{{name}}</Para>
-							<Para hinset="1" width="${timeCellWidth}" halign="AlignRight">{{timeMs|ogTime:${'DISQ'|tr}}}</Para>
-							<Para hinset="1" width="${timeCellWidth}" halign="AlignRight">{{timeLossMs|ogTime:|prefix:+}}</Para>
+							<Para hinset="1" width="${qeFontScaled(100)}">{{name}}</Para>
+							<Para hinset="1" width="${qeFontScaled(timeCellWidth)}" halign="AlignRight">{{timeMs|ogTime:${'DISQ'|tr}}}</Para>
+							<Para hinset="1" width="${qeFontScaled(timeCellWidth)}" halign="AlignRight">{{timeLossMs|ogTime:|prefix:+}}</Para>
 						</Detail>
 					</Band>
 				</Detail>
