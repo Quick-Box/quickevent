@@ -62,6 +62,23 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="lblClassFilter">
+       <property name="text">
+        <string>Classes</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="edClassFilter">
+       <property name="toolTip">
+        <string>Class name, '*' matches anything, e.g. H21* for all classes starting with H21</string>
+       </property>
+       <property name="placeholderText">
+        <string>e.g. H21*, empty = all classes</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

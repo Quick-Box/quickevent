@@ -26,6 +26,7 @@ PunchingTestServiceWidget::PunchingTestServiceWidget(QWidget *parent)
 	if (svc) {
 		PunchingTestServiceSettings ss = svc->settings();
 		ui->edPunchInterval->setValue(ss.punchInterval());
+		ui->edClassFilter->setText(ss.classFilter());
 		ui->edUnknownCardRate->setValue(ss.unknownCardRate());
 		ui->edMissingStartRate->setValue(ss.missingStartRate());
 		ui->edMissingFinishRate->setValue(ss.missingFinishRate());
@@ -63,6 +64,7 @@ void PunchingTestServiceWidget::saveSettings()
 	if (svc) {
 		PunchingTestServiceSettings ss = svc->settings();
 		ss.setPunchInterval(ui->edPunchInterval->value());
+		ss.setClassFilter(ui->edClassFilter->text().trimmed());
 		ss.setUnknownCardRate(ui->edUnknownCardRate->value());
 		ss.setMissingStartRate(ui->edMissingStartRate->value());
 		ss.setMissingFinishRate(ui->edMissingFinishRate->value());

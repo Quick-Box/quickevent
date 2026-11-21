@@ -12,6 +12,7 @@
 
 #include <quickevent/core/codedef.h>
 #include <quickevent/core/coursedef.h>
+#include <quickevent/gui/reportoptionsdialog.h>
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/core/sql/query.h>
@@ -86,23 +87,38 @@ void PunchingTestService::stop()
 	Super::stop();
 }
 
+QString PunchingTestService::classFilterSqlCondition() const
+{
+	// Same wildcard syntax as the class filter in the report options, '*' means anything
+	using quickevent::gui::ReportOptionsDialog;
+	ReportOptionsDialog::Options opts;
+	opts.setUseClassFilter(true);
+	opts.setClassFilterType(static_cast<int>(ReportOptionsDialog::FilterType::WildCard));
+	opts.setClassFilter(settings().classFilter().trimmed());
+	QString condition = ReportOptionsDialog::sqlWhereExpression(opts, 0);
+	return condition.isEmpty()? QString(): QStringLiteral(" AND ") + condition;
+}
+
 int PunchingTestService::shameStartTimeMs(int stage_id) const
 {
 	// The shame start is announced for the whole event once the top 3 positions are decided
 	// in every relay class. Legs with no SI assigned are left out of the counting, such a
-	// relay can never finish and would block the announcement forever.
+	// relay can never finish and would block the announcement forever. The same applies
+	// to the classes left out by the class filter.
 	qf::core::sql::Query q;
 	if (!q.exec(QStringLiteral(
 			"SELECT relays.classId, MAX(runs.finishTimeMs) AS lastFinishMs, COUNT(*) AS legCount,"
 			" SUM(CASE WHEN COALESCE(runs.finishTimeMs, 0)>0 THEN 1 ELSE 0 END) AS finishedCount"
 			" FROM runs"
 			" JOIN relays ON relays.id=runs.relayId"
+			" JOIN classes ON classes.id=relays.classId"
 			" WHERE runs.stageId=%1"
 			" AND runs.isRunning"
 			" AND relays.isRunning"
 			" AND runs.siId>0"
 			" AND NOT runs.notStart"
-			" GROUP BY relays.classId, runs.relayId").arg(stage_id))) {
+			"%2"
+			" GROUP BY relays.classId, runs.relayId").arg(QString::number(stage_id), classFilterSqlCondition()))) {
 		qfWarning() << "PunchingTestService: cannot query relay finish times";
 		return 0;
 	}
@@ -166,11 +182,13 @@ void PunchingTestService::onTimerTick()
 			" LEFT JOIN relays ON relays.id=runs.relayId"
 			" LEFT JOIN classdefs ON (classdefs.classId=competitors.classId OR classdefs.classId=relays.classId)"
 			" AND classdefs.stageId=runs.stageId"
+			" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
 			" WHERE runs.stageId=%1"
 			" AND runs.isRunning"
 			" AND runs.siId>0"
 			" AND NOT runs.notStart"
-			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id).arg(relay_cols).arg(event_plugin->freeStartSqlCondition()))) {
+			"%4"
+			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id).arg(relay_cols).arg(event_plugin->freeStartSqlCondition(), classFilterSqlCondition()))) {
 		qfWarning() << "PunchingTestService: cannot query runs";
 		return;
 	}

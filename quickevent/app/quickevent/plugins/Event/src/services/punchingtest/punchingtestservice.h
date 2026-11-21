@@ -12,6 +12,7 @@ class PunchingTestServiceSettings : public ServiceSettings
 	using Super = ServiceSettings;
 
 	QF_VARIANTMAP_FIELD2(int, p, setP, unchInterval, 10) // seconds between ticks
+	QF_VARIANTMAP_FIELD(QString, c, setC, lassFilter) // class name wildcard, empty = all classes
 
 	// Per-card imperfections: probability = 1/N
 	QF_VARIANTMAP_FIELD2(int, u, setU, nknownCardRate, 100) // wrong SI number
@@ -49,6 +50,7 @@ public:
 private:
 	void onTimerTick();
 	int shameStartTimeMs(int stage_id) const;
+	QString classFilterSqlCondition() const;
 	qf::gui::framework::DialogWidget *createDetailWidget() override;
 
 private:
