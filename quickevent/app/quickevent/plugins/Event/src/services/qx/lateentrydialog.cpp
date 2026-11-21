@@ -27,12 +27,12 @@ using namespace quickevent::core::og;
 
 namespace Event::services::qx {
 
-LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent)
+LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, bool paid, QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::LateEntryDialog)
 	, m_changeId(change_id)
 	, m_stageId(stage_id)
-	, m_lateEntryId(late_entry.id)
+	, m_lateEntryId(late_entry.kind)
 	, m_status(qxChangeStatusFromString(status))
 {
 	Q_ASSERT(change_id > 0);
@@ -101,24 +101,35 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 
 	connect(ui->edStartTime, &QLineEdit::textEdited, this, &LateEntryDialog::checkStartTimeIsValid);
 
-	if (auto *run_id = std::get_if<RunId>(&late_entry.id)) {
-		auto id = run_id->id;
+	if (auto *run_id = std::get_if<Update>(&late_entry.kind)) {
+		auto id = run_id->runId;
 		ui->edRunId->setValue(id);
 		loadOrigValues(id);
 		checkStartTimeIsValid();
 	}
-	else if (auto *id = std::get_if<ClassId>(&late_entry.id)) {
-		auto class_id = id->id;
+	else if (auto *id = std::get_if<NewEntry>(&late_entry.kind)) {
+		auto class_id = id->classId;
 		loadClassName(class_id);
 	}
 
-	if (late_entry.paid.value_or(false)) {
-		ui->lblPaid->setText(tr("Paid"));
-		ui->lblPaid->setStyleSheet("background:green;color:white");
-	} else {
-		ui->lblPaid->setText(tr("Not Paid"));
-		ui->lblPaid->setStyleSheet("background:red;color:white");
-	}
+	auto update_paid_style = [this]() {
+		if (ui->chkPaid->isChecked()) {
+			ui->chkPaid->setText(tr("Paid"));
+			ui->chkPaid->setStyleSheet("background:green;color:white");
+		} else {
+			ui->chkPaid->setText(tr("Not Paid"));
+			ui->chkPaid->setStyleSheet("background:red;color:white");
+		}
+	};
+	ui->chkPaid->setChecked(paid);
+	update_paid_style();
+	connect(ui->chkPaid, &QCheckBox::toggled, this, [this, update_paid_style](bool is_paid) {
+		update_paid_style();
+		qf::core::sql::Record rec {
+			{ "paid", is_paid },
+		};
+		qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
+	});
 
 	checkDuplicitRegistration();
 	checkDuplicitName();
@@ -393,16 +404,16 @@ void LateEntryDialog::done(int result)
 
 std::optional<int> LateEntryDialog::runId() const
 {
-	if (auto *id = std::get_if<RunId>(&m_lateEntryId)) {
-		return id->id;
+	if (auto *id = std::get_if<Update>(&m_lateEntryId)) {
+		return id->runId;
 	}
 	return std::nullopt;
 }
 
 std::optional<int> LateEntryDialog::classId() const
 {
-	if (auto *id = std::get_if<ClassId>(&m_lateEntryId)) {
-		return id->id;
+	if (auto *id = std::get_if<NewEntry>(&m_lateEntryId)) {
+		return id->classId;
 	}
 	return std::nullopt;
 }

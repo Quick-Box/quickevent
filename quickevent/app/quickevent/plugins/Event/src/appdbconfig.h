@@ -12,6 +12,8 @@
 #include <QSet>
 #include <QVariantMap>
 
+namespace qf::core::sql { class Connection; }
+
 namespace Event {
 
 struct QxConfig {
@@ -44,6 +46,7 @@ public:
 	const QxConfig &qxConfig() const { return m_qxConfig; }
 	void setQxConfig(const QxConfig &config);
 
+	static int loadDbVersion(const qf::core::sql::Connection &conn);
 private:
 	void save(const QString &prefix, const QVariantMap &data);
 	void save(const QString &prefix, int stage_id, const QVariantMap &data);

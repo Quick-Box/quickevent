@@ -13,16 +13,22 @@ namespace Event::services::qx {
 // 	return ret;
 // }
 
-LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
+std::optional<LateEntry> LateEntry::fromVariantMap(const QVariantMap &map)
 {
 	LateEntry ret;
 
-	auto id_map = map.value("id").toMap();
-	if (auto id = id_map.value("RunId").toInt(); id > 0) {
-		ret.id = RunId{id};
+	auto kind_map = map.value("kind").toMap();
+	if (auto id = kind_map.value("Update").toMap().value("runId").toInt(); id > 0) {
+		ret.kind = Update{.runId = id};
 	}
-	if (auto id = id_map.value("ClassId").toInt(); id > 0) {
-		ret.id = ClassId{id};
+	else if (auto id = kind_map.value("NewEntry").toMap().value("classId").toInt(); id > 0) {
+		ret.kind = NewEntry{.classId = id};
+	}
+	else if (auto id = kind_map.value("DeleteEntry").toMap().value("runId").toInt(); id > 0) {
+		ret.kind = DeleteEntry{.runId = id};
+	} else {
+		qfWarning() << "Invalid late entry kind";
+		return {};
 	}
 	if (auto v = map.value("firstname"); v.isValid()) { ret.first_name = v.toString(); }
 	if (auto v = map.value("lastname"); v.isValid()) { ret.last_name = v.toString(); }
@@ -31,7 +37,6 @@ LateEntry LateEntry::fromVariantMap(const QVariantMap &map)
 	if (auto v = map.value("siid"); v.isValid()) { ret.si_id = v.toInt(); }
 	// if (auto v = map.value("si_id_rent"); v.isValid()) { ret.si_id_rent = v.toBool(); }
 	if (auto v = map.value("note"); v.isValid()) { ret.note = v.toString(); }
-	if (auto v = map.value("paid"); v.isValid()) { ret.paid = v.toBool(); }
 
 	return ret;
 }

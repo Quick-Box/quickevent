@@ -12,6 +12,8 @@
 #include <QVariantMap>
 #include <QSqlDriver>
 
+#include <functional>
+
 namespace qf::core::sql { class Query; class Connection; struct QxRecChng; }
 namespace qf::gui { class Action; }
 namespace qf::gui::framework { class DockWidget; }
@@ -82,6 +84,14 @@ public:
 	void editEvent();
 	bool closeEvent();
 	bool openEvent(const QString &event_name = QString());
+	using ProgressCallback = std::function<void(const QString &msg, int completed, int total)>;
+	/// Exports the currently open event to a SQLite database and returns the file content.
+	/// Returns empty array on failure, the reason is stored to \a error if it is not null.
+	/// \a progress is called before each export step, it is up to the caller to display it.
+	/// If \a consistent_snapshot is set, the tables cannot change while they are copied one by one.
+	/// On SQL server they are read in a REPEATABLE READ transaction, in single file mode the DB cannot change
+	/// while the app does not process events, so \a progress is not called then.
+	QByteArray eventQbeData(QString *error = nullptr, const ProgressCallback &progress = {}, bool consistent_snapshot = false);
 	void exportEvent_qbe();
 	void importEvent_qbe();
 

@@ -22,6 +22,7 @@
 #include <plugins/Core/src/coreplugin.h>
 #include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
+#include <qassert.h>
 #include <qhashfunctions.h>
 #include <quickevent/core/og/timems.h>
 #include <quickevent/core/classdef.h>
@@ -70,6 +71,8 @@
 #include <QRandomGenerator>
 #include <QCryptographicHash>
 #include <QFileInfo>
+#include <QSaveFile>
+#include <QTemporaryDir>
 
 #include <regex>
 
@@ -119,7 +122,8 @@ QByteArray DbEventPayload::toJson() const
 	return jsd.toJson(QJsonDocument::Compact);
 }
 
-const auto QBE_EXT = QStringLiteral(".qbe");
+const auto QBE_EXT = QStringLiteral(".qbe"); // NOLINT(bugprone-throwing-static-initialization)
+
 
 QString singleFileStorageDir()
 {
@@ -826,9 +830,9 @@ void EventPlugin::connectToSqlServer()
 					bool ok = connect(db.driver(), &QSqlDriver::notification, this, &EventPlugin::onDbEvent);
 					if(ok)
 						ok = db.driver()->subscribeToNotification(DBEVENT_NOTIFY_NAME);
-					if(!ok)
+					if(!ok) {
 						qfError() << "Failed to subscribe db notification:" << DBEVENT_NOTIFY_NAME;
-					else {
+					} else {
 						qfInfo() << "Successfully subscribe db notification:" << DBEVENT_NOTIFY_NAME;
 						qfInfo() << db.driver() << "subscribedToNotifications:" << db.driver()->subscribedToNotifications().join(", ");
 					}
@@ -991,7 +995,6 @@ void EventPlugin::editEvent()
 	qfd::Dialog dlg(fwk);
 	dlg.setButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	auto *event_w = new EventDialogWidget();
-	event_w->setWindowTitle(tr("Edit event"));
 	event_w->setEventId(eventDbName());
 	event_w->setEventIdEditable(false);
 	EventDialogWidget::Params params;
@@ -1130,21 +1133,43 @@ bool EventPlugin::openEvent(const QString &_event_name)
 		}
 	}
 	if(ok) {
-		m_appDbConfig = AppDbConfig();
-		m_appDbConfig.load();
-		if(m_appDbConfig.dbVersion() < dbVersion()) {
-			qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
-									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion()))
-									   .arg(qf::core::Utils::intToVersionString(dbVersion())));
-			closeEvent();
-			ok = false;
+		auto conn = qfs::Connection(QSqlDatabase::database());
+		auto current_db_version = AppDbConfig::loadDbVersion(conn);
+		if(DbSchema::canMigrate(current_db_version)) {
+			auto msg = tr("Event data version (%1) is older than current version (%2).\n"
+						  "Event data has to be upgraded to be opened. Older QuickEvent versions will not be able to open the event after the upgrade.\n\n"
+						  "Do you want to upgrade event data now?")
+					.arg(qf::core::Utils::intToVersionString(current_db_version))
+					.arg(qf::core::Utils::intToVersionString(dbVersion()));
+			if(!qfd::MessageBox::askYesNo(fwk, msg, false)) {
+				closeEvent();
+				ok = false;
+			}
+			else {
+				if(!DbSchema::migrate(conn)) {
+					qfd::MessageBox::showError(fwk, tr("Event data upgrade failed, see application log for details."));
+					ok = false;
+				}
+				current_db_version = dbVersion();
+			}
 		}
-		else if(m_appDbConfig.dbVersion() > dbVersion()) {
-			qfd::MessageBox::showError(fwk, tr("Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.")
-									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion())));
+		if(ok) {
+			if(current_db_version < dbVersion()) {
+				qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
+										   .arg(qf::core::Utils::intToVersionString(current_db_version))
+										   .arg(qf::core::Utils::intToVersionString(dbVersion())));
+				closeEvent();
+				ok = false;
+			}
+			else if(current_db_version > dbVersion()) {
+				qfd::MessageBox::showError(fwk, tr("Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.")
+										   .arg(qf::core::Utils::intToVersionString(current_db_version)));
+			}
 		}
 	}
+	m_appDbConfig = AppDbConfig();
 	if(ok) {
+		m_appDbConfig.load();
 		connection_settings.setEventName(event_name);
 		setEventDbName(event_name);
 		qf::gui::framework::Plugin::reportFileCache()->openEventCache(reportCacheId(event_name, connection_type));
@@ -1281,40 +1306,60 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	return QString();
 }
 }
-void EventPlugin::exportEvent_qbe()
+namespace {
+void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
+{
+	dst.setHostName(src.hostName());
+	dst.setPort(src.port());
+	dst.setUserName(src.userName());
+	dst.setPassword(src.password());
+	dst.setDatabaseName(src.databaseName());
+}
+}
+
+QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &progress, bool consistent_snapshot)
 {
 	qfLogFuncFrame();
-	qff::MainWindow *fwk = qff::MainWindow::frameWork();
-	QString ext = ".qbe";
-	QString ex_fn = qf::gui::dialogs::FileDialog::getSaveFileName (fwk, tr("Export as Quick Event"), singleFileStorageDir(), tr("Quick Event files *%1 (*%1)").arg(ext));
-	if(ex_fn.isEmpty())
-		return;
-	if(!ex_fn.endsWith(ext, Qt::CaseInsensitive))
-		ex_fn += ext;
 	QString err_str;
+	QByteArray data;
+	int step_cnt = 0;
+	int step_no = 0;
+	// Consistent snapshot: table rows cannot change while the tables are copied one by one.
+	// SQL server (POSTGRES): other clients can write anytime, copy tables using a dedicated connection in a REPEATABLE READ transaction,
+	// app event processing during the export (progress reporting) cannot interfere with the snapshot then.
+	// Single file (SQLITE): only this app instance writes to the DB, no event processing is the only way to keep the DB unchanged,
+	// because a long read transaction would lock the DB file for writing.
+	const bool is_sql_server = connectionType() == ConnectionType::SqlServer;
+	const bool use_snapshot_transaction = consistent_snapshot && is_sql_server;
+	const ProgressCallback progress_cb = (consistent_snapshot && !is_sql_server)? ProgressCallback{}: progress;
+	const auto report_step = [&](const QString &msg) {
+		if(progress_cb)
+			progress_cb(msg, ++step_no, step_cnt);
+	};
+	QTemporaryDir tmp_dir;
+	const QString ex_fn = tmp_dir.filePath(QStringLiteral("event.qbe"));
 	QString export_connection_name = QStringLiteral("qe_export_connection");
+	QString source_connection_name = QStringLiteral("qe_export_source_connection");
 	do {
-		if(QFile::exists(ex_fn)) {
-			if(!QFile::remove(ex_fn)) {
-				err_str = tr("Cannot delete existing file %1").arg(ex_fn);
-				break;
-			}
+		if(!tmp_dir.isValid()) {
+			err_str = tr("Cannot create temporary directory: %1").arg(tmp_dir.errorString());
+			break;
 		}
 		qfs::Connection ex_conn(QSqlDatabase::addDatabase("QSQLITE", export_connection_name));
 		ex_conn.setDatabaseName(ex_fn);
 		qfInfo() << "Opening export database file" << ex_fn;
 		if(!ex_conn.open()) {
-			qfd::MessageBox::showError(fwk, tr("Open Database Error: %1").arg(ex_conn.errorString()));
-			return;
+			err_str = tr("Open Database Error: %1").arg(ex_conn.errorString());
+			break;
 		}
 		//qfLogScope("exportEvent_qbe");
 		qfs::Transaction transaction(ex_conn);
 
 		DbSchema *db_schema = dbSchema();
 		const auto &tables = db_schema->tableNames();
-		int step_cnt = tables.count() + 1;
-		int step_no = 0;
-		fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
+		// create database + tables + read exported file
+		step_cnt = tables.count() + 2;
+		report_step(tr("Creating database"));
 		{
 			DbSchema::CreateDbSqlScriptOptions create_options;
 			create_options.setDriverName(ex_conn.driverName());
@@ -1326,9 +1371,27 @@ void EventPlugin::exportEvent_qbe()
 			}
 		}
 		qfs::Connection conn = qfs::Connection::forName();
+		if(use_snapshot_transaction) {
+			qfs::Connection current_conn = conn;
+			conn = qfs::Connection(QSqlDatabase::addDatabase(current_conn.driverName(), source_connection_name));
+			cloneDbConnection(conn, current_conn);
+			if(!conn.open()) {
+				err_str = tr("Open Database Error: %1").arg(conn.errorString());
+				break;
+			}
+			if(!conn.setCurrentSchema(eventDbName())) {
+				err_str = tr("Cannot set event schema '%1': %2").arg(eventDbName(), conn.errorString());
+				break;
+			}
+			qfs::Query q(conn);
+			if(!q.exec(QStringLiteral("BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"))) {
+				err_str = tr("Cannot start export transaction: %1").arg(q.lastErrorText());
+				break;
+			}
+		}
 		for(const QString &table_name : tables) {
 			qfDebug() << "Copying table" << table_name;
-			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
+			report_step(tr("Copying table %1").arg(table_name));
 			QSqlRecord rec = db_schema->sqlRecord(ex_conn, table_name);
 			err_str = copy_sql_table(table_name, rec, conn, ex_conn);
 			if(!err_str.isEmpty())
@@ -1344,9 +1407,53 @@ void EventPlugin::exportEvent_qbe()
 			c.close();
 	}
 	QSqlDatabase::removeDatabase(export_connection_name);
-	fwk->hideProgress();
-	if(!err_str.isEmpty()) {
+	{
+		// read only transaction, closing the connection rolls it back
+		QSqlDatabase c = QSqlDatabase::database(source_connection_name, false);
+		if(c.isOpen())
+			c.close();
+	}
+	QSqlDatabase::removeDatabase(source_connection_name);
+	if(err_str.isEmpty()) {
+		report_step(tr("Reading exported database"));
+		QFile f(ex_fn);
+		if(f.open(QFile::ReadOnly))
+			data = f.readAll();
+		if(data.isEmpty())
+			err_str = tr("Cannot read exported database %1: %2").arg(ex_fn, f.errorString());
+	}
+	if(error)
+		*error = err_str;
+	return data;
+}
+
+void EventPlugin::exportEvent_qbe()
+{
+	qfLogFuncFrame();
+	qff::MainWindow *fwk = qff::MainWindow::frameWork();
+	QString ext = ".qbe";
+	QString ex_fn = qf::gui::dialogs::FileDialog::getSaveFileName (fwk, tr("Export as Quick Event"), singleFileStorageDir(), tr("Quick Event files *%1 (*%1)").arg(ext));
+	if(ex_fn.isEmpty())
+		return;
+	if(!ex_fn.endsWith(ext, Qt::CaseInsensitive))
+		ex_fn += ext;
+	QString err_str;
+	const QByteArray data = eventQbeData(&err_str, [fwk](const QString &msg, int completed, int total) {
+		fwk->showProgress(msg, completed, total);
+	});
+	if(data.isEmpty()) {
+		fwk->hideProgress();
 		qfd::MessageBox::showError(fwk, err_str);
+		return;
+	}
+	fwk->showProgress(tr("Saving file %1").arg(ex_fn), 1, 2);
+	// showProgress() processes events before it updates the status bar, repaint it before the blocking write
+	QCoreApplication::processEvents();
+	QSaveFile f(ex_fn);
+	const bool saved = f.open(QFile::WriteOnly) && f.write(data) == data.size() && f.commit();
+	fwk->hideProgress();
+	if(!saved) {
+		qfd::MessageBox::showError(fwk, tr("Cannot write file %1: %2").arg(ex_fn, f.errorString()));
 	}
 }
 
@@ -1367,16 +1474,6 @@ void EventPlugin::deleteEvent(const QString &event_name)
 			qfd::MessageBox::showError(fwk, tr("Cannot delete event schema '%1': %2")
 			                           .arg(event_name, q.lastErrorText()));
 	}
-}
-namespace {
-void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
-{
-	dst.setHostName(src.hostName());
-	dst.setPort(src.port());
-	dst.setUserName(src.userName());
-	dst.setPassword(src.password());
-	dst.setDatabaseName(src.databaseName());
-}
 }
 bool EventPlugin::importEventFromFile(const QString &src_file, const QString &dest_event_name)
 {

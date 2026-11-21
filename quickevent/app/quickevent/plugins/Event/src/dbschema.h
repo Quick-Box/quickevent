@@ -33,6 +33,10 @@ public:
 	const QStringList& tableNames();
 	/// table record as it exists in database of connection
 	QSqlRecord sqlRecord(const qf::core::sql::Connection &conn, const QString &table_name);
+	/// true if event data of db_version can be upgraded in place to the current DB version
+	static bool canMigrate(int db_version);
+	/// applies all pending migrations in version order to current schema of conn, each one in its own transaction
+	static bool migrate(const qf::core::sql::Connection &conn);
 private:
 	static QString loadCreateDbSqlFile(const QString &driver_name);
 private:

@@ -134,7 +134,7 @@ void PunchingTestService::onTimerTick()
 {
 	auto *event_plugin = getPlugin<EventPlugin>();
 	if (!event_plugin->isEventOpen()) {
-		setStatusMessage(tr("No event open"));
+		setStatusMessage(tr("No event open"), NecroLogLevel::Warning);
 		return;
 	}
 	int stage_id = event_plugin->currentStageId();

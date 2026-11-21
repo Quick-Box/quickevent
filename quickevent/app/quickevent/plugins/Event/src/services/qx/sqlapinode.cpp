@@ -14,6 +14,9 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include <utility>
+
+
 using namespace shv::chainpack;
 using namespace shv::coreqt::data;
 
@@ -25,14 +28,42 @@ SqlApiNode::SqlApiNode(shv::iotqt::node::ShvNode *parent)
 {
 	connect(m_sqlApi, &SqlApi::recChng, this, [this](const qf::core::sql::QxRecChng &recchng, QObject *source) {
 		Q_UNUSED(source);
-		RpcSignal sig;
-		sig.setSignal("recchng");
-		sig.setShvPath(shvPath().asString());
-		sig.setParams(shv::coreqt::rpc::qVariantToRpcValue(recchng.toVariantMap()));
+		auto params = shv::coreqt::rpc::qVariantToRpcValue(recchng.toVariantMap());
+		if (m_postponedRecChngs) {
+			qfInfo() << "postpone recchng:" << recchng.table;
+			m_postponedRecChngs->push_back(params);
+			return;
+		}
 		qfInfo() << "emit recchng:" << recchng.table;
-		emitSendRpcMessage(sig);
+		sendRecChngSignal(params);
 	});
 
+}
+
+void SqlApiNode::sendRecChngSignal(const shv::chainpack::RpcValue &params)
+{
+	RpcSignal sig;
+	sig.setSignal("recchng");
+	sig.setShvPath(shvPath().asString());
+	sig.setParams(params);
+	emitSendRpcMessage(sig);
+}
+
+void SqlApiNode::setRecChngSignalsPostponed(bool is_postponed)
+{
+	if (m_postponedRecChngs.has_value() == is_postponed) {
+		return;
+	}
+	if (is_postponed) {
+		m_postponedRecChngs.emplace();
+		return;
+	}
+	auto postponed = std::move(*m_postponedRecChngs);
+	m_postponedRecChngs.reset();
+	qfInfo() << "emit postponed recchng signals, count:" << postponed.size();
+	for (const auto &params : postponed) {
+		sendRecChngSignal(params);
+	}
 }
 
 namespace {

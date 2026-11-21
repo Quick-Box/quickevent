@@ -92,9 +92,20 @@ bool CompetitorDocument::saveData()
 				for (auto run_id : m_runsIds) {
 					auto rec = runs_plugin->runsRecord(run_id);
 					getPlugin<EventPlugin>()->emitDbEvent(Event::EventPlugin::DBEVENT_RUN_CHANGED, QVariantList {run_id, rec});
+
 					// new update API
 					auto *app = qf::gui::framework::Application::instance();
-					app->qxSql()->emitRecInserted( "runs", run_id, rec, this);
+					auto filter_table_record = [](const QString &table, const QVariantMap &rec) {
+						auto prefix = table + '.';
+						QVariantMap filtered;
+						for(const auto &[key, value] : rec.asKeyValueRange()) {
+							if (key.startsWith(prefix)) {
+								filtered[key.mid(prefix.length())] = value;
+							}
+						}
+						return filtered;
+					};
+					app->qxSql()->emitRecInserted( "runs", run_id, filter_table_record("runs", rec), this);
 				}
 			}
 		}
@@ -310,5 +321,3 @@ QList<int> CompetitorDocument::possibleStartTimesMs(int run_id)
 	}
 	return ret;
 }
-
-
