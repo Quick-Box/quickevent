@@ -48,8 +48,20 @@ public:
 	static QString plannedStartMsSqlExpression() { return QStringLiteral("CASE WHEN NOT (runs.relayId IS NULL AND COALESCE(classdefs.startIntervalMin, 0)=0) THEN runs.startTimeMs END"); }
 	/// SQL condition for started runs. A finished runner has started, even without a start time or a corridor entry.
 	static QString startedSqlCondition(qint64 started_until_ms) { return QStringLiteral("(%1 OR runs.notStart OR runs.corridorTime IS NOT NULL OR %2<=%3)").arg(finishedSqlCondition(), plannedStartMsSqlExpression()).arg(started_until_ms); }
+	/// NULL safe SQL condition for runs without final status yet (not started or on track)
+	static QString notFinishedSqlCondition() { return QStringLiteral("(CASE WHEN %1 THEN 1 ELSE 0 END)=0").arg(finishedSqlCondition()); }
 	/// NULL safe SQL condition for runs started and not finished yet
-	static QString onTrackSqlCondition(qint64 started_until_ms) { return QStringLiteral("(CASE WHEN %1 THEN 1 ELSE 0 END)=1 AND (CASE WHEN %2 THEN 1 ELSE 0 END)=0").arg(startedSqlCondition(started_until_ms), finishedSqlCondition()); }
+	static QString onTrackSqlCondition(qint64 started_until_ms) { return QStringLiteral("(CASE WHEN %1 THEN 1 ELSE 0 END)=1 AND %2").arg(startedSqlCondition(started_until_ms), notFinishedSqlCondition()); }
+	/// FROM clause for stage runs statistics, joins competitors, relays, classes and classdefs
+	static QString statisticsFromSql() { return QStringLiteral(" FROM runs"
+		" LEFT JOIN competitors ON competitors.id=runs.competitorId"
+		" LEFT JOIN relays ON relays.id=runs.relayId"
+		" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
+		" LEFT JOIN classdefs ON classdefs.classId=classes.id AND classdefs.stageId=runs.stageId"); }
+	/// runs counted in stage statistics, vacants have no competitor, relay legs have only relayId
+	static QString statisticsRunsSqlCondition(int stage_id) { return QStringLiteral("runs.stageId=%1 AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)").arg(stage_id); }
+	/// IOF XML 3.0 ResultList status: "Snapshot" until every runner is finished (finish time, DNS, DSQ, ...), "Complete" then
+	static QString iofResultListStatus(int stage_id);
 public:
 	RunsPlugin(QObject *parent = nullptr);
 	~RunsPlugin() Q_DECL_OVERRIDE;
