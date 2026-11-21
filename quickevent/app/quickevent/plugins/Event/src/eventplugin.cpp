@@ -22,6 +22,7 @@
 #include <plugins/Core/src/coreplugin.h>
 #include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
+#include <qassert.h>
 #include <qhashfunctions.h>
 #include <quickevent/core/og/timems.h>
 #include <quickevent/core/classdef.h>
@@ -1132,27 +1133,43 @@ bool EventPlugin::openEvent(const QString &_event_name)
 		}
 	}
 	if(ok) {
-		m_appDbConfig = AppDbConfig();
-		m_appDbConfig.load();
-		if(m_appDbConfig.dbVersion() < dbVersion() && DbSchema::canMigrate(m_appDbConfig.dbVersion())) {
-			// on failure the version stays low and the check below offers import instead
-			DbSchema::migrate(qfs::Connection(QSqlDatabase::database()));
-			m_appDbConfig = AppDbConfig();
-			m_appDbConfig.load();
+		auto conn = qfs::Connection(QSqlDatabase::database());
+		auto current_db_version = AppDbConfig::loadDbVersion(conn);
+		if(DbSchema::canMigrate(current_db_version)) {
+			auto msg = tr("Event data version (%1) is older than current version (%2).\n"
+						  "Event data has to be upgraded to be opened. Older QuickEvent versions will not be able to open the event after the upgrade.\n\n"
+						  "Do you want to upgrade event data now?")
+					.arg(qf::core::Utils::intToVersionString(current_db_version))
+					.arg(qf::core::Utils::intToVersionString(dbVersion()));
+			if(!qfd::MessageBox::askYesNo(fwk, msg, false)) {
+				closeEvent();
+				ok = false;
+			}
+			else {
+				if(!DbSchema::migrate(conn)) {
+					qfd::MessageBox::showError(fwk, tr("Event data upgrade failed, see application log for details."));
+					ok = false;
+				}
+				current_db_version = dbVersion();
+			}
 		}
-		if(m_appDbConfig.dbVersion() < dbVersion()) {
-			qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
-									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion()))
-									   .arg(qf::core::Utils::intToVersionString(dbVersion())));
-			closeEvent();
-			ok = false;
-		}
-		else if(m_appDbConfig.dbVersion() > dbVersion()) {
-			qfd::MessageBox::showError(fwk, tr("Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.")
-									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion())));
+		if(ok) {
+			if(current_db_version < dbVersion()) {
+				qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
+										   .arg(qf::core::Utils::intToVersionString(current_db_version))
+										   .arg(qf::core::Utils::intToVersionString(dbVersion())));
+				closeEvent();
+				ok = false;
+			}
+			else if(current_db_version > dbVersion()) {
+				qfd::MessageBox::showError(fwk, tr("Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.")
+										   .arg(qf::core::Utils::intToVersionString(current_db_version)));
+			}
 		}
 	}
+	m_appDbConfig = AppDbConfig();
 	if(ok) {
+		m_appDbConfig.load();
 		connection_settings.setEventName(event_name);
 		setEventDbName(event_name);
 		qf::gui::framework::Plugin::reportFileCache()->openEventCache(reportCacheId(event_name, connection_type));
