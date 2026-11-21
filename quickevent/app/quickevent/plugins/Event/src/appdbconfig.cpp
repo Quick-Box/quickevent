@@ -53,6 +53,17 @@ QVariantMap QxConfig::toVariantMap() const
 	return ret;
 }
 
+int AppDbConfig::loadDbVersion(const qf::core::sql::Connection &conn)
+{
+	using namespace qf::core::sql;
+	Query q(conn);
+	q.exec("SELECT cvalue FROM config WHERE ckey = 'db.version'");
+	if(q.next()) {
+		return q.value(0).toString().toInt();
+	}
+	return 0;
+}
+
 void AppDbConfig::load()
 {
 	using namespace qf::core::sql;
