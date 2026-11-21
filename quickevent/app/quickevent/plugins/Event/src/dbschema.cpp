@@ -1,6 +1,8 @@
 #include "dbschema.h"
 #include "eventplugin.h"
+#include "plugins/Event/src/appdbconfig.h"
 
+#include <optional>
 #include <qf/core/assert.h>
 #include <qf/core/log.h>
 #include <qf/core/sql/connection.h>
@@ -26,17 +28,14 @@ struct Migration
 
 /// executes the ';' delimited SQL commands written for the driver of conn, stops on first error
 /// commands are split on every ';', so it cannot be used inside of a command (string literal, trigger body)
-bool exec_sql(const Connection &conn, const QString &psql_commands, const QString &sqlite_commands)
+bool exec_sql(const Connection &conn, const QStringList &psql_commands, std::optional<QStringList> sqlite_commands)
 {
-	const auto &commands = conn.driverName().endsWith(QLatin1String("SQLITE"))? sqlite_commands: psql_commands;
+	const auto is_sqlite = conn.driverName().endsWith(QLatin1String("SQLITE"));
+	const auto &commands = is_sqlite? sqlite_commands.value_or(psql_commands): psql_commands;
 	QSqlQuery q(conn);
-	for (const auto &part : commands.split(';', Qt::SkipEmptyParts)) {
-		const auto command = part.trimmed();
-		if (command.isEmpty()) {
-			continue;
-		}
-		if (!q.exec(command)) {
-			qfError() << "Migration SQL error:" << q.lastError().text() << "command:" << command;
+	for (const auto &sql_command : commands) {
+		if (!q.exec(sql_command)) {
+			qfError() << "Migration SQL error:" << q.lastError().text() << "command:" << sql_command;
 			return false;
 		}
 		q.finish();
@@ -61,9 +60,27 @@ bool migrate_31000(const Connection &conn)
 	if (has_column(conn, "qxchanges", "paid")) {
 		return true;
 	}
-	return exec_sql(conn,
+	qfInfo() << "Adding paid column to qxchanges";
+	auto ok = exec_sql(conn,
+			QStringList {
 			"ALTER TABLE qxchanges ADD COLUMN paid boolean NOT NULL DEFAULT false",
-			"ALTER TABLE qxchanges ADD COLUMN paid boolean NOT NULL DEFAULT 0");
+			},
+			QStringList {
+			"ALTER TABLE qxchanges ADD COLUMN paid boolean NOT NULL DEFAULT 0",
+			});
+	if (!ok) {
+		return false;
+	}
+	qfInfo() << "Adding id serial column to config";
+	ok = exec_sql(conn,
+			QStringList {
+			"CREATE TABLE config_new ( id INTEGER PRIMARY KEY, ckey VARCHAR NOT NULL UNIQUE, cname VARCHAR, cvalue VARCHAR, ctype VARCHAR);",
+			"INSERT INTO config_new (id, ckey, cname, cvalue, ctype) SELECT ROW_NUMBER() OVER (ORDER BY ckey), ckey, cname, cvalue, ctype FROM config",
+			"DROP TABLE config",
+			"ALTER TABLE config_new RENAME TO config",
+			},
+			std::nullopt);
+	return ok;
 }
 
 // oldest event data version the migrations below can start from
@@ -87,24 +104,14 @@ constexpr bool migrations_are_ascending()
 }
 static_assert(migrations_are_ascending(), "MIGRATIONS must be sorted by ascending version");
 
-const Migration* next_migration(int db_version, int target_version)
+const Migration* next_migration(int db_version)
 {
 	for (const auto &migration : MIGRATIONS) {
 		if (migration.version > db_version) {
-			return migration.version <= target_version? &migration: nullptr;
+			return &migration;
 		}
 	}
 	return nullptr;
-}
-
-int read_db_version(const Connection &conn)
-{
-	QSqlQuery q(conn);
-	if (!q.exec(QStringLiteral("SELECT cvalue FROM config WHERE ckey='db.version'")) || !q.next()) {
-		qfError() << "Cannot read event data version:" << q.lastError().text();
-		return 0;
-	}
-	return q.value(0).toInt();
 }
 
 } // namespace
@@ -183,47 +190,45 @@ QSqlRecord DbSchema::sqlRecord(const qf::core::sql::Connection &conn, const QStr
 
 bool DbSchema::canMigrate(int db_version)
 {
-	return db_version >= MIN_MIGRATABLE_VERSION && db_version <= Event::EventPlugin::dbVersion();
+	return db_version >= MIN_MIGRATABLE_VERSION && db_version < Event::EventPlugin::dbVersion();
 }
 
 bool DbSchema::migrate(const qf::core::sql::Connection &conn)
 {
-	auto version = read_db_version(conn);
-	if (!canMigrate(version)) {
+	auto current_version = Event::AppDbConfig::loadDbVersion(conn);
+	if (!canMigrate(current_version)) {
 		return false;
 	}
 	const auto target_version = Event::EventPlugin::dbVersion();
-	while (version < target_version) {
-		const auto *migration = next_migration(version, target_version);
+	while (current_version < target_version) {
+		const auto *migration = next_migration(current_version);
+		if (!migration) {
+			break;
+		}
 		// app versions without schema change have no migration, only the version number is raised
-		const auto next_version = migration? migration->version: target_version;
+		auto next_version = migration->version;
 		{
 			qf::core::sql::Transaction transaction(conn);
 			QSqlQuery q(conn);
 			// claim the step first, concurrent client waits here and then finds nothing to do
-			const auto claim = QStringLiteral("UPDATE config SET cvalue='%1' WHERE ckey='db.version' AND cvalue='%2'")
-					.arg(next_version).arg(version);
+			const auto claim = QStringLiteral("UPDATE config SET cvalue='%1' WHERE ckey='db.version'")
+					.arg(next_version);
 			if (!q.exec(claim)) {
 				qfError() << "Cannot update event data version:" << q.lastError().text();
 				return false;
 			}
 			if (q.numRowsAffected() > 0) {
-				if (migration && !migration->apply(conn)) {
+				if (!migration->apply(conn)) {
 					return false;
 				}
 				transaction.commit();
-				qfInfo() << "Event data migrated from version" << version << "to" << next_version;
+				qfInfo() << "=== Event database migrated from" << current_version << "to" << next_version;
 			}
 			else {
 				transaction.rollback();
 			}
 		}
-		const auto new_version = read_db_version(conn);
-		if (new_version <= version) {
-			qfError() << "Event data version did not change after migration from" << version;
-			return false;
-		}
-		version = new_version;
+		current_version = next_version;
 	}
 	return true;
 }
