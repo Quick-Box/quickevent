@@ -73,6 +73,7 @@ private:
 	void saveLockedForDrawing(int class_id, int stage_id, bool is_locked, int start_last_min);
 
 	void import_start_times_ob2000();
+	void import_ochecklist_yaml();
 
 	QString getSaveFileName(const QString &file_name, std::optional<int> stage_id);
 

@@ -2,6 +2,7 @@
 #include "ui_runswidget.h"
 #include "runstablemodel.h"
 #include "runsplugin.h"
+#include "ochecklistimportdialog.h"
 
 #include <plugins/Competitors/src/competitorwidget.h>
 #include <plugins/Competitors/src/competitordocument.h>
@@ -279,6 +280,10 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 	a_import_start_times->addActionInto(a_import_start_times_ob2000);
 	connect(a_import_start_times_ob2000, &qfw::Action::triggered, this, &RunsWidget::import_start_times_ob2000);
 
+	auto *a_import_ochecklist = new qfw::Action("ochecklist", tr("O Checklist start report (YAML)"));
+	a_import->addActionInto(a_import_ochecklist);
+	connect(a_import_ochecklist, &qfw::Action::triggered, this, &RunsWidget::import_ochecklist_yaml);
+
 	auto *a_export = part_widget->menuBar()->actionForPath("export", true);
 	a_export->setText(tr("E&xport"));
 	auto *m_stlist = a_export->addMenuInto("startList", tr("&Start list"));
@@ -340,7 +345,7 @@ void RunsWidget::settleDownInPartWidget(::PartWidget *part_widget)
 			connect(a, &qfw::Action::triggered, getPlugin<RunsPlugin>(), &Runs::RunsPlugin::export_resultsHtmlStage);
 		}
 		{
-			qfw::Action *a = a_export_results_stage->addActionInto("htmlWithLaps", tr("HTML with &laps"));
+			qfw::Action *a = a_export_results_stage->addActionInto("htmlWithLaps", tr("HTML with &splits"));
 			connect(a, &qfw::Action::triggered, getPlugin<RunsPlugin>(), &Runs::RunsPlugin::export_resultsHtmlStageWithLaps);
 		}
 		{
@@ -668,6 +673,31 @@ QList<RunsWidget::CompetitorForClass> RunsWidget::competitorsForClass(int stage_
 		ret << CompetitorForClass{ .competitorId = q.value("competitorId").toInt(), .runId = q.value("id").toInt() };
 	}
 	return ret;
+}
+
+void RunsWidget::import_ochecklist_yaml()
+{
+	QString fn = qf::gui::dialogs::FileDialog::getOpenFileName(this, tr("Import O Checklist start report"), QString(), tr("YAML files (*.yaml *.yml)"));
+	if (fn.isEmpty()) {
+		return;
+	}
+	QFile f(fn);
+	if (!f.open(QFile::ReadOnly)) {
+		qf::gui::dialogs::MessageBox::showError(this, tr("Cannot open file '%1' for reading.").arg(fn));
+		return;
+	}
+	auto report = OChecklistImportDialog::parseReport(QString::fromUtf8(f.readAll()));
+	if (report.runners.isEmpty()) {
+		qf::gui::dialogs::MessageBox::showError(this, tr("No runners found in file '%1'.").arg(fn));
+		return;
+	}
+	try {
+		OChecklistImportDialog dlg(report, selectedStageId(), this);
+		dlg.exec();
+	}
+	catch (const qf::core::Exception &e) {
+		qf::gui::dialogs::MessageBox::showException(this, e);
+	}
 }
 
 void RunsWidget::import_start_times_ob2000()

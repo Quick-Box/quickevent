@@ -179,7 +179,6 @@ private:
 	void processCorridorTimeUpdate(int runs_id, const QDateTime &created_at);
 	bool processNewRunner(const QJsonObject &change);
 	bool processCompetitorChange(const QString &type, int runs_id, const QJsonObject &competitor);
-	bool setRunStartTime(int run_id, const QString &start_time);
 	bool retryChange(int protocol_id);
 	void storeChange(const QJsonObject &change);
 	QByteArray zlibCompress(QByteArray data);
