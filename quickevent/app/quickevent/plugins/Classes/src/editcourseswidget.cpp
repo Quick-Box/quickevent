@@ -86,6 +86,28 @@ public:
 		return Super::dropRows(row_ix, count, throw_exc);
 	}
 
+	void cloneRow(int row_ix) override
+	{
+		int src_course_id = m_table.row(row_ix).value("courses.id").toInt();
+		Super::cloneRow(row_ix);
+		int new_row_ix = row_ix + 1;
+		qf::core::utils::TableRow &new_row = m_table.rowRef(new_row_ix);
+		new_row.setValue("courses.name", tr("%1 copy").arg(new_row.value("courses.name").toString()));
+		/// save the clone immediately to get its id, then copy the course codes
+		qfs::Transaction transaction(sqlConnection());
+		postRow(new_row_ix, qf::core::Exception::Throw);
+		int new_course_id = new_row.value("courses.id").toInt();
+		if(new_course_id <= 0) {
+			return;
+		}
+		qfs::Query q(sqlConnection());
+		q.exec("INSERT INTO coursecodes (courseId, position, codeId)"
+			   " SELECT " QF_IARG(new_course_id) ", position, codeId FROM coursecodes"
+			   " WHERE courseId=" QF_IARG(src_course_id), qf::core::Exception::Throw);
+		transaction.commit();
+		emit dataChanged(index(new_row_ix, 0), index(new_row_ix, Col_COUNT - 1));
+	}
+
 	bool removeTableRow(int row_no, bool throw_exc) override
 	{
 		int course_id = m_table.row(row_no).value("courses.id").toInt();

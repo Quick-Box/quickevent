@@ -2901,6 +2901,11 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <translation>Trať %1 nelze smazat.</translation>
     </message>
     <message>
+        <location filename="plugins/Classes/src/editcourseswidget.cpp" line="95"/>
+        <source>%1 copy</source>
+        <translation>%1 kopie</translation>
+    </message>
+    <message>
         <location filename="plugins/Classes/src/editcourseswidget.cpp" line="49"/>
         <source>Id</source>
         <translation>Id</translation>
