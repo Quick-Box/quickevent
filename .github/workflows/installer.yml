@@ -77,7 +77,7 @@ jobs:
       - name: Setup CMake
         uses: ./.github/actions/cmake
         with:
-          qt_version: 6.11.2
+          qt_version: 6.11.3
           qt_arch: ${{ matrix.qt_arch }}
           toolchain: ${{ matrix.toolchain }}
           use_qt6: ON
@@ -114,8 +114,11 @@ jobs:
         run: |
           cd "C:/Program Files/PostgreSQL/17/bin"
           cp libiconv-2.dll libintl-9.dll liblz4.dll zlib1.dll libpq.dll '${{ github.workspace }}/install/bin/'
-          # libintl-9.dll needs libwinpthread-1.dll, MinGW build already has its own copy
-          cp -n libwinpthread-1.dll '${{ github.workspace }}/install/bin/'
+          # older PostgreSQL builds need libwinpthread-1.dll for libintl-9.dll, newer ones do not ship it,
+          # the driver load check below fails when it is needed and missing; MinGW build already has its own copy
+          if [ -f libwinpthread-1.dll ]; then
+            cp -n libwinpthread-1.dll '${{ github.workspace }}/install/bin/'
+          fi
           cd "C:\openssl"
           cp libssl-3-x64.dll libcrypto-3-x64.dll '${{ github.workspace }}/install/bin/'
         shell: bash

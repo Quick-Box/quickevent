@@ -86,3 +86,4 @@ Checks:
     -readability-qualified-auto,
     -readability-redundant-access-specifiers,
     -readability-simplify-boolean-expr,
+    -readability-trailing-comma,

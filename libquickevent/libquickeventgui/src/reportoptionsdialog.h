@@ -24,6 +24,7 @@ class QUICKEVENTGUI_DECL_EXPORT ReportOptionsDialog : public QDialog, public qf:
 	Q_PROPERTY(bool classFilterVisible READ isClassFilterVisible WRITE setClassFilterVisible NOTIFY classFilterVisibleChanged)
 	Q_PROPERTY(bool startListOptionsVisible READ isStartListOptionsVisible WRITE setStartListOptionsVisible NOTIFY startListOptionsVisibleChanged)
 	Q_PROPERTY(bool startersOptionsVisible READ isStartersOptionsVisible WRITE setStartersOptionsVisible NOTIFY startersOptionsVisibleChanged)
+	Q_PROPERTY(bool startModeVisible READ isStartModeVisible WRITE setStartModeVisible NOTIFY startModeVisibleChanged)
 	Q_PROPERTY(bool vacantsVisible READ isVacantsVisible WRITE setVacantsVisible NOTIFY vacantsVisibleChanged)
 	Q_PROPERTY(bool stagesOptionVisible READ isStagesOptionVisible WRITE setStagesOptionVisible NOTIFY stagesOptionVisibleChanged)
 	//Q_PROPERTY(int stagesCount READ stagesCount WRITE setStagesCount NOTIFY stagesCountChanged)
@@ -38,6 +39,7 @@ class QUICKEVENTGUI_DECL_EXPORT ReportOptionsDialog : public QDialog, public qf:
 	QF_PROPERTY_BOOL_IMPL2(c, C, lassFilterVisible, true)
 	QF_PROPERTY_BOOL_IMPL2(s, S, tartListOptionsVisible, false)
 	QF_PROPERTY_BOOL_IMPL2(s, S, tartersOptionsVisible, false)
+	QF_PROPERTY_BOOL_IMPL2(s, S, tartModeVisible, false)
 	QF_PROPERTY_BOOL_IMPL2(v, V, acantsVisible, true)
 	QF_PROPERTY_BOOL_IMPL2(s, S, tagesOptionVisible, false)
 	QF_PROPERTY_BOOL_IMPL2(l, L, egsOptionVisible, false)
@@ -79,6 +81,7 @@ public:
 		QF_VARIANTMAP_FIELD2(int, s, setS, tartTimeFormat, 0)
 		QF_VARIANTMAP_FIELD2(int, s, setS, tartlistOrderFirstBy, 0)
 		QF_VARIANTMAP_FIELD2(int, s, setS, tartNumber, 0)
+		QF_VARIANTMAP_FIELD(QString, s, setS, tartMode)
 		QF_VARIANTMAP_FIELD2(bool, isR, setR, elayShowLegsDetails, true)
 		public:
 			Options(const QVariantMap &o = QVariantMap()) : QVariantMap(o) {}

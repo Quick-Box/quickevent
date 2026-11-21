@@ -586,16 +586,11 @@ Statistics loadStatistics(int stage_id)
 	const QDateTime stage_start = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
 	const QDateTime now = QDateTime::currentDateTime();
 	const qint64 started_until_ms = stage_start.msecsTo(now);
-	// vacants have no competitor, relay legs have only relayId
-	const QString cond = "runs.stageId=" QF_IARG(stage_id) " AND runs.isRunning AND (runs.competitorId IS NOT NULL OR runs.relayId IS NOT NULL)";
+	const QString cond = RunsPlugin::statisticsRunsSqlCondition(stage_id);
 	const QString start_ms = RunsPlugin::plannedStartMsSqlExpression();
 	const QString finished_cond = RunsPlugin::finishedSqlCondition();
 	const QString started_cond = RunsPlugin::startedSqlCondition(started_until_ms);
-	const QString from = " FROM runs"
-		" LEFT JOIN competitors ON competitors.id=runs.competitorId"
-		" LEFT JOIN relays ON relays.id=runs.relayId"
-		" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
-		" LEFT JOIN classdefs ON classdefs.classId=classes.id AND classdefs.stageId=runs.stageId";
+	const QString from = RunsPlugin::statisticsFromSql();
 	qfs::Query q;
 	q.execThrow("SELECT COALESCE(SUM(CASE WHEN " + started_cond + " THEN 1 ELSE 0 END), 0)"
 		", COALESCE(SUM(CASE WHEN " + finished_cond + " THEN 1 ELSE 0 END), 0)"

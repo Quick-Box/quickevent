@@ -1,4 +1,5 @@
 add_library(libquickeventcore SHARED
+    src/classdef.cpp
     src/codedef.cpp
     src/coursedef.cpp
     src/exporters/fileexporter.cpp

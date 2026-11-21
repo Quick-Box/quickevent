@@ -24,6 +24,7 @@
 
 #include <qhashfunctions.h>
 #include <quickevent/core/og/timems.h>
+#include <quickevent/core/classdef.h>
 
 #include <qf/gui/framework/dockwidget.h>
 #include <qf/gui/framework/mainwindow.h>
@@ -620,6 +621,22 @@ QString EventPlugin::dbVersionString()
 	return QString("%1.%2.0").arg(maj).arg(min);
 }
 
+QString EventPlugin::startModeSqlExpression() const
+{
+	using quickevent::core::ClassDef;
+	if(eventConfig().disciplineId == static_cast<int>(Event::EventConfig::Discipline::MassStart)) {
+		return QStringLiteral("COALESCE(classdefs.startMode, '%1')").arg(ClassDef::startModeToString(ClassDef::StartMode::MassStart));
+	}
+	return QStringLiteral("COALESCE(classdefs.startMode, CASE WHEN COALESCE(classdefs.startIntervalMin, 0) = 0 THEN '%1' ELSE '%2' END)")
+			.arg(ClassDef::startModeToString(ClassDef::StartMode::FreeStart), ClassDef::startModeToString(ClassDef::StartMode::StartList));
+}
+
+QString EventPlugin::freeStartSqlCondition() const
+{
+	using quickevent::core::ClassDef;
+	return '(' + startModeSqlExpression() + " = '" + ClassDef::startModeToString(ClassDef::StartMode::FreeStart) + "')";
+}
+
 void EventPlugin::onDbEvent(const QString &name, QSqlDriver::NotificationSource source, const QVariant &payload)
 {
 	qfLogFuncFrame() << "name:" << name << "source:" << source << "payload:" << payload;
@@ -1117,6 +1134,12 @@ bool EventPlugin::openEvent(const QString &_event_name)
 	if(ok) {
 		m_appDbConfig = AppDbConfig();
 		m_appDbConfig.load();
+		if(m_appDbConfig.dbVersion() < dbVersion() && DbSchema::canMigrate(m_appDbConfig.dbVersion())) {
+			// on failure the version stays low and the check below offers import instead
+			DbSchema::migrate(qfs::Connection(QSqlDatabase::database()));
+			m_appDbConfig = AppDbConfig();
+			m_appDbConfig.load();
+		}
 		if(m_appDbConfig.dbVersion() < dbVersion()) {
 			qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
 									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion()))
