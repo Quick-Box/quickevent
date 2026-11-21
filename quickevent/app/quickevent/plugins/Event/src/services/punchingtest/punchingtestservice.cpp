@@ -230,9 +230,19 @@ void PunchingTestService::onTimerTick()
 	}
 
 	if (candidates.isEmpty()) {
-		setStatusMessage(waiting_for_handover > 0
-						 ? tr("Waiting for handover, %1 legs").arg(waiting_for_handover)
-						 : tr("No eligible runners left"));
+		if (waiting_for_handover > 0) {
+			setStatusMessage(tr("Waiting for handover, %1 legs").arg(waiting_for_handover));
+			return;
+		}
+		// Stopped first, the message box would pop up again on every tick otherwise
+		stop();
+		setStatusMessage(tr("No eligible runners left"));
+		QString class_filter = ss.classFilter().trimmed();
+		QMessageBox::information(qf::gui::framework::MainWindow::frameWork(),
+								 serviceDisplayName(),
+								 class_filter.isEmpty()
+								 ? tr("Punches have been generated for all runners, the service was stopped.")
+								 : tr("Punches have been generated for all runners in classes %1, the service was stopped.").arg(class_filter));
 		return;
 	}
 
