@@ -149,6 +149,51 @@ void RunsPlugin::setCompetitorRunsSiId(int competitor_id, int stage_id, int si_i
 	}
 }
 
+bool RunsPlugin::appendCompetitorNote(int competitor_id, const QString &note, QObject *source)
+{
+	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
+	auto rec = qxsql->readRecord("competitors", competitor_id, QStringList{"note"});
+	if (!rec.has_value()) {
+		qfWarning() << "Cannot append note, competitor not found, id:" << competitor_id;
+		return false;
+	}
+	// readRecord returns lower case field names
+	const QString old_note = rec->value("note").toString();
+	return qxsql->updateRecord("competitors", competitor_id, QVariantMap{{"note", old_note.isEmpty()? note: old_note + ", " + note}}, source);
+}
+
+bool RunsPlugin::setRunCorridorTimeIfEarlier(int run_id, const QDateTime &corridor_time, QObject *source)
+{
+	// conditional update in SQL, the stored corridorTime format differs between the DB drivers
+	qfs::Query q;
+	q.prepare("UPDATE runs SET corridorTime=:corridorTime WHERE id=:runId AND (corridorTime IS NULL OR corridorTime > :corridorTime2)", qf::core::Exception::Throw);
+	q.bindValue(":runId", run_id);
+	q.bindValue(":corridorTime", corridor_time);
+	q.bindValue(":corridorTime2", corridor_time);
+	q.exec(qf::core::Exception::Throw);
+	if (q.numRowsAffected() == 0) {
+		return false;
+	}
+	qf::gui::framework::Application::instance()->qxSql()->emitRecUpdated("runs", run_id, QVariantMap{{"corridorTime", corridor_time}}, source);
+	return true;
+}
+
+bool RunsPlugin::setRunStartTime(int run_id, const QString &start_time, QObject *source)
+{
+	QVariant start_time_ms; // NULL
+	if (!start_time.isEmpty()) {
+		const QDateTime dt = QDateTime::fromString(start_time, Qt::ISODate);
+		if (!dt.isValid()) {
+			qfWarning() << tr("Start time of the run %1 is not valid, not set: %2").arg(run_id).arg(start_time);
+			return false;
+		}
+		const int stage_id = getPlugin<EventPlugin>()->stageIdForRun(run_id);
+		start_time_ms = static_cast<int>(getPlugin<EventPlugin>()->stageStartDateTime(stage_id).msecsTo(dt));
+	}
+	qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", run_id, QVariantMap{{"startTimeMs", start_time_ms}}, source);
+	return true;
+}
+
 void RunsPlugin::onInstalled()
 {
 	qfLogFuncFrame();

@@ -61,6 +61,13 @@ public:
 	const qf::core::utils::Table& runnersTable(int stage_id);
 	Q_SLOT void clearRunnersTableCache();
 	void setCompetitorRunsSiId(int competitor_id, int stage_id, int si_id, bool use_in_next_stages, QObject *source);
+	/// appends the note to the competitor note, separated by a comma
+	bool appendCompetitorNote(int competitor_id, const QString &note, QObject *source);
+	/// sets the corridor time when it is not set yet or the new one is earlier
+	bool setRunCorridorTimeIfEarlier(int run_id, const QDateTime &corridor_time, QObject *source);
+	/// @param start_time ISO date time, empty clears the start time
+	/// @return false when the start time is not valid and nothing was changed
+	bool setRunStartTime(int run_id, const QString &start_time, QObject *source);
 
 	Q_INVOKABLE int courseForRun(int run_id);
 	int courseForRelay(int relay_number, int leg);
