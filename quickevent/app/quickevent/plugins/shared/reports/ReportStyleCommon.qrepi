@@ -18,7 +18,7 @@
 	<Brush name="khaki" color="khaki"/>
 	<Brush name="salmon" color="salmon"/>
 
-	<Font name="default" pointSize="9"/>
+	<Font name="default" pointSize="${options.fontSize|nonzero|default:9}"/>
 	<Font name="bold" basedOn="default" weight="WeightBold"/>
 	<Font name="boldItalic" basedOn="bold" style="StyleItalic"/>
 	<Font name="italic" basedOn="default" style="StyleItalic"/>

@@ -11,16 +11,16 @@
 				<include src="../../shared/reports/QuickEventReportHeader.qrepi"/>
 				<Detail width="%" layout="LayoutVertical">
 					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
-						<Para hinset="1" width="10" textStyle="bold">{{startTimeMin|changed}}</Para>
+						<Para hinset="1" width="${qeFontScaled(10)}" textStyle="bold">{{startTimeMin|changed}}</Para>
 						<Para hinset="1" width="%" textStyle="bold">{{startTimeText|changed}}</Para>
 					</Frame>
 					<Frame width="%" layout="LayoutHorizontal">
-						<Para width="10">{{classes.name}}</Para>
-						<Para visible="${options.isStartListPrintStartNumbers}" width="8" halign="AlignRight">{{competitors.startNumber|positive}}</Para>
+						<Para width="${qeFontScaled(10)}">{{classes.name}}</Para>
+						<Para visible="${options.isStartListPrintStartNumbers}" width="${qeFontScaled(8)}" halign="AlignRight">{{competitors.startNumber|positive}}</Para>
 						<Para hinset="1" width="%">{{competitorName}}</Para>
-						<Para width="16">{{competitors.registration}}</Para>
-						<Para width="15" halign="AlignRight">{{runs.siId}}</Para>
-						<Para width="12" halign="AlignRight">{{startTimeMs|ogTimeSec}}</Para>
+						<Para width="${qeFontScaled(16)}">{{competitors.registration}}</Para>
+						<Para width="${qeFontScaled(15)}" halign="AlignRight">{{runs.siId}}</Para>
+						<Para width="${qeFontScaled(12)}" halign="AlignRight">{{startTimeMs|ogTimeSec}}</Para>
 					</Frame>
 					<Frame visible="${options.startersOptionsLineSpacing|positive|if:true:false}" height="${options.startersOptionsLineSpacing|positive|default:0}"/>
 				</Detail>

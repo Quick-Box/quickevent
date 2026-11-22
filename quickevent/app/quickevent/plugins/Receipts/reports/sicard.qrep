@@ -44,7 +44,7 @@
 			</Detail>
 			<Frame width="%" borderTop="black2"/>
 			<Frame width="%" hinset="1" layout="LayoutHorizontal">
-				<Para>{{data|key:batteryStatus|key:voltage|number:2|prefix:${'Siac battery: '|tr}|suffix:V - }}{{select(data|key:batteryStatus, data|key:batteryStatus|key:low|if:LOW:Ok, '')}}</Para>
+				<Para>{{data|key:batteryStatus|key:voltage|number:2|prefix:${'SIAC battery: '|tr}|suffix:V - }}{{select(data|key:batteryStatus, data|key:batteryStatus|key:low|if:LOW:Ok, '')}}</Para>
 			</Frame>
 		</Band>
 	</Frame>

@@ -257,6 +257,7 @@ QuickEvent registers these additional functions (`quickevent/app/quickevent/src/
 |----------|-------------|
 | `ogRunStatus()` | run status text (`NC`, `DISQ`, `MP`, `DNS`, `DNF`, `OVRT`) from the current row flags |
 | `qeStagePrefix()` | `E<stage> ` prefix of the report title for multi-stage events |
+| `qeFontScaled(mm)` | column width in mm designed for the default 9pt font, scaled to `options.fontSize` (Font size in Print Report Options) |
 | `appVersion()` | application version |
 
 ### Formatters
@@ -294,6 +295,8 @@ QuickEvent formatters:
 
 ```xml
 <Report width="${options.pageWidth|nonzero|default:210}">
+<Font name="default" pointSize="${options.fontSize|nonzero|default:9}"/>
+<Para width="${qeFontScaled(15)}">{{startTimeText}}</Para>
 <Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}"/>
 <Para>{{'length: '|tr}}{{courses.length}}</Para>
 <Para>{{div(band('courses.length'), 1000)|default:0}}km</Para>

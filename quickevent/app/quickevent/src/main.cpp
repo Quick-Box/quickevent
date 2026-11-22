@@ -225,7 +225,6 @@ int main(int argc, char *argv[])
 	qfInfo() << "========================================================";
 	qfInfo() << QDateTime::currentDateTime().toString(Qt::ISODate) << "starting" << QCoreApplication::applicationName() << "ver:" << QCoreApplication::applicationVersion();
 	qfInfo() << "Log tresholds:" << NecroLog::thresholdsLogInfo();
-	qfInfo() << "Open SSL:" << QSslSocket::sslLibraryBuildVersionString();
 
 	qRegisterMetaType<qf::core::LogEntryMap>();
 	quickevent::core::og::TimeMs::registerQVariantFunctions();
@@ -257,6 +256,7 @@ int main(int argc, char *argv[])
 	qfInfo() << "Abort on exception:" << qf::core::Exception::isAbortOnException();
 	qfInfo() << "Application file:" << QCoreApplication::applicationFilePath();
 	qfInfo() << "Application dir:" << QCoreApplication::applicationDirPath();
+	qfInfo() << "Open SSL:" << QSslSocket::sslLibraryBuildVersionString();
 	qfInfo() << "========================================================";
 
 	QString lc_name;

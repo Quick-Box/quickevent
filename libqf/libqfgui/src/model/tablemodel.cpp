@@ -878,7 +878,7 @@ bool TableModel::insertRows(int row_ix, int count, const QModelIndex &parent)
 
 void TableModel::cloneRow(int row_ix)
 {
-	beginInsertRows(QModelIndex(), row_ix, row_ix + 1);
+	beginInsertRows(QModelIndex(), row_ix + 1, row_ix + 1);
 	insertTableRow(row_ix + 1);
 	const qfu::TableRow &r1 = tableRow(row_ix);
 	qfu::TableRow &r2 = tableRowRef(row_ix + 1);

@@ -1835,60 +1835,6 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
     </message>
 </context>
 <context>
-    <name>Classic</name>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="5"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="6"/>
-        <source>DISQ</source>
-        <translation>DISK</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="7"/>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="8"/>
-        <source>-----</source>
-        <translation>-----</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="9"/>
-        <source>!!! RENTED CARD !!!</source>
-        <oldsource>!!! CARD LENT !!!</oldsource>
-        <translation>!!! ZAPŮJČENÝ ČIP !!!</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="10"/>
-        <source>extra: </source>
-        <translation>navíc: </translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="11"/>
-        <source>BAD CHECK !!!</source>
-        <translation>ŠPATNÝ ČAS KONTROLY NULOVÁNÍ ČIPU !!!</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="12"/>
-        <source>current overall loss: +</source>
-        <translation>ztráta na nejlepší mezičasy: +</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="13"/>
-        <source>standings: </source>
-        <translation>pořadí: </translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="14"/>
-        <source>Siac battery: </source>
-        <translation>Baterie Siac: </translation>
-    </message>
-</context>
-<context>
     <name>CodeClassResultsWidget</name>
     <message>
         <location filename="plugins/Speaker/src/codeclassresultswidget.ui" line="14"/>
@@ -2905,6 +2851,11 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <translation>Trať %1 nelze smazat.</translation>
     </message>
     <message>
+        <location filename="plugins/Classes/src/editcourseswidget.cpp" line="95"/>
+        <source>%1 copy</source>
+        <translation>%1 kopie</translation>
+    </message>
+    <message>
         <location filename="plugins/Classes/src/editcourseswidget.cpp" line="49"/>
         <source>Id</source>
         <translation>Id</translation>
@@ -3043,6 +2994,16 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="31"/>
         <source>extra punches = </source>
         <translation>navíc oraženo = </translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>BAD CHECK !!!</source>
+        <translation>ŠPATNÝ ČAS KONTROLY NULOVÁNÍ ČIPU !!!</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>SIAC battery: </source>
+        <translation>Baterie SIAC: </translation>
     </message>
 </context>
 <context>
@@ -10382,9 +10343,9 @@ Soubor s logem: %1</translation>
         <translation>Cíl</translation>
     </message>
     <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="36"/>
-        <source>Siac battery: </source>
-        <translation>Baterie Siac: </translation>
+        <location filename="plugins/Receipts/qml/reports/sicard.qml" line="219"/>
+        <source>SIAC battery: </source>
+        <translation>Baterie SIAC: </translation>
     </message>
 </context>
 <context>

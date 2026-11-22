@@ -16,16 +16,16 @@
 					<Break breakType="${isColumnBreak|if:Column:Page}" visible="${isBreakAfterEachClass}" skipFirst="true"/>
 					<Frame height="2"/>
 					<Frame width="%" vinset="1" layout="LayoutHorizontal" fill="khaki">
-						<Para hinset="1" width="2"/>
+						<Para hinset="1" width="${qeFontScaled(2)}"/>
 						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
 					</Frame>
 					<Band width="%" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutVertical">
 							<Frame width="%" layout="LayoutHorizontal">
-								<Para hinset="1" width="10" halign="AlignRight">{{relays.number}}</Para>
-								<Para hinset="1" width="5"/>
-								<Para hinset="1" width="15" halign="AlignLeft">{{relayName}}</Para>
-								<Para hinset="1" width="5"/>
+								<Para hinset="1" width="${qeFontScaled(10)}" halign="AlignRight">{{relays.number}}</Para>
+								<Para hinset="1" width="${qeFontScaled(5)}"/>
+								<Para hinset="1" width="${qeFontScaled(15)}" halign="AlignLeft">{{relayName}}</Para>
+								<Para hinset="1" width="${qeFontScaled(5)}"/>
 								<Para hinset="1" width="%" halign="AlignLeft">{{clubs.name}}</Para>
 							</Frame>
 						</Detail>

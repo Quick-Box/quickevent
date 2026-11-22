@@ -15,21 +15,21 @@
 					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
 					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
 						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
-						<Para hinset="1" visible="${options.isStartListPrintStartNumbers}" width="16" textStyle="bold" halign="AlignRight">${'Bib'|tr}</Para>
-						<Para hinset="1" width="25" textStyle="bold">${'Registration'|tr}</Para>
-						<Para hinset="1" width="18" textStyle="bold" halign="AlignRight">${'SI'|tr}</Para>
+						<Para hinset="1" visible="${options.isStartListPrintStartNumbers}" width="${qeFontScaled(16)}" textStyle="bold" halign="AlignRight">${'Bib'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(25)}" textStyle="bold">${'Registration'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(18)}" textStyle="bold" halign="AlignRight">${'SI'|tr}</Para>
 						<Repeat var="i" from="1" to="${stagesCount}">
-							<Para hinset="1" textStyle="bold" halign="AlignRight" width="18">${'Stage'|tr}${i}</Para>
+							<Para hinset="1" textStyle="bold" halign="AlignRight" width="${qeFontScaled(18)}">${'Stage'|tr}${i}</Para>
 						</Repeat>
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
 							<Para hinset="1" width="%">{{competitorName}}</Para>
-							<Para hinset="1" visible="${options.isStartListPrintStartNumbers}" width="16" halign="AlignRight">{{startNumber|positive}}</Para>
-							<Para hinset="1" width="25">{{registration}}</Para>
-							<Para hinset="1" width="18" halign="AlignRight">{{competitors.siId}}</Para>
+							<Para hinset="1" visible="${options.isStartListPrintStartNumbers}" width="${qeFontScaled(16)}" halign="AlignRight">{{startNumber|positive}}</Para>
+							<Para hinset="1" width="${qeFontScaled(25)}">{{registration}}</Para>
+							<Para hinset="1" width="${qeFontScaled(18)}" halign="AlignRight">{{competitors.siId}}</Para>
 							<Repeat var="i" from="1" to="${stagesCount}">
-								<Para hinset="1" width="18" halign="AlignRight">{{select(runs${i}.isRunning, runs${i}.startTimeText, '-')}}</Para>
+								<Para hinset="1" width="${qeFontScaled(18)}" halign="AlignRight">{{select(runs${i}.isRunning, runs${i}.startTimeText, '-')}}</Para>
 							</Repeat>
 						</Detail>
 					</Band>

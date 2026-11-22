@@ -1828,59 +1828,6 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
     </message>
 </context>
 <context>
-    <name>Classic</name>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="6"/>
-        <source>DISQ</source>
-        <translation>DISQ</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="5"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="7"/>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="8"/>
-        <source>-----</source>
-        <translation>-----</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="9"/>
-        <source>!!! RENTED CARD !!!</source>
-        <translation>!!! ОРЕНДА ЧИПУ !!!</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="10"/>
-        <source>extra: </source>
-        <translation>додатк: </translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="11"/>
-        <source>BAD CHECK !!!</source>
-        <translation>НЕКОРРЕКТНА ВІДМІТКА !!!</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="12"/>
-        <source>current overall loss: +</source>
-        <translation>поточне відставання: +</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="13"/>
-        <source>standings: </source>
-        <translation>турнірна таблиця: </translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="14"/>
-        <source>Siac battery: </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CodeClassResultsWidget</name>
     <message>
         <location filename="plugins/Speaker/src/codeclassresultswidget.ui" line="14"/>
@@ -3024,6 +2971,16 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
         <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="31"/>
         <source>extra punches = </source>
         <translation>додаткова відмітка = </translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>BAD CHECK !!!</source>
+        <translation>НЕКОРРЕКТНА ВІДМІТКА !!!</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>SIAC battery: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -9744,8 +9701,8 @@ Log file: %1</source>
         <translation>FI</translation>
     </message>
     <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="36"/>
-        <source>Siac battery: </source>
+        <location filename="plugins/Receipts/qml/reports/sicard.qml" line="219"/>
+        <source>SIAC battery: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -21,10 +21,10 @@
 					<Band width="%" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutVertical">
 							<Frame width="%" layout="LayoutHorizontal" valign="AlignBottom">
-								<Para width="9" halign="AlignRight">{{pos|nonzero|suffix:.}}</Para>
+								<Para width="${qeFontScaled(9)}" halign="AlignRight">{{pos|nonzero|suffix:.}}</Para>
 								<Para hinset="1" width="%">{{name}}</Para>
-								<Para width="15" halign="AlignRight">{{time|ogTimeStatus}}</Para>
-								<Para width="17" halign="AlignRight">{{loss|nonzero|ogTime|prefix:+}}</Para>
+								<Para width="${qeFontScaled(15)}" halign="AlignRight">{{time|ogTimeStatus}}</Para>
+								<Para width="${qeFontScaled(17)}" halign="AlignRight">{{loss|nonzero|ogTime|prefix:+}}</Para>
 							</Frame>
 						</Detail>
 					</Band>

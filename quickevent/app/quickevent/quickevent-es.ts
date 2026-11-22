@@ -1836,60 +1836,6 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     </message>
 </context>
 <context>
-    <name>Classic</name>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="5"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="6"/>
-        <source>DISQ</source>
-        <translation>DSQ</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="7"/>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="8"/>
-        <source>-----</source>
-        <translation>-----</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="9"/>
-        <source>!!! RENTED CARD !!!</source>
-        <oldsource>!!! CARD LENT !!!</oldsource>
-        <translation>¡ CHIP ALQUILADO !</translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="10"/>
-        <source>extra: </source>
-        <translation>extra: </translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="11"/>
-        <source>BAD CHECK !!!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="12"/>
-        <source>current overall loss: +</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="13"/>
-        <source>standings: </source>
-        <translation>Clasificación: </translation>
-    </message>
-    <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="14"/>
-        <source>Siac battery: </source>
-        <translation>Batería SIAC: </translation>
-    </message>
-</context>
-<context>
     <name>CodeClassResultsWidget</name>
     <message>
         <location filename="plugins/Speaker/src/codeclassresultswidget.ui" line="14"/>
@@ -3015,6 +2961,16 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
         <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="31"/>
         <source>extra punches = </source>
         <translation>Picadas adicionales = </translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>BAD CHECK !!!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>SIAC battery: </source>
+        <translation>Batería SIAC: </translation>
     </message>
 </context>
 <context>
@@ -9848,8 +9804,8 @@ Archivo de registro: %1</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build/Desktop_Qt_6_12_0_Debug/quickevent/app/quickevent/report_translations.cpp" line="36"/>
-        <source>Siac battery: </source>
+        <location filename="plugins/Receipts/qml/reports/sicard.qml" line="219"/>
+        <source>SIAC battery: </source>
         <translation type="unfinished">Batería SIAC: </translation>
     </message>
 </context>
