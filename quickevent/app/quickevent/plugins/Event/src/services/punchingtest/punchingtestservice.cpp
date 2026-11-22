@@ -12,6 +12,7 @@
 
 #include <quickevent/core/codedef.h>
 #include <quickevent/core/coursedef.h>
+#include <quickevent/gui/reportoptionsdialog.h>
 
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/core/sql/query.h>
@@ -86,22 +87,38 @@ void PunchingTestService::stop()
 	Super::stop();
 }
 
+QString PunchingTestService::classFilterSqlCondition() const
+{
+	// Same wildcard syntax as the class filter in the report options, '*' means anything
+	using quickevent::gui::ReportOptionsDialog;
+	ReportOptionsDialog::Options opts;
+	opts.setUseClassFilter(true);
+	opts.setClassFilterType(static_cast<int>(ReportOptionsDialog::FilterType::WildCard));
+	opts.setClassFilter(settings().classFilter().trimmed());
+	QString condition = ReportOptionsDialog::sqlWhereExpression(opts, 0);
+	return condition.isEmpty()? QString(): QStringLiteral(" AND ") + condition;
+}
+
 int PunchingTestService::shameStartTimeMs(int stage_id) const
 {
 	// The shame start is announced for the whole event once the top 3 positions are decided
 	// in every relay class. Legs with no SI assigned are left out of the counting, such a
-	// relay can never finish and would block the announcement forever.
+	// relay can never finish and would block the announcement forever. The same applies
+	// to the classes left out by the class filter.
 	qf::core::sql::Query q;
 	if (!q.exec(QStringLiteral(
 			"SELECT relays.classId, MAX(runs.finishTimeMs) AS lastFinishMs, COUNT(*) AS legCount,"
 			" SUM(CASE WHEN COALESCE(runs.finishTimeMs, 0)>0 THEN 1 ELSE 0 END) AS finishedCount"
 			" FROM runs"
 			" JOIN relays ON relays.id=runs.relayId"
+			" JOIN classes ON classes.id=relays.classId"
 			" WHERE runs.stageId=%1"
 			" AND runs.isRunning"
 			" AND relays.isRunning"
 			" AND runs.siId>0"
-			" GROUP BY relays.classId, runs.relayId").arg(stage_id))) {
+			" AND NOT runs.notStart"
+			"%2"
+			" GROUP BY relays.classId, runs.relayId").arg(QString::number(stage_id), classFilterSqlCondition()))) {
 		qfWarning() << "PunchingTestService: cannot query relay finish times";
 		return 0;
 	}
@@ -156,25 +173,28 @@ void PunchingTestService::onTimerTick()
 	// the start unit. Competitors of classes with drawn start times start on a signal and
 	// have no start punch in the card.
 	if (!q.exec(QStringLiteral(
-			"SELECT runs.id, runs.siId, runs.startTimeMs,"
+			"SELECT runs.id, runs.competitorId, runs.siId, runs.startTimeMs,"
 			" %3 AS isFreeStart,"
-			" COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') AS competitorName"
+			" COALESCE(competitors.lastName, '') || ' ' || COALESCE(competitors.firstName, '') || ' ' || COALESCE(competitors.registration, '') AS competitorName"
 			"%2"
 			" FROM runs"
 			" LEFT JOIN competitors ON competitors.id=runs.competitorId"
 			" LEFT JOIN relays ON relays.id=runs.relayId"
 			" LEFT JOIN classdefs ON (classdefs.classId=competitors.classId OR classdefs.classId=relays.classId)"
 			" AND classdefs.stageId=runs.stageId"
+			" LEFT JOIN classes ON classes.id=COALESCE(relays.classId, competitors.classId)"
 			" WHERE runs.stageId=%1"
 			" AND runs.isRunning"
-			" AND runs.siId>0"
-			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id).arg(relay_cols).arg(event_plugin->freeStartSqlCondition()))) {
+			" AND NOT runs.notStart"
+			"%4"
+			" AND (runs.finishTimeMs IS NULL OR runs.finishTimeMs=0)").arg(stage_id).arg(relay_cols).arg(event_plugin->freeStartSqlCondition(), classFilterSqlCondition()))) {
 		qfWarning() << "PunchingTestService: cannot query runs";
 		return;
 	}
 
 	struct Candidate {
 		int run_id;
+		int competitor_id;
 		int si_id;
 		int start_time_ms; // ms relative to stage start
 		bool is_free_start;
@@ -182,9 +202,16 @@ void PunchingTestService::onTimerTick()
 	};
 	QList<Candidate> candidates;
 	int waiting_for_handover = 0;
+	auto &app_db_config = event_plugin->appDbConfig();
+	PunchingTestConfig punching_test_cfg = app_db_config.punchingTestConfig(stage_id);
 	while (q.next()) {
 		Candidate cand;
 		cand.run_id = q.value(QStringLiteral("id")).toInt();
+		cand.competitor_id = q.value(QStringLiteral("competitorId")).toInt();
+		// Every competitor reads out once, the card can stay unassigned (unknown or duplicate SI)
+		if (punching_test_cfg.generatedCards.contains(cand.competitor_id)) {
+			continue;
+		}
 		cand.si_id = q.value(QStringLiteral("siId")).toInt();
 		cand.start_time_ms = q.value(QStringLiteral("startTimeMs")).toInt();
 		// In relays the leg start time is taken over from the previous leg finish (handover),
@@ -200,19 +227,43 @@ void PunchingTestService::onTimerTick()
 				continue;
 			}
 		}
+		// Relay first legs have a mass start in waves, their start time is always known,
+		// 0 means the stage start.
+		if (cand.start_time_ms <= 0 && !is_relays) {
+			// Runner has no drawn start — place randomly within the past 60 minutes
+			cand.start_time_ms = static_cast<int>(rng.bounded(60U * 60U * 1000U));
+		}
 		candidates << cand;
 	}
 
 	if (candidates.isEmpty()) {
-		setStatusMessage(waiting_for_handover > 0
-						 ? tr("Waiting for handover, %1 legs").arg(waiting_for_handover)
-						 : tr("No eligible runners left"));
+		if (waiting_for_handover > 0) {
+			setStatusMessage(tr("Waiting for handover, %1 legs").arg(waiting_for_handover));
+			return;
+		}
+		// Stopped first, the message box would pop up again on every tick otherwise
+		stop();
+		setStatusMessage(tr("No eligible runners left"));
+		QString class_filter = ss.classFilter().trimmed();
+		QMessageBox::information(qf::gui::framework::MainWindow::frameWork(),
+								 serviceDisplayName(),
+								 class_filter.isEmpty()
+								 ? tr("Punches have been generated for all runners, the service was stopped.")
+								 : tr("Punches have been generated for all runners in classes %1, the service was stopped.").arg(class_filter));
 		return;
 	}
 
-	int ix = static_cast<int>(rng.bounded(static_cast<quint32>(candidates.size())));
+	// Cards are read out roughly in the start order, a random pick among the earliest
+	// starters simulates different running times.
+	std::sort(candidates.begin(), candidates.end(), [](const Candidate &a, const Candidate &b) {
+		return a.start_time_ms < b.start_time_ms;
+	});
+	static constexpr int START_ORDER_WINDOW = 5;
+	int window = qMin(START_ORDER_WINDOW, static_cast<int>(candidates.size()));
+	int ix = static_cast<int>(rng.bounded(static_cast<quint32>(window)));
 	const Candidate &cand = candidates[ix];
 	int run_id = cand.run_id;
+	int competitor_id = cand.competitor_id;
 	int si_id = cand.si_id;
 	int start_time_ms = cand.start_time_ms;
 	bool is_free_start = cand.is_free_start;
@@ -223,13 +274,6 @@ void PunchingTestService::onTimerTick()
 	QVariantList codes = course.codes();
 
 	int stage_start_ms = event_plugin->stageStartMsec(stage_id);
-
-	// Relay first legs have a mass start in waves, their start time is always known,
-	// 0 means the stage start.
-	if (start_time_ms <= 0 && !is_relays) {
-		// Runner has no drawn start — place randomly within the past 60 minutes
-		start_time_ms = static_cast<int>(rng.bounded(60U * 60U * 1000U));
-	}
 
 	int abs_start_ms = stage_start_ms + start_time_ms;
 	// Finish 20..30 minutes after start
@@ -250,9 +294,11 @@ void PunchingTestService::onTimerTick()
 
 	// Original SI and name are read before the swap below, they tell the operator whom the
 	// punches belong to on a manual assign.
-	QString generated_test_data_note = tr("TEST");
-	if (rng.bounded(static_cast<quint32>(ss.unknownCardRate())) == 0) {
-		generated_test_data_note = tr("TEST, data for: %1, SI %2").arg(competitor_name).arg(si_id);
+	QString generated_test_data_note = si_id > 0
+		? tr("TEST, data for: %1, SI %2").arg(competitor_name).arg(si_id)
+		: tr("TEST, data for: %1, no SI").arg(competitor_name);
+	// A runner without SI reads out a card unknown to the event, like an unreported card
+	if (si_id <= 0 || rng.bounded(static_cast<quint32>(ss.unknownCardRate())) == 0) {
 		si_id = 1000000 + static_cast<int>(rng.bounded(8000000U));
 	}
 
@@ -373,6 +419,10 @@ void PunchingTestService::onTimerTick()
 		static_cast<int>(siut::SiTask::Type::CardRead),
 		card.toVariantMap(),
 		generated_test_data_note);
+
+	// ponytail: whole id list rewritten on every card, fine for a test tool with ~1000 competitors
+	punching_test_cfg.generatedCards.insert(competitor_id);
+	app_db_config.setPunchingTestConfig(stage_id, punching_test_cfg);
 }
 
 qf::gui::framework::DialogWidget *PunchingTestService::createDetailWidget()
