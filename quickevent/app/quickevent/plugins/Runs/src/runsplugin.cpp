@@ -1162,15 +1162,24 @@ qf::core::utils::TreeTable RunsPlugin::addLapsToStageResultsTable(int course_id,
 			lap_times[pos][run_id] = RunStp{.runId=run_id, .time=lap};
 		}
 	}
-	auto make_pos = [](QMap<int, RunStpMap> &times) {
+	const auto time_precision = quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision();
+	auto make_pos = [time_precision](QMap<int, RunStpMap> &times) {
 		const auto control_positions = times.keys();
 		for(int pos : control_positions) {
 			RunStpMap &map = times[pos];
 			QList<RunStp> lst = map.values();
 			std::ranges::sort(lst, [](const RunStp &a, const RunStp &b) { return a.time < b.time; });
+			int prev_pos = 0;
+			int prev_time_ms = -1;
 			for (int i = 0; i < lst.size(); ++i) {
 				const RunStp &rs = lst[i];
-				map[rs.runId].pos = i+1;
+				// quantize to event precision, so that competitors with the same displayed time get the same position
+				int time_ms = quantizeTimeMsec(rs.time, time_precision);
+				if(time_ms != prev_time_ms) {
+					prev_pos = i+1;
+					prev_time_ms = time_ms;
+				}
+				map[rs.runId].pos = prev_pos;
 			}
 		}
 	};
