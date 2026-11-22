@@ -3259,7 +3259,7 @@ QString RunsPlugin::startListStageIofXml30(int stage_id, quickevent::gui::Report
 	QDateTime start00 = getPlugin<EventPlugin>()->stageStartDateTime(stage_id);
 	const auto &event_config = getPlugin<EventPlugin>()->eventConfig();
 	//console.debug("print_vacants", print_vacants);
-	auto tt1 = startListClassesTable(selectedStageId(), "", vacants_option, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
+	auto tt1 = startListClassesTable(stage_id, "", vacants_option, quickevent::gui::ReportOptionsDialog::StartTimeFormat::RelativeToClassStart);
 	bool is_iof_race = event_config.iofRace;
 	int iof_xml_race_number = event_config.iofXmlRaceNumber;
 
