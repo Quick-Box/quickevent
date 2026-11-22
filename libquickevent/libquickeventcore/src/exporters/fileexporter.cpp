@@ -19,7 +19,7 @@ FileExporter::FileExporter(QObject *parent)
 QVariantMap FileExporter::eventInfo()
 {
 	if(m_eventInfo.isEmpty()) {
-		auto q = execSql("SELECT ckey, cvalue FROM config WHERE ckey LIKE 'event.%'");
+		auto q = execSql("SELECT id, cvalue FROM config WHERE id LIKE 'event.%'");
 		while(q.next()) {
 			m_eventInfo[q.value(0).toString().mid(6)] = q.value(1);
 		}

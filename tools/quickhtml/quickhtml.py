@@ -149,7 +149,7 @@ def main():
 # according to current stage in database (manipulated via QuickEvent program)
     while True:
 # Read event data
-        cur.execute("SELECT ckey, cvalue FROM config WHERE ckey LIKE 'event.%'")
+        cur.execute("SELECT id, cvalue FROM config WHERE id LIKE 'event.%'")
         event = {}
         for i in cur:
             (_, field) = i[0].split('.', 2)

@@ -3,7 +3,6 @@
 #include "eventplugin.h"
 #include "eventconfig.h"
 
-#include <cstdint>
 #include <qf/core/assert.h>
 #include <qf/core/utils.h>
 #include <qf/core/sql/connection.h>
@@ -17,6 +16,8 @@
 #include <qf/gui/dialogs/messagebox.h>
 
 #include <QDateTime>
+#include <QSqlQuery>
+#include <QSqlRecord>
 
 using namespace Event;
 
@@ -60,11 +61,21 @@ int AppDbConfig::loadDbVersion(const qf::core::sql::Connection &conn)
 {
 	using namespace qf::core::sql;
 	Query q(conn);
-	q.exec("SELECT cvalue FROM config WHERE ckey = 'db.version'");
+	// called before migration too, event data can still have the old key column
+	q.exec(QStringLiteral("SELECT cvalue FROM config WHERE %1 = 'db.version'").arg(keyColumnName(conn)));
 	if(q.next()) {
 		return q.value(0).toString().toInt();
 	}
 	return 0;
+}
+
+QString AppDbConfig::keyColumnName(const QSqlDatabase &db, const QString &config_table)
+{
+	QSqlQuery q(db);
+	if (q.exec(QStringLiteral("SELECT * FROM %1 LIMIT 0").arg(config_table)) && q.record().contains(QStringLiteral("ckey"))) {
+		return QStringLiteral("ckey");
+	}
+	return QStringLiteral("id");
 }
 
 void AppDbConfig::load()
@@ -90,7 +101,7 @@ void AppDbConfig::load()
 
 	Query q(conn);
 	QueryBuilder qb;
-	qb.select("ckey, cvalue, ctype").from("config");
+	qb.select("id, cvalue, ctype").from("config");
 	if(q.exec(qb.toString(), qf::core::Exception::Throw)) {
 		while(q.next()) {
 			QString key = q.value(0).toString();
@@ -153,23 +164,10 @@ void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 		return;
 	}
 
-	using namespace qf::core::sql;
-	Connection conn = Connection::forName();
-	Query q_id(conn);
-	q_id.prepare("SELECT id FROM config WHERE ckey = :key");
-
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 
 	for (const auto &[key, val] : data.asKeyValueRange()) {
 		auto full_key = prefix.isEmpty() ? key : prefix + "." + key;
-		int64_t id = 0;
-
-		q_id.bindValue(":key", full_key);
-		if(q_id.exec(qf::core::Exception::Throw)) {
-			if (q_id.next()) {
-				id = q_id.value(0).toLongLong();
-			}
-		}
 
 		QString val_str;
 		if(val.typeId() == qMetaTypeId<QDate>())
@@ -182,14 +180,14 @@ void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 			val_str = qf::core::Utils::qvariantToJson(val);
 		else
 			val_str = val.toString();
-		Record record;
-		record["ckey"] = full_key;
+		qf::core::sql::Record record;
 		record["cvalue"] = val_str;
-		if (id == 0) {
+		if (qxsql->readRecord("config", full_key, QStringList{"id"}).has_value()) {
+			qxsql->updateRecord("config", full_key, record, nullptr);
+		} else {
+			record["id"] = full_key;
 			record["ctype"] = val.typeName();
 			qxsql->createRecord("config", record, nullptr);
-		} else {
-			qxsql->updateRecord("config", id, record, nullptr);
 		}
 	}
 }

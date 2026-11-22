@@ -98,7 +98,7 @@ QVariantMap Application::eventInfo()
 {
 	static QVariantMap info;
 	if(info.isEmpty()) {
-		QSqlQuery q = execSql("SELECT ckey, cvalue FROM config WHERE ckey LIKE 'event.%'");
+		QSqlQuery q = execSql("SELECT id, cvalue FROM config WHERE id LIKE 'event.%'");
 		while(q.next())
 			info[q.value(0).toString().mid(6)] = q.value(1);
 		info["profile"] = profile();

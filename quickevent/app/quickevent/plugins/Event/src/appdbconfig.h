@@ -13,6 +13,7 @@
 #include <QVariantMap>
 
 namespace qf::core::sql { class Connection; }
+class QSqlDatabase;
 
 namespace Event {
 
@@ -47,6 +48,8 @@ public:
 	void setQxConfig(const QxConfig &config);
 
 	static int loadDbVersion(const qf::core::sql::Connection &conn);
+	/// config table key column, it is 'ckey' in event data not migrated to 3.10.0 yet, 'id' otherwise
+	static QString keyColumnName(const QSqlDatabase &db, const QString &config_table = QStringLiteral("config"));
 private:
 	void save(const QString &prefix, const QVariantMap &data);
 	void save(const QString &prefix, int stage_id, const QVariantMap &data);

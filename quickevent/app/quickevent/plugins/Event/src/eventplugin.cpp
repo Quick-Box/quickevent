@@ -187,7 +187,7 @@ QList<OpenEventDialog::EventInfo> loadEventInfoList(EventPlugin::ConnectionType 
 				db.setDatabaseName(eventNameToFileName(name));
 				if (db.open()) {
 					QSqlQuery q(db);
-					q.exec(QStringLiteral("SELECT ckey, cvalue FROM config WHERE ckey IN (%1)").arg(SQL_KEYS));
+					q.exec(QStringLiteral("SELECT %1, cvalue FROM config WHERE %1 IN (%2)").arg(AppDbConfig::keyColumnName(db), SQL_KEYS));
 					while (q.next())
 						parseRow(info, q.value(0).toString(), q.value(1).toString());
 					db.close();
@@ -204,7 +204,8 @@ QList<OpenEventDialog::EventInfo> loadEventInfoList(EventPlugin::ConnectionType 
 			OpenEventDialog::EventInfo info;
 			info.id = name;
 			qfs::Query q(conn);
-			if (q.exec(QStringLiteral("SELECT ckey, cvalue FROM %1.config WHERE ckey IN (%2)").arg(name, SQL_KEYS)))
+			const auto config_table = name + QStringLiteral(".config");
+			if (q.exec(QStringLiteral("SELECT %1, cvalue FROM %2 WHERE %1 IN (%3)").arg(AppDbConfig::keyColumnName(conn, config_table), config_table, SQL_KEYS)))
 				while (q.next())
 					parseRow(info, q.value(0).toString(), q.value(1).toString());
 			result << info;
@@ -688,7 +689,7 @@ void EventPlugin::repairStageStarts(const qf::core::sql::Connection &from_conn, 
 {
 	qfs::Query to_q(to_conn);
 	// keys already present in the copied config table win
-	to_q.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (ckey) DO NOTHING");
+	to_q.prepare("INSERT INTO config (id, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (id) DO NOTHING");
 
 	qfs::Query from_q(from_conn);
 	from_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
@@ -1232,6 +1233,12 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 			rec.append(dest_rec.field("isRunning"));
 		}
 	}
+	// config.ckey was renamed to config.id in 3.10.0
+	const bool is_import_config_ckey = table_name == QLatin1String("config")
+			&& src_rec.contains("ckey") && !src_rec.contains("id") && dest_rec.contains("id");
+	if(is_import_config_ckey) {
+		rec.append(dest_rec.field("id"));
+	}
 	// qxchanges.data_id (always runs.id) was replaced by foreign_table + foreign_id
 	const bool is_import_qxchanges_data_id = table_name == QLatin1String("qxchanges")
 			&& src_rec.contains("data_id") && !src_rec.contains("foreign_id")
@@ -1252,7 +1259,7 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	bool has_id_int = false;
 	while(from_q.next()) {
 		if(table_name == QLatin1String("config")) {
-			if(from_q.value("ckey").toString() == QLatin1String("db.version"))
+			if(from_q.value(is_import_config_ckey? QStringLiteral("ckey"): QStringLiteral("id")).toString() == QLatin1String("db.version"))
 				continue;
 		}
 		for (int i = 0; i < rec.count(); ++i) {
@@ -1270,6 +1277,9 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 					// isRunning cannot be NULL, convert NULL to false during import
 					v = from_q.value(fld_name).toBool();
 				}
+			}
+			else if(is_import_config_ckey && fld_name == QLatin1String("id")) {
+				v = from_q.value(QStringLiteral("ckey"));
 			}
 			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_id")) {
 				v = from_q.value(QStringLiteral("data_id"));

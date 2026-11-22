@@ -375,14 +375,14 @@ QVariantMap ReceiptsPlugin::readCardTablesData(int card_id)
 		}
 		{
 			qf::core::sql::QueryBuilder qb;
-			qb.select2("config", "ckey, cvalue, ctype")
+			qb.select2("config", "id, cvalue, ctype")
 					.from("config")
-					.where("ckey LIKE 'event.%'");
+					.where("id LIKE 'event.%'");
 			qf::core::sql::Query q;
 			q.exec(qb.toString());
 			while(q.next()) {
 				QVariant v = qf::core::Utils::retypeStringValue(q.value("cvalue").toString(), q.value("ctype").toString());
-				tt.setValue(q.value("ckey").toString(), v);
+				tt.setValue(q.value("id").toString(), v);
 			}
 		}
 		tt.setValue("stageCount", getPlugin<EventPlugin>()->stageCount());
@@ -593,14 +593,14 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 		}
 		{
 			qf::core::sql::QueryBuilder qb;
-			qb.select2("config", "ckey, cvalue, ctype")
+			qb.select2("config", "id, cvalue, ctype")
 					.from("config")
-					.where("ckey LIKE 'event.%'");
+					.where("id LIKE 'event.%'");
 			qf::core::sql::Query q;
 			q.exec(qb.toString());
 			while(q.next()) {
 				QVariant v = qf::core::Utils::retypeStringValue(q.value("cvalue").toString(), q.value("ctype").toString());
-				tt.setValue(q.value("ckey").toString(), v);
+				tt.setValue(q.value("id").toString(), v);
 			}
 		}
 		tt.setValue("appVersion", QCoreApplication::applicationVersion());
@@ -687,14 +687,14 @@ QVariantMap ReceiptsPlugin::receiptTablesData(int card_id)
 		tt.setValue("relayNumber", relay_num);
 		{
 			qf::core::sql::QueryBuilder qb;
-			qb.select2("config", "ckey, cvalue, ctype")
+			qb.select2("config", "id, cvalue, ctype")
 				.from("config")
-				.where("ckey LIKE 'event.%'");
+				.where("id LIKE 'event.%'");
 			qf::core::sql::Query q;
 			q.exec(qb.toString());
 			while(q.next()) {
 				QVariant v = qf::core::Utils::retypeStringValue(q.value("cvalue").toString(), q.value("ctype").toString());
-				tt.setValue(q.value("ckey").toString(), v);
+				tt.setValue(q.value("id").toString(), v);
 			}
 		}
 		tt.setValue("appVersion", QCoreApplication::applicationVersion());

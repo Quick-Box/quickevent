@@ -79,10 +79,10 @@ void setRowValues(qf::core::utils::TreeTable &tt, int row_ix, const QVariantMap 
 void applyEventConfigValues(qf::core::utils::TreeTable &tt)
 {
 	qf::core::sql::Query q;
-	q.exec(QStringLiteral("SELECT ckey, cvalue, ctype FROM config WHERE ckey LIKE 'event.%'"));
+	q.exec(QStringLiteral("SELECT id, cvalue, ctype FROM config WHERE id LIKE 'event.%'"));
 	while(q.next()) {
 		QVariant v = qf::core::Utils::retypeStringValue(q.value(QStringLiteral("cvalue")).toString(), q.value(QStringLiteral("ctype")).toString());
-		tt.setValue(q.value(QStringLiteral("ckey")).toString(), v);
+		tt.setValue(q.value(QStringLiteral("id")).toString(), v);
 	}
 }
 
