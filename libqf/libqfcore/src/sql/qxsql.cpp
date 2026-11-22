@@ -56,7 +56,16 @@ void QxSqlApi::transaction(const QString &query, const QVariantList &params, QSq
 	transaction.commit();
 }
 
-qint64 QxSqlApi::createRecord(const QString &table, const Record &record, const QString &issuer)
+QList<Record> QxSqlApi::listRecords(const QString &table, const std::optional<QStringList> &fields, const std::optional<RecId> &ids_above, const std::optional<qint64> &limit)
+{
+	std::optional<IdFilter> id_filter;
+	if (ids_above.has_value()) {
+		id_filter = IdFilter{.op = IdFilter::Op::Above, .id = *ids_above};
+	}
+	return listOneOrMoreRecords(table, fields, id_filter, limit);
+}
+
+RecId QxSqlApi::createRecord(const QString &table, const Record &record, const QString &issuer)
 {
 	Q_UNUSED(issuer)
 	QStringList keys;
@@ -76,61 +85,71 @@ qint64 QxSqlApi::createRecord(const QString &table, const Record &record, const 
 		throw qf::core::Exception("Insert should return an ID");
 	}
 
-	bool ok = false;
-	qint64 id = result.rows[0][0].toLongLong(&ok);
-
-	if (!ok) {
-		throw qf::core::Exception("Insert should return an integer ID");
+	const auto &id = result.rows[0][0];
+	if (id.typeId() == QMetaType::QString) {
+		return RecId(id.toString());
 	}
-
-	return id;
+	bool ok = false;
+	qint64 int_id = id.toLongLong(&ok);
+	if (!ok) {
+		throw qf::core::Exception(QStringLiteral("Insert should return an integer or string ID, got: %1").arg(id.typeName()));
+	}
+	return RecId(int_id);
 }
 
-std::optional<Record> QxSqlApi::readRecord(const QString &table, qint64 id, const std::optional<QStringList> &fields)
+std::optional<Record> QxSqlApi::readRecord(const QString &table, const RecId &id, const std::optional<QStringList> &fields)
 {
-	auto records = listOneOrMoreRecords(table, fields, id, 1);
+	auto records = listOneOrMoreRecords(table, fields, IdFilter{.op = IdFilter::Op::Equal, .id = id}, 1);
 	if (!records.isEmpty()) {
 		return records.first();
 	}
 	return std::nullopt;
 }
 
-bool QxSqlApi::updateRecord(const QString &table, qint64 id, const Record &record, const QString &issuer)
+bool QxSqlApi::updateRecord(const QString &table, const RecId &id, const Record &record, const QString &issuer)
 {
 	Q_UNUSED(issuer)
+	static const auto ID = QStringLiteral("id");
+	if (auto it = record.constFind(ID); it != record.cend() && RecId::fromVariant(it.value()) != id) {
+		throw qf::core::Exception("Record ID cannot be updated");
+	}
 	QStringList keyVals;
-
 	for (auto it = record.begin(); it != record.end(); ++it) {
-		keyVals << QString("%1 = :%1").arg(it.key());
+		if (it.key() != ID) {
+			keyVals << QString("%1 = :%1").arg(it.key());
+		}
+	}
+	if (keyVals.isEmpty()) {
+		throw qf::core::Exception("Nothing to update");
 	}
 
-	QString qs = QString("UPDATE %1 SET %2 WHERE id = %3")
-			.arg(table, keyVals.join(", "), QString::number(id));
-	ExecResult res = exec(qs, record);
+	QString qs = QString("UPDATE %1 SET %2 WHERE id = :id").arg(table, keyVals.join(", "));
+	auto params = record;
+	params[ID] = id.toVariant();
+	ExecResult res = exec(qs, params);
 	return res.numRowsAffected == 1;
 }
 
-bool QxSqlApi::deleteRecord(const QString &table, qint64 id, const QString &issuer)
+bool QxSqlApi::deleteRecord(const QString &table, const RecId &id, const QString &issuer)
 {
 	Q_UNUSED(issuer)
-	QString qs = QString("DELETE FROM %1 WHERE id = %2").arg(table, QString::number(id));
+	QString qs = QString("DELETE FROM %1 WHERE id = :id").arg(table);
 
-	ExecResult res = exec(qs, {});
+	ExecResult res = exec(qs, {{"id", id.toVariant()}});
 	return res.numRowsAffected == 1;
 }
 
-QList<Record> QxSqlApi::listOneOrMoreRecords(const QString &table, const std::optional<QStringList> &fields, const std::optional<qint64> &id, const std::optional<qint64> &limit)
+QList<Record> QxSqlApi::listOneOrMoreRecords(const QString &table, const std::optional<QStringList> &fields, const std::optional<IdFilter> &id_filter, const std::optional<qint64> &limit)
 {
-	QString fieldsStr =
-			(fields && !fields->isEmpty()) ? fields->join(", ") : "*";
+	QString fieldsStr = (fields && !fields->isEmpty()) ? fields->join(", ") : "*";
 
 	QString qs = QString("SELECT %1 FROM %2").arg(fieldsStr, table);
 
-	if (id.has_value() && limit.has_value() && *limit == 1) {
-		qs += QString(" WHERE id = %1").arg(*id);
-	}
-	else if (id.has_value()) {
-		qs += QString(" WHERE id >= %1").arg(*id);
+	Record params;
+	if (id_filter.has_value()) {
+		auto op = id_filter->op == IdFilter::Op::Equal? QStringLiteral("="): QStringLiteral(">");
+		qs += QString(" WHERE id %1 :id").arg(op);
+		params["id"] = id_filter->id.toVariant();
 	}
 
 	qs += QString(" ORDER BY id");
@@ -139,7 +158,7 @@ QList<Record> QxSqlApi::listOneOrMoreRecords(const QString &table, const std::op
 		qs += QString(" LIMIT %1").arg(*limit);
 	}
 
-	QueryResult result = query(qs, {});
+	QueryResult result = query(qs, params);
 
 	QList<Record> records;
 	records.reserve(result.rows.size()); // still valid for QList (Qt 6)
@@ -237,9 +256,9 @@ ExecResult QxSql::exec(const QString &query, const QVariantMap &params)
 	return m_sqlApi.exec(query, params);
 }
 
-QList<Record> QxSql::listRecords(const QString &table, const std::optional<QStringList> &fields, const std::optional<qint64> &fromId, const std::optional<qint64> &limit)
+QList<Record> QxSql::listRecords(const QString &table, const std::optional<QStringList> &fields, const std::optional<RecId> &ids_above, const std::optional<qint64> &limit)
 {
-	return m_sqlApi.listRecords(table, fields, fromId, limit);
+	return m_sqlApi.listRecords(table, fields, ids_above, limit);
 }
 
 void QxSql::transaction(const QString &query, const QVariantList &params)
@@ -247,7 +266,7 @@ void QxSql::transaction(const QString &query, const QVariantList &params)
 	m_sqlApi.transaction(query, params);
 }
 
-qint64 QxSql::createRecord(const QString &table, const Record &record, QObject *source)
+RecId QxSql::createRecord(const QString &table, const Record &record, QObject *source)
 {
 	auto id = m_sqlApi.createRecord(table, record, m_issuer);
 	emit recChng(qf::core::sql::QxRecChng{.table = table,
@@ -259,12 +278,12 @@ qint64 QxSql::createRecord(const QString &table, const Record &record, QObject *
 	return id;
 }
 
-std::optional<Record> QxSql::readRecord(const QString &table, qint64 id, const std::optional<QStringList> &fields)
+std::optional<Record> QxSql::readRecord(const QString &table, const RecId &id, const std::optional<QStringList> &fields)
 {
 	return m_sqlApi.readRecord(table, id, fields);
 }
 
-bool QxSql::updateRecord(const QString &table, qint64 id, const Record &record, QObject *source)
+bool QxSql::updateRecord(const QString &table, const RecId &id, const Record &record, QObject *source)
 {
 	auto ok = m_sqlApi.updateRecord(table, id, record, m_issuer);
 	if (ok) {
@@ -278,7 +297,7 @@ bool QxSql::updateRecord(const QString &table, qint64 id, const Record &record, 
 	return ok;
 }
 
-bool QxSql::deleteRecord(const QString &table, qint64 id, QObject *source)
+bool QxSql::deleteRecord(const QString &table, const RecId &id, QObject *source)
 {
 	auto ok = m_sqlApi.deleteRecord(table, id, m_issuer);
 	if (ok) {
@@ -292,7 +311,7 @@ bool QxSql::deleteRecord(const QString &table, qint64 id, QObject *source)
 	return ok;
 }
 
-void QxSql::emitRecInserted(const QString &table, qint64 id, const QVariantMap &record, QObject *source)
+void QxSql::emitRecInserted(const QString &table, const RecId &id, const QVariantMap &record, QObject *source)
 {
 	emit recChng(qf::core::sql::QxRecChng{
 		.table = table,
@@ -303,7 +322,7 @@ void QxSql::emitRecInserted(const QString &table, qint64 id, const QVariantMap &
 	}, source);
 }
 
-void QxSql::emitRecUpdated(const QString &table, qint64 id, const QVariantMap &record, QObject *source)
+void QxSql::emitRecUpdated(const QString &table, const RecId &id, const QVariantMap &record, QObject *source)
 {
 	emit recChng(qf::core::sql::QxRecChng{
 		.table = table,
@@ -314,7 +333,7 @@ void QxSql::emitRecUpdated(const QString &table, qint64 id, const QVariantMap &r
 	}, source);
 }
 
-void QxSql::emitRecDeleted(const QString &table, qint64 id, QObject *source)
+void QxSql::emitRecDeleted(const QString &table, const RecId &id, QObject *source)
 {
 	emit recChng(qf::core::sql::QxRecChng{
 		.table = table,

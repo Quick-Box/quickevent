@@ -13,12 +13,36 @@ RecOp recopFromString(const QString &s)
 	return RecOp::Update;
 }
 }
+RecId RecId::fromVariant(const QVariant &v)
+{
+	if (v.typeId() == QMetaType::QString) {
+		return RecId(v.toString());
+	}
+	return RecId(v.toLongLong());
+}
+
+QString RecId::toString() const
+{
+	if (isString()) {
+		return std::get<QString>(m_id);
+	}
+	return QString::number(std::get<qint64>(m_id));
+}
+
+QVariant RecId::toVariant() const
+{
+	if (isString()) {
+		return std::get<QString>(m_id);
+	}
+	return std::get<qint64>(m_id);
+}
+
 QVariantMap QxRecChng::toVariantMap() const
 {
 	QVariantMap ret;
 	ret["table"] = table;
 	ret["op"] = recopToString(op);
-	ret["id"] = id;
+	ret["id"] = id.toVariant();
 	if (op != RecOp::Delete) {
 		ret["record"] = record;
 	}
@@ -33,7 +57,7 @@ QxRecChng QxRecChng::fromVariantMap(const QVariantMap &m)
 	QxRecChng ret;
 	ret.table = m.value("table").toString();
 	ret.op = recopFromString(m.value("op").toString());
-	ret.id = m.value("id").value<qint64>();
+	ret.id = RecId::fromVariant(m.value("id"));
 	if (ret.op != RecOp::Delete) {
 		ret.record = m.value("record").toMap();
 	}

@@ -55,22 +55,25 @@ public:
 	QList<Record> listRecords(
 			const QString &table,
 			const std::optional<QStringList> &fields = std::nullopt,
-			const std::optional<qint64> &fromId = std::nullopt,
-			const std::optional<qint64> &limit = std::nullopt)
-	{
-		return listOneOrMoreRecords(table, fields, fromId, limit);
-	}
+			const std::optional<RecId> &idsAbove = std::nullopt,
+			const std::optional<qint64> &limit = std::nullopt);
 	void transaction(const QString &query, const QVariantList &params, QSqlDatabase db);
 
-	qint64 createRecord(const QString &table, const Record &record, const QString &issuer);
-	std::optional<Record> readRecord(const QString &table, qint64 id, const std::optional<QStringList> &fields = std::nullopt);
-	bool updateRecord(const QString &table, qint64 id, const Record &record, const QString &issuer);
-	bool deleteRecord(const QString &table, qint64 id, const QString &issuer);
+	RecId createRecord(const QString &table, const Record &record, const QString &issuer);
+	std::optional<Record> readRecord(const QString &table, const RecId &id, const std::optional<QStringList> &fields = std::nullopt);
+	bool updateRecord(const QString &table, const RecId &id, const Record &record, const QString &issuer);
+	bool deleteRecord(const QString &table, const RecId &id, const QString &issuer);
 protected:
+	struct IdFilter
+	{
+		enum class Op { Equal, Above };
+		Op op;
+		RecId id;
+	};
 	QList<Record> listOneOrMoreRecords(
 			const QString &table,
 			const std::optional<QStringList> &fields,
-			const std::optional<qint64> &id,
+			const std::optional<IdFilter> &idFilter,
 			const std::optional<qint64> &limit);
 };
 
@@ -100,18 +103,18 @@ public:
 	QList<Record> listRecords(
 			const QString &table,
 			const std::optional<QStringList> &fields = std::nullopt,
-			const std::optional<qint64> &fromId = std::nullopt,
+			const std::optional<RecId> &idsAbove = std::nullopt,
 			const std::optional<qint64> &limit = std::nullopt);
 	void transaction(const QString &query, const QVariantList &params);
 
-	qint64 createRecord(const QString &table, const Record &record, QObject *source);
-	std::optional<Record> readRecord(const QString &table, qint64 id, const std::optional<QStringList> &fields = std::nullopt);
-	bool updateRecord(const QString &table, qint64 id, const Record &record, QObject *source);
-	bool deleteRecord(const QString &table, qint64 id, QObject *source);
+	RecId createRecord(const QString &table, const Record &record, QObject *source);
+	std::optional<Record> readRecord(const QString &table, const RecId &id, const std::optional<QStringList> &fields = std::nullopt);
+	bool updateRecord(const QString &table, const RecId &id, const Record &record, QObject *source);
+	bool deleteRecord(const QString &table, const RecId &id, QObject *source);
 
-	void emitRecInserted(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
-	void emitRecUpdated(const QString &table, qint64 id, const QVariantMap &record, QObject *source);
-	void emitRecDeleted(const QString &table, qint64 id, QObject *source);
+	void emitRecInserted(const QString &table, const RecId &id, const QVariantMap &record, QObject *source);
+	void emitRecUpdated(const QString &table, const RecId &id, const QVariantMap &record, QObject *source);
+	void emitRecDeleted(const QString &table, const RecId &id, QObject *source);
 	void emitRecChng(const qf::core::sql::QxRecChng &recchng, QObject *source);
 private:
 	QString m_issuer;

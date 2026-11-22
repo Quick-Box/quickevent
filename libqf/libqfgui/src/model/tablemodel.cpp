@@ -668,14 +668,14 @@ void TableModel::applyQxRecChng(const core::sql::QxRecChng &recchng, QObject *so
 	if (source == this) {
 		return;
 	}
-	auto find_row_by_id = [this](const QString &table_name, int id) {
+	auto find_row_by_id = [this](const QString &table_name, const qf::core::sql::RecId &id) {
 		if (auto fld_ix = table().fields().fieldIndex(table_name + ".id"); fld_ix >= 0) {
 			for (int i = 0; i < rowCount(); ++i) {
-				if (table().row(i).value(fld_ix).toInt() == id) {
+				if (qf::core::sql::RecId::fromVariant(table().row(i).value(fld_ix)) == id) {
 					return i;
 				}
 			}
-			qfMessage() << "cannot find table row with id:" << id;
+			qfMessage() << "cannot find table row with id:" << id.toString();
 		} else {
 			// not every change is addressing every table model
 			qfMessage() << metaObject()->className() << objectName() << "cannot find table column:" << (table_name + ".id");
@@ -690,7 +690,7 @@ void TableModel::applyQxRecChng(const core::sql::QxRecChng &recchng, QObject *so
 		if (auto fld_ix = table().fields().fieldIndex(recchng.table + ".id"); fld_ix >= 0) {
 			beginInsertRows({}, 0, 0);
 			auto row = insertTableRow(0);
-			tableRowRef(row).setValue(fld_ix, recchng.id);
+			tableRowRef(row).setValue(fld_ix, recchng.id.toVariant());
 			endInsertRows();
 			qfMessage() << "reloading inserted row:" << row << "table:" << recchng.table;
 			reloadRow(row);
@@ -721,7 +721,7 @@ void TableModel::applyQxRecChng(const core::sql::QxRecChng &recchng, QObject *so
 	}
 	else if (recchng.op == qf::core::sql::RecOp::Delete) {
 		if (int row = find_row_by_id(recchng.table, recchng.id); row >= 0) {
-			qfMessage() << "deleteing row:" << row << (recchng.table + ".id") << recchng.id;
+			qfMessage() << "deleteing row:" << row << (recchng.table + ".id") << recchng.id.toString();
 			removeRowNoOverload(row, !qf::core::Exception::Throw);
 		}
 	}

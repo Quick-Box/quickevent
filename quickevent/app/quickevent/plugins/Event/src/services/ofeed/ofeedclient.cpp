@@ -439,7 +439,7 @@ void OFeedClient::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *
 	int stage_id = getPlugin<EventPlugin>()->currentStageId();
 
 	if (recchng.table == QLatin1String("runs")) {
-		int run_id = static_cast<int>(recchng.id);
+		int run_id = static_cast<int>(recchng.id.toInt64());
 		switch (recchng.op) {
 		case qf::core::sql::RecOp::Insert: {
 			// runs record is inserted for every stage, the new competitor is sent just once
@@ -473,7 +473,7 @@ void OFeedClient::onQxRecChng(const qf::core::sql::QxRecChng &recchng, QObject *
 		}
 	}
 	else if (recchng.table == QLatin1String("competitors") && recchng.op == qf::core::sql::RecOp::Update) {
-		int run_id = getPlugin<RunsPlugin>()->runForCompetitorStage(static_cast<int>(recchng.id), stage_id);
+		int run_id = getPlugin<RunsPlugin>()->runForCompetitorStage(static_cast<int>(recchng.id.toInt64()), stage_id);
 		if (run_id > 0) {
 			queueRunChange(run_id, recchng.table, recchng.record);
 		}

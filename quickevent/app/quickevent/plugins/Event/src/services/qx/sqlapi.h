@@ -30,6 +30,8 @@ struct SqlQueryAndParams
 };
 
 shv::chainpack::RpcValue qxRecChngToRpcValue(const qf::core::sql::QxRecChng &chng);
+qf::core::sql::RecId rpcValueToRecId(const shv::chainpack::RpcValue &rv);
+shv::chainpack::RpcValue recIdToRpcValue(const qf::core::sql::RecId &id);
 
 
 class SqlApi : public QObject
@@ -43,11 +45,11 @@ public:
 	ExecResult exec(const SqlQueryAndParams &params);
 	QueryResult query(const SqlQueryAndParams &params);
 	void transaction(const std::string &query, const shv::chainpack::RpcValue::List &params);
-	shv::chainpack::RpcValue::List list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit);
-	int64_t create(const std::string &table, const shv::chainpack::RpcValue::Map &record);
-	std::optional<shv::chainpack::RpcValue::Map> read(const std::string &table, int64_t id, const std::vector<std::string> &fields);
-	bool update(const std::string &table, int64_t id, const shv::chainpack::RpcValue::Map &record);
-	bool drop(const std::string &table, int64_t id);
+	shv::chainpack::RpcValue::List list(const std::string &table, const std::vector<std::string> &fields, std::optional<qf::core::sql::RecId> ids_above, std::optional<int64_t> limit);
+	qf::core::sql::RecId create(const std::string &table, const shv::chainpack::RpcValue::Map &record);
+	std::optional<shv::chainpack::RpcValue::Map> read(const std::string &table, const qf::core::sql::RecId &id, const std::vector<std::string> &fields);
+	bool update(const std::string &table, const qf::core::sql::RecId &id, const shv::chainpack::RpcValue::Map &record);
+	bool drop(const std::string &table, const qf::core::sql::RecId &id);
 };
 
 }
