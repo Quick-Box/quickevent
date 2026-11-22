@@ -718,7 +718,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 				p = "N";
 			else if(disqualified)
 				p = "D";
-			if (!not_competing && !disqualified) {
+			if (!not_competing && !disqualified && time_ms > 0) {
 				best_time = std::min(best_time, time_ms);
 			}
 			mod.setValue(row_ix, QString("pos%1").arg(stage_id), p);
@@ -741,7 +741,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 			}
 			if (max_points > 0) {
 				int stage_pts = 0;
-				if (pos > 0 && stage_time_ms < UNREAL_TIME_MSEC) {
+				if (pos > 0 && stage_time_ms > 0 && stage_time_ms < UNREAL_TIME_MSEC) {
 					auto stage_best_time = stage_to_best_time.value(stage_id, UNREAL_TIME_MSEC);
 					if (stage_best_time < UNREAL_TIME_MSEC) {
 						stage_pts = static_cast<int>(std::round(static_cast<double>(max_points) * stage_best_time / stage_time_ms));
@@ -996,7 +996,7 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		tt2.appendColumn("loss", QMetaType(QMetaType::Int));
 		tt2.appendColumn("points", QMetaType(QMetaType::Int));
 		int first_time_ms = 0;
-		int prev_time_ms = 0;
+		int prev_time_ms = -1;
 		int prev_pos = 0;
 		std::optional<int> best_time_ms;
 		for(int j=0; j<tt2.rowCount(); j++) {
@@ -1036,7 +1036,10 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 				if (tt2_row.value(QStringLiteral("npos")).toInt() == 0) {
 					continue;
 				}
-				auto time_ms = tt2_row.value(QStringLiteral("timeMs")).toInt();
+				auto time_ms = quantizeTimeMsec(tt2_row.value(QStringLiteral("timeMs")).toInt(), time_precision);
+				if (time_ms <= 0) {
+					continue;
+				}
 				auto points = std::round(static_cast<double>(max_points) * best_time_ms.value() / time_ms);
 				tt2_row.setValue(QStringLiteral("points"), static_cast<int>(points));
 				tt2.setRow(i, tt2_row);

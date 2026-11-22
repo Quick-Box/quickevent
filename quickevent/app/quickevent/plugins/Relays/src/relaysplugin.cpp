@@ -451,7 +451,7 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 			for (int i = 0; i < relays.count(); ++i) {
 				if(relays[i].relayId == relay_id) {
 					if(run_pos == 1) {
-						winner_time = q.value("timeMs").toInt();
+						winner_time = quantizeTimeMsec(q.value("timeMs").toInt(), time_precision);
 					}
 					int run_id = q.value("runs.id").toInt();
 					Relay &relay = relays[i];
@@ -462,10 +462,10 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 					else {
 						leg.runStatus = quickevent::core::RunStatus::fromQuery(q);
 						leg.time = q.value("timeMs").toInt();
-						leg.loss = leg.time - winner_time;
+						// quantize to event precision, so that competitors with the same displayed time get the same position and loss
+						int time_ms = quantizeTimeMsec(leg.time, time_precision);
+						leg.loss = time_ms - winner_time;
 						if (leg.runStatus.isOk() && leg.time > 0) {
-							// quantize to event precision, so that competitors with the same displayed time get the same position
-							int time_ms = quantizeTimeMsec(leg.time, time_precision);
 							if(time_ms != prev_time_ms) {
 								prev_pos = run_pos;
 								prev_time_ms = time_ms;
@@ -502,7 +502,7 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 		int pos = 0;
 		int pos_diff = 1;
 		int prev_time = -1;
-		int winner_time = (!relay_stime.empty()) ? relay_stime.begin()->stime : 0;
+		int winner_time = (!relay_stime.empty()) ? quantizeTimeMsec(relay_stime.begin()->stime, time_precision) : 0;
 		for(const auto &p : relay_stime) {
 			int relay_id = p.relayId;
 			for (int i = 0; i < relays.count(); ++i) {
@@ -510,15 +510,16 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 					Relay &relay = relays[i];
 					Leg &leg = relay.legs[legno];
 					int stime = quantizeTimeMsec(p.stime, time_precision);
-					if (stime == prev_time)
+					if (stime == prev_time) {
 						pos_diff++;
+					}
 					else {
 						pos += pos_diff;
 						pos_diff = 1;
 						prev_time = stime;
 					}
 					leg.spos = pos;
-					leg.lossOverall = p.stime - winner_time;
+					leg.lossOverall = stime - winner_time;
 					break;
 				}
 			}
