@@ -1836,60 +1836,6 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
     </message>
 </context>
 <context>
-    <name>Classic</name>
-    <message>
-        <source>E</source>
-        <translation type="vanished">E</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="256"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="256"/>
-        <source>DISQ</source>
-        <translation>DISK</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="270"/>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="282"/>
-        <source>-----</source>
-        <translation>-----</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="338"/>
-        <source>!!! RENTED CARD !!!</source>
-        <oldsource>!!! CARD LENT !!!</oldsource>
-        <translation>!!! ZAPŮJČENÝ ČIP !!!</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="353"/>
-        <source>extra: </source>
-        <translation>navíc: </translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="365"/>
-        <source>BAD CHECK !!!</source>
-        <translation>ŠPATNÝ ČAS KONTROLY NULOVÁNÍ ČIPU !!!</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="385"/>
-        <source>current overall loss: +</source>
-        <translation>ztráta na nejlepší mezičasy: +</translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="400"/>
-        <source>standings: </source>
-        <translation>pořadí: </translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="426"/>
-        <source>Siac battery: </source>
-        <translation>Baterie Siac: </translation>
-    </message>
-</context>
-<context>
     <name>CodeClassResultsWidget</name>
     <message>
         <location filename="plugins/Speaker/src/codeclassresultswidget.ui" line="14"/>
@@ -3040,6 +2986,16 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="560"/>
         <source>extra punches = </source>
         <translation>navíc oraženo = </translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>BAD CHECK !!!</source>
+        <translation>ŠPATNÝ ČAS KONTROLY NULOVÁNÍ ČIPU !!!</translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>SIAC battery: </source>
+        <translation>Baterie SIAC: </translation>
     </message>
 </context>
 <context>
@@ -10176,8 +10132,8 @@ Soubor s logem: %1</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/qml/reports/sicard.qml" line="219"/>
-        <source>Siac battery: </source>
-        <translation>Baterie Siac: </translation>
+        <source>SIAC battery: </source>
+        <translation>Baterie SIAC: </translation>
     </message>
 </context>
 <context>

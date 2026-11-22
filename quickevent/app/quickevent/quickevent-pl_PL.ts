@@ -1780,55 +1780,6 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
     </message>
 </context>
 <context>
-    <name>Classic</name>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="256"/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="256"/>
-        <source>DISQ</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="270"/>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="282"/>
-        <source>-----</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="338"/>
-        <source>!!! RENTED CARD !!!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="353"/>
-        <source>extra: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="365"/>
-        <source>BAD CHECK !!!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="385"/>
-        <source>current overall loss: +</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="400"/>
-        <source>standings: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="plugins/Receipts/qml/reports/receipts/Classic.qml" line="426"/>
-        <source>Siac battery: </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CodeClassResultsWidget</name>
     <message>
         <location filename="plugins/Speaker/src/codeclassresultswidget.cpp" line="37"/>
@@ -2788,6 +2739,16 @@ Consider setting &quot;Interval&quot; column for all classes before continuing.<
     <message>
         <location filename="plugins/Receipts/qml/reports/receipts/Default.qml" line="560"/>
         <source>extra punches = </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>BAD CHECK !!!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="plugins/Receipts/reports/receipts/Default.qrep"/>
+        <source>SIAC battery: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -8767,7 +8728,7 @@ editing is disabled.</source>
     </message>
     <message>
         <location filename="plugins/Receipts/qml/reports/sicard.qml" line="219"/>
-        <source>Siac battery: </source>
+        <source>SIAC battery: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
