@@ -215,8 +215,9 @@ bool DbSchema::migrate(const qf::core::sql::Connection &conn)
 			// claim the step first, only the client which still sees the old version succeeds,
 			// concurrent client waits here and then finds nothing to do
 			// key column is renamed by migrate_31000
+			auto config_id_key = current_version < 31000? "ckey": "id";
 			const auto claim = QStringLiteral("UPDATE config SET cvalue='%1' WHERE %2='db.version' AND cvalue='%3'")
-					.arg(next_version).arg(Event::AppDbConfig::keyColumnName(conn)).arg(current_version);
+					.arg(next_version).arg(config_id_key).arg(current_version);
 			if (!q.exec(claim)) {
 				qfError() << "Cannot update event data version:" << q.lastError().text();
 				return false;

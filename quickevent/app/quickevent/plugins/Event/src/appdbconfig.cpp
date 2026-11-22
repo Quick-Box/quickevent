@@ -62,20 +62,11 @@ int AppDbConfig::loadDbVersion(const qf::core::sql::Connection &conn)
 	using namespace qf::core::sql;
 	Query q(conn);
 	// called before migration too, event data can still have the old key column
-	q.exec(QStringLiteral("SELECT cvalue FROM config WHERE %1 = 'db.version'").arg(keyColumnName(conn)));
+	q.exec(QStringLiteral("SELECT cvalue FROM config WHERE ckey = 'db.version'"));
 	if(q.next()) {
 		return q.value(0).toString().toInt();
 	}
 	return 0;
-}
-
-QString AppDbConfig::keyColumnName(const QSqlDatabase &db, const QString &config_table)
-{
-	QSqlQuery q(db);
-	if (q.exec(QStringLiteral("SELECT * FROM %1 LIMIT 0").arg(config_table)) && q.record().contains(QStringLiteral("ckey"))) {
-		return QStringLiteral("ckey");
-	}
-	return QStringLiteral("id");
 }
 
 void AppDbConfig::load()

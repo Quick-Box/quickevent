@@ -187,9 +187,14 @@ QList<OpenEventDialog::EventInfo> loadEventInfoList(EventPlugin::ConnectionType 
 				db.setDatabaseName(eventNameToFileName(name));
 				if (db.open()) {
 					QSqlQuery q(db);
-					q.exec(QStringLiteral("SELECT %1, cvalue FROM config WHERE %1 IN (%2)").arg(AppDbConfig::keyColumnName(db), SQL_KEYS));
-					while (q.next())
-						parseRow(info, q.value(0).toString(), q.value(1).toString());
+					for (const auto &id_key : {"id", "ckey"}) {
+						if (q.exec(QStringLiteral("SELECT %1, cvalue FROM config WHERE %1 IN (%2)").arg(id_key, SQL_KEYS))) {
+							while (q.next()) {
+								parseRow(info, q.value(0).toString(), q.value(1).toString());
+							}
+							break;
+						}
+					}
 					db.close();
 				}
 			}
@@ -199,15 +204,20 @@ QList<OpenEventDialog::EventInfo> loadEventInfoList(EventPlugin::ConnectionType 
 	}
 	else {
 		// PostgreSQL: use schema-qualified table name to avoid switching search_path
-		qfs::Connection conn(QSqlDatabase::database());
+		QSqlDatabase conn = QSqlDatabase::database();
 		for (const QString &name : event_names) {
 			OpenEventDialog::EventInfo info;
 			info.id = name;
-			qfs::Query q(conn);
+			QSqlQuery q(conn);
 			const auto config_table = name + QStringLiteral(".config");
-			if (q.exec(QStringLiteral("SELECT %1, cvalue FROM %2 WHERE %1 IN (%3)").arg(AppDbConfig::keyColumnName(conn, config_table), config_table, SQL_KEYS)))
-				while (q.next())
-					parseRow(info, q.value(0).toString(), q.value(1).toString());
+			for (const auto &id_key : {"id", "ckey"}) {
+				if (q.exec(QStringLiteral("SELECT %1, cvalue FROM %2 WHERE %1 IN (%3)").arg(id_key, config_table, SQL_KEYS))) {
+					while (q.next()) {
+						parseRow(info, q.value(0).toString(), q.value(1).toString());
+					}
+					break;
+				}
+			}
 			result << info;
 		}
 	}
@@ -689,7 +699,7 @@ void EventPlugin::repairStageStarts(const qf::core::sql::Connection &from_conn, 
 {
 	qfs::Query to_q(to_conn);
 	// keys already present in the copied config table win
-	to_q.prepare("INSERT INTO config (id, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (id) DO NOTHING");
+	to_q.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (ckey) DO NOTHING");
 
 	qfs::Query from_q(from_conn);
 	from_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
@@ -1233,12 +1243,7 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 			rec.append(dest_rec.field("isRunning"));
 		}
 	}
-	// config.ckey was renamed to config.id in 3.10.0
-	const bool is_import_config_ckey = table_name == QLatin1String("config")
-			&& src_rec.contains("ckey") && !src_rec.contains("id") && dest_rec.contains("id");
-	if(is_import_config_ckey) {
-		rec.append(dest_rec.field("id"));
-	}
+	const bool is_config_table = table_name == QLatin1String("config");
 	// qxchanges.data_id (always runs.id) was replaced by foreign_table + foreign_id
 	const bool is_import_qxchanges_data_id = table_name == QLatin1String("qxchanges")
 			&& src_rec.contains("data_id") && !src_rec.contains("foreign_id")
@@ -1258,9 +1263,9 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	}
 	bool has_id_int = false;
 	while(from_q.next()) {
-		if(table_name == QLatin1String("config")) {
-			if(from_q.value(is_import_config_ckey? QStringLiteral("ckey"): QStringLiteral("id")).toString() == QLatin1String("db.version"))
-				continue;
+		// db.version is inserted by create script already
+		if(is_config_table && from_q.value(QStringLiteral("ckey")).toString() == QLatin1String("db.version")) {
+			continue;
 		}
 		for (int i = 0; i < rec.count(); ++i) {
 			QSqlField fld = rec.field(i);
@@ -1277,9 +1282,6 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 					// isRunning cannot be NULL, convert NULL to false during import
 					v = from_q.value(fld_name).toBool();
 				}
-			}
-			else if(is_import_config_ckey && fld_name == QLatin1String("id")) {
-				v = from_q.value(QStringLiteral("ckey"));
 			}
 			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_id")) {
 				v = from_q.value(QStringLiteral("data_id"));
@@ -1304,8 +1306,9 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 			}
 			to_q.addBindValue(v);
 		}
-		if(!to_q.exec())
+		if(!to_q.exec()) {
 			return QString("SQL Error: %1").arg(to_q.lastError().text());
+		}
 	}
 	if(has_id_int && to_conn.driverName().endsWith(QLatin1String("PSQL"), Qt::CaseInsensitive)) {
 		// set sequence current value when importing to PSQL
@@ -1483,7 +1486,7 @@ void EventPlugin::deleteEvent(const QString &event_name)
 		qfs::Query q(conn);
 		if(!q.exec(QStringLiteral("DROP SCHEMA \"%1\" CASCADE").arg(event_name)))
 			qfd::MessageBox::showError(fwk, tr("Cannot delete event schema '%1': %2")
-			                           .arg(event_name, q.lastErrorText()));
+								.arg(event_name, q.lastErrorText()));
 	}
 }
 bool EventPlugin::importEventFromFile(const QString &src_file, const QString &dest_event_name)
