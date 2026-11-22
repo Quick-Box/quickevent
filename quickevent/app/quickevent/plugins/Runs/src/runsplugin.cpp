@@ -964,6 +964,7 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		qfDebug() << qb.toString();
 		model.setQueryBuilder(qb, true);
 	}
+	const auto time_precision = quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision();
 	for(int i=0; i<tt.rowCount(); i++) {
 		qf::core::utils::TreeTableRow tt_row = tt.row(i);
 		int class_id = tt_row.value("classes.id").toInt();
@@ -987,7 +988,8 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 			auto disqualified = tt2_row.value(QStringLiteral("disqualified")).toBool();
 			auto not_competing = tt2_row.value(QStringLiteral("notCompeting")).toBool();
 			bool has_pos = !disqualified && !not_competing;
-			int time_ms = tt2_row.value(QStringLiteral("timeMs")).toInt();
+			// quantize to event precision, so that competitors with the same displayed time get the same position
+			int time_ms = quantizeTimeMsec(tt2_row.value(QStringLiteral("timeMs")).toInt(), time_precision);
 			if (time_ms > 0 && time_ms < UNREAL_TIME_MSEC) {
 				best_time_ms = std::min(time_ms, best_time_ms.value_or(UNREAL_TIME_MSEC));
 			}
