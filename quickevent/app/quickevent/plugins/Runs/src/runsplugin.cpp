@@ -686,6 +686,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		competitor_id_to_row[mod.value(j, "competitors.id").toInt()] = j;
 	}
 	QMap<int, int> stage_to_best_time;
+	const auto time_precision = quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision();
 	for (int stage_id = 1; stage_id <= stages_count; ++stage_id) {
 		qfs::QueryBuilder qb;
 		qb.select2("runs", "competitorId, timeMs, notCompeting, disqualified")
@@ -696,6 +697,8 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		qfs::Query q;
 		q.exec(qb.toString());
 		int pos = 0;
+		int prev_pos = 0;
+		int prev_time_ms = -1;
 		int best_time = UNREAL_TIME_MSEC;
 		while (q.next()) {
 			++pos;
@@ -704,12 +707,17 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 			QF_ASSERT(row_ix >= 0, "Bad row index!", continue);
 			auto not_competing = q.value("notCompeting").toBool();
 			auto disqualified = q.value("disqualified").toBool();
-			QString p = QString::number(pos);
+			// quantize to event precision, so that competitors with the same displayed time get the same position
+			int time_ms = quantizeTimeMsec(q.value("timeMs").toInt(), time_precision);
+			if(time_ms != prev_time_ms) {
+				prev_pos = pos;
+				prev_time_ms = time_ms;
+			}
+			QString p = QString::number(prev_pos);
 			if(not_competing)
 				p = "N";
 			else if(disqualified)
 				p = "D";
-			int time_ms = q.value("timeMs").toInt();
 			if (!not_competing && !disqualified) {
 				best_time = std::min(best_time, time_ms);
 			}
@@ -776,14 +784,22 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		t.sort("timeMs");
 	}
 	int pos = 0;
+	int prev_pos = 0;
+	int prev_rank_value = -1;
 	int time_ms1 = 0;
 	int first_place_points = 0;
 	int trim_at = -1;
 	for (int j = 0; j < t.rowCount(); ++j) {
 		++pos;
-		QString p = QString::number(pos) + '.';
 		int time_ms = t.row(j).value("timeMs").toInt();
 		int points = t.row(j).value("points").toInt();
+		// same total time (or points) gives the same position
+		int rank_value = (max_points > 0)? points: time_ms;
+		if(rank_value != prev_rank_value) {
+			prev_pos = pos;
+			prev_rank_value = rank_value;
+		}
+		QString p = QString::number(prev_pos) + '.';
 		int time_loss_ms = UNREAL_TIME_MSEC;
 		QVariant points_loss;
 		if(time_ms < UNREAL_TIME_MSEC) {
