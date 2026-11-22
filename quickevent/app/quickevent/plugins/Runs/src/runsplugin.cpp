@@ -75,6 +75,7 @@ QString datetime_to_string(const QDateTime &dt)
 using quickevent::core::og::quantizeDatetimeMsec;
 using quickevent::core::og::quantizeTimeMsec;
 using quickevent::core::ClassDef;
+using quickevent::core::SharedPosition;
 const auto vacant_name_sentinel = QStringLiteral("---");
 }
 RunsPlugin::RunsPlugin(QObject *parent)
@@ -697,8 +698,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		qfs::Query q;
 		q.exec(qb.toString());
 		int pos = 0;
-		int prev_pos = 0;
-		int prev_time_ms = -1;
+		SharedPosition shared_pos;
 		int best_time = UNREAL_TIME_MSEC;
 		while (q.next()) {
 			++pos;
@@ -707,13 +707,8 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 			QF_ASSERT(row_ix >= 0, "Bad row index!", continue);
 			auto not_competing = q.value("notCompeting").toBool();
 			auto disqualified = q.value("disqualified").toBool();
-			// quantize to event precision, so that competitors with the same displayed time get the same position
 			int time_ms = quantizeTimeMsec(q.value("timeMs").toInt(), time_precision);
-			if(time_ms != prev_time_ms) {
-				prev_pos = pos;
-				prev_time_ms = time_ms;
-			}
-			QString p = QString::number(prev_pos);
+			QString p = QString::number(shared_pos.next(pos, time_ms));
 			if(not_competing)
 				p = "N";
 			else if(disqualified)
@@ -784,8 +779,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		t.sort("timeMs");
 	}
 	int pos = 0;
-	int prev_pos = 0;
-	int prev_rank_value = -1;
+	SharedPosition shared_pos;
 	int time_ms1 = 0;
 	int first_place_points = 0;
 	int trim_at = -1;
@@ -793,13 +787,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		++pos;
 		int time_ms = t.row(j).value("timeMs").toInt();
 		int points = t.row(j).value("points").toInt();
-		// same total time (or points) gives the same position
-		int rank_value = (max_points > 0)? points: time_ms;
-		if(rank_value != prev_rank_value) {
-			prev_pos = pos;
-			prev_rank_value = rank_value;
-		}
-		QString p = QString::number(prev_pos) + '.';
+		QString p = QString::number(shared_pos.next(pos, (max_points > 0)? points: time_ms)) + '.';
 		int time_loss_ms = UNREAL_TIME_MSEC;
 		QVariant points_loss;
 		if(time_ms < UNREAL_TIME_MSEC) {
@@ -996,15 +984,13 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		tt2.appendColumn("loss", QMetaType(QMetaType::Int));
 		tt2.appendColumn("points", QMetaType(QMetaType::Int));
 		int first_time_ms = 0;
-		int prev_time_ms = -1;
-		int prev_pos = 0;
+		SharedPosition shared_pos;
 		std::optional<int> best_time_ms;
 		for(int j=0; j<tt2.rowCount(); j++) {
 			qf::core::utils::TreeTableRow tt2_row = tt2.row(j);
 			auto disqualified = tt2_row.value(QStringLiteral("disqualified")).toBool();
 			auto not_competing = tt2_row.value(QStringLiteral("notCompeting")).toBool();
 			bool has_pos = !disqualified && !not_competing;
-			// quantize to event precision, so that competitors with the same displayed time get the same position
 			int time_ms = quantizeTimeMsec(tt2_row.value(QStringLiteral("timeMs")).toInt(), time_precision);
 			if (time_ms > 0 && time_ms < UNREAL_TIME_MSEC) {
 				best_time_ms = std::min(time_ms, best_time_ms.value_or(UNREAL_TIME_MSEC));
@@ -1013,12 +999,7 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 				first_time_ms = time_ms;
 			}
 			if(has_pos) {
-				int pos = j+1;
-				if(time_ms == prev_time_ms) {
-					pos = prev_pos;
-				} else {
-					prev_pos = pos;
-				}
+				int pos = shared_pos.next(j+1, time_ms);
 				tt2_row.setValue(QStringLiteral( "pos"), QString::number(pos) + '.');
 				tt2_row.setValue(QStringLiteral( "npos"), pos);
 				tt2_row.setValue(QStringLiteral( "loss"), time_ms - first_time_ms);
@@ -1027,7 +1008,6 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 				tt2_row.setValue(QStringLiteral( "pos"), QString());
 				tt2_row.setValue(QStringLiteral( "npos"), 0);
 			}
-			prev_time_ms = time_ms;
 			tt2.setRow(j, tt2_row);
 		}
 		if (best_time_ms.has_value() && max_points > 0) {
@@ -1172,17 +1152,10 @@ qf::core::utils::TreeTable RunsPlugin::addLapsToStageResultsTable(int course_id,
 			RunStpMap &map = times[pos];
 			QList<RunStp> lst = map.values();
 			std::ranges::sort(lst, [](const RunStp &a, const RunStp &b) { return a.time < b.time; });
-			int prev_pos = 0;
-			int prev_time_ms = -1;
+			SharedPosition shared_pos;
 			for (int i = 0; i < lst.size(); ++i) {
 				const RunStp &rs = lst[i];
-				// quantize to event precision, so that competitors with the same displayed time get the same position
-				int time_ms = quantizeTimeMsec(rs.time, time_precision);
-				if(time_ms != prev_time_ms) {
-					prev_pos = i+1;
-					prev_time_ms = time_ms;
-				}
-				map[rs.runId].pos = prev_pos;
+				map[rs.runId].pos = shared_pos.next(i+1, quantizeTimeMsec(rs.time, time_precision));
 			}
 		}
 	};
