@@ -4,6 +4,7 @@
 #include "plugins/Event/src/stageconfig.h"
 #include "services/oresultsconfig.h"
 #include "services/ofeed/ofeedconfig.h"
+#include "services/punchingtest/punchingtestconfig.h"
 #include "services/radiosender/radiosenderconfig.h"
 #include <plugins/Receipts/src/receiptsconfig.h>
 
@@ -39,6 +40,8 @@ public:
 	void setReceiptsConfig(int stage_id, const Receipts::ReceiptsConfig &config);
 	const services::OFeedConfig &ofeedConfig(int stage_id) const;
 	void setOfeedConfig(int stage_id, const services::OFeedConfig &config);
+	const services::PunchingTestConfig &punchingTestConfig(int stage_id) const;
+	void setPunchingTestConfig(int stage_id, const services::PunchingTestConfig &config);
 	const services::RadioSenderConfig &radioSenderConfig() const { return m_radioSenderConfig; }
 	void setRadioSenderConfig(const services::RadioSenderConfig &config);
 	const QxConfig &qxConfig() const { return m_qxConfig; }
@@ -53,6 +56,7 @@ private:
 	std::map<int, services::OFeedConfig> m_ofeedConfig;
 	std::map<int, Receipts::ReceiptsConfig> m_receiptsConfig;
 	std::map<int, services::OResultsConfig> m_oresultsConfig;
+	std::map<int, services::PunchingTestConfig> m_punchingTestConfig;
 	EventConfig m_eventConfig;
 	QxConfig m_qxConfig;
 	services::RadioSenderConfig m_radioSenderConfig;

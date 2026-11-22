@@ -24,6 +24,7 @@ constexpr auto STAGE = "stage";
 constexpr auto RECEIPTS = "receipts";
 constexpr auto OFEED = "ofeed";
 constexpr auto ORESULTS = "oresults";
+constexpr auto PUNCHING_TEST = "punchingtest";
 constexpr auto RADIO_SENDER = "radioSender";
 constexpr auto QX = "qx";
 
@@ -86,7 +87,7 @@ void AppDbConfig::load()
 			const auto group = key.section('.', 0, 0);
 			if (group == EVENT || group == QX || group == RADIO_SENDER) {
 				set_group_value(group, key.section('.', 1), v);
-			} else if (group == STAGE || group == RECEIPTS || group == ORESULTS || group == OFEED) {
+			} else if (group == STAGE || group == RECEIPTS || group == ORESULTS || group == OFEED || group == PUNCHING_TEST) {
 				auto stage_id = key.section('.', 1, 1).toInt();
 				set_group_stage_value(group, stage_id, key.section('.', 2), v);
 			} else {
@@ -126,6 +127,7 @@ void AppDbConfig::load()
 	load_stage_config(RECEIPTS, m_receiptsConfig, Receipts::ReceiptsConfig::fromVariantMap);
 	load_stage_config(ORESULTS, m_oresultsConfig, services::OResultsConfig::fromVariantMap);
 	load_stage_config(OFEED, m_ofeedConfig, services::OFeedConfig::fromVariantMap);
+	load_stage_config(PUNCHING_TEST, m_punchingTestConfig, services::PunchingTestConfig::fromVariantMap);
 }
 
 void AppDbConfig::save(const QString &prefix, int stage_id, const QVariantMap &data)
@@ -249,6 +251,22 @@ void AppDbConfig::setOfeedConfig(int stage_id, const services::OFeedConfig &cfg)
 	const QVariantMap changed_values = changedValues(ofeedConfig(stage_id).toVariantMap(), cfg.toVariantMap());
 	m_ofeedConfig[stage_id] = cfg;
 	save(OFEED, stage_id, changed_values);
+}
+
+const services::PunchingTestConfig& AppDbConfig::punchingTestConfig(int stage_id) const
+{
+	if (m_punchingTestConfig.contains(stage_id)) {
+		return m_punchingTestConfig.at(stage_id);
+	}
+	static services::PunchingTestConfig defaultCfg;
+	return defaultCfg;
+}
+
+void AppDbConfig::setPunchingTestConfig(int stage_id, const services::PunchingTestConfig &cfg)
+{
+	const QVariantMap changed_values = changedValues(punchingTestConfig(stage_id).toVariantMap(), cfg.toVariantMap());
+	m_punchingTestConfig[stage_id] = cfg;
+	save(PUNCHING_TEST, stage_id, changed_values);
 }
 
 void AppDbConfig::setQxConfig(const QxConfig &config)
