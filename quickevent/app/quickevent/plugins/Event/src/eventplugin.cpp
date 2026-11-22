@@ -699,7 +699,7 @@ void EventPlugin::repairStageStarts(const qf::core::sql::Connection &from_conn, 
 {
 	qfs::Query to_q(to_conn);
 	// keys already present in the copied config table win
-	to_q.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (ckey) DO NOTHING");
+	to_q.prepare("INSERT INTO config (id, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (id) DO NOTHING");
 
 	qfs::Query from_q(from_conn);
 	from_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
@@ -978,6 +978,8 @@ bool EventPlugin::createEvent(const QString &event_name, const EventConfig &even
 				break;
 			conn.setCurrentSchema(event_id);
 			transaction.commit();
+			// create script creates the base DB version, upgrade it to the current one
+			ok = DbSchema::migrate(conn);
 		} while(false);
 		if(!ok) {
 			qfd::MessageBox::showError(fwk, tr("Create Database Error: %1").arg(q.lastError().text()));
@@ -1244,6 +1246,8 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 		}
 	}
 	const bool is_config_table = table_name == QLatin1String("config");
+	// config.ckey was renamed to config.id in 3.10.0
+	const auto src_config_key = src_rec.contains(QStringLiteral("ckey"))? QStringLiteral("ckey"): QStringLiteral("id");
 	// qxchanges.data_id (always runs.id) was replaced by foreign_table + foreign_id
 	const bool is_import_qxchanges_data_id = table_name == QLatin1String("qxchanges")
 			&& src_rec.contains("data_id") && !src_rec.contains("foreign_id")
@@ -1264,7 +1268,7 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	bool has_id_int = false;
 	while(from_q.next()) {
 		// db.version is inserted by create script already
-		if(is_config_table && from_q.value(QStringLiteral("ckey")).toString() == QLatin1String("db.version")) {
+		if(is_config_table && from_q.value(src_config_key).toString() == QLatin1String("db.version")) {
 			continue;
 		}
 		for (int i = 0; i < rec.count(); ++i) {
@@ -1367,8 +1371,6 @@ QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &pro
 			break;
 		}
 		//qfLogScope("exportEvent_qbe");
-		qfs::Transaction transaction(ex_conn);
-
 		DbSchema *db_schema = dbSchema();
 		const auto &tables = db_schema->tableNames();
 		// create database + tables + read exported file
@@ -1378,12 +1380,20 @@ QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &pro
 			DbSchema::CreateDbSqlScriptOptions create_options;
 			create_options.setDriverName(ex_conn.driverName());
 			QStringList create_script = db_schema->loadCreateDbSqlScript(create_options);
+			qfs::Transaction create_transaction(ex_conn);
 			qfs::Query ex_q(ex_conn);
 			if(!run_sql_script(ex_q, create_script)) {
 				err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
 				break;
 			}
+			create_transaction.commit();
 		}
+		// create script creates the base DB version, upgrade it to the current one
+		if(!DbSchema::migrate(ex_conn)) {
+			err_str = tr("Event data upgrade failed, see application log for details.");
+			break;
+		}
+		qfs::Transaction transaction(ex_conn);
 		qfs::Connection conn = qfs::Connection::forName();
 		if(use_snapshot_transaction) {
 			qfs::Connection current_conn = conn;
@@ -1574,35 +1584,63 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 {
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	QString err_str;
-	qfs::Transaction transaction(exp_conn);
 	DbSchema *db_schema = dbSchema();
 	const auto &tables = db_schema->tableNames();
 	int step_cnt = tables.count() + 1;
 	int step_no = 0;
 	fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
 	do {
+		// tables are copied between DBs of the same version, imported DB is upgraded to the current version after the copy
+		// event data older than base DB version are converted by copying fields present in both DBs
+		const auto src_db_version = AppDbConfig::loadDbVersion(imp_conn);
+		if(src_db_version > dbVersion()) {
+			err_str = tr("Imported event data version (%1) is newer than current version (%2).")
+					.arg(qf::core::Utils::intToVersionString(src_db_version))
+					.arg(qf::core::Utils::intToVersionString(dbVersion()));
+			break;
+		}
 		DbSchema::CreateDbSqlScriptOptions create_options;
 		create_options.setDriverName(exp_conn.driverName());
 		create_options.setSchemaName(dest_schema_name);
 		QStringList create_script = db_schema->loadCreateDbSqlScript(create_options);
-		qfs::Query ex_q(exp_conn);
-		if(!run_sql_script(ex_q, create_script)) {
-			err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
-			break;
+		{
+			qfs::Transaction create_transaction(exp_conn);
+			qfs::Query ex_q(exp_conn);
+			if(!run_sql_script(ex_q, create_script)) {
+				err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
+				break;
+			}
+			create_transaction.commit();
 		}
 		exp_conn.setCurrentSchema(dest_schema_name);
-		for(const QString &table_name : tables) {
-			qfDebug() << "Copying table" << table_name;
-			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
-			QSqlRecord rec = db_schema->sqlRecord(exp_conn, table_name);
-			err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
+		// create script creates the base DB version, upgrade it to the version of imported data
+		if(src_db_version > DbSchema::baseDbVersion() && !DbSchema::migrate(exp_conn, src_db_version)) {
+			err_str = tr("Event data upgrade failed, see application log for details.");
+			break;
+		}
+		{
+			qfs::Transaction transaction(exp_conn);
+			for(const QString &table_name : tables) {
+				qfDebug() << "Copying table" << table_name;
+				fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
+				QSqlRecord rec = db_schema->sqlRecord(exp_conn, table_name);
+				err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
+				if(!err_str.isEmpty())
+					break;
+			}
 			if(!err_str.isEmpty())
 				break;
+			transaction.commit();
 		}
-		if(!err_str.isEmpty())
+		if(AppDbConfig::loadDbVersion(exp_conn) < dbVersion() && !DbSchema::migrate(exp_conn)) {
+			err_str = tr("Event data upgrade failed, see application log for details.");
 			break;
-		repairStageStarts(imp_conn, exp_conn);
-		transaction.commit();
+		}
+		{
+			qfs::Transaction transaction(exp_conn);
+			repairStageStarts(imp_conn, exp_conn);
+			transaction.commit();
+		}
 	} while(false);
 	return err_str;
 }

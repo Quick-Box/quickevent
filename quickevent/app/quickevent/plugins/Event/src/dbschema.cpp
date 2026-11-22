@@ -195,13 +195,23 @@ bool DbSchema::canMigrate(int db_version)
 	return db_version >= MIN_MIGRATABLE_VERSION && db_version < Event::EventPlugin::dbVersion();
 }
 
+int DbSchema::baseDbVersion()
+{
+	return MIN_MIGRATABLE_VERSION;
+}
+
 bool DbSchema::migrate(const qf::core::sql::Connection &conn)
 {
+	return migrate(conn, Event::EventPlugin::dbVersion());
+}
+
+bool DbSchema::migrate(const qf::core::sql::Connection &conn, int target_version)
+{
 	auto current_version = Event::AppDbConfig::loadDbVersion(conn);
-	if (!canMigrate(current_version)) {
+	if (!canMigrate(current_version) || target_version <= current_version || target_version > Event::EventPlugin::dbVersion()) {
+		qfError() << "Cannot migrate event data from version" << current_version << "to" << target_version;
 		return false;
 	}
-	const auto target_version = Event::EventPlugin::dbVersion();
 	while (current_version < target_version) {
 		const auto *migration = next_migration(current_version);
 		// app versions without schema change have no migration, only the version number is raised

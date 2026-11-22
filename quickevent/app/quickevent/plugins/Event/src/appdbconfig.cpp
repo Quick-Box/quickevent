@@ -59,10 +59,16 @@ QVariantMap QxConfig::toVariantMap() const
 
 int AppDbConfig::loadDbVersion(const qf::core::sql::Connection &conn)
 {
-	using namespace qf::core::sql;
-	Query q(conn);
 	// called before migration too, event data can still have the old key column
-	q.exec(QStringLiteral("SELECT cvalue FROM config WHERE ckey = 'db.version'"));
+	// probe columns by query which cannot fail, failed query would abort current PSQL transaction
+	QSqlQuery q(conn);
+	if(!q.exec(QStringLiteral("SELECT * FROM config LIMIT 0"))) {
+		return 0;
+	}
+	const auto key_column = q.record().contains(QStringLiteral("ckey"))? QStringLiteral("ckey"): QStringLiteral("id");
+	if(!q.exec(QStringLiteral("SELECT cvalue FROM config WHERE %1 = 'db.version'").arg(key_column))) {
+		return 0;
+	}
 	if(q.next()) {
 		return q.value(0).toString().toInt();
 	}
