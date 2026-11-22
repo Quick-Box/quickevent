@@ -13,7 +13,6 @@ OFeedConfig OFeedConfig::fromVariantMap(const QVariantMap& map)
     OFeedConfig config;
     config.hostUrl = map.value("hostUrl", config.hostUrl).toString();
     config.eventId = map.value("eventId", config.eventId).toString();
-    config.eventPassword = map.value("eventPassword", config.eventPassword).toString();
     // fall back to the pre-rename keys, so settings of existing events are not lost
     config.lastStartChangelogCall = map.value("lastStartChangelogCall", map.value("lastChangelogCall", config.lastStartChangelogCall)).toDateTime();
     config.lastOfficeChangelogCall = map.value("lastOfficeChangelogCall", config.lastOfficeChangelogCall).toDateTime();
@@ -31,7 +30,6 @@ QVariantMap OFeedConfig::toVariantMap() const
     QVariantMap map;
     map["hostUrl"] = hostUrl;
     map["eventId"] = eventId;
-    map["eventPassword"] = eventPassword;
     map["lastStartChangelogCall"] = lastStartChangelogCall;
     map["lastOfficeChangelogCall"] = lastOfficeChangelogCall;
     map["runXmlValidation"] = runXmlValidation;

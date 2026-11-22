@@ -48,6 +48,11 @@ public:
 	ServiceSettings settings() const {return ServiceSettings(m_settings);}
 	void saveSettings();
 	void setSettings(const QVariantMap &s);
+	// Secrets (API keys, passwords) must not be stored in the event DB config table,
+	// which is shared with other clients and with the QX server in Replica mode.
+	// Keep them in the local per-event service settings.
+	QVariant stageSetting(const QString &key, int stage_id) const;
+	void setStageSetting(const QString &key, int stage_id, const QVariant &val);
 	Q_SIGNAL void settingsChanged();
 
 	void showDetail(QWidget *parent);

@@ -632,8 +632,7 @@ QString OFeedClient::eventId() const
 QString OFeedClient::eventPassword() const
 {
 	int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	OFeedConfig cfg = getPlugin<EventPlugin>()->appDbConfig().ofeedConfig(current_stage);
-	return cfg.eventPassword;
+	return stageSetting(QStringLiteral("eventPassword"), current_stage).toString();
 }
 
 QDateTime OFeedClient::lastChangelogCall(const QString &origin) {
@@ -973,11 +972,8 @@ void OFeedClient::setEventId(QString eventId)
 
 void OFeedClient::setEventPassword(QString eventPassword)
 {
-	auto &config = getPlugin<EventPlugin>()->appDbConfig();
 	const int current_stage = getPlugin<EventPlugin>()->currentStageId();
-	auto cfg = config.ofeedConfig(current_stage);
-	cfg.eventPassword = eventPassword;
-	config.setOfeedConfig(current_stage, cfg);
+	setStageSetting(QStringLiteral("eventPassword"), current_stage, eventPassword);
 	m_eventImageStartupAttempted = false;
 }
 

@@ -10,7 +10,6 @@ struct OResultsConfig
 	static OResultsConfig fromVariantMap(const QVariantMap &map);
 	QVariantMap toVariantMap() const;
 
-	QString apiKey;
 	QString eventName;
 };
 

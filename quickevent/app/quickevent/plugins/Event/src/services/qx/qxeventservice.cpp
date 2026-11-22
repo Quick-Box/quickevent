@@ -28,8 +28,6 @@ using namespace qf::core;
 using namespace qf::gui;
 using namespace qf::gui::dialogs;
 using namespace qf::core::sql;
-using qf::gui::framework::getPlugin;
-using Event::EventPlugin;
 
 namespace Event::services::qx {
 

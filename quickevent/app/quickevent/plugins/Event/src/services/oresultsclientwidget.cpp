@@ -86,10 +86,10 @@ bool OResultsClientWidget::saveSettings()
 	if(svc) {
 		OResultsClientSettings ss = svc->settings();
 		ss.setExportIntervalSec(ui->edExportInterval->value());
+		svc->setSettings(ss);
 		if (!m_testPassed)
 			svc->setEventName({});
 		svc->setApiKey(ui->edApiKey->text().trimmed());
-		svc->setSettings(ss);
 	}
 	return true;
 }
