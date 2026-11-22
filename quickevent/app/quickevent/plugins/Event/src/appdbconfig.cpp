@@ -29,7 +29,6 @@ constexpr auto RECEIPTS = "receipts";
 constexpr auto OFEED = "ofeed";
 constexpr auto ORESULTS = "oresults";
 constexpr auto RADIO_SENDER = "radioSender";
-constexpr auto QX = "qx";
 
 QVariantMap changedValues(const QVariantMap &old_values, const QVariantMap &new_values)
 {
@@ -41,20 +40,6 @@ QVariantMap changedValues(const QVariantMap &old_values, const QVariantMap &new_
 	return ret;
 }
 
-}
-
-QxConfig QxConfig::fromVariantMap(const QVariantMap &map)
-{
-	QxConfig ret;
-	ret.apiToken = map.value("apiToken").toString();
-	return ret;
-}
-
-QVariantMap QxConfig::toVariantMap() const
-{
-	QVariantMap ret;
-	ret["apiToken"] = apiToken;
-	return ret;
 }
 
 int AppDbConfig::loadDbVersion(const qf::core::sql::Connection &conn)
@@ -106,7 +91,7 @@ void AppDbConfig::load()
 			QString type = q.value(2).toString();
 			QVariant v = qf::core::Utils::retypeStringValue(val.toString(), type);
 			const auto group = key.section('.', 0, 0);
-			if (group == EVENT || group == QX || group == RADIO_SENDER) {
+			if (group == EVENT || group == RADIO_SENDER) {
 				set_group_value(group, key.section('.', 1), v);
 			} else if (group == STAGE || group == RECEIPTS || group == ORESULTS || group == OFEED) {
 				auto stage_id = key.section('.', 1, 1).toInt();
@@ -120,7 +105,6 @@ void AppDbConfig::load()
 	m_dbVersion = config.value("db.version", 0).toInt();
 	Q_ASSERT(m_dbVersion > 0);
 
-	m_qxConfig = QxConfig::fromVariantMap(config.value(QX).toMap());
 	m_radioSenderConfig = services::RadioSenderConfig::fromVariantMap(config.value(RADIO_SENDER).toMap());
 	m_eventConfig = EventConfig::fromVariantMap(config.value(EVENT).toMap());
 	quickevent::core::og::TimeMs::setDefaultTimeMeasurementPrecision(m_eventConfig.timeMeasurementPrecision);
@@ -266,11 +250,4 @@ void AppDbConfig::setOfeedConfig(int stage_id, const services::OFeedConfig &cfg)
 	const QVariantMap changed_values = changedValues(ofeedConfig(stage_id).toVariantMap(), cfg.toVariantMap());
 	m_ofeedConfig[stage_id] = cfg;
 	save(OFEED, stage_id, changed_values);
-}
-
-void AppDbConfig::setQxConfig(const QxConfig &config)
-{
-	const QVariantMap changed_values = changedValues(m_qxConfig.toVariantMap(), config.toVariantMap());
-	m_qxConfig = config;
-	save(QX, changed_values);
 }

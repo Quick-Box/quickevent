@@ -141,12 +141,6 @@ int QxEventService::eventId() const
 	return m_eventId;
 }
 
-QString QxEventService::apiToken() const
-{
-	auto *event_plugin = getPlugin<EventPlugin>();
-	return event_plugin->appDbConfig().qxConfig().apiToken;
-}
-
 int QxEventService::currentConnectionId()
 {
 	return qf::core::sql::Connection::forName().connectionId();
@@ -175,9 +169,7 @@ void QxEventService::onBrokerConnectedChanged(bool is_connected)
 {
 	if(is_connected) {
 		auto ss = qxSettings();
-		auto *event_plugin = getPlugin<EventPlugin>();
-		const auto &app_config = event_plugin->appDbConfig();
-		auto api_token = app_config.qxConfig().apiToken.toStdString();
+		auto api_token = ss.apiToken().toStdString();
 		auto *rpc_call = shv::iotqt::rpc::RpcCall::create(m_rpcConnection)
 				->setShvPath(eventctlShvPath(ss.isLocalBroker()))
 				->setMethod("openEventApiKey")

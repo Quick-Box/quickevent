@@ -127,12 +127,9 @@ bool QxEventServiceWidget::saveSettings()
 			ss.setShvBrokerUrl(ui->edServerUrl->text());
 		}
 		ss.setLocalBroker(is_localhost);
+		ss.setApiToken(ui->edApiToken->text().trimmed());
 		svc->setSettings(ss);
-
-		auto &app_config = getPlugin<EventPlugin>()->appDbConfig();
-		auto qx_config = app_config.qxConfig();
-		qx_config.apiToken = ui->edApiToken->text().trimmed();
-		app_config.setQxConfig(qx_config);
+		svc->saveSettings();
 	}
 	return true;
 }

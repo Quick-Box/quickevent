@@ -17,13 +17,6 @@ class QSqlDatabase;
 
 namespace Event {
 
-struct QxConfig {
-	static QxConfig fromVariantMap(const QVariantMap &map);
-	QVariantMap toVariantMap() const;
-
-	QString apiToken;
-};
-
 class AppDbConfig {
 public:
 	explicit AppDbConfig() = default;
@@ -44,8 +37,6 @@ public:
 	void setOfeedConfig(int stage_id, const services::OFeedConfig &config);
 	const services::RadioSenderConfig &radioSenderConfig() const { return m_radioSenderConfig; }
 	void setRadioSenderConfig(const services::RadioSenderConfig &config);
-	const QxConfig &qxConfig() const { return m_qxConfig; }
-	void setQxConfig(const QxConfig &config);
 
 	static int loadDbVersion(const qf::core::sql::Connection &conn);
 private:
@@ -58,7 +49,6 @@ private:
 	std::map<int, Receipts::ReceiptsConfig> m_receiptsConfig;
 	std::map<int, services::OResultsConfig> m_oresultsConfig;
 	EventConfig m_eventConfig;
-	QxConfig m_qxConfig;
 	services::RadioSenderConfig m_radioSenderConfig;
 
 	int m_dbVersion = 0;

@@ -16,6 +16,9 @@ class QxEventServiceSettings : public ServiceSettings
 
 	QF_VARIANTMAP_FIELD2(QString, s, setS, hvBrokerUrl, "tcp://localhost?user=qe&password=test")
 	QF_VARIANTMAP_FIELD2(bool, is, set, LocalBroker, false)
+	// API token is a secret, it must not be stored in the event DB config table,
+	// which is shared with other clients and with the server in Replica mode
+	QF_VARIANTMAP_FIELD(QString, a, setA, piToken)
 	// QF_VARIANTMAP_FIELD2(bool, is, set, ExportDatabase, false)
 public:
 	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
@@ -37,7 +40,7 @@ public:
 	void stop() override;
 	QxEventServiceSettings qxSettings() const {return QxEventServiceSettings(m_settings);}
 
-	QString apiToken() const;
+	QString apiToken() const { return qxSettings().apiToken(); }
 	static int currentConnectionId();
 
 	static QString eventctlShvPath(bool is_local_connection);
