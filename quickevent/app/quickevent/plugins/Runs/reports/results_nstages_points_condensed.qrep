@@ -15,17 +15,17 @@
 					<Break breakType="${options.isColumnBreak|if:Column:Page}" visible="${options.isBreakAfterEachClass}" skipFirst="true"/>
 					<Frame width="%" layout="LayoutHorizontal" fill="khaki">
 						<Para hinset="1" width="%" textStyle="bold">{{classes.name}}</Para>
-						<Para hinset="1" width="17" halign="AlignRight" textStyle="bold">${'Reg'|tr}</Para>
-						<Para hinset="1" width="15" halign="AlignRight" textStyle="bold">${'Result'|tr}</Para>
-						<Para hinset="1" width="15" halign="AlignRight" textStyle="bold">${'Diff.'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(17)}" halign="AlignRight" textStyle="bold">${'Reg'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(15)}" halign="AlignRight" textStyle="bold">${'Result'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(15)}" halign="AlignRight" textStyle="bold">${'Diff.'|tr}</Para>
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
-							<Para hinset="1" width="9" halign="AlignRight">{{pos}}</Para>
+							<Para hinset="1" width="${qeFontScaled(9)}" halign="AlignRight">{{pos}}</Para>
 							<Para hinset="1" width="%">{{competitorName}}</Para>
-							<Para hinset="1" width="17">{{registration}}</Para>
-							<Para hinset="1" width="15" halign="AlignRight">{{points|positive}}</Para>
-							<Para hinset="1" width="15" halign="AlignRight">{{pointsloss|nonzero|prefix:- }}</Para>
+							<Para hinset="1" width="${qeFontScaled(17)}">{{registration}}</Para>
+							<Para hinset="1" width="${qeFontScaled(15)}" halign="AlignRight">{{points|positive}}</Para>
+							<Para hinset="1" width="${qeFontScaled(15)}" halign="AlignRight">{{pointsloss|nonzero|prefix:- }}</Para>
 						</Detail>
 					</Band>
 				</Detail>

@@ -19,11 +19,11 @@
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
-							<Para hinset="1" width="15" halign="AlignRight">{{startTimeText}}</Para>
-							<Para visible="${options.isStartListPrintStartNumbers}" width="8" halign="AlignRight">{{startNumber|positive}}</Para>
+							<Para hinset="1" width="${qeFontScaled(15)}" halign="AlignRight">{{startTimeText}}</Para>
+							<Para visible="${options.isStartListPrintStartNumbers}" width="${qeFontScaled(8)}" halign="AlignRight">{{startNumber|positive}}</Para>
 							<Para hinset="1" width="%">{{competitorName}}</Para>
-							<Para width="16">{{registration}}</Para>
-							<Para hinset="1" width="17" halign="AlignRight">{{runs.siId|positive}}</Para>
+							<Para width="${qeFontScaled(16)}">{{registration}}</Para>
+							<Para hinset="1" width="${qeFontScaled(17)}" halign="AlignRight">{{runs.siId|positive}}</Para>
 						</Detail>
 					</Band>
 				</Detail>

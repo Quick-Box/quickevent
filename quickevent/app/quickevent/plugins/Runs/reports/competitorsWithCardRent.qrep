@@ -13,18 +13,18 @@
 			<Band width="%" height="%" columns="%,%">
 				<Detail width="%" layout="LayoutVertical">
 					<Frame fill="khaki" textStyle="bold" layout="LayoutHorizontal">
-						<Para width="36">{{classes.name}}</Para>
+						<Para width="${qeFontScaled(36)}">{{classes.name}}</Para>
 						<Para hinset="1" width="%"/>
-						<Para hinset="1" width="12">${'Off'|tr}</Para>
-						<Para hinset="1" width="12">${'Ret'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(12)}">${'Off'|tr}</Para>
+						<Para hinset="1" width="${qeFontScaled(12)}">${'Ret'|tr}</Para>
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
-							<Para width="18">{{runs.siid}}</Para>
-							<Para width="18">{{registration}}</Para>
+							<Para width="${qeFontScaled(18)}">{{runs.siid}}</Para>
+							<Para width="${qeFontScaled(18)}">{{registration}}</Para>
 							<Para hinset="1" width="%">{{competitorName}}</Para>
-							<Para hinset="1" width="12">{{isRunning|if::${'Y'|tr}}}</Para>
-							<Para hinset="1" width="12">{{cardReturned|if:${'Y'|tr}:}}</Para>
+							<Para hinset="1" width="${qeFontScaled(12)}">{{isRunning|if::${'Y'|tr}}}</Para>
+							<Para hinset="1" width="${qeFontScaled(12)}">{{cardReturned|if:${'Y'|tr}:}}</Para>
 						</Detail>
 					</Band>
 				</Detail>

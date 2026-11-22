@@ -17,12 +17,12 @@
 					</Frame>
 					<Band keepFirst="3" keepWithPrev="true" htmlExportAsTable="true">
 						<Detail width="%" layout="LayoutHorizontal">
-							<Para hinset="1" width="13" halign="AlignRight">{{startTimeText}}</Para>
-							<Para width="10">{{classes.name}}</Para>
-							<Para visible="${options.isStartListPrintStartNumbers}" width="7" halign="AlignRight">{{startNumber|positive}}</Para>
+							<Para hinset="1" width="${qeFontScaled(13)}" halign="AlignRight">{{startTimeText}}</Para>
+							<Para width="${qeFontScaled(10)}">{{classes.name}}</Para>
+							<Para visible="${options.isStartListPrintStartNumbers}" width="${qeFontScaled(7)}" halign="AlignRight">{{startNumber|positive}}</Para>
 							<Para hinset="1" width="%">{{competitorName}}</Para>
-							<Para width="15">{{registration}}</Para>
-							<Para width="17" halign="AlignRight">{{cardLent|if:${'R '|tr}:}}{{runs.siId}}</Para>
+							<Para width="${qeFontScaled(15)}">{{registration}}</Para>
+							<Para width="${qeFontScaled(17)}" halign="AlignRight">{{cardLent|if:${'R '|tr}:}}{{runs.siId}}</Para>
 						</Detail>
 					</Band>
 				</Detail>

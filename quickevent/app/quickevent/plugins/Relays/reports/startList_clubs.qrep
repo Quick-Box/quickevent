@@ -27,10 +27,10 @@
 							</Frame>
 							<Band width="%" keepFirst="10" keepWithPrev="true" htmlExportAsTable="true">
 								<Detail width="%" layout="LayoutHorizontal">
-									<Para hinset="1" width="15" halign="AlignRight">{{leg}}</Para>
+									<Para hinset="1" width="${qeFontScaled(15)}" halign="AlignRight">{{leg}}</Para>
 									<Para hinset="1" width="%">{{competitorName}}</Para>
-									<Para width="18">{{registration}}</Para>
-									<Para hinset="1" width="18" halign="AlignRight">{{runs.siId}}</Para>
+									<Para width="${qeFontScaled(18)}">{{registration}}</Para>
+									<Para hinset="1" width="${qeFontScaled(18)}" halign="AlignRight">{{runs.siId}}</Para>
 								</Detail>
 							</Band>
 						</Detail>
