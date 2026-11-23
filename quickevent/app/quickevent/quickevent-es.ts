@@ -5482,7 +5482,7 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="403"/>
         <source>Unique event security key (32 chars)</source>
-        <translation type="unfinished"></translation>
+        <translation>Clave única de seguridad del evento (32 caracteres)</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="416"/>
