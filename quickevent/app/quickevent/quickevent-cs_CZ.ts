@@ -3786,12 +3786,12 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="274"/>
         <source>results upload</source>
-        <translation type="unfinished">nahrání výsledků</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="303"/>
         <source>start list upload</source>
-        <translation type="unfinished">nahrání startovky</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="513"/>
@@ -3811,112 +3811,110 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="855"/>
         <source>Missing OFeed event credentials.</source>
-        <translation type="unfinished">Chybí přihlašovací údaje k události v OFeedu.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="862"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1084"/>
         <source>Invalid OFeed URL.</source>
-        <translation type="unfinished">Neplatné URL OFeedu.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="885"/>
         <source>No event image is available in OFeed.</source>
-        <translation type="unfinished">V OFeedu není k dispozici žádný obrázek k akci.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="887"/>
         <source>Event image download failed: %1</source>
-        <translation type="unfinished">Stažení obrázku akce se nezdařilo: %1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="892"/>
         <source>No event image payload received from OFeed.</source>
-        <translation type="unfinished">Z OFeedu nebyla přijata žádná data obrázku k akci.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="902"/>
         <source>Event image cached as SVG.</source>
-        <translation type="unfinished">Obrázek akce uložen do mezipaměti jako SVG.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="921"/>
         <source>Unsupported image format received from OFeed.</source>
-        <translation type="unfinished">Z OFeedu byl přijat nepodporovaný formát obrázku.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="933"/>
         <source>Cannot encode cached event image.</source>
-        <translation type="unfinished">Nelze zakódovat uložený obrázek akce.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="939"/>
         <source>Cached image encoding produced empty payload.</source>
-        <translation type="unfinished">Kódování uloženého obrázku vytvořilo prázdná data.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="944"/>
         <source>Event image cached (%1x%2).</source>
-        <translation type="unfinished">Obrázek akce uložen do mezipaměti (%1×%2).</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1078"/>
         <source>Please fill URL, event id, and password.</source>
-        <translation type="unfinished">Vyplň prosím URL, ID akce a heslo.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1118"/>
         <source>Unexpected HTTP response</source>
-        <translation type="unfinished">Neočekávaná odpověď HTTP</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1126"/>
         <source>Invalid JSON response.</source>
-        <translation type="unfinished">Neplatná odpověď JSON.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1138"/>
         <source>Password has expired.</source>
-        <translation type="unfinished">Platnost hesla vypršela.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1140"/>
         <source>Event ID mismatch.</source>
-        <translation type="unfinished">Neshoda ID akce.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1142"/>
         <source>Authentication required.</source>
-        <translation type="unfinished">Vyžadováno ověření.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1144"/>
         <source>Invalid credentials.</source>
-        <translation type="unfinished">Neplatné přihlašovací údaje.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1152"/>
         <source>Event not found.</source>
-        <translation type="unfinished">Akce nenalezena.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1236"/>
         <source>OFeed — Invalid Credentials</source>
-        <translation type="unfinished">OFeed — Neplatné přihlašovací údaje</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1237"/>
         <source>OFeed password is invalid or has expired.
 
 Please open OFeed service settings and update your credentials.</source>
-        <translation type="unfinished">OFeed heslo je neplatné nebo mu vypršela platnost.
-
-Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1629"/>
         <source>Exception occurred while getting changes by origin: </source>
-        <translation type="unfinished">Došlo k výjimce při načítání změn podle původu: </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1789"/>
@@ -3924,7 +3922,7 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1840"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1866"/>
         <source>Database query failed: </source>
-        <translation type="unfinished">Dotaz do databáze se nezdařil: </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1904"/>
@@ -3974,7 +3972,7 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1870"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1934"/>
         <source>Exception occurred while executing query: </source>
-        <translation type="unfinished">Došlo k výjimce při provádění dotazu: </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1798"/>
@@ -3982,7 +3980,7 @@ Otevř prosím nastavení služby OFeed a aktualizuj své přihlašovací údaje
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1849"/>
         <location filename="plugins/Event/src/services/ofeed/ofeedclient.cpp" line="1874"/>
         <source>Unknown exception occurred while executing query.</source>
-        <translation type="unfinished">Došlo k neznámé výjimce při provádění dotazu.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>No data received or an error occurred.</source>
@@ -4129,12 +4127,12 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="918"/>
         <source>Credential check interval</source>
-        <translation type="unfinished">Interval kontroly přihlašovacích údajů</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="932"/>
         <source>How often to verify OFeed credentials in the background</source>
-        <translation type="unfinished">Jak často se mají ověřovat přihlašovací údaje na pozadí</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="938"/>
@@ -4158,7 +4156,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="46"/>
         <source>⚠ OFeed password is invalid or has expired. Please update your credentials.</source>
-        <translation type="unfinished">⚠ OFeed heslo vypršelo nebo je neplatné. Uprav přihlašovací údaje.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="234"/>
@@ -4200,22 +4198,22 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="593"/>
         <source>Fetch and process pending changes from OFeed</source>
-        <translation type="unfinished">Načíst a zpracovat čekající změny z OFeedu</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="596"/>
         <source>Process changes</source>
-        <translation type="unfinished">Zpracovat změny</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="502"/>
         <source>Enable or disable automatic processing of changes from the start</source>
-        <translation type="unfinished">Zapnout nebo vypnout automatické zpracování změn ze startu</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="512"/>
         <source>Process changes from start (O Checklist)</source>
-        <translation type="unfinished">Zpracovat změny ze startu (O Checklistu)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="536"/>
@@ -4367,12 +4365,12 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="412"/>
         <source>Export start list</source>
-        <translation type="unfinished">Nahrát startovku</translation>
+        <translation>Exportovat startovku</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="419"/>
         <source>Export results</source>
-        <translation type="unfinished">Nahrát výsledky</translation>
+        <translation>Exportovat výsledky</translation>
     </message>
     <message>
         <source>Processing Changes</source>
@@ -4415,37 +4413,37 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="181"/>
         <source>About</source>
-        <translation type="unfinished">Přestavení</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="182"/>
         <source>Getting started</source>
-        <translation type="unfinished">Jak na to</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="183"/>
         <source>Best practices</source>
-        <translation type="unfinished">Doporučená nastavení</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="184"/>
         <source>Tutorials</source>
-        <translation type="unfinished">Návody</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="185"/>
         <source>How it works</source>
-        <translation type="unfinished">Jak to funguje</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="186"/>
         <source>Support</source>
-        <translation type="unfinished">Podpora</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="223"/>
         <source>Time until next automatic export</source>
-        <translation type="unfinished">Čas do dalšího automatického exportu</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="227"/>
@@ -4455,7 +4453,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="231"/>
         <source>Time until next credential check</source>
-        <translation type="unfinished">Čas do další kontroly přihlašovacích údajů</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="291"/>
@@ -4522,42 +4520,42 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="14"/>
         <source>OFeed – Getting started</source>
-        <translation type="unfinished">OFeed - Jak na to</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="41"/>
         <source>New to OFeed?</source>
-        <translation type="unfinished">Slyšíš o OFeedu poprvé?</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="48"/>
         <source>OFeed is an online platform for orienteering race data. Connect QuickEvent to enable handling start lists and results in real time.</source>
-        <translation type="unfinished">OFeed je datová platforma primárně pro pořadatele. Její využití umožňuje synchronizovat data závodu v reálném čase, hlavně mezi závodní kanceláří a startem.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="68"/>
         <source>&lt;html&gt;&lt;body&gt;&lt;ul style=&quot;margin:0; padding-left:20px;&quot;&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Smooth readout&lt;/b&gt; – no unknown cards that slow down read-out.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Actual card numbers&lt;/b&gt; – card numbers changed at the start are processed within a minute; radio controls work for all competitors.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Real-time data&lt;/b&gt; – O Checklist stays up-to-date even with late entries and other changes before the first corridor.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Instant DNS&lt;/b&gt; – competitors who didn&apos;t start can be processed quickly; DNS is reversed to Active if a late start occurs.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Central Data Hub&lt;/b&gt; – all orienteering data in one secure place, accessible to other integrated applications.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;body&gt;&lt;ul style=&quot;margin:0; padding-left:20px;&quot;&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Hladký průběh vyčítání&lt;/b&gt; – víš, kdo s jakým čipem vystartoval a tak vyčítací frontu neznámý čip již nezpomalí.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Skutečná čísla čipů&lt;/b&gt; – změny čísel čipů na startu se snadno dostanou zpět do pořádacího programu a tak se nenastane, že by nefungovaly radiokontroly. Práce s instalací radiokontrol nepřijde nazmar.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Aktuální data&lt;/b&gt; – O Checklist si sám stáhne provedené změny před závodem i dohlášky během závodu. Data jsou na startu dřív, než samotný závodník vstoupí do prvního koridoru.&lt;/li&gt;&lt;li style=&quot;margin-bottom:5px;&quot;&gt;&lt;b&gt;Okamžité DNS&lt;/b&gt; – závodníky co nedorazí na start je možné okamžitě označit jako nestartující. Případný pozdní start změnu zruší. Máš tak jasný přehled, kdo je ještě na trati.&lt;/li&gt;&lt;li&gt;&lt;b&gt;Centrální úložiště dat&lt;/b&gt; – měj všechna orienťácká data k pořádání na jednom bezpečném místě, odkud jsou jednoduše dostupná dalším integrujícím aplikacím.&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.ui" line="106"/>
         <source>Got it</source>
-        <translation type="unfinished">Super, chápu</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.cpp" line="34"/>
         <source>About</source>
-        <translation type="unfinished">Představení</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.cpp" line="35"/>
         <source>Getting started</source>
-        <translation type="unfinished">Jak na to</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedwelcomedialog.cpp" line="36"/>
         <source>Best practices</source>
-        <translation type="unfinished">Doporučená nastavení</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4651,7 +4649,7 @@ V případě chyb neváhejte napsat na support@oresults.eu</translation>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="42"/>
         <source>Punching Test</source>
-        <translation type="unfinished">Generátor ražení</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="51"/>
@@ -4666,17 +4664,17 @@ V případě chyb neváhejte napsat na support@oresults.eu</translation>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="73"/>
         <source>Running, interval: %1 s</source>
-        <translation type="unfinished">Běží, interval: %1 s</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="132"/>
         <source>No event open</source>
-        <translation type="unfinished">Není otevřený závod</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="204"/>
         <source>No eligible runners left</source>
-        <translation type="unfinished">Žádní vhodní závodníci</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="203"/>
@@ -4696,7 +4694,7 @@ V případě chyb neváhejte napsat na support@oresults.eu</translation>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="365"/>
         <source>Card SI %1, %2 controls</source>
-        <translation type="unfinished">Čip SI %1, %2 kontrol</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservice.cpp" line="37"/>
@@ -4711,64 +4709,62 @@ Nespouštějte během ostrého závodu!</translation>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="14"/>
         <source>Punching Test</source>
-        <translation type="unfinished">Generátor ražení</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="20"/>
         <source>Generates fake SI card readouts for registered runners at a fixed interval. Each readout simulates realistic imperfections — missing punches, extra controls, unknown card numbers, and bad check times — to stress-test results processing without physical SI cards.</source>
-        <translation type="unfinished">Generuje falešná vyčítání SI čipů pro přihlášené závodníky v pravidelném intervalu. Každé vyčtení simuluje dle nastavené pravděpodobnosti realistické situace — chybějící ražení, kontroly navíc, neznámá čísla čipů a chybné časy kontroly čipu.
-
-Slouží pro testování zpracování výsledků bez fyzických SI čipů.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="42"/>
         <source>Punch interval</source>
-        <translation type="unfinished">Interval generování</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="52"/>
         <source> s</source>
-        <translation type="unfinished"> s</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="70"/>
         <source>Per-card imperfections (1 in N probability)</source>
-        <translation type="unfinished">Chybové situace (pravděpodobnost 1 z N)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="76"/>
         <source>Unknown card number (1 in)</source>
-        <translation type="unfinished">Neznámé číslo čip</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="99"/>
         <source>Missing start punch (1 in)</source>
-        <translation type="unfinished">Neoražená startovací krabička</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="122"/>
         <source>Missing finish punch (1 in)</source>
-        <translation type="unfinished">Neoražená cílová krabička</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="145"/>
         <source>Extra wrong control (1 in)</source>
-        <translation type="unfinished">Oražená cizí kontrola navíc</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="168"/>
         <source>Bad check time (1 in)</source>
-        <translation type="unfinished">Špatný čas kontroly čipu</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="194"/>
         <source>Per-control imperfections (1 in N probability)</source>
-        <translation type="unfinished">Chyby na kontrolách (pravděpodobnost 1 z N)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="200"/>
         <source>Mispunch / missed control (1 in)</source>
-        <translation type="unfinished">Chybné/chybějící ražení</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/punchingtest/punchingtestservicewidget.ui" line="226"/>
@@ -5587,7 +5583,7 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="152"/>
         <source>#</source>
-        <translation></translation>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="157"/>
@@ -5796,7 +5792,7 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.cpp" line="196"/>
         <source>Knock-out sprint</source>
-        <translation></translation>
+        <translation>Knock-out sprint</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.cpp" line="197"/>
@@ -6951,17 +6947,17 @@ Imported: %1 of %2 clubs.</source>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="124"/>
         <source>Clipboard does not contain OFeed setup link.</source>
-        <translation>Ve schránce není odkaz pro nastavení OFeedu.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="150"/>
         <source>Unsupported auth type &apos;%1&apos; in setup link.</source>
-        <translation>Nepodporovaný typ ověření &apos;%1&apos; v odkazu pro nastavení.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.cpp" line="155"/>
         <source>Setup link must contain id and pwd (or password) query parameters.</source>
-        <translation>Odkaz pro nastavení musí obsahovat parametry id a pwd (nebo password).</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="33"/>
@@ -8532,7 +8528,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
     <message>
         <location filename="plugins/Runs/src/runstablemodel.cpp" line="40"/>
         <source>SI reg</source>
-        <translation></translation>
+        <translation>SI reg</translation>
     </message>
     <message>
         <location filename="plugins/Runs/src/runstablemodel.cpp" line="44"/>
