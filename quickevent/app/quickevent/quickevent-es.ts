@@ -2794,7 +2794,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Classes/src/courseitemdelegate.cpp" line="79"/>
         <source>Implicit</source>
-        <translation type="unfinished">Implícito</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2802,7 +2802,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
     <message>
         <location filename="plugins/Classes/src/editcourseswidget.cpp" line="49"/>
         <source>Id</source>
-        <translation type="unfinished">Id</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/editcourseswidget.cpp" line="50"/>
@@ -3188,7 +3188,7 @@ Configure la columna &quot;Intervalo&quot; para todas las clases antes de contin
         <location filename="plugins/Event/src/eventplugin.cpp" line="390"/>
         <location filename="plugins/Event/src/eventplugin.cpp" line="478"/>
         <source>Set current stage</source>
-        <translation type="unfinished">Establecer etapa actual</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventplugin.cpp" line="395"/>
@@ -3428,7 +3428,7 @@ Utilice: Archivo --&gt; Importar --&gt; Evento (*.qbe) para convertir el evento 
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="164"/>
         <source>ID</source>
-        <translation type="unfinished">ID</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="164"/>
@@ -4115,7 +4115,7 @@ Documentación: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="711"/>
         <source> mm</source>
-        <translation type="unfinished"> mm</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="744"/>
@@ -4176,7 +4176,7 @@ Documentación: https://docs.orienteerfeed.com</translation>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="873"/>
         <source>Live Results</source>
-        <translation type="unfinished">Resultados en directo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="1012"/>
@@ -4489,7 +4489,7 @@ En el caso de errores inesperados, contacte con support@oresults.eu</translation
     <message>
         <location filename="plugins/Event/src/services/oresultsclientwidget.cpp" line="99"/>
         <source>Testing...</source>
-        <translation type="unfinished">Comprobando...</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/oresultsclientwidget.cpp" line="123"/>
@@ -4754,7 +4754,7 @@ Do not run it in a live race!</source>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="165"/>
         <source>Test</source>
-        <translation type="unfinished">Test</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="174"/>
@@ -5584,7 +5584,7 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="373"/>
         <source>Event id</source>
-        <translation type="unfinished">Id del evento</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="344"/>
@@ -6176,7 +6176,7 @@ https://qxqx.org</translation>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="95"/>
         <source>Open</source>
-        <translation type="unfinished">Abrir</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
