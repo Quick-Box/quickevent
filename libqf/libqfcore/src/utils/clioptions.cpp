@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QJsonParseError>
 #include <QJsonDocument>
+#include <QRegularExpression>
 
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
@@ -407,6 +408,9 @@ bool ConfigCLIOptions::loadConfigFile()
 		qfInfo() << "Reading config file:" << f.fileName();
 		QString str = QString::fromUtf8(f.readAll());
 		str = qf::core::Utils::removeJsonComments(str);
+		// allow Windows paths with single backslash, C:\dir -> C:\\dir, keep \\ and \" untouched
+		static const auto single_backslash = QRegularExpression(R"((?<!\\)((?:\\\\)*)\\(?![\\"]))");
+		str.replace(single_backslash, R"(\1\\)");
 		qfDebug() << str;
 		QJsonParseError err;
 		auto jsd = QJsonDocument::fromJson(str.toUtf8(), &err);
