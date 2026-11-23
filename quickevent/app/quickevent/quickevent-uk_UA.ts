@@ -8948,7 +8948,7 @@ Press refresh button to show imported data.</source>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="277"/>
         <source>class: &lt;b&gt;%1&lt;/b&gt;, %2 runners + %3 vacants = %4&lt;br/&gt;</source>
         <oldsource>class: &lt;b&gt;%1&lt;/b&gt;, %2 runners + %3 vacants&lt;br/&gt;</oldsource>
-        <translation type="unfinished">група: &lt;b&gt;%1&lt;/b&gt;, %2 учасників + %3 вільно&lt;br/&gt;</translation>
+        <translation>група: &lt;b&gt;%1&lt;/b&gt;, %2 учасників + %3 вільно = %4&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="282"/>
