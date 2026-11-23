@@ -44,6 +44,7 @@ namespace Relays {
 namespace {
 using qog::quantizeDatetimeMsec;
 using qog::quantizeTimeMsec;
+using quickevent::core::SharedPosition;
 }
 
 RelaysPlugin::RelaysPlugin(QObject *parent)
@@ -342,6 +343,7 @@ QPair <int, QString> getClubFromName(QString name)
 
 qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, int leg_count, int max_places, bool exclude_not_finish)
 {
+	const auto time_precision = qog::TimeMs::defaultTimeMeasurementPrecision();
 	int max_leg = 0;
 	qfs::Query q;
 	{
@@ -442,13 +444,14 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 				.orderBy("runs.disqualified, runs.timeMs");
 		q.execThrow(qb.toString());
 		int run_pos = 1;
+		SharedPosition shared_pos;
 		int winner_time = 0;
 		while(q.next()) {
 			int relay_id = q.value("runs.relayId").toInt();
 			for (int i = 0; i < relays.count(); ++i) {
 				if(relays[i].relayId == relay_id) {
 					if(run_pos == 1) {
-						winner_time = q.value("timeMs").toInt();
+						winner_time = quantizeTimeMsec(q.value("timeMs").toInt(), time_precision);
 					}
 					int run_id = q.value("runs.id").toInt();
 					Relay &relay = relays[i];
@@ -459,9 +462,10 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 					else {
 						leg.runStatus = quickevent::core::RunStatus::fromQuery(q);
 						leg.time = q.value("timeMs").toInt();
-						leg.loss = leg.time - winner_time;
+						int time_ms = quantizeTimeMsec(leg.time, time_precision);
+						leg.loss = time_ms - winner_time;
 						if (leg.runStatus.isOk() && leg.time > 0) {
-							leg.pos = run_pos;
+							leg.pos = shared_pos.next(run_pos, time_ms);
 							run_pos++;
 						}
 					}
@@ -491,24 +495,17 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 		}
 		std::sort(relay_stime.begin(), relay_stime.end(), [](const LegTime &a, const LegTime &b) {return a.stime < b.stime;});
 		int pos = 0;
-		int pos_diff = 1;
-		int prev_time = -1;
-		int winner_time = (!relay_stime.empty()) ? relay_stime.begin()->stime : 0;
+		SharedPosition shared_pos;
+		int winner_time = (!relay_stime.empty()) ? quantizeTimeMsec(relay_stime.begin()->stime, time_precision) : 0;
 		for(const auto &p : relay_stime) {
 			int relay_id = p.relayId;
 			for (int i = 0; i < relays.count(); ++i) {
 				if(relays[i].relayId == relay_id) {
 					Relay &relay = relays[i];
 					Leg &leg = relay.legs[legno];
-					if (p.stime == prev_time)
-						pos_diff++;
-					else {
-						pos += pos_diff;
-						pos_diff = 1;
-						prev_time = p.stime;
-					}
-					leg.spos = pos;
-					leg.lossOverall = p.stime - winner_time;
+					int stime = quantizeTimeMsec(p.stime, time_precision);
+					leg.spos = shared_pos.next(++pos, stime);
+					leg.lossOverall = stime - winner_time;
 					break;
 				}
 			}
@@ -541,13 +538,14 @@ qf::core::utils::TreeTable RelaysPlugin::nLegsClassResultsTable(int class_id, in
 	tt.appendColumn("id", QMetaType(QMetaType::Int));
 	tt.appendColumn("time", QMetaType(QMetaType::Int));
 	tt.appendColumn("status", QMetaType(QMetaType::QString));
+	SharedPosition shared_pos;
 	for (int i = 0; i < relays.count() && i < max_places; ++i) {
 		int ix = tt.appendRow();
 		qf::core::utils::TreeTableRow tt_row = tt.row(ix);
 		const Relay &relay = relays[i];
 		int time = relay.time(leg_count);
-		int prev_time = (i > 0)? relays[i-1].time(leg_count): 0;
-		tt_row.setValue("pos", (time <= qog::TimeMs::MAX_REAL_TIME_MSEC && time > prev_time)? i+1: 0);
+		int pos = shared_pos.next(i+1, quantizeTimeMsec(time, time_precision));
+		tt_row.setValue("pos", (time <= qog::TimeMs::MAX_REAL_TIME_MSEC)? pos: 0);
 		tt_row.setValue("name", relay.name);
 		tt_row.setValue("relayNumber", relay.relayNumber);
 		tt_row.setValue("orgId", relay.org.id);

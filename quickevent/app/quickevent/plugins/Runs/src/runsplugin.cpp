@@ -75,6 +75,7 @@ QString datetime_to_string(const QDateTime &dt)
 using quickevent::core::og::quantizeDatetimeMsec;
 using quickevent::core::og::quantizeTimeMsec;
 using quickevent::core::ClassDef;
+using quickevent::core::SharedPosition;
 const auto vacant_name_sentinel = QStringLiteral("---");
 }
 RunsPlugin::RunsPlugin(QObject *parent)
@@ -686,6 +687,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		competitor_id_to_row[mod.value(j, "competitors.id").toInt()] = j;
 	}
 	QMap<int, int> stage_to_best_time;
+	const auto time_precision = quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision();
 	for (int stage_id = 1; stage_id <= stages_count; ++stage_id) {
 		qfs::QueryBuilder qb;
 		qb.select2("runs", "competitorId, timeMs, notCompeting, disqualified")
@@ -696,6 +698,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		qfs::Query q;
 		q.exec(qb.toString());
 		int pos = 0;
+		SharedPosition shared_pos;
 		int best_time = UNREAL_TIME_MSEC;
 		while (q.next()) {
 			++pos;
@@ -704,13 +707,13 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 			QF_ASSERT(row_ix >= 0, "Bad row index!", continue);
 			auto not_competing = q.value("notCompeting").toBool();
 			auto disqualified = q.value("disqualified").toBool();
-			QString p = QString::number(pos);
+			int time_ms = quantizeTimeMsec(q.value("timeMs").toInt(), time_precision);
+			QString p = QString::number(shared_pos.next(pos, time_ms));
 			if(not_competing)
 				p = "N";
 			else if(disqualified)
 				p = "D";
-			int time_ms = q.value("timeMs").toInt();
-			if (!not_competing && !disqualified) {
+			if (!not_competing && !disqualified && time_ms > 0) {
 				best_time = std::min(best_time, time_ms);
 			}
 			mod.setValue(row_ix, QString("pos%1").arg(stage_id), p);
@@ -733,7 +736,7 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 			}
 			if (max_points > 0) {
 				int stage_pts = 0;
-				if (pos > 0 && stage_time_ms < UNREAL_TIME_MSEC) {
+				if (pos > 0 && stage_time_ms > 0 && stage_time_ms < UNREAL_TIME_MSEC) {
 					auto stage_best_time = stage_to_best_time.value(stage_id, UNREAL_TIME_MSEC);
 					if (stage_best_time < UNREAL_TIME_MSEC) {
 						stage_pts = static_cast<int>(std::round(static_cast<double>(max_points) * stage_best_time / stage_time_ms));
@@ -776,14 +779,15 @@ qf::core::utils::Table RunsPlugin::nstagesClassResultsTable(
 		t.sort("timeMs");
 	}
 	int pos = 0;
+	SharedPosition shared_pos;
 	int time_ms1 = 0;
 	int first_place_points = 0;
 	int trim_at = -1;
 	for (int j = 0; j < t.rowCount(); ++j) {
 		++pos;
-		QString p = QString::number(pos) + '.';
 		int time_ms = t.row(j).value("timeMs").toInt();
 		int points = t.row(j).value("points").toInt();
+		QString p = QString::number(shared_pos.next(pos, (max_points > 0)? points: time_ms)) + '.';
 		int time_loss_ms = UNREAL_TIME_MSEC;
 		QVariant points_loss;
 		if(time_ms < UNREAL_TIME_MSEC) {
@@ -964,6 +968,7 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		qfDebug() << qb.toString();
 		model.setQueryBuilder(qb, true);
 	}
+	const auto time_precision = quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision();
 	for(int i=0; i<tt.rowCount(); i++) {
 		qf::core::utils::TreeTableRow tt_row = tt.row(i);
 		int class_id = tt_row.value("classes.id").toInt();
@@ -979,15 +984,14 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 		tt2.appendColumn("loss", QMetaType(QMetaType::Int));
 		tt2.appendColumn("points", QMetaType(QMetaType::Int));
 		int first_time_ms = 0;
-		int prev_time_ms = 0;
-		int prev_pos = 0;
+		SharedPosition shared_pos;
 		std::optional<int> best_time_ms;
 		for(int j=0; j<tt2.rowCount(); j++) {
 			qf::core::utils::TreeTableRow tt2_row = tt2.row(j);
 			auto disqualified = tt2_row.value(QStringLiteral("disqualified")).toBool();
 			auto not_competing = tt2_row.value(QStringLiteral("notCompeting")).toBool();
 			bool has_pos = !disqualified && !not_competing;
-			int time_ms = tt2_row.value(QStringLiteral("timeMs")).toInt();
+			int time_ms = quantizeTimeMsec(tt2_row.value(QStringLiteral("timeMs")).toInt(), time_precision);
 			if (time_ms > 0 && time_ms < UNREAL_TIME_MSEC) {
 				best_time_ms = std::min(time_ms, best_time_ms.value_or(UNREAL_TIME_MSEC));
 			}
@@ -995,12 +999,7 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 				first_time_ms = time_ms;
 			}
 			if(has_pos) {
-				int pos = j+1;
-				if(time_ms == prev_time_ms) {
-					pos = prev_pos;
-				} else {
-					prev_pos = pos;
-				}
+				int pos = shared_pos.next(j+1, time_ms);
 				tt2_row.setValue(QStringLiteral( "pos"), QString::number(pos) + '.');
 				tt2_row.setValue(QStringLiteral( "npos"), pos);
 				tt2_row.setValue(QStringLiteral( "loss"), time_ms - first_time_ms);
@@ -1009,7 +1008,6 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 				tt2_row.setValue(QStringLiteral( "pos"), QString());
 				tt2_row.setValue(QStringLiteral( "npos"), 0);
 			}
-			prev_time_ms = time_ms;
 			tt2.setRow(j, tt2_row);
 		}
 		if (best_time_ms.has_value() && max_points > 0) {
@@ -1018,7 +1016,10 @@ qf::core::utils::TreeTable RunsPlugin::stageResultsTable(int stage_id, const QSt
 				if (tt2_row.value(QStringLiteral("npos")).toInt() == 0) {
 					continue;
 				}
-				auto time_ms = tt2_row.value(QStringLiteral("timeMs")).toInt();
+				auto time_ms = quantizeTimeMsec(tt2_row.value(QStringLiteral("timeMs")).toInt(), time_precision);
+				if (time_ms <= 0) {
+					continue;
+				}
 				auto points = std::round(static_cast<double>(max_points) * best_time_ms.value() / time_ms);
 				tt2_row.setValue(QStringLiteral("points"), static_cast<int>(points));
 				tt2.setRow(i, tt2_row);
@@ -1144,15 +1145,17 @@ qf::core::utils::TreeTable RunsPlugin::addLapsToStageResultsTable(int course_id,
 			lap_times[pos][run_id] = RunStp{.runId=run_id, .time=lap};
 		}
 	}
-	auto make_pos = [](QMap<int, RunStpMap> &times) {
+	const auto time_precision = quickevent::core::og::TimeMs::defaultTimeMeasurementPrecision();
+	auto make_pos = [time_precision](QMap<int, RunStpMap> &times) {
 		const auto control_positions = times.keys();
 		for(int pos : control_positions) {
 			RunStpMap &map = times[pos];
 			QList<RunStp> lst = map.values();
 			std::ranges::sort(lst, [](const RunStp &a, const RunStp &b) { return a.time < b.time; });
+			SharedPosition shared_pos;
 			for (int i = 0; i < lst.size(); ++i) {
 				const RunStp &rs = lst[i];
-				map[rs.runId].pos = i+1;
+				map[rs.runId].pos = shared_pos.next(i+1, quantizeTimeMsec(rs.time, time_precision));
 			}
 		}
 	};
