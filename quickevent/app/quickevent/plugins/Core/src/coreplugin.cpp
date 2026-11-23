@@ -19,6 +19,9 @@
 #include <QSettings>
 #include <QSslSocket>
 #include <QActionGroup>
+#include <QDesktopServices>
+#include <QShortcut>
+#include <QUrl>
 
 namespace qfw = qf::gui;
 namespace qff = qf::gui::framework;
@@ -153,6 +156,18 @@ void CorePlugin::onInstalled()
 	{
 		auto *a_help = fwk->menuBar()->actionForPath("help", true);
 		a_help->setText(tr("&Help"));
+		{
+			auto open_documentation = []() {
+				QDesktopServices::openUrl(QUrl("https://github.com/Quick-Box/quickevent/wiki"));
+			};
+			auto *a = new qfw::Action(tr("&Documentation"));
+			connect(a, &qfw::Action::triggered, this, open_documentation);
+			a_help->addActionInto(a);
+			a_help->addSeparatorInto();
+			// shortcut is not set on the action, Windows 11 style draws its hint glued to the text
+			auto *sc = new QShortcut(QKeySequence::HelpContents, fwk);
+			connect(sc, &QShortcut::activated, this, open_documentation);
+		}
 		{
 			auto *a = new qfw::Action(tr("&About Quick Event"));
 			connect(a, &qfw::Action::triggered, this, &CorePlugin::aboutQuickEvent);
