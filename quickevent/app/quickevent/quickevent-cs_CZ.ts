@@ -4039,7 +4039,7 @@ Dokumentace: https://docs.orienteerfeed.com</translation>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="86"/>
         <source>https://orienteerfeed.com</source>
         <oldsource>https://api.orienteerfeed.com</oldsource>
-        <translation type="unfinished">https://orienteerfeed.com</translation>
+        <translation>https://orienteerfeed.com</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/ofeed/ofeedclientwidget.ui" line="93"/>
@@ -4890,7 +4890,7 @@ Nespouštějte během ostrého závodu!</translation>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="165"/>
         <source>Test</source>
-        <translation type="unfinished">Test oražení</translation>
+        <translation>Test ražení</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/services/radiosender/radiosenderservicewidget.ui" line="174"/>
@@ -5603,7 +5603,7 @@ https://qxqx.org</translation>
         <location filename="plugins/Event/src/eventdialogwidget.ui" line="344"/>
         <source>Used to select race number in XML format (for XML import/export)</source>
         <translatorcomment>Používá se k výběru čísla závodu ve formátu XML (pro import/export XML)</translatorcomment>
-        <translation></translation>
+        <translation>Používá se k výběru čísla závodu ve formátu XML (pro import/export XML)</translation>
     </message>
     <message>
         <source>ORIS</source>
@@ -6610,7 +6610,7 @@ zdroj - ORIS-&gt;Závod-&gt;Informace-&gt;Bezpečnostní klíč závodu</transla
     <message>
         <location filename="plugins/Event/src/openeventdialog.ui" line="42"/>
         <source>Filter events…</source>
-        <translation>Filtrovat závody...</translation>
+        <translation>Filtrovat závody…</translation>
     </message>
     <message>
         <location filename="plugins/Event/src/openeventdialog.cpp" line="94"/>
@@ -7207,7 +7207,8 @@ Přejděte do Nastavení -&gt; Mezičasy a nastavte typ mezičasů.</translation
 Please choose a receipt template first.</source>
         <translatorcomment>Typ šablony lístečku není definován.
 Nejprve si prosím vyberte šablonu lístečku.</translatorcomment>
-        <translation></translation>
+        <translation>Typ šablony lístečku není definován.
+Nejprve si prosím vyberte šablonu lístečku.</translation>
     </message>
     <message>
         <location filename="plugins/Receipts/src/receiptssettingspage.cpp" line="659"/>
@@ -9561,7 +9562,7 @@ Stskněte tlačítko pro obnovení pro zobrazení importovaných dat.</translati
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="277"/>
         <source>class: &lt;b&gt;%1&lt;/b&gt;, %2 runners + %3 vacants = %4&lt;br/&gt;</source>
         <oldsource>class: &lt;b&gt;%1&lt;/b&gt;, %2 runners + %3 vacants&lt;br/&gt;</oldsource>
-        <translation>kategorie: &lt;b&gt;%1&lt;/b&gt;, %2 závodníků + %3 vakantů&lt;br/&gt;</translation>
+        <translation>kategorie: &lt;b&gt;%1&lt;/b&gt;, %2 závodníků + %3 vakantů = %4&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="plugins/Classes/src/drawing/classitem.cpp" line="282"/>
