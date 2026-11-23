@@ -3,6 +3,8 @@
 
 #include "quickeventcoreglobal.h"
 
+#include <optional>
+
 class QDateTime;
 
 namespace quickevent {
@@ -14,22 +16,22 @@ public:
 	static QString dateTimeToIsoStringWithUtcOffset(QDateTime dt);
 };
 
-/// Position in a list sorted by value, equal values share the position (1, 2, 2, 4).
+/// Position in a list sorted by time, equal times share the position (1, 2, 2, 4).
 /// Pass times quantized to event precision, so that competitors with the same displayed time get the same position.
 class SharedPosition
 {
 public:
-	int next(int position, int value)
+	int next(int position, int time)
 	{
-		if(value != m_prevValue) {
+		if(time != m_prevTime) {
 			m_position = position;
-			m_prevValue = value;
+			m_prevTime = time;
 		}
 		return m_position;
 	}
 private:
 	int m_position = 0;
-	int m_prevValue = -1;
+	std::optional<int> m_prevTime;
 };
 
 } // namespace core
