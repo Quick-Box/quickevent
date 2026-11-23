@@ -148,12 +148,12 @@
     <message>
         <location filename="src/exporters/stagestartlisthtmlexporter.cpp" line="45"/>
         <source> length: </source>
-        <translation type="unfinished"> distància </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="src/exporters/stagestartlisthtmlexporter.cpp" line="45"/>
         <source>climb: </source>
-        <translation type="unfinished">desnivell </translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="src/exporters/stagestartlisthtmlexporter.cpp" line="63"/>
