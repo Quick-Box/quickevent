@@ -33,6 +33,9 @@ private slots:
 	//CardReaderSettingsPage *cardReaderSettingsPage() const;
 private:
 	SettingsPage* page(int page_index);
+	bool isPageAvailable(int page_index);
+	void loadPage(int page_index);
+	void savePage(int page_index);
 private:
 	Ui::SettingsDialog *ui;
 	QButtonGroup *m_buttonGroup;

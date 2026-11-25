@@ -26,6 +26,7 @@ ReportsSettingsPage::ReportsSettingsPage(QWidget *parent) :
 	m_reportProxyModel(new ::QSortFilterProxyModel(this))
 {
 	m_caption = tr("Reports");
+	m_requiresOpenEvent = true;
 	ui->setupUi(this);
 
 	ui->btResizeColumnsToFit->setIcon(qf::gui::Style::icon("zoom_fitwidth"));

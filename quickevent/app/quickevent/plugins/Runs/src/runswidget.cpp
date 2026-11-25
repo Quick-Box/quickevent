@@ -1222,6 +1222,9 @@ void RunsWidget::editCompetitors(int mode)
 
 void RunsWidget::editCompetitorOnPunch(int siid)
 {
+	if(!getPlugin<EventPlugin>()->isEventOpen()) {
+		return;
+	}
 	qfs::Query q;
 	q.exec("SELECT id FROM competitors WHERE siId=" + QString::number(siid), qfc::Exception::Throw);
 	if(q.next()) {
@@ -1296,6 +1299,9 @@ void RunsWidget::report_competitorsStatistics()
 void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 {
 	qfLogFuncFrame() << "id:" << id << "mode:" << mode;
+	if(!getPlugin<EventPlugin>()->isEventOpen()) {
+		return;
+	}
 	bool ok = false;
 	bool save_and_next = false;
 
@@ -1351,6 +1357,9 @@ void RunsWidget::editCompetitor_helper(const QVariant &id, int mode, int siid)
 
 void RunsWidget::showEditCompetitorDialog(int competitor_id, QWidget *parent)
 {
+	if(!getPlugin<EventPlugin>()->isEventOpen()) {
+		return;
+	}
 	auto *w = new CompetitorWidget();
 	w->setWindowTitle(tr("Edit Competitor"));
 	qfd::Dialog dlg(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, parent);

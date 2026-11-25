@@ -333,6 +333,7 @@ ReceiptsSettingsPage::ReceiptsSettingsPage(QWidget *parent)
 	ui = new Ui::ReceiptsSettingsPage;
 	ui->setupUi(this);
 	m_caption = tr("Receipts");
+	m_requiresOpenEvent = true;
 
 	ui->cbxWhenRunnerNotFound->addItem(tr("Error info"), "ErrorInfo");
 	ui->cbxWhenRunnerNotFound->addItem(tr("Error info with picture"), "ErrorInfoLong");

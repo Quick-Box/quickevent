@@ -2737,6 +2737,11 @@ Zvažte nastavení intervalu pro všechny kategorie.</translation>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
+    <message>
+        <location filename="plugins/Core/src/widgets/settingsdialog.cpp" line="84"/>
+        <source>%1 - open an event to change these settings</source>
+        <translation>%1 - pro změnu tohoto nastavení otevři závod</translation>
+    </message>
 </context>
 <context>
     <name>CourseCodesTableModel</name>
@@ -6804,6 +6809,23 @@ Imported: %1 of %2 clubs.</source>
         <location filename="plugins/Oris/src/orisimporter.cpp" line="783"/>
         <source>Year of registration:</source>
         <translation>Registrace z roku:</translation>
+    </message>
+</context>
+<context>
+    <name>PartWidget</name>
+    <message>
+        <location filename="src/partwidget.cpp" line="91"/>
+        <source>No event is open.
+Create a new event or open an existing one to continue.</source>
+        <translation>Není otevřen žádný závod.
+Pro pokračování vytvoř nový závod nebo otevři existující.</translation>
+    </message>
+    <message>
+        <location filename="src/partwidget.cpp" line="92"/>
+        <source>Data storage is not set.
+Connect to a database (working directory or SQL server) first, then create or open an event.</source>
+        <translation>Není nastaveno úložiště dat.
+Nejprve se připoj k databázi (pracovní adresář nebo SQL server), poté vytvoř nebo otevři závod.</translation>
     </message>
 </context>
 <context>

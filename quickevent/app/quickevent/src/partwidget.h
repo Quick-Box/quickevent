@@ -2,6 +2,9 @@
 
 #include <qf/gui/framework/partwidget.h>
 
+class QLabel;
+class QToolButton;
+
 class PartWidget : public qf::gui::framework::PartWidget
 {
 	Q_OBJECT
@@ -14,6 +17,15 @@ public:
 	Q_SIGNAL void reloadPartRequest();
 protected:
 	Q_SLOT virtual void onActiveChanged();
+	void showEvent(QShowEvent *event) override;
+private:
+	void updateNoEventFrame();
+private:
+	QWidget *m_noEventFrame = nullptr;
+	QLabel *m_noEventLabel = nullptr;
+	QToolButton *m_btConnectDb = nullptr;
+	QToolButton *m_btCreateEvent = nullptr;
+	QToolButton *m_btOpenEvent = nullptr;
 };
 
 

@@ -13,11 +13,13 @@ public:
 	explicit SettingsPage(QWidget *parent = nullptr);
 
 	QString caption() const { return m_caption; }
+	bool requiresOpenEvent() const { return m_requiresOpenEvent; }
 
 	virtual void load() = 0;
 	virtual void save() = 0;
 protected:
 	QString m_caption;
+	bool m_requiresOpenEvent = false;
 	//QString m_settingsDir;
 };
 
