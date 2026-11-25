@@ -80,7 +80,7 @@ void SettingsDialog::loadPage(int page_index)
 	auto *p = page(page_index);
 	const bool available = isPageAvailable(page_index);
 	p->setEnabled(available);
-	if(auto *label = ui->stackedWidget->widget(page_index)->findChild<QLabel*>("CaptionFrame")) {
+	if(auto *label = ui->stackedWidget->widget(page_index)->findChild<QLabel*>("CaptionFrame", Qt::FindDirectChildrenOnly)) {
 		label->setText("  " + (available? p->caption(): tr("%1 - open an event to change these settings").arg(p->caption())));
 	}
 	if(available) {
