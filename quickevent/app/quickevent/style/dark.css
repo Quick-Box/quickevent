@@ -2,6 +2,23 @@ QMenu,QMenuBar {
 	background-color: #525252;
 }
 
+QMenu::item, QMenuBar::item {
+	background-color: transparent;
+}
+
+QMenu::item:disabled, QMenuBar::item:disabled {
+	color: gray;
+}
+
+QMenu::item:selected, QMenuBar::item:selected {
+	color: black;
+	background: #FDE364;
+}
+
+QMenu::item:pressed, QMenuBar::item:pressed {
+	background: darkgray;
+}
+
 qf--gui--framework--PartSwitch {
 	background: #525252;
 }
