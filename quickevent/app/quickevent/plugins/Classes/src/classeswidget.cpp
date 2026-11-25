@@ -17,6 +17,7 @@
 #include <qf/gui/action.h>
 #include <qf/gui/menubar.h>
 #include <qf/gui/toolbar.h>
+#include <qf/gui/style.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/dialog.h>
 #include <qf/gui/dialogs/filedialog.h>
@@ -205,6 +206,17 @@ ClassesWidget::ClassesWidget(QWidget *parent) :
 		connect(m_courseItemDelegate, &CourseItemDelegate::courseIdChanged, ui->tblClasses, &qfw::TableView::reloadCurrentRow, Qt::QueuedConnection);
 
 		m_classesModel = m;
+
+		m_actDrawLockAll = new QAction(this);
+		ui->tblClassesTB->addAction(m_actDrawLockAll);
+		connect(m_actDrawLockAll, &QAction::triggered, this, [this]() {
+			setDrawLockForAllClasses(m_actDrawLockAll->data().toBool());
+		});
+		connect(m, &qfm::SqlTableModel::reloaded, this, &ClassesWidget::updateDrawLockAction);
+		connect(m, &qfm::SqlTableModel::dataChanged, this, &ClassesWidget::updateDrawLockAction);
+		connect(m, &qfm::SqlTableModel::rowsInserted, this, &ClassesWidget::updateDrawLockAction);
+		connect(m, &qfm::SqlTableModel::rowsRemoved, this, &ClassesWidget::updateDrawLockAction);
+		updateDrawLockAction();
 	}
 	{
 		ui->tblCourseCodes->setPersistentSettingsId("tblCourseCodes");
@@ -292,6 +304,33 @@ void ClassesWidget::settleDownInPartWidget(::PartWidget *part_widget)
 		main_tb->addWidget(m_cbxStage);
 	}
 
+}
+
+void ClassesWidget::setDrawLockForAllClasses(bool is_locked)
+{
+	const QString msg = is_locked? tr("Lock drawing for all classes in stage %1?"): tr("Unlock drawing for all classes in stage %1?");
+	if(qfd::MessageBox::askYesNo(this, msg.arg(m_cbxStage->currentText()), false)) {
+		qfs::Query q;
+		q.prepare("UPDATE classdefs SET drawLock=:drawLock WHERE stageId=:stageId", qf::core::Exception::Throw);
+		q.bindValue(":drawLock", is_locked);
+		q.bindValue(":stageId", selectedStageId());
+		q.exec(qf::core::Exception::Throw);
+		reload();
+	}
+}
+
+void ClassesWidget::updateDrawLockAction()
+{
+	const int row_count = m_classesModel->rowCount();
+	bool all_locked = row_count > 0;
+	for(int i = 0; i < row_count && all_locked; ++i) {
+		all_locked = m_classesModel->value(i, "classdefs.drawLock").toBool();
+	}
+	m_actDrawLockAll->setEnabled(row_count > 0);
+	// action shows what will happen on click: unlock when all are locked, lock otherwise
+	m_actDrawLockAll->setData(!all_locked);
+	m_actDrawLockAll->setIcon(qfw::Style::icon(all_locked? "lock-open": "lock"));
+	m_actDrawLockAll->setToolTip(all_locked? tr("Unlock drawing for all classes"): tr("Lock drawing for all classes"));
 }
 
 void ClassesWidget::edit_courses()

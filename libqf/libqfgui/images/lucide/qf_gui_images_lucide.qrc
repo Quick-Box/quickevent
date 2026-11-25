@@ -32,6 +32,8 @@
 		<file>eye-off.svg</file>
 		<file alias="help.svg">circle-question-mark.svg</file>
 		<file>globe.svg</file>
+		<file>lock.svg</file>
+		<file>lock-open.svg</file>
 
 		<file alias="zoom_in.svg">zoom-in.svg</file>
 		<file alias="zoom_out.svg">zoom-out.svg</file>
