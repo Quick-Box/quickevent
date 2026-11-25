@@ -32,7 +32,7 @@ RunsSettingsPage::RunsSettingsPage(QWidget *parent)
 {
 	m_caption = tr("Runs");
 	m_requiresOpenEvent = true;
-	ui =new ::Ui::RunsSettingsPage;
+	ui = new ::Ui::RunsSettingsPage;
 	ui->setupUi(this);
 
 	auto *model = runsTableWidget()->runsModel();
