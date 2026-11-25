@@ -86,6 +86,43 @@ void CorePlugin::onInstalled()
 		});
 		a_file->addActionInto(a);
 	}
+	{
+		auto *m = a_file->addMenuInto("language", tr("&Language"));
+		QPair<QString, QString> langs[] = {
+			{tr("System"), "system"},
+			{tr("Czech"), "cs_CZ"},
+			{tr("English"), "en_US"},
+			{tr("Flemish"), "nl_BE"},
+			{tr("French"), "fr_FR"},
+			{tr("Norwegian"), "nb_NO"},
+			{tr("Polish"), "pl_PL"},
+			{tr("Russian"), "ru_RU"},
+			{tr("Spanish"), "es"},
+			{tr("Ukrainian"), "uk_UA"},
+		};
+		auto *ag = new QActionGroup(m);
+		QSettings settings;
+		QString curr_lang = settings.value(SETTINGS_PREFIX_APPLICATION_LOCALE_LANGUAGE(), "system").toString();
+		for(auto i : langs) {
+			auto *a = new qfw::Action(i.first);
+			ag->addAction(a);
+			a->setOid(i.second);
+			a->setCheckable(true);
+			if(a->oid() == curr_lang) {
+				a->setChecked(true);
+			}
+			m->addActionInto(a);
+			connect(a, &QAction::triggered, a, [a](bool checked) {
+				if(checked) {
+					QSettings settings;
+					settings.setValue(SETTINGS_PREFIX_APPLICATION_LOCALE_LANGUAGE(), a->oid());
+					QMessageBox::information(qff::MainWindow::frameWork()
+											 , tr("Information")
+											 , tr("Language change to '%1' will be applied after application restart.").arg(a->text()));
+				}
+			});
+		}
+	}
 	a_file->addSeparatorInto();
 	{
 		auto *a_quit = new qfw::Action(tr("&Quit"));
@@ -101,46 +138,6 @@ void CorePlugin::onInstalled()
 		//a->setShortcut("ctrl+L");
 		connect(a, &qfw::Action::triggered, this, &CorePlugin::launchSqlTool);
 		a_tools->addActionInto(a);
-	}
-	{
-		auto *m1 = a_tools->addMenuInto("locale", tr("&Locale"));
-		{
-			auto *m2 = m1->addMenuInto("language", tr("&Language"));
-			QPair<QString, QString> langs[] = {
-				{tr("System"), "system"},
-				{tr("Czech"), "cs_CZ"},
-				{tr("English"), "en_US"},
-				{tr("Flemish"), "nl_BE"},
-				{tr("French"), "fr_FR"},
-				{tr("Norwegian"), "nb_NO"},
-				{tr("Polish"), "pl_PL"},
-				{tr("Russian"), "ru_RU"},
-				{tr("Spanish"), "es"},
-				{tr("Ukrainian"), "uk_UA"},
-			};
-			auto *ag = new QActionGroup(m2);
-			QSettings settings;
-			QString curr_lang = settings.value(SETTINGS_PREFIX_APPLICATION_LOCALE_LANGUAGE(), "system").toString();
-			for(auto i : langs) {
-				auto *a = new qfw::Action(i.first);
-				ag->addAction(a);
-				a->setOid(i.second);
-				a->setCheckable(true);
-				if(a->oid() == curr_lang) {
-					a->setChecked(true);
-				}
-				m2->addActionInto(a);
-				connect(a, &QAction::triggered, a, [a](bool checked) {
-					if(checked) {
-						QSettings settings;
-						settings.setValue(SETTINGS_PREFIX_APPLICATION_LOCALE_LANGUAGE(), a->oid());
-						QMessageBox::information(qff::MainWindow::frameWork()
-												 , tr("Information")
-												 , tr("Language change to '%1' will be applied after application restart.").arg(a->text()));
-					}
-				});
-			}
-		}
 	}
 	{
 		auto *a = fwk->menuBar()->actionForPath("view", true);
