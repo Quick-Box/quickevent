@@ -2,6 +2,8 @@
 
 #include <qf/gui/framework/partwidget.h>
 
+#include <QPointer>
+
 class QLabel;
 class QToolButton;
 
@@ -26,6 +28,7 @@ private:
 	QToolButton *m_btConnectDb = nullptr;
 	QToolButton *m_btCreateEvent = nullptr;
 	QToolButton *m_btOpenEvent = nullptr;
+	QList<QPointer<QWidget>> m_hiddenByNoEvent;
 };
 
 

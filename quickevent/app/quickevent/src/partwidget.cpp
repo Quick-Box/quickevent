@@ -80,10 +80,22 @@ void PartWidget::updateNoEventFrame()
 	}
 	const bool is_connected = event_plugin->isSqlServerConnected();
 	const bool is_open = event_plugin->isEventOpen();
-	// item 0 is the caption frame, keep it visible
-	for(int i = 1; i < ly->count(); ++i) {
-		if(auto *w = ly->itemAt(i)->widget(); w && w != m_noEventFrame) {
-			w->setVisible(is_open);
+	if(is_open) {
+		// show only widgets hidden here, keep the ones hidden by plugins
+		for(const auto &w : std::as_const(m_hiddenByNoEvent)) {
+			if(w) {
+				w->show();
+			}
+		}
+		m_hiddenByNoEvent.clear();
+	}
+	else {
+		// item 0 is the caption frame, keep it visible
+		for(int i = 1; i < ly->count(); ++i) {
+			if(auto *w = ly->itemAt(i)->widget(); w && w != m_noEventFrame && !w->isHidden()) {
+				w->hide();
+				m_hiddenByNoEvent << w;
+			}
 		}
 	}
 	m_noEventFrame->setVisible(!is_open);
