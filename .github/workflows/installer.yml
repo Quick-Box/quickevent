@@ -69,7 +69,6 @@ jobs:
       - name: Get libraries
 #         if: steps.cache-libs.outputs.cache-hit != 'true'
         run: |
-          choco install openssl.light --params "/InstallDir:C:\openssl" --version=3.1.4 -y
           choco install postgresql17 -y
           choco install innosetup -y
         shell: cmd
@@ -119,7 +118,8 @@ jobs:
           if [ -f libwinpthread-1.dll ]; then
             cp -n libwinpthread-1.dll '${{ github.workspace }}/install/bin/'
           fi
-          cd "C:\openssl"
+          # OpenSSL 3 preinstalled on the GitHub Windows runner image
+          cd "C:/Program Files/OpenSSL/bin"
           cp libssl-3-x64.dll libcrypto-3-x64.dll '${{ github.workspace }}/install/bin/'
         shell: bash
 
