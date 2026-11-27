@@ -19,6 +19,23 @@ using qf::gui::framework::getPlugin;
 using Event::EventPlugin;
 using Runs::RunsPlugin;
 
+namespace {
+
+/// returns fields of rec prefixed with "table." with the prefix stripped
+QVariantMap filter_table_record(const QString &table, const QVariantMap &rec)
+{
+	auto prefix = table + '.';
+	QVariantMap filtered;
+	for (const auto &[key, value] : rec.asKeyValueRange()) {
+		if (key.startsWith(prefix)) {
+			filtered[key.mid(prefix.length())] = value;
+		}
+	}
+	return filtered;
+}
+
+}
+
 CompetitorDocument::CompetitorDocument(QObject *parent)
 	: Super(parent)
 {
@@ -95,17 +112,7 @@ bool CompetitorDocument::saveData()
 
 					// new update API
 					auto *app = qf::gui::framework::Application::instance();
-					auto filter_table_record = [](const QString &table, const QVariantMap &rec) {
-						auto prefix = table + '.';
-						QVariantMap filtered;
-						for(const auto &[key, value] : rec.asKeyValueRange()) {
-							if (key.startsWith(prefix)) {
-								filtered[key.mid(prefix.length())] = value;
-							}
-						}
-						return filtered;
-					};
-					app->qxSql()->emitRecInserted( "runs", run_id, filter_table_record("runs", rec), this);
+					app->qxSql()->emitRecInserted("runs", run_id, filter_table_record("runs", rec), this);
 				}
 			}
 		}
