@@ -1370,6 +1370,32 @@ QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &pro
 			err_str = tr("Cannot create temporary directory: %1").arg(tmp_dir.errorString());
 			break;
 		}
+		// take the snapshot before the first progress report, it processes app events,
+		// changes made after the snapshot are postponed recchng signals in Replica mode and must not be in the snapshot
+		qfs::Connection conn = qfs::Connection::forName();
+		if(use_snapshot_transaction) {
+			qfs::Connection current_conn = conn;
+			conn = qfs::Connection(QSqlDatabase::addDatabase(current_conn.driverName(), source_connection_name));
+			cloneDbConnection(conn, current_conn);
+			if(!conn.open()) {
+				err_str = tr("Open Database Error: %1").arg(conn.errorString());
+				break;
+			}
+			if(!conn.setCurrentSchema(eventDbName())) {
+				err_str = tr("Cannot set event schema '%1': %2").arg(eventDbName(), conn.errorString());
+				break;
+			}
+			qfs::Query q(conn);
+			if(!q.exec(QStringLiteral("BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"))) {
+				err_str = tr("Cannot start export transaction: %1").arg(q.lastErrorText());
+				break;
+			}
+			// REPEATABLE READ snapshot is taken by the first query, not by BEGIN, take it now
+			if(!q.exec(QStringLiteral("SELECT 1"))) {
+				err_str = tr("Cannot start export transaction: %1").arg(q.lastErrorText());
+				break;
+			}
+		}
 		qfs::Connection ex_conn(QSqlDatabase::addDatabase("QSQLITE", export_connection_name));
 		ex_conn.setDatabaseName(ex_fn);
 		qfInfo() << "Opening export database file" << ex_fn;
@@ -1401,25 +1427,6 @@ QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &pro
 			break;
 		}
 		qfs::Transaction transaction(ex_conn);
-		qfs::Connection conn = qfs::Connection::forName();
-		if(use_snapshot_transaction) {
-			qfs::Connection current_conn = conn;
-			conn = qfs::Connection(QSqlDatabase::addDatabase(current_conn.driverName(), source_connection_name));
-			cloneDbConnection(conn, current_conn);
-			if(!conn.open()) {
-				err_str = tr("Open Database Error: %1").arg(conn.errorString());
-				break;
-			}
-			if(!conn.setCurrentSchema(eventDbName())) {
-				err_str = tr("Cannot set event schema '%1': %2").arg(eventDbName(), conn.errorString());
-				break;
-			}
-			qfs::Query q(conn);
-			if(!q.exec(QStringLiteral("BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"))) {
-				err_str = tr("Cannot start export transaction: %1").arg(q.lastErrorText());
-				break;
-			}
-		}
 		for(const QString &table_name : tables) {
 			qfDebug() << "Copying table" << table_name;
 			report_step(tr("Copying table %1").arg(table_name));
