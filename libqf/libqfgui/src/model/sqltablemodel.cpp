@@ -163,7 +163,6 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 			int serial_ix = -1;
 			bool serial_ix_explicitly_set = false;
 			int primary_ix = -1;
-			// QVariantMap qx_record;
 			for (const auto &fld : row_ref.fields()) {
 				i++;
 				if(fld.tableId() != table_id)
@@ -198,7 +197,6 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 					new_fld.setValue(v);
 					// qfInfo() << "append field:" << new_fld.name() << "-->" << new_fld.value().toString();
 					rec.append(new_fld);
-					// qx_record[fld.shortName().toLower()] = v;
 				}
 			}
 
@@ -268,7 +266,6 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 		QSqlDriver *sqldrv = sql_conn.driver();
 		for (const auto &table_id : tableIds(m_table.fields())) {
 			qfDebug() << "\ttableid:" << table_id;
-			// QVariantMap qx_record;
 			QSqlRecord edit_rec;
 			int i = -1;
 			for (const auto &fld : row_ref.fields()) {
@@ -292,7 +289,6 @@ bool SqlTableModel::postRow(int row_no, bool throw_exc)
 				//	has_blob_field = true;
 				qfDebug() << "\tfield is null: " << sqlfld.isNull();
 				edit_rec.append(sqlfld);
-				// qx_record[fld.shortName()] = v;
 			}
 			if(!edit_rec.isEmpty()) {
 				qfDebug() << "updating table edits:" << table_id;

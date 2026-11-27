@@ -19,7 +19,6 @@ class QxEventServiceSettings : public ServiceSettings
 	// API token is a secret, it must not be stored in the event DB config table,
 	// which is shared with other clients and with the server in Replica mode
 	QF_VARIANTMAP_FIELD(QString, a, setA, piToken)
-	// QF_VARIANTMAP_FIELD2(bool, is, set, ExportDatabase, false)
 public:
 	QxEventServiceSettings(const QVariantMap &o = QVariantMap()) : Super(o) {}
 };

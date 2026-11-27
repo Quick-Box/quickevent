@@ -1,6 +1,5 @@
 #include "openeventdialog.h"
 #include "ui_openeventdialog.h"
-// #include "appdbconfig.h"
 #include "dbschema.h"
 #include "eventdialogwidget.h"
 

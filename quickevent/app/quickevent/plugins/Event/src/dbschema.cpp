@@ -18,7 +18,7 @@
 
 namespace {
 
-using   qf::core::sql::Connection;
+using qf::core::sql::Connection;
 
 struct Migration
 {
