@@ -91,6 +91,10 @@ public:
 	bool isSqlServerConnected() const { return m_sqlServerConnected; }
 	Q_SIGNAL void sqlServerConnectedChanged(bool is_open);
 
+	qf::gui::Action* connectDbAction() const { return m_actConnectDb; }
+	qf::gui::Action* createEventAction() const { return m_actCreateEvent; }
+	qf::gui::Action* openEventAction() const { return m_actOpenEvent; }
+
 	Q_INVOKABLE void emitDbEvent(const QString &domain, const QVariant &data = QVariant(), bool loopback = true);
 	/// emitted only if loopback is not set
 	Q_SIGNAL void dbEventNotify(const QString &domain, int connection_id, const QVariant &payload);

@@ -11,6 +11,7 @@ LentCardsSettingsPage::LentCardsSettingsPage(QWidget *parent)
 	, ui(new Ui::LentCardsSettingsPage)
 {
 	m_caption = tr("Cards to rent");
+	m_requiresOpenEvent = true;
 	ui->setupUi(this);
 
 	ui->tblCardsTB->setTableView(ui->tblCards);

@@ -6,8 +6,6 @@
 #include "runsplugin.h"
 #include "runswidget.h"
 
-#include <plugins/Event/src/eventplugin.h>
-
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
 #include <qf/gui/tableview.h>
@@ -33,6 +31,7 @@ RunsSettingsPage::RunsSettingsPage(QWidget *parent)
 	: Super(parent)
 {
 	m_caption = tr("Runs");
+	m_requiresOpenEvent = true;
 	ui = new ::Ui::RunsSettingsPage;
 	ui->setupUi(this);
 
@@ -58,12 +57,6 @@ void RunsSettingsPage::load()
 	for(int i = 0; i < ui->lwColumns->count(); ++i) {
 		ui->lwColumns->item(i)->setCheckState(Qt::Checked);
 	}
-
-	if(!qf::gui::framework::getPlugin<Event::EventPlugin>()->isEventOpen()) {
-		setEnabled(false);
-		return;
-	}
-	setEnabled(true);
 
 	auto *runs_table = runsTableWidget();
 	if(!runs_table)
@@ -97,10 +90,6 @@ void RunsSettingsPage::load()
 
 void RunsSettingsPage::save()
 {
-	if(!qf::gui::framework::getPlugin<Event::EventPlugin>()->isEventOpen()) {
-		return;
-	}
-
 	auto *runs_table = runsTableWidget();
 	if(!runs_table)
 		return;

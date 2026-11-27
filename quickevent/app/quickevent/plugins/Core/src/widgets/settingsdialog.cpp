@@ -3,6 +3,8 @@
 
 #include "settingspage.h"
 
+#include <plugins/Event/src/eventplugin.h>
+
 #include <qf/core/log.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/framework/plugin.h>
@@ -28,10 +30,10 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 		qfDebug() << "id toggled:" << page_index << checked;
 		if(checked) {
 			ui->stackedWidget->setCurrentIndex(page_index);
-			page(page_index)->load();
+			loadPage(page_index);
 		}
 		else {
-			page(page_index)->save();
+			savePage(page_index);
 		}
 	});
 }
@@ -45,14 +47,14 @@ void SettingsDialog::showEvent(QShowEvent *event)
 {
 	QDialog::showEvent(event);
 	if(int page_index = m_buttonGroup->checkedId(); page_index >= 0) {
-		page(page_index)->load();
+		loadPage(page_index);
 	}
 }
 
 void SettingsDialog::onButtonBoxRejected()
 {
 	if(int page_index = m_buttonGroup->checkedId(); page_index >= 0) {
-		page(page_index)->save();
+		savePage(page_index);
 	}
 	accept();
 }
@@ -62,6 +64,35 @@ SettingsPage *SettingsDialog::page(int page_index)
 	auto *page = ui->stackedWidget->widget(page_index)->findChild<SettingsPage*>(QString(), Qt::FindDirectChildrenOnly);
 	Q_ASSERT(page);
 	return page;
+}
+
+bool SettingsDialog::isPageAvailable(int page_index)
+{
+	return !page(page_index)->requiresOpenEvent() || qf::gui::framework::getPlugin<Event::EventPlugin>()->isEventOpen();
+}
+
+void SettingsDialog::loadPage(int page_index)
+{
+	if(!isVisible()) {
+		// first page is selected in addPage() while plugins are still installing, showEvent() loads it later
+		return;
+	}
+	auto *p = page(page_index);
+	const bool available = isPageAvailable(page_index);
+	p->setEnabled(available);
+	if(auto *label = ui->stackedWidget->widget(page_index)->findChild<QLabel*>("CaptionFrame", Qt::FindDirectChildrenOnly)) {
+		label->setText("  " + (available? p->caption(): tr("%1 - open an event to change these settings").arg(p->caption())));
+	}
+	if(available) {
+		p->load();
+	}
+}
+
+void SettingsDialog::savePage(int page_index)
+{
+	if(isPageAvailable(page_index)) {
+		page(page_index)->save();
+	}
 }
 
 void SettingsDialog::addPage(SettingsPage *page)
