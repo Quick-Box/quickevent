@@ -111,6 +111,9 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 		auto class_id = id->classId;
 		loadClassName(class_id);
 	}
+	else if (auto *del = std::get_if<DeleteEntry>(&late_entry.kind)) {
+		initDeleteEntry(del->runId);
+	}
 
 	auto update_paid_style = [this]() {
 		if (ui->chkPaid->isChecked()) {
@@ -204,6 +207,34 @@ void LateEntryDialog::loadOrigValues(int run_id)
 	ui->edSiCardOrig->setValue(m_origValues.si_id);
 }
 
+void LateEntryDialog::initDeleteEntry(int run_id)
+{
+	ui->edRunId->setValue(run_id);
+	// nothing is changed by delete entry, only the run is unregistered from the stage
+	for (auto *grp : {ui->grpFirstName, ui->grpLastName, ui->grpRegistration, ui->grpSiCard, ui->grpStartTime}) {
+		grp->setChecked(false);
+		grp->setEnabled(false);
+	}
+	ui->btAcceptAndEdit->setEnabled(false);
+
+	qf::core::sql::Query q;
+	q.execThrow(QStringLiteral("SELECT finishTimeMs FROM runs WHERE id=%1").arg(run_id));
+	if (!q.next()) {
+		m_acceptBlockedReason = tr("Run %1 does not exist.").arg(run_id);
+		setMessage(m_acceptBlockedReason, true);
+		return;
+	}
+	auto has_result = !q.value("finishTimeMs").isNull();
+	loadOrigValues(run_id);
+	if (has_result) {
+		m_acceptBlockedReason = tr("Competitor has finished already, the entry cannot be deleted.");
+		setMessage(m_acceptBlockedReason, true);
+	}
+	else {
+		setMessage(tr("Competitor will be removed from stage %1.").arg(m_stageId), false);
+	}
+}
+
 void LateEntryDialog::loadClassName(int class_id)
 {
 	qf::core::sql::Query q;
@@ -243,7 +274,7 @@ void LateEntryDialog::lockChange()
 
 void LateEntryDialog::updateButtonsEnabled()
 {
-	ui->btAccept->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
+	ui->btAccept->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0) && m_acceptBlockedReason.isEmpty());
 	ui->btReject->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
 }
 
@@ -251,7 +282,15 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 {
 	using namespace qf::gui::model;
 
-	if (is_accepted) {
+	if (auto *del = std::get_if<DeleteEntry>(&m_lateEntryId); del && is_accepted) {
+		Q_ASSERT(m_acceptBlockedReason.isEmpty());
+		// unregister run from stage, the change is propagated to QX as recchng
+		qf::core::sql::Record rec {
+			{"isRunning", false},
+		};
+		qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", del->runId, rec, this);
+	}
+	else if (is_accepted) {
 		auto class_id = classId();
 		bool is_insert = class_id.has_value() && !m_setIsRunning;
 		Competitors::CompetitorDocument doc;

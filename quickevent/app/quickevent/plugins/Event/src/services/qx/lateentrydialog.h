@@ -35,6 +35,7 @@ private:
 
 	void loadOrigValues(int run_id);
 	void loadClassName(int class_id);
+	void initDeleteEntry(int run_id);
 
 	void lockChange();
 	void unlockChange() const;
@@ -57,6 +58,8 @@ private:
 	QxChangeStatus m_status = QxChangeStatus::Rejected;
 	OrigRunRecord m_origValues;
 	bool m_setIsRunning = false;
+	// non empty if the change cannot be accepted
+	QString m_acceptBlockedReason;
 };
 
 
