@@ -125,6 +125,8 @@ bool QxEventServiceWidget::saveSettings()
 		bool is_localhost = ui->btLocalhost->isChecked();
 		if (is_localhost) {
 			ss.setShvBrokerUrl(ui->edServerUrl->text());
+		} else {
+			ss.setShvBrokerUrl(brokerUrl());
 		}
 		ss.setLocalBroker(is_localhost);
 		ss.setApiToken(ui->edApiToken->text().trimmed());

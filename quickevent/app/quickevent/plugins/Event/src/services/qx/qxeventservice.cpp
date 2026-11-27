@@ -97,7 +97,7 @@ void QxEventService::run() {
 	connect(m_rpcConnection, &ClientConnection::rpcMessageReceived, this, &QxEventService::onRpcMessageReceived);
 
 	// connect(::qx::SqlApi::instance(), &::qx::SqlApi::recchng, this, &QxEventService::sendRecchgShvSignal);
-
+	qfInfo() << "connectiog to broker:" << ss.shvBrokerUrl();
 	m_rpcConnection->open();
 }
 
