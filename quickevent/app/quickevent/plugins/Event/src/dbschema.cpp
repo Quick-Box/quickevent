@@ -82,6 +82,18 @@ bool migrate_31000(const Connection &conn)
 			return false;
 		}
 	}
+	{
+		// secrets are stored in service settings now, the config table is shared with other clients
+		qfInfo() << "Removing secrets from config table";
+		auto ok = exec_sql(conn,
+				QStringList {
+				"DELETE FROM config WHERE id='qx.apiToken' OR id LIKE 'ofeed.%.eventPassword' OR id LIKE 'oresults.%.apiKey'",
+				},
+				std::nullopt);
+		if (!ok) {
+			return false;
+		}
+	}
 	return true;
 }
 
