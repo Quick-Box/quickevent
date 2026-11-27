@@ -70,6 +70,7 @@
 #include <QTimer>
 #include <QRandomGenerator>
 #include <QCryptographicHash>
+#include <QFile>
 #include <QFileInfo>
 #include <QSaveFile>
 #include <QTemporaryDir>
@@ -1512,6 +1513,8 @@ bool EventPlugin::importEventFromFile(const QString &src_file, const QString &de
 	QString err_str;
 	const QString import_connection_name = QStringLiteral("qe_import_connection");
 	const QString export_connection_name = QStringLiteral("qe_export_connection");
+	const QString dest_file = (connectionType() == ConnectionType::SingleFile)? eventNameToFileName(dest_event_name): QString();
+	const bool dest_file_existed = !dest_file.isEmpty() && QFile::exists(dest_file);
 	do {
 		qfs::Connection current_conn = qfs::Connection::forName();
 
@@ -1524,8 +1527,8 @@ bool EventPlugin::importEventFromFile(const QString &src_file, const QString &de
 		}
 
 		qfs::Connection exp_conn(QSqlDatabase::addDatabase(current_conn.driverName(), export_connection_name));
-		if(connectionType() == ConnectionType::SingleFile)
-			exp_conn.setDatabaseName(eventNameToFileName(dest_event_name));
+		if(!dest_file.isEmpty())
+			exp_conn.setDatabaseName(dest_file);
 		else
 			cloneDbConnection(exp_conn, current_conn);
 		qfInfo() << "Opening export database:" << exp_conn.databaseName();
@@ -1538,6 +1541,13 @@ bool EventPlugin::importEventFromFile(const QString &src_file, const QString &de
 	} while(false);
 	QSqlDatabase::removeDatabase(import_connection_name);
 	QSqlDatabase::removeDatabase(export_connection_name);
+	if(!err_str.isEmpty() && !dest_file.isEmpty() && !dest_file_existed && QFile::exists(dest_file)) {
+		// do not leave half filled event file, it would block next import with the same name
+		qfInfo() << "Removing partially created event file:" << dest_file;
+		if(!QFile::remove(dest_file)) {
+			qfError() << "Cannot remove file:" << dest_file;
+		}
+	}
 	fwk->hideProgress();
 	if(!err_str.isEmpty()) {
 		qfd::MessageBox::showError(fwk, err_str);
@@ -1595,6 +1605,8 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 	int step_cnt = tables.count() + 1;
 	int step_no = 0;
 	fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
+	// migrations run in their own transactions, so the schema cannot be created and filled in one transaction
+	bool schema_created = false;
 	do {
 		// tables are copied between DBs of the same version, imported DB is upgraded to the current version after the copy
 		// event data older than base DB version are converted by copying fields present in both DBs
@@ -1617,6 +1629,7 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 				break;
 			}
 			create_transaction.commit();
+			schema_created = true;
 		}
 		exp_conn.setCurrentSchema(dest_schema_name);
 		// create script creates the base DB version, upgrade it to the version of imported data
@@ -1648,6 +1661,15 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 			transaction.commit();
 		}
 	} while(false);
+	if(!err_str.isEmpty() && schema_created && exp_conn.driverName().endsWith(QLatin1String("PSQL"))) {
+		// do not leave half filled schema, it would block next import with the same name
+		// SQLite event file is removed by caller after connection is closed
+		qfInfo() << "Dropping partially created schema:" << dest_schema_name;
+		qfs::Query q(exp_conn);
+		if(!q.exec(QStringLiteral("DROP SCHEMA \"%1\" CASCADE").arg(dest_schema_name))) {
+			qfError() << "Cannot drop schema" << dest_schema_name << ":" << q.lastErrorText();
+		}
+	}
 	return err_str;
 }
 
