@@ -19,6 +19,7 @@
 #include <QJsonDocument>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QSignalBlocker>
 #include <QSpinBox>
 
 #include <variant>
@@ -125,13 +126,29 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 		}
 	};
 	ui->chkPaid->setChecked(paid);
+	// payment status is a separate action, it can be changed also after the change is resolved
+	ui->chkPaid->setToolTip(tr("Payment status is saved immediately, independently of Accept, Reject or Cancel."));
 	update_paid_style();
 	connect(ui->chkPaid, &QCheckBox::toggled, this, [this, update_paid_style](bool is_paid) {
-		update_paid_style();
 		qf::core::sql::Record rec {
 			{ "paid", is_paid },
 		};
-		qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this);
+		QString err;
+		try {
+			if (!qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this)) {
+				err = tr("Change %1 not found.").arg(m_changeId);
+			}
+		}
+		catch (const std::exception &e) {
+			err = QString::fromUtf8(e.what());
+		}
+		if (!err.isEmpty()) {
+			qfError() << "Cannot save payment status:" << err;
+			setMessage(tr("Cannot save payment status: %1").arg(err), true);
+			QSignalBlocker blocker(ui->chkPaid);
+			ui->chkPaid->setChecked(!is_paid);
+		}
+		update_paid_style();
 	});
 
 	checkDuplicitRegistration();
