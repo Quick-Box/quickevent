@@ -19,6 +19,8 @@
 #include <QSettings>
 #include <QSslSocket>
 #include <QActionGroup>
+#include <QDesktopServices>
+#include <QUrl>
 
 namespace qfw = qf::gui;
 namespace qff = qf::gui::framework;
@@ -153,6 +155,15 @@ void CorePlugin::onInstalled()
 	{
 		auto *a_help = fwk->menuBar()->actionForPath("help", true);
 		a_help->setText(tr("&Help"));
+		{
+			auto *a = new qfw::Action(tr("&Documentation"));
+			a->setShortcut(QKeySequence::HelpContents);
+			connect(a, &qfw::Action::triggered, this, []() {
+				QDesktopServices::openUrl(QUrl("https://github.com/Quick-Box/quickevent/wiki"));
+			});
+			a_help->addActionInto(a);
+			a_help->addSeparatorInto();
+		}
 		{
 			auto *a = new qfw::Action(tr("&About Quick Event"));
 			connect(a, &qfw::Action::triggered, this, &CorePlugin::aboutQuickEvent);
