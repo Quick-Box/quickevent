@@ -970,19 +970,25 @@ bool EventPlugin::createEvent(const QString &event_name, const EventConfig &even
 
 		qfInfo().nospace() << create_script.join(";\n") << ';';
 		qfs::Query q(conn);
+		QString err_str;
 		do {
 			qfLogScope("createEvent");
 			qfs::Transaction transaction(conn);
 			ok = run_sql_script(q, create_script);
-			if(!ok)
+			if(!ok) {
+				err_str = tr("Create Database Error: %1").arg(q.lastError().text());
 				break;
+			}
 			conn.setCurrentSchema(event_id);
 			transaction.commit();
 			// create script creates the base DB version, upgrade it to the current one
 			ok = DbSchema::migrate(conn);
+			if(!ok) {
+				err_str = tr("Event data upgrade failed, see application log for details.");
+			}
 		} while(false);
 		if(!ok) {
-			qfd::MessageBox::showError(fwk, tr("Create Database Error: %1").arg(q.lastError().text()));
+			qfd::MessageBox::showError(fwk, err_str);
 		}
 	}
 	else {
