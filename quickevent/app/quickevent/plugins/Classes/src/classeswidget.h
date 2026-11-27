@@ -5,6 +5,7 @@
 
 #include "partwidget.h"
 
+class QAction;
 class QComboBox;
 
 namespace Ui {
@@ -44,6 +45,9 @@ private:
 	Q_SLOT void reset();
 	Q_SLOT void reload();
 	Q_SLOT void reloadCourseCodes();
+
+	void setDrawLockForAllClasses(bool is_locked);
+	void updateDrawLockAction();
 private:
 	void importCourses(const QList<ImportCourseDef> &course_defs, const QList<quickevent::core::CodeDef> &code_defs);
 private:
@@ -52,6 +56,7 @@ private:
 	qf::gui::model::SqlTableModel *m_courseCodesModel;
 	QComboBox *m_cbxStage = nullptr;
 	CourseItemDelegate *m_courseItemDelegate = nullptr;
+	QAction *m_actDrawLockAll = nullptr;
 };
 
 #endif // CLASSESWIDGET_H
