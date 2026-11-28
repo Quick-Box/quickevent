@@ -1223,6 +1223,8 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 		return QString();
 	}
 	qfs::Query from_q(from_conn);
+	// rows are read once, do not let the driver cache the whole result set
+	from_q.setForwardOnly(true);
 	if(!from_q.exec(QString("SELECT * FROM %1").arg(table_name))) {
 		qfWarning() << "Source table" << table_name << "doesn't exist!";
 		return QString();
@@ -1272,51 +1274,83 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 		qfInfo() << qs;
 		return ret;
 	}
+	// resolve source column indexes and conversions once, not for every row
+	enum class ColKind { Plain, IsRunningFromOffRace, IsRunningNotNull, ForeignTableFromDataId };
+	struct ColPlan { ColKind kind; int srcIx; QMetaType type; };
+	QList<ColPlan> plan;
+	plan.reserve(rec.count());
+	bool has_int_id_field = false;
+	for (int i = 0; i < rec.count(); ++i) {
+		const QSqlField fld = rec.field(i);
+		const QString fld_name = fld.name();
+		ColPlan p{.kind=ColKind::Plain, .srcIx=-1, .type=fld.metaType()};
+		if(is_import_runs_table && fld_name.compare(QLatin1String("isRunning"), Qt::CaseInsensitive) == 0) {
+			if(is_import_offrace) {
+				p.kind = ColKind::IsRunningFromOffRace;
+				p.srcIx = from_q.fieldIndex(QStringLiteral("offRace"));
+			}
+			else {
+				// since db ver 1.8.0
+				// isRunning cannot be NULL, convert NULL to false during import
+				p.kind = ColKind::IsRunningNotNull;
+				p.srcIx = from_q.fieldIndex(fld_name);
+			}
+		}
+		else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_id")) {
+			p.srcIx = from_q.fieldIndex(QStringLiteral("data_id"));
+		}
+		else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_table")) {
+			p.kind = ColKind::ForeignTableFromDataId;
+			p.srcIx = from_q.fieldIndex(QStringLiteral("data_id"));
+		}
+		else {
+			p.srcIx = from_q.fieldIndex(fld_name);
+		}
+		if(p.srcIx < 0) {
+			return QString("Source column for field %1 not found, table: %2.").arg(fld_name).arg(table_name);
+		}
+		if(fld_name == QLatin1String("id")) {
+			switch(p.type.id()) {
+			case QMetaType::Int:
+			case QMetaType::UInt:
+			case QMetaType::LongLong:
+			case QMetaType::ULongLong:
+				// probably ID INT AUTO_INCREMENT
+				has_int_id_field = true;
+				break;
+			default:
+				break;
+			}
+		}
+		plan << p;
+	}
+	const int config_key_ix = is_config_table? from_q.fieldIndex(src_config_key): -1;
 	bool has_id_int = false;
 	while(from_q.next()) {
 		// db.version is inserted by create script already
-		if(is_config_table && from_q.value(src_config_key).toString() == QLatin1String("db.version")) {
+		if(config_key_ix >= 0 && from_q.value(config_key_ix).toString() == QLatin1String("db.version")) {
 			continue;
 		}
-		for (int i = 0; i < rec.count(); ++i) {
-			QSqlField fld = rec.field(i);
-			QString fld_name = fld.name();
-			//qfDebug() << "copy:" << fld_name << from_q.value(fld_name);
-			QVariant v;
-			if(is_import_runs_table && fld_name.compare(QLatin1String("isRunning"), Qt::CaseInsensitive) == 0) {
-				if(is_import_offrace) {
-					bool offrace = from_q.value(QStringLiteral("offRace")).toBool();
-					v = offrace? QVariant(): QVariant(true);
-				}
-				else {
-					// since db ver 1.8.0
-					// isRunning cannot be NULL, convert NULL to false during import
-					v = from_q.value(fld_name).toBool();
-				}
+		for (int i = 0; i < plan.size(); ++i) {
+			const ColPlan &p = plan[i];
+			QVariant v = from_q.value(p.srcIx);
+			switch(p.kind) {
+			case ColKind::Plain:
+				v.convert(p.type);
+				break;
+			case ColKind::IsRunningFromOffRace:
+				v = v.toBool()? QVariant(): QVariant(true);
+				break;
+			case ColKind::IsRunningNotNull:
+				v = v.toBool();
+				break;
+			case ColKind::ForeignTableFromDataId:
+				v = v.isNull()? QVariant(QMetaType(QMetaType::QString)): QVariant(QStringLiteral("runs"));
+				break;
 			}
-			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_id")) {
-				v = from_q.value(QStringLiteral("data_id"));
-				v.convert(rec.field(i).metaType());
-			}
-			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_table")) {
-				v = from_q.value(QStringLiteral("data_id")).isNull()? QVariant(QMetaType(QMetaType::QString)): QVariant(QStringLiteral("runs"));
-			}
-			else {
-				v = from_q.value(fld_name);
-				v.convert(rec.field(i).metaType());
-			}
-			if(!has_id_int
-					&& (fld.metaType().id() == QMetaType::Type::Int
-						|| fld.metaType().id() == QMetaType::Type::UInt
-						|| fld.metaType().id() == QMetaType::Type::LongLong
-						|| fld.metaType().id() == QMetaType::Type::ULongLong)
-					&& fld_name == QLatin1String("id")) {
-				// probably ID INT AUTO_INCREMENT
-				//max_id = qMax(max_id, v.toInt());
-				has_id_int = true;
-			}
-			to_q.addBindValue(v);
+			to_q.bindValue(i, v);
 		}
+		has_id_int = has_int_id_field;
 		if(!to_q.exec()) {
 			return QString("SQL Error: %1").arg(to_q.lastError().text());
 		}
