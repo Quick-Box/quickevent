@@ -13,14 +13,10 @@
 #include <QSet>
 #include <QVariantMap>
 
+namespace qf::core::sql { class Connection; }
+class QSqlDatabase;
+
 namespace Event {
-
-struct QxConfig {
-	static QxConfig fromVariantMap(const QVariantMap &map);
-	QVariantMap toVariantMap() const;
-
-	QString apiToken;
-};
 
 class AppDbConfig {
 public:
@@ -44,9 +40,8 @@ public:
 	void setPunchingTestConfig(int stage_id, const services::PunchingTestConfig &config);
 	const services::RadioSenderConfig &radioSenderConfig() const { return m_radioSenderConfig; }
 	void setRadioSenderConfig(const services::RadioSenderConfig &config);
-	const QxConfig &qxConfig() const { return m_qxConfig; }
-	void setQxConfig(const QxConfig &config);
 
+	static int loadDbVersion(const qf::core::sql::Connection &conn);
 private:
 	void save(const QString &prefix, const QVariantMap &data);
 	void save(const QString &prefix, int stage_id, const QVariantMap &data);
@@ -58,7 +53,6 @@ private:
 	std::map<int, services::OResultsConfig> m_oresultsConfig;
 	std::map<int, services::PunchingTestConfig> m_punchingTestConfig;
 	EventConfig m_eventConfig;
-	QxConfig m_qxConfig;
 	services::RadioSenderConfig m_radioSenderConfig;
 
 	int m_dbVersion = 0;

@@ -88,6 +88,24 @@ void Service::setSettings(const QVariantMap &s)
 	}
 }
 
+static QString stageSettingKey(const QString &key, int stage_id)
+{
+	return key + '.' + QString::number(stage_id);
+}
+
+QVariant Service::stageSetting(const QString &key, int stage_id) const
+{
+	return m_settings.value(stageSettingKey(key, stage_id));
+}
+
+void Service::setStageSetting(const QString &key, int stage_id, const QVariant &val)
+{
+	auto s = m_settings;
+	s[stageSettingKey(key, stage_id)] = val;
+	setSettings(s);
+	saveSettings();
+}
+
 void Service::run()
 {
 	setStatus(Status::Running);
@@ -96,6 +114,16 @@ void Service::run()
 void Service::stop()
 {
 	setStatus(Status::Stopped);
+}
+
+void Service::setStatusMessage(const QString &message, NecroLogLevel level)
+{
+	if (message == m_statusMessage && level == m_statusMessageLevel) {
+		return;
+	}
+	m_statusMessage = message;
+	m_statusMessageLevel = level;
+	emit statusMessageChanged(message, level);
 }
 
 void Service::loadSettingsForEvent(const QString &event_name)

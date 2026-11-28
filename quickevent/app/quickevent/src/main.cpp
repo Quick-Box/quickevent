@@ -333,7 +333,7 @@ int main(int argc, char *argv[])
 		};
 		qfInfo() << "REC-CHNG table:" << recchng.table
 				 << "op:" << qf::core::sql::QxRecChng::recopToString(recchng.op)
-				 << "id:" << recchng.id
+				 << "id:" << recchng.id.toString()
 				 << "record:" << dump_map(recchng.record);
 	});
 #endif

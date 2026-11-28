@@ -22,6 +22,7 @@
 #include <plugins/Core/src/coreplugin.h>
 #include <plugins/Event/src/services/ofeed/ofeedclient.h>
 
+#include <qassert.h>
 #include <qhashfunctions.h>
 #include <quickevent/core/og/timems.h>
 #include <quickevent/core/classdef.h>
@@ -69,7 +70,10 @@
 #include <QTimer>
 #include <QRandomGenerator>
 #include <QCryptographicHash>
+#include <QFile>
 #include <QFileInfo>
+#include <QSaveFile>
+#include <QTemporaryDir>
 
 #include <regex>
 
@@ -119,7 +123,8 @@ QByteArray DbEventPayload::toJson() const
 	return jsd.toJson(QJsonDocument::Compact);
 }
 
-const auto QBE_EXT = QStringLiteral(".qbe");
+const auto QBE_EXT = QStringLiteral(".qbe"); // NOLINT(bugprone-throwing-static-initialization)
+
 
 QString singleFileStorageDir()
 {
@@ -183,9 +188,14 @@ QList<OpenEventDialog::EventInfo> loadEventInfoList(EventPlugin::ConnectionType 
 				db.setDatabaseName(eventNameToFileName(name));
 				if (db.open()) {
 					QSqlQuery q(db);
-					q.exec(QStringLiteral("SELECT ckey, cvalue FROM config WHERE ckey IN (%1)").arg(SQL_KEYS));
-					while (q.next())
-						parseRow(info, q.value(0).toString(), q.value(1).toString());
+					for (const auto &id_key : {"id", "ckey"}) {
+						if (q.exec(QStringLiteral("SELECT %1, cvalue FROM config WHERE %1 IN (%2)").arg(id_key, SQL_KEYS))) {
+							while (q.next()) {
+								parseRow(info, q.value(0).toString(), q.value(1).toString());
+							}
+							break;
+						}
+					}
 					db.close();
 				}
 			}
@@ -195,14 +205,20 @@ QList<OpenEventDialog::EventInfo> loadEventInfoList(EventPlugin::ConnectionType 
 	}
 	else {
 		// PostgreSQL: use schema-qualified table name to avoid switching search_path
-		qfs::Connection conn(QSqlDatabase::database());
+		QSqlDatabase conn = QSqlDatabase::database();
 		for (const QString &name : event_names) {
 			OpenEventDialog::EventInfo info;
 			info.id = name;
-			qfs::Query q(conn);
-			if (q.exec(QStringLiteral("SELECT ckey, cvalue FROM %1.config WHERE ckey IN (%2)").arg(name, SQL_KEYS)))
-				while (q.next())
-					parseRow(info, q.value(0).toString(), q.value(1).toString());
+			QSqlQuery q(conn);
+			const auto config_table = name + QStringLiteral(".config");
+			for (const auto &id_key : {"id", "ckey"}) {
+				if (q.exec(QStringLiteral("SELECT %1, cvalue FROM %2 WHERE %1 IN (%3)").arg(id_key, config_table, SQL_KEYS))) {
+					while (q.next()) {
+						parseRow(info, q.value(0).toString(), q.value(1).toString());
+					}
+					break;
+				}
+			}
 			result << info;
 		}
 	}
@@ -684,7 +700,7 @@ void EventPlugin::repairStageStarts(const qf::core::sql::Connection &from_conn, 
 {
 	qfs::Query to_q(to_conn);
 	// keys already present in the copied config table win
-	to_q.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (ckey) DO NOTHING");
+	to_q.prepare("INSERT INTO config (id, cvalue, ctype) VALUES (:key, :value, :type) ON CONFLICT (id) DO NOTHING");
 
 	qfs::Query from_q(from_conn);
 	from_q.exec("SELECT * FROM stages ORDER BY id", !qf::core::Exception::Throw);
@@ -826,9 +842,9 @@ void EventPlugin::connectToSqlServer()
 					bool ok = connect(db.driver(), &QSqlDriver::notification, this, &EventPlugin::onDbEvent);
 					if(ok)
 						ok = db.driver()->subscribeToNotification(DBEVENT_NOTIFY_NAME);
-					if(!ok)
+					if(!ok) {
 						qfError() << "Failed to subscribe db notification:" << DBEVENT_NOTIFY_NAME;
-					else {
+					} else {
 						qfInfo() << "Successfully subscribe db notification:" << DBEVENT_NOTIFY_NAME;
 						qfInfo() << db.driver() << "subscribedToNotifications:" << db.driver()->subscribedToNotifications().join(", ");
 					}
@@ -955,17 +971,25 @@ bool EventPlugin::createEvent(const QString &event_name, const EventConfig &even
 
 		qfInfo().nospace() << create_script.join(";\n") << ';';
 		qfs::Query q(conn);
+		QString err_str;
 		do {
 			qfLogScope("createEvent");
 			qfs::Transaction transaction(conn);
 			ok = run_sql_script(q, create_script);
-			if(!ok)
+			if(!ok) {
+				err_str = tr("Create Database Error: %1").arg(q.lastError().text());
 				break;
+			}
 			conn.setCurrentSchema(event_id);
 			transaction.commit();
+			// create script creates the base DB version, upgrade it to the current one
+			ok = DbSchema::migrate(conn);
+			if(!ok) {
+				err_str = tr("Event data upgrade failed, see application log for details.");
+			}
 		} while(false);
 		if(!ok) {
-			qfd::MessageBox::showError(fwk, tr("Create Database Error: %1").arg(q.lastError().text()));
+			qfd::MessageBox::showError(fwk, err_str);
 		}
 	}
 	else {
@@ -991,7 +1015,6 @@ void EventPlugin::editEvent()
 	qfd::Dialog dlg(fwk);
 	dlg.setButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 	auto *event_w = new EventDialogWidget();
-	event_w->setWindowTitle(tr("Edit event"));
 	event_w->setEventId(eventDbName());
 	event_w->setEventIdEditable(false);
 	EventDialogWidget::Params params;
@@ -1130,21 +1153,44 @@ bool EventPlugin::openEvent(const QString &_event_name)
 		}
 	}
 	if(ok) {
-		m_appDbConfig = AppDbConfig();
-		m_appDbConfig.load();
-		if(m_appDbConfig.dbVersion() < dbVersion()) {
-			qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
-									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion()))
-									   .arg(qf::core::Utils::intToVersionString(dbVersion())));
-			closeEvent();
-			ok = false;
+		auto conn = qfs::Connection(QSqlDatabase::database());
+		auto current_db_version = AppDbConfig::loadDbVersion(conn);
+		if(DbSchema::canMigrate(current_db_version)) {
+			auto msg = tr("Event data version (%1) is older than current version (%2).\n"
+						  "Event data has to be upgraded to be opened. Older QuickEvent versions will not be able to open the event after the upgrade.\n\n"
+						  "Do you want to upgrade event data now?")
+					.arg(qf::core::Utils::intToVersionString(current_db_version))
+					.arg(qf::core::Utils::intToVersionString(dbVersion()));
+			if(!qfd::MessageBox::askYesNo(fwk, msg, false)) {
+				closeEvent();
+				ok = false;
+			}
+			else {
+				if(!DbSchema::migrate(conn)) {
+					qfd::MessageBox::showError(fwk, tr("Event data upgrade failed, see application log for details."));
+					closeEvent();
+					ok = false;
+				}
+				current_db_version = dbVersion();
+			}
 		}
-		else if(m_appDbConfig.dbVersion() > dbVersion()) {
-			qfd::MessageBox::showError(fwk, tr("Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.")
-									   .arg(qf::core::Utils::intToVersionString(m_appDbConfig.dbVersion())));
+		if(ok) {
+			if(current_db_version < dbVersion()) {
+				qfd::MessageBox::showError(fwk, tr("Event data version (%1) is too low, minimal version is (%2).\nUse: File --> Import --> Event (*.qbe) to convert event to current version.")
+										   .arg(qf::core::Utils::intToVersionString(current_db_version))
+										   .arg(qf::core::Utils::intToVersionString(dbVersion())));
+				closeEvent();
+				ok = false;
+			}
+			else if(current_db_version > dbVersion()) {
+				qfd::MessageBox::showError(fwk, tr("Event was created in more recent QuickEvent version (%1) and the application might not work as expected. Download latest QuickEvent is strongly recommended.")
+										   .arg(qf::core::Utils::intToVersionString(current_db_version)));
+			}
 		}
 	}
+	m_appDbConfig = AppDbConfig();
 	if(ok) {
+		m_appDbConfig.load();
 		connection_settings.setEventName(event_name);
 		setEventDbName(event_name);
 		qf::gui::framework::Plugin::reportFileCache()->openEventCache(reportCacheId(event_name, connection_type));
@@ -1177,6 +1223,8 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 		return QString();
 	}
 	qfs::Query from_q(from_conn);
+	// rows are read once, do not let the driver cache the whole result set
+	from_q.setForwardOnly(true);
 	if(!from_q.exec(QString("SELECT * FROM %1").arg(table_name))) {
 		qfWarning() << "Source table" << table_name << "doesn't exist!";
 		return QString();
@@ -1206,6 +1254,9 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 			rec.append(dest_rec.field("isRunning"));
 		}
 	}
+	const bool is_config_table = table_name == QLatin1String("config");
+	// config.ckey was renamed to config.id in 3.10.0
+	const auto src_config_key = src_rec.contains(QStringLiteral("ckey"))? QStringLiteral("ckey"): QStringLiteral("id");
 	// qxchanges.data_id (always runs.id) was replaced by foreign_table + foreign_id
 	const bool is_import_qxchanges_data_id = table_name == QLatin1String("qxchanges")
 			&& src_rec.contains("data_id") && !src_rec.contains("foreign_id")
@@ -1223,53 +1274,86 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 		qfInfo() << qs;
 		return ret;
 	}
-	bool has_id_int = false;
-	while(from_q.next()) {
-		if(table_name == QLatin1String("config")) {
-			if(from_q.value(0).toString() == QLatin1String("db.version"))
-				continue;
-		}
-		for (int i = 0; i < rec.count(); ++i) {
-			QSqlField fld = rec.field(i);
-			QString fld_name = fld.name();
-			//qfDebug() << "copy:" << fld_name << from_q.value(fld_name);
-			QVariant v;
-			if(is_import_runs_table && fld_name.compare(QLatin1String("isRunning"), Qt::CaseInsensitive) == 0) {
-				if(is_import_offrace) {
-					bool offrace = from_q.value(QStringLiteral("offRace")).toBool();
-					v = offrace? QVariant(): QVariant(true);
-				}
-				else {
-					// since db ver 1.8.0
-					// isRunning cannot be NULL, convert NULL to false during import
-					v = from_q.value(fld_name).toBool();
-				}
-			}
-			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_id")) {
-				v = from_q.value(QStringLiteral("data_id"));
-				v.convert(rec.field(i).metaType());
-			}
-			else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_table")) {
-				v = from_q.value(QStringLiteral("data_id")).isNull()? QVariant(QMetaType(QMetaType::QString)): QVariant(QStringLiteral("runs"));
+	// resolve source column indexes and conversions once, not for every row
+	enum class ColKind { Plain, IsRunningFromOffRace, IsRunningNotNull, ForeignTableFromDataId };
+	struct ColPlan { ColKind kind; int srcIx; QMetaType type; };
+	QList<ColPlan> plan;
+	plan.reserve(rec.count());
+	bool has_int_id_field = false;
+	for (int i = 0; i < rec.count(); ++i) {
+		const QSqlField fld = rec.field(i);
+		const QString fld_name = fld.name();
+		ColPlan p{.kind=ColKind::Plain, .srcIx=-1, .type=fld.metaType()};
+		if(is_import_runs_table && fld_name.compare(QLatin1String("isRunning"), Qt::CaseInsensitive) == 0) {
+			if(is_import_offrace) {
+				p.kind = ColKind::IsRunningFromOffRace;
+				p.srcIx = from_q.fieldIndex(QStringLiteral("offRace"));
 			}
 			else {
-				v = from_q.value(fld_name);
-				v.convert(rec.field(i).metaType());
+				// since db ver 1.8.0
+				// isRunning cannot be NULL, convert NULL to false during import
+				p.kind = ColKind::IsRunningNotNull;
+				p.srcIx = from_q.fieldIndex(fld_name);
 			}
-			if(!has_id_int
-					&& (fld.metaType().id() == QMetaType::Type::Int
-						|| fld.metaType().id() == QMetaType::Type::UInt
-						|| fld.metaType().id() == QMetaType::Type::LongLong
-						|| fld.metaType().id() == QMetaType::Type::ULongLong)
-					&& fld_name == QLatin1String("id")) {
-				// probably ID INT AUTO_INCREMENT
-				//max_id = qMax(max_id, v.toInt());
-				has_id_int = true;
-			}
-			to_q.addBindValue(v);
 		}
-		if(!to_q.exec())
+		else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_id")) {
+			p.srcIx = from_q.fieldIndex(QStringLiteral("data_id"));
+		}
+		else if(is_import_qxchanges_data_id && fld_name == QLatin1String("foreign_table")) {
+			p.kind = ColKind::ForeignTableFromDataId;
+			p.srcIx = from_q.fieldIndex(QStringLiteral("data_id"));
+		}
+		else {
+			p.srcIx = from_q.fieldIndex(fld_name);
+		}
+		if(p.srcIx < 0) {
+			return QString("Source column for field %1 not found, table: %2.").arg(fld_name).arg(table_name);
+		}
+		if(fld_name == QLatin1String("id")) {
+			switch(p.type.id()) {
+			case QMetaType::Int:
+			case QMetaType::UInt:
+			case QMetaType::LongLong:
+			case QMetaType::ULongLong:
+				// probably ID INT AUTO_INCREMENT
+				has_int_id_field = true;
+				break;
+			default:
+				break;
+			}
+		}
+		plan << p;
+	}
+	const int config_key_ix = is_config_table? from_q.fieldIndex(src_config_key): -1;
+	bool has_id_int = false;
+	while(from_q.next()) {
+		// db.version is inserted by create script already
+		if(config_key_ix >= 0 && from_q.value(config_key_ix).toString() == QLatin1String("db.version")) {
+			continue;
+		}
+		for (int i = 0; i < plan.size(); ++i) {
+			const ColPlan &p = plan[i];
+			QVariant v = from_q.value(p.srcIx);
+			switch(p.kind) {
+			case ColKind::Plain:
+				v.convert(p.type);
+				break;
+			case ColKind::IsRunningFromOffRace:
+				v = v.toBool()? QVariant(): QVariant(true);
+				break;
+			case ColKind::IsRunningNotNull:
+				v = v.toBool();
+				break;
+			case ColKind::ForeignTableFromDataId:
+				v = v.isNull()? QVariant(QMetaType(QMetaType::QString)): QVariant(QStringLiteral("runs"));
+				break;
+			}
+			to_q.bindValue(i, v);
+		}
+		has_id_int = has_int_id_field;
+		if(!to_q.exec()) {
 			return QString("SQL Error: %1").arg(to_q.lastError().text());
+		}
 	}
 	if(has_id_int && to_conn.driverName().endsWith(QLatin1String("PSQL"), Qt::CaseInsensitive)) {
 		// set sequence current value when importing to PSQL
@@ -1281,22 +1365,68 @@ QString copy_sql_table(const QString &table_name, const QSqlRecord &dest_rec, qf
 	return QString();
 }
 }
-void EventPlugin::exportEvent_qbe()
+namespace {
+void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
+{
+	dst.setHostName(src.hostName());
+	dst.setPort(src.port());
+	dst.setUserName(src.userName());
+	dst.setPassword(src.password());
+	dst.setDatabaseName(src.databaseName());
+}
+}
+
+QByteArray EventPlugin::eventQbeData(QString *error, const ProgressCallback &progress, bool consistent_snapshot)
 {
 	qfLogFuncFrame();
-	qff::MainWindow *fwk = qff::MainWindow::frameWork();
-	QString ext = ".qbe";
-	QString ex_fn = qf::gui::dialogs::FileDialog::getSaveFileName (fwk, tr("Export as Quick Event"), singleFileStorageDir(), tr("Quick Event files *%1 (*%1)").arg(ext));
-	if(ex_fn.isEmpty())
-		return;
-	if(!ex_fn.endsWith(ext, Qt::CaseInsensitive))
-		ex_fn += ext;
 	QString err_str;
+	QByteArray data;
+	int step_cnt = 0;
+	int step_no = 0;
+	// Consistent snapshot: table rows cannot change while the tables are copied one by one.
+	// SQL server (POSTGRES): other clients can write anytime, copy tables using a dedicated connection in a REPEATABLE READ transaction,
+	// app event processing during the export (progress reporting) cannot interfere with the snapshot then.
+	// Single file (SQLITE): only this app instance writes to the DB, no event processing is the only way to keep the DB unchanged,
+	// because a long read transaction would lock the DB file for writing.
+	const bool is_sql_server = connectionType() == ConnectionType::SqlServer;
+	const bool use_snapshot_transaction = consistent_snapshot && is_sql_server;
+	const ProgressCallback progress_cb = (consistent_snapshot && !is_sql_server)? ProgressCallback{}: progress;
+	const auto report_step = [&](const QString &msg) {
+		if(progress_cb)
+			progress_cb(msg, ++step_no, step_cnt);
+	};
+	QTemporaryDir tmp_dir;
+	const QString ex_fn = tmp_dir.filePath(QStringLiteral("event.qbe"));
 	QString export_connection_name = QStringLiteral("qe_export_connection");
+	QString source_connection_name = QStringLiteral("qe_export_source_connection");
 	do {
-		if(QFile::exists(ex_fn)) {
-			if(!QFile::remove(ex_fn)) {
-				err_str = tr("Cannot delete existing file %1").arg(ex_fn);
+		if(!tmp_dir.isValid()) {
+			err_str = tr("Cannot create temporary directory: %1").arg(tmp_dir.errorString());
+			break;
+		}
+		// take the snapshot before the first progress report, it processes app events,
+		// changes made after the snapshot are postponed recchng signals in Replica mode and must not be in the snapshot
+		qfs::Connection conn = qfs::Connection::forName();
+		if(use_snapshot_transaction) {
+			qfs::Connection current_conn = conn;
+			conn = qfs::Connection(QSqlDatabase::addDatabase(current_conn.driverName(), source_connection_name));
+			cloneDbConnection(conn, current_conn);
+			if(!conn.open()) {
+				err_str = tr("Open Database Error: %1").arg(conn.errorString());
+				break;
+			}
+			if(!conn.setCurrentSchema(eventDbName())) {
+				err_str = tr("Cannot set event schema '%1': %2").arg(eventDbName(), conn.errorString());
+				break;
+			}
+			qfs::Query q(conn);
+			if(!q.exec(QStringLiteral("BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"))) {
+				err_str = tr("Cannot start export transaction: %1").arg(q.lastErrorText());
+				break;
+			}
+			// REPEATABLE READ snapshot is taken by the first query, not by BEGIN, take it now
+			if(!q.exec(QStringLiteral("SELECT 1"))) {
+				err_str = tr("Cannot start export transaction: %1").arg(q.lastErrorText());
 				break;
 			}
 		}
@@ -1304,31 +1434,36 @@ void EventPlugin::exportEvent_qbe()
 		ex_conn.setDatabaseName(ex_fn);
 		qfInfo() << "Opening export database file" << ex_fn;
 		if(!ex_conn.open()) {
-			qfd::MessageBox::showError(fwk, tr("Open Database Error: %1").arg(ex_conn.errorString()));
-			return;
+			err_str = tr("Open Database Error: %1").arg(ex_conn.errorString());
+			break;
 		}
 		//qfLogScope("exportEvent_qbe");
-		qfs::Transaction transaction(ex_conn);
-
 		DbSchema *db_schema = dbSchema();
 		const auto &tables = db_schema->tableNames();
-		int step_cnt = tables.count() + 1;
-		int step_no = 0;
-		fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
+		// create database + tables + read exported file
+		step_cnt = tables.count() + 2;
+		report_step(tr("Creating database"));
 		{
 			DbSchema::CreateDbSqlScriptOptions create_options;
 			create_options.setDriverName(ex_conn.driverName());
 			QStringList create_script = db_schema->loadCreateDbSqlScript(create_options);
+			qfs::Transaction create_transaction(ex_conn);
 			qfs::Query ex_q(ex_conn);
 			if(!run_sql_script(ex_q, create_script)) {
 				err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
 				break;
 			}
+			create_transaction.commit();
 		}
-		qfs::Connection conn = qfs::Connection::forName();
+		// create script creates the base DB version, upgrade it to the current one
+		if(!DbSchema::migrate(ex_conn)) {
+			err_str = tr("Event data upgrade failed, see application log for details.");
+			break;
+		}
+		qfs::Transaction transaction(ex_conn);
 		for(const QString &table_name : tables) {
 			qfDebug() << "Copying table" << table_name;
-			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
+			report_step(tr("Copying table %1").arg(table_name));
 			QSqlRecord rec = db_schema->sqlRecord(ex_conn, table_name);
 			err_str = copy_sql_table(table_name, rec, conn, ex_conn);
 			if(!err_str.isEmpty())
@@ -1344,9 +1479,53 @@ void EventPlugin::exportEvent_qbe()
 			c.close();
 	}
 	QSqlDatabase::removeDatabase(export_connection_name);
-	fwk->hideProgress();
-	if(!err_str.isEmpty()) {
+	{
+		// read only transaction, closing the connection rolls it back
+		QSqlDatabase c = QSqlDatabase::database(source_connection_name, false);
+		if(c.isOpen())
+			c.close();
+	}
+	QSqlDatabase::removeDatabase(source_connection_name);
+	if(err_str.isEmpty()) {
+		report_step(tr("Reading exported database"));
+		QFile f(ex_fn);
+		if(f.open(QFile::ReadOnly))
+			data = f.readAll();
+		if(data.isEmpty())
+			err_str = tr("Cannot read exported database %1: %2").arg(ex_fn, f.errorString());
+	}
+	if(error)
+		*error = err_str;
+	return data;
+}
+
+void EventPlugin::exportEvent_qbe()
+{
+	qfLogFuncFrame();
+	qff::MainWindow *fwk = qff::MainWindow::frameWork();
+	QString ext = ".qbe";
+	QString ex_fn = qf::gui::dialogs::FileDialog::getSaveFileName (fwk, tr("Export as Quick Event"), singleFileStorageDir(), tr("Quick Event files *%1 (*%1)").arg(ext));
+	if(ex_fn.isEmpty())
+		return;
+	if(!ex_fn.endsWith(ext, Qt::CaseInsensitive))
+		ex_fn += ext;
+	QString err_str;
+	const QByteArray data = eventQbeData(&err_str, [fwk](const QString &msg, int completed, int total) {
+		fwk->showProgress(msg, completed, total);
+	});
+	if(data.isEmpty()) {
+		fwk->hideProgress();
 		qfd::MessageBox::showError(fwk, err_str);
+		return;
+	}
+	fwk->showProgress(tr("Saving file %1").arg(ex_fn), 1, 2);
+	// showProgress() processes events before it updates the status bar, repaint it before the blocking write
+	QCoreApplication::processEvents();
+	QSaveFile f(ex_fn);
+	const bool saved = f.open(QFile::WriteOnly) && f.write(data) == data.size() && f.commit();
+	fwk->hideProgress();
+	if(!saved) {
+		qfd::MessageBox::showError(fwk, tr("Cannot write file %1: %2").arg(ex_fn, f.errorString()));
 	}
 }
 
@@ -1365,18 +1544,8 @@ void EventPlugin::deleteEvent(const QString &event_name)
 		qfs::Query q(conn);
 		if(!q.exec(QStringLiteral("DROP SCHEMA \"%1\" CASCADE").arg(event_name)))
 			qfd::MessageBox::showError(fwk, tr("Cannot delete event schema '%1': %2")
-			                           .arg(event_name, q.lastErrorText()));
+								.arg(event_name, q.lastErrorText()));
 	}
-}
-namespace {
-void cloneDbConnection(qfs::Connection &dst, const qfs::Connection &src)
-{
-	dst.setHostName(src.hostName());
-	dst.setPort(src.port());
-	dst.setUserName(src.userName());
-	dst.setPassword(src.password());
-	dst.setDatabaseName(src.databaseName());
-}
 }
 bool EventPlugin::importEventFromFile(const QString &src_file, const QString &dest_event_name)
 {
@@ -1385,6 +1554,8 @@ bool EventPlugin::importEventFromFile(const QString &src_file, const QString &de
 	QString err_str;
 	const QString import_connection_name = QStringLiteral("qe_import_connection");
 	const QString export_connection_name = QStringLiteral("qe_export_connection");
+	const QString dest_file = (connectionType() == ConnectionType::SingleFile)? eventNameToFileName(dest_event_name): QString();
+	const bool dest_file_existed = !dest_file.isEmpty() && QFile::exists(dest_file);
 	do {
 		qfs::Connection current_conn = qfs::Connection::forName();
 
@@ -1397,8 +1568,8 @@ bool EventPlugin::importEventFromFile(const QString &src_file, const QString &de
 		}
 
 		qfs::Connection exp_conn(QSqlDatabase::addDatabase(current_conn.driverName(), export_connection_name));
-		if(connectionType() == ConnectionType::SingleFile)
-			exp_conn.setDatabaseName(eventNameToFileName(dest_event_name));
+		if(!dest_file.isEmpty())
+			exp_conn.setDatabaseName(dest_file);
 		else
 			cloneDbConnection(exp_conn, current_conn);
 		qfInfo() << "Opening export database:" << exp_conn.databaseName();
@@ -1411,6 +1582,13 @@ bool EventPlugin::importEventFromFile(const QString &src_file, const QString &de
 	} while(false);
 	QSqlDatabase::removeDatabase(import_connection_name);
 	QSqlDatabase::removeDatabase(export_connection_name);
+	if(!err_str.isEmpty() && !dest_file.isEmpty() && !dest_file_existed && QFile::exists(dest_file)) {
+		// do not leave half filled event file, it would block next import with the same name
+		qfInfo() << "Removing partially created event file:" << dest_file;
+		if(!QFile::remove(dest_file)) {
+			qfError() << "Cannot remove file:" << dest_file;
+		}
+	}
 	fwk->hideProgress();
 	if(!err_str.isEmpty()) {
 		qfd::MessageBox::showError(fwk, err_str);
@@ -1463,36 +1641,76 @@ QString EventPlugin::copyEventSchema(qfs::Connection &imp_conn, qfs::Connection 
 {
 	qff::MainWindow *fwk = qff::MainWindow::frameWork();
 	QString err_str;
-	qfs::Transaction transaction(exp_conn);
 	DbSchema *db_schema = dbSchema();
 	const auto &tables = db_schema->tableNames();
 	int step_cnt = tables.count() + 1;
 	int step_no = 0;
 	fwk->showProgress(tr("Creating database"), ++step_no, step_cnt);
+	// migrations run in their own transactions, so the schema cannot be created and filled in one transaction
+	bool schema_created = false;
 	do {
+		// tables are copied between DBs of the same version, imported DB is upgraded to the current version after the copy
+		// event data older than base DB version are converted by copying fields present in both DBs
+		const auto src_db_version = AppDbConfig::loadDbVersion(imp_conn);
+		if(src_db_version > dbVersion()) {
+			err_str = tr("Imported event data version (%1) is newer than current version (%2).")
+					.arg(qf::core::Utils::intToVersionString(src_db_version))
+					.arg(qf::core::Utils::intToVersionString(dbVersion()));
+			break;
+		}
 		DbSchema::CreateDbSqlScriptOptions create_options;
 		create_options.setDriverName(exp_conn.driverName());
 		create_options.setSchemaName(dest_schema_name);
 		QStringList create_script = db_schema->loadCreateDbSqlScript(create_options);
-		qfs::Query ex_q(exp_conn);
-		if(!run_sql_script(ex_q, create_script)) {
-			err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
-			break;
+		{
+			qfs::Transaction create_transaction(exp_conn);
+			qfs::Query ex_q(exp_conn);
+			if(!run_sql_script(ex_q, create_script)) {
+				err_str = tr("Create Database Error: %1").arg(ex_q.lastError().text());
+				break;
+			}
+			create_transaction.commit();
+			schema_created = true;
 		}
 		exp_conn.setCurrentSchema(dest_schema_name);
-		for(const QString &table_name : tables) {
-			qfDebug() << "Copying table" << table_name;
-			fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
-			QSqlRecord rec = db_schema->sqlRecord(exp_conn, table_name);
-			err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
+		// create script creates the base DB version, upgrade it to the version of imported data
+		if(src_db_version > DbSchema::baseDbVersion() && !DbSchema::migrate(exp_conn, src_db_version)) {
+			err_str = tr("Event data upgrade failed, see application log for details.");
+			break;
+		}
+		{
+			qfs::Transaction transaction(exp_conn);
+			for(const QString &table_name : tables) {
+				qfDebug() << "Copying table" << table_name;
+				fwk->showProgress(tr("Copying table %1").arg(table_name), ++step_no, step_cnt);
+				QSqlRecord rec = db_schema->sqlRecord(exp_conn, table_name);
+				err_str = copy_sql_table(table_name, rec, imp_conn, exp_conn);
+				if(!err_str.isEmpty())
+					break;
+			}
 			if(!err_str.isEmpty())
 				break;
+			transaction.commit();
 		}
-		if(!err_str.isEmpty())
+		if(AppDbConfig::loadDbVersion(exp_conn) < dbVersion() && !DbSchema::migrate(exp_conn)) {
+			err_str = tr("Event data upgrade failed, see application log for details.");
 			break;
-		repairStageStarts(imp_conn, exp_conn);
-		transaction.commit();
+		}
+		{
+			qfs::Transaction transaction(exp_conn);
+			repairStageStarts(imp_conn, exp_conn);
+			transaction.commit();
+		}
 	} while(false);
+	if(!err_str.isEmpty() && schema_created && exp_conn.driverName().endsWith(QLatin1String("PSQL"))) {
+		// do not leave half filled schema, it would block next import with the same name
+		// SQLite event file is removed by caller after connection is closed
+		qfInfo() << "Dropping partially created schema:" << dest_schema_name;
+		qfs::Query q(exp_conn);
+		if(!q.exec(QStringLiteral("DROP SCHEMA \"%1\" CASCADE").arg(dest_schema_name))) {
+			qfError() << "Cannot drop schema" << dest_schema_name << ":" << q.lastErrorText();
+		}
+	}
 	return err_str;
 }
 

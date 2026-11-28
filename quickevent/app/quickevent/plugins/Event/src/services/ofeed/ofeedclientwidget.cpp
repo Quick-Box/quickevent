@@ -367,6 +367,7 @@ bool OFeedClientWidget::saveSettings()
 		ss.setExportIntervalSec(ui->edExportInterval->value());
 		ss.setChangesIntervalSec(ui->edChangesInterval->value());
 		ss.setCredentialCheckIntervalMin(ui->edCredentialCheckInterval->value());
+		svc->setSettings(ss);
 		svc->setHostUrl(ui->edHostUrl->text().trimmed());
 		svc->setEventId(ui->edEventId->text().trimmed());
 		svc->setEventPassword(ui->edEventPassword->text().trimmed());
@@ -376,7 +377,6 @@ bool OFeedClientWidget::saveSettings()
 		svc->setPrintEventQrCodeOnReceipt(ui->additionalSettingsPrintEventQrCodeOnReceipt->isChecked());
 		svc->setReceiptEventLinkUrl(ui->edReceiptEventLink->text().trimmed());
 		svc->setReceiptEventQrCodeCaption(ui->edReceiptEventQrCodeCaption->text().trimmed());
-		svc->setSettings(ss);
 	}
 	return true;
 }

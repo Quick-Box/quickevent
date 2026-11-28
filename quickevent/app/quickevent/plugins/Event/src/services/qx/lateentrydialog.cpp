@@ -19,6 +19,7 @@
 #include <QJsonDocument>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QSignalBlocker>
 #include <QSpinBox>
 
 #include <variant>
@@ -27,12 +28,12 @@ using namespace quickevent::core::og;
 
 namespace Event::services::qx {
 
-LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent)
+LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, bool paid, QWidget *parent)
 	: Super(parent)
 	, ui(new Ui::LateEntryDialog)
 	, m_changeId(change_id)
 	, m_stageId(stage_id)
-	, m_lateEntryId(late_entry.id)
+	, m_lateEntryId(late_entry.kind)
 	, m_status(qxChangeStatusFromString(status))
 {
 	Q_ASSERT(change_id > 0);
@@ -101,24 +102,54 @@ LateEntryDialog::LateEntryDialog(int change_id, int stage_id, const LateEntry &l
 
 	connect(ui->edStartTime, &QLineEdit::textEdited, this, &LateEntryDialog::checkStartTimeIsValid);
 
-	if (auto *run_id = std::get_if<RunId>(&late_entry.id)) {
-		auto id = run_id->id;
+	if (auto *run_id = std::get_if<Update>(&late_entry.kind)) {
+		auto id = run_id->runId;
 		ui->edRunId->setValue(id);
 		loadOrigValues(id);
 		checkStartTimeIsValid();
 	}
-	else if (auto *id = std::get_if<ClassId>(&late_entry.id)) {
-		auto class_id = id->id;
+	else if (auto *id = std::get_if<NewEntry>(&late_entry.kind)) {
+		auto class_id = id->classId;
 		loadClassName(class_id);
 	}
-
-	if (late_entry.paid.value_or(false)) {
-		ui->lblPaid->setText(tr("Paid"));
-		ui->lblPaid->setStyleSheet("background:green;color:white");
-	} else {
-		ui->lblPaid->setText(tr("Not Paid"));
-		ui->lblPaid->setStyleSheet("background:red;color:white");
+	else if (auto *del = std::get_if<DeleteEntry>(&late_entry.kind)) {
+		initDeleteEntry(del->runId);
 	}
+
+	auto update_paid_style = [this]() {
+		if (ui->chkPaid->isChecked()) {
+			ui->chkPaid->setText(tr("Paid"));
+			ui->chkPaid->setStyleSheet("background:green;color:white");
+		} else {
+			ui->chkPaid->setText(tr("Not Paid"));
+			ui->chkPaid->setStyleSheet("background:red;color:white");
+		}
+	};
+	ui->chkPaid->setChecked(paid);
+	// payment status is a separate action, it can be changed also after the change is resolved
+	ui->chkPaid->setToolTip(tr("Payment status is saved immediately, independently of Accept, Reject or Cancel."));
+	update_paid_style();
+	connect(ui->chkPaid, &QCheckBox::toggled, this, [this, update_paid_style](bool is_paid) {
+		qf::core::sql::Record rec {
+			{ "paid", is_paid },
+		};
+		QString err;
+		try {
+			if (!qf::gui::framework::Application::instance()->qxSql()->updateRecord("qxchanges", m_changeId, rec, this)) {
+				err = tr("Change %1 not found.").arg(m_changeId);
+			}
+		}
+		catch (const std::exception &e) {
+			err = QString::fromUtf8(e.what());
+		}
+		if (!err.isEmpty()) {
+			qfError() << "Cannot save payment status:" << err;
+			setMessage(tr("Cannot save payment status: %1").arg(err), true);
+			QSignalBlocker blocker(ui->chkPaid);
+			ui->chkPaid->setChecked(!is_paid);
+		}
+		update_paid_style();
+	});
 
 	checkDuplicitRegistration();
 	checkDuplicitName();
@@ -193,6 +224,34 @@ void LateEntryDialog::loadOrigValues(int run_id)
 	ui->edSiCardOrig->setValue(m_origValues.si_id);
 }
 
+void LateEntryDialog::initDeleteEntry(int run_id)
+{
+	ui->edRunId->setValue(run_id);
+	// nothing is changed by delete entry, only the run is unregistered from the stage
+	for (auto *grp : {ui->grpFirstName, ui->grpLastName, ui->grpRegistration, ui->grpSiCard, ui->grpStartTime}) {
+		grp->setChecked(false);
+		grp->setEnabled(false);
+	}
+	ui->btAcceptAndEdit->setEnabled(false);
+
+	qf::core::sql::Query q;
+	q.execThrow(QStringLiteral("SELECT finishTimeMs FROM runs WHERE id=%1").arg(run_id));
+	if (!q.next()) {
+		m_acceptBlockedReason = tr("Run %1 does not exist.").arg(run_id);
+		setMessage(m_acceptBlockedReason, true);
+		return;
+	}
+	auto has_result = !q.value("finishTimeMs").isNull();
+	loadOrigValues(run_id);
+	if (has_result) {
+		m_acceptBlockedReason = tr("Competitor has finished already, the entry cannot be deleted.");
+		setMessage(m_acceptBlockedReason, true);
+	}
+	else {
+		setMessage(tr("Competitor will be removed from stage %1.").arg(m_stageId), false);
+	}
+}
+
 void LateEntryDialog::loadClassName(int class_id)
 {
 	qf::core::sql::Query q;
@@ -232,7 +291,7 @@ void LateEntryDialog::lockChange()
 
 void LateEntryDialog::updateButtonsEnabled()
 {
-	ui->btAccept->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
+	ui->btAccept->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0) && m_acceptBlockedReason.isEmpty());
 	ui->btReject->setEnabled(m_status == QxChangeStatus::Pending && (ui->chkForce->isChecked() || m_lockNumber > 0));
 }
 
@@ -240,7 +299,15 @@ void LateEntryDialog::resolveChangesAndClose(bool is_accepted)
 {
 	using namespace qf::gui::model;
 
-	if (is_accepted) {
+	if (auto *del = std::get_if<DeleteEntry>(&m_lateEntryId); del && is_accepted) {
+		Q_ASSERT(m_acceptBlockedReason.isEmpty());
+		// unregister run from stage, the change is propagated to QX as recchng
+		qf::core::sql::Record rec {
+			{"isRunning", false},
+		};
+		qf::gui::framework::Application::instance()->qxSql()->updateRecord("runs", del->runId, rec, this);
+	}
+	else if (is_accepted) {
 		auto class_id = classId();
 		bool is_insert = class_id.has_value() && !m_setIsRunning;
 		Competitors::CompetitorDocument doc;
@@ -393,16 +460,16 @@ void LateEntryDialog::done(int result)
 
 std::optional<int> LateEntryDialog::runId() const
 {
-	if (auto *id = std::get_if<RunId>(&m_lateEntryId)) {
-		return id->id;
+	if (auto *id = std::get_if<Update>(&m_lateEntryId)) {
+		return id->runId;
 	}
 	return std::nullopt;
 }
 
 std::optional<int> LateEntryDialog::classId() const
 {
-	if (auto *id = std::get_if<ClassId>(&m_lateEntryId)) {
-		return id->id;
+	if (auto *id = std::get_if<NewEntry>(&m_lateEntryId)) {
+		return id->classId;
 	}
 	return std::nullopt;
 }

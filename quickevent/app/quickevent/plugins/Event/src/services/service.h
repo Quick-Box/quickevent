@@ -2,6 +2,8 @@
 
 #include <qf/core/utils.h>
 
+#include <necrolog/necrologlevel.h>
+
 #include <QObject>
 
 namespace qf { namespace gui { namespace framework { class DialogWidget; }}}
@@ -23,8 +25,6 @@ public:
 class Service : public QObject
 {
 	Q_OBJECT
-
-	QF_PROPERTY_IMPL(QString, s, S, tatusMessage)
 public:
 	enum class Status { Unknown, Stopped, Running};
 public:
@@ -48,6 +48,11 @@ public:
 	ServiceSettings settings() const {return ServiceSettings(m_settings);}
 	void saveSettings();
 	void setSettings(const QVariantMap &s);
+	// Secrets (API keys, passwords) must not be stored in the event DB config table,
+	// which is shared with other clients and with the QX server in Replica mode.
+	// Keep them in the local per-event service settings.
+	QVariant stageSetting(const QString &key, int stage_id) const;
+	void setStageSetting(const QString &key, int stage_id, const QVariant &val);
 	Q_SIGNAL void settingsChanged();
 
 	void showDetail(QWidget *parent);
@@ -57,6 +62,11 @@ public:
 
 	virtual void setRunning(bool on);
 	bool isRunning() const { return status() == Status::Running; }
+
+	QString statusMessage() const {return m_statusMessage;}
+	NecroLogLevel statusMessageLevel() const {return m_statusMessageLevel;}
+	void setStatusMessage(const QString &message, NecroLogLevel level = NecroLogLevel::Info);
+	Q_SIGNAL void statusMessageChanged(const QString &message, NecroLogLevel level);
 
 	static void addService(Service *service);
 	static int serviceCount() {return m_services.count();}
@@ -80,6 +90,8 @@ protected:
 private:
 	QString m_eventName;
 	Status m_status = Status::Unknown;
+	QString m_statusMessage;
+	NecroLogLevel m_statusMessageLevel = NecroLogLevel::Info;
 	static QList<Service*> m_services;
 };
 

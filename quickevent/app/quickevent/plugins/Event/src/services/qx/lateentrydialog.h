@@ -21,7 +21,7 @@ class LateEntryDialog : public QDialog
 	Q_OBJECT
 	using Super = QDialog;
 public:
-	explicit LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, QWidget *parent = nullptr);
+	explicit LateEntryDialog(int change_id, int stage_id, const LateEntry &late_entry, const QString &status, const QString &status_message, bool paid, QWidget *parent = nullptr);
 	~LateEntryDialog() override;
 
 	Q_SIGNAL void editCompetitor(int competitor_id);
@@ -35,6 +35,7 @@ private:
 
 	void loadOrigValues(int run_id);
 	void loadClassName(int class_id);
+	void initDeleteEntry(int run_id);
 
 	void lockChange();
 	void unlockChange() const;
@@ -51,12 +52,14 @@ private:
 	Ui::LateEntryDialog *ui;
 	int m_changeId = 0;
 	int m_stageId = 0;
-	LateEntryForeignId m_lateEntryId = RunId{};
+	LateEntryKind m_lateEntryId = Update{};
 	int m_competitorId = 0;
 	int m_lockNumber = 0;
 	QxChangeStatus m_status = QxChangeStatus::Rejected;
 	OrigRunRecord m_origValues;
 	bool m_setIsRunning = false;
+	// non empty if the change cannot be accepted
+	QString m_acceptBlockedReason;
 };
 
 

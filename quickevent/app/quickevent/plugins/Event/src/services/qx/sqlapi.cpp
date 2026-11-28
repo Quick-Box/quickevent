@@ -90,6 +90,22 @@ RpcValue qxRecChngToRpcValue(const qf::core::sql::QxRecChng &chng)
 	return shv::coreqt::rpc::qVariantToRpcValue(m);
 }
 
+qf::core::sql::RecId rpcValueToRecId(const shv::chainpack::RpcValue &rv)
+{
+	if (rv.isString()) {
+		return qf::core::sql::RecId(QString::fromStdString(rv.asString()));
+	}
+	return qf::core::sql::RecId(rv.toInt64());
+}
+
+RpcValue recIdToRpcValue(const qf::core::sql::RecId &id)
+{
+	if (id.isString()) {
+		return RpcValue(id.toString().toStdString());
+	}
+	return RpcValue(static_cast<RpcValue::Int>(id.toInt64()));
+}
+
 //==============================================
 // SqlApi
 //==============================================
@@ -205,7 +221,7 @@ void SqlApi::transaction(const std::string &query, const shv::chainpack::RpcValu
 	qxsql->transaction(QString::fromStdString(query), qparams);
 }
 
-RpcValue::List SqlApi::list(const std::string &table, const std::vector<std::string> &fields, std::optional<int64_t> ids_above, std::optional<int64_t> limit)
+RpcValue::List SqlApi::list(const std::string &table, const std::vector<std::string> &fields, std::optional<qf::core::sql::RecId> ids_above, std::optional<int64_t> limit)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 	auto records = qxsql->listRecords(QString::fromStdString(table), toQStringList(fields), ids_above, limit);
@@ -232,13 +248,13 @@ std::string to_lower(const std::string &s)
 	return ret;
 }
 }
-int64_t SqlApi::create(const std::string &table, const RpcValue::Map &record)
+qf::core::sql::RecId SqlApi::create(const std::string &table, const RpcValue::Map &record)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 	return qxsql->createRecord(QString::fromStdString(table), shv::coreqt::rpc::rpcValueToQVariant(record).toMap(), this);
 }
 
-std::optional<RpcValue::Map> SqlApi::read(const std::string &table, int64_t id, const std::vector<std::string> &fields)
+std::optional<RpcValue::Map> SqlApi::read(const std::string &table, const qf::core::sql::RecId &id, const std::vector<std::string> &fields)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 	if (auto rec = qxsql->readRecord(QString::fromStdString(table), id, toQStringList(fields)); rec.has_value()) {
@@ -247,13 +263,13 @@ std::optional<RpcValue::Map> SqlApi::read(const std::string &table, int64_t id, 
 	return {};
 }
 
-bool SqlApi::update(const std::string &table, int64_t id, const RpcValue::Map &record)
+bool SqlApi::update(const std::string &table, const qf::core::sql::RecId &id, const RpcValue::Map &record)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 	return qxsql->updateRecord(QString::fromStdString(table), id, shv::coreqt::rpc::rpcValueToQVariant(record).toMap(), this);
 }
 
-bool SqlApi::drop(const std::string &table, int64_t id)
+bool SqlApi::drop(const std::string &table, const qf::core::sql::RecId &id)
 {
 	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 	return qxsql->deleteRecord(QString::fromStdString(table), id, this);

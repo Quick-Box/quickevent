@@ -27,8 +27,7 @@ public:
 
 	enum class RowAction { Open, Convert, Delete };
 
-	OpenEventDialog(const QList<EventInfo> &events, int appDbVersion,
-	                const QStringList &existing_names, QWidget *parent = nullptr);
+	OpenEventDialog(const QList<EventInfo> &events, int appDbVersion, const QStringList &existing_names, QWidget *parent = nullptr);
 	~OpenEventDialog() override;
 
 	QString selectedEventId() const { return m_selectedEventId; }

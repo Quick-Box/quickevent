@@ -14,6 +14,9 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include <utility>
+
+
 using namespace shv::chainpack;
 using namespace shv::coreqt::data;
 
@@ -25,14 +28,42 @@ SqlApiNode::SqlApiNode(shv::iotqt::node::ShvNode *parent)
 {
 	connect(m_sqlApi, &SqlApi::recChng, this, [this](const qf::core::sql::QxRecChng &recchng, QObject *source) {
 		Q_UNUSED(source);
-		RpcSignal sig;
-		sig.setSignal("recchng");
-		sig.setShvPath(shvPath().asString());
-		sig.setParams(shv::coreqt::rpc::qVariantToRpcValue(recchng.toVariantMap()));
+		auto params = shv::coreqt::rpc::qVariantToRpcValue(recchng.toVariantMap());
+		if (m_postponedRecChngs) {
+			qfInfo() << "postpone recchng:" << recchng.table;
+			m_postponedRecChngs->push_back(params);
+			return;
+		}
 		qfInfo() << "emit recchng:" << recchng.table;
-		emitSendRpcMessage(sig);
+		sendRecChngSignal(params);
 	});
 
+}
+
+void SqlApiNode::sendRecChngSignal(const shv::chainpack::RpcValue &params)
+{
+	RpcSignal sig;
+	sig.setSignal("recchng");
+	sig.setShvPath(shvPath().asString());
+	sig.setParams(params);
+	emitSendRpcMessage(sig);
+}
+
+void SqlApiNode::setRecChngSignalsPostponed(bool is_postponed)
+{
+	if (m_postponedRecChngs.has_value() == is_postponed) {
+		return;
+	}
+	if (is_postponed) {
+		m_postponedRecChngs.emplace();
+		return;
+	}
+	auto postponed = std::move(*m_postponedRecChngs);
+	m_postponedRecChngs.reset();
+	qfInfo() << "emit postponed recchng signals, count:" << postponed.size();
+	for (const auto &params : postponed) {
+		sendRecChngSignal(params);
+	}
 }
 
 namespace {
@@ -54,11 +85,11 @@ const std::vector<MetaMethod> &SqlApiNode::metaMethods()
 		{METH_QUERY, MetaMethod::Flag::LargeResultHint, "[s:query,{s|i|b|t|n}:params]", "{{s:name}:fields,[[s|i|b|t|n]]:rows}", AccessLevel::Read},
 		{METH_EXEC, MetaMethod::Flag::None, "[s:query,{s|i|b|t|n}:params]", "{i:rows_affected,i|n:insert_id}", AccessLevel::Write},
 		{METH_TRANSACTION, MetaMethod::Flag::None, "[s:query,[{s|i|b|t|n}]:params]", "n", AccessLevel::Write},
-		{METH_LIST, MetaMethod::Flag::LargeResultHint, "{s:table,[s]|n:fields,i|n:ids_above,i|n:limit}", "[{s|i|b|t|n}]", AccessLevel::Write},
-		{METH_CREATE, MetaMethod::Flag::None, "{s:table,{s|i|b|t|n}:record}", "i", AccessLevel::Write},
-		{METH_READ, MetaMethod::Flag::None, "{s:table,i:id,{s}|n:fields}", "{s|i|b|t|n}|n", AccessLevel::Read},
-		{METH_UPDATE, MetaMethod::Flag::None, "{s:table,i:id,{s|i|b|t|n}:record}", "b", AccessLevel::Write},
-		{METH_DELETE, MetaMethod::Flag::None, "{s:table,i:id}", "b", AccessLevel::Write},
+		{METH_LIST, MetaMethod::Flag::LargeResultHint, "{s:table,[s]|n:fields,i|s|n:ids_above,i|n:limit}", "[{s|i|b|t|n}]", AccessLevel::Write},
+		{METH_CREATE, MetaMethod::Flag::None, "{s:table,{s|i|b|t|n}:record}", "i|s", AccessLevel::Write},
+		{METH_READ, MetaMethod::Flag::None, "{s:table,i|s:id,{s}|n:fields}", "{s|i|b|t|n}|n", AccessLevel::Read},
+		{METH_UPDATE, MetaMethod::Flag::None, "{s:table,i|s:id,{s|i|b|t|n}:record}", "b", AccessLevel::Write},
+		{METH_DELETE, MetaMethod::Flag::None, "{s:table,i|s:id}", "b", AccessLevel::Write},
 	};
 	return meta_methods;
 }
@@ -89,7 +120,10 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			for (const auto &fn : map.valref("fields").asList()) {
 				fields.push_back(fn.asString());
 			}
-			auto ids_above = map.contains("ids_above")? std::optional<int64_t>(map.value("ids_above").toInt64()): std::optional<int64_t>();
+			std::optional<qf::core::sql::RecId> ids_above;
+			if (const auto &v = map.valref("ids_above"); v.isValid() && !v.isNull()) {
+				ids_above = rpcValueToRecId(v);
+			}
 			auto limit = map.contains("limit")? std::optional<int64_t>(map.value("limit").toInt64()): std::optional<int64_t>();
 			auto res = m_sqlApi->list(table, fields, ids_above, limit);
 			return res;
@@ -99,12 +133,12 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 			const auto &table = map.value("table").asString();
 			const auto &record = map.valref("record").asMap();
 			auto res = m_sqlApi->create(table, record);
-			return res;
+			return recIdToRpcValue(res);
 		}
 		if(method == METH_READ) {
 			const auto &map = params.asMap();
 			const auto &table = map.value("table").asString();
-			auto id = map.value("id").toInt64();
+			auto id = rpcValueToRecId(map.valref("id"));
 			std::vector<std::string> fields;
 			for (const auto &fn : map.valref("fields").asList()) {
 				fields.push_back(fn.asString());
@@ -118,7 +152,7 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 		if(method == METH_UPDATE) {
 			const auto &map = params.asMap();
 			const auto &table = map.value("table").asString();
-			auto id = map.value("id").toInt64();
+			auto id = rpcValueToRecId(map.valref("id"));
 			const auto &record = map.valref("record").asMap();
 			auto res = m_sqlApi->update(table, id, record);
 			return res;
@@ -126,7 +160,7 @@ RpcValue SqlApiNode::callMethod(const StringViewList &shv_path, const std::strin
 		if(method == METH_DELETE) {
 			const auto &map = params.asMap();
 			const auto &table = map.value("table").asString();
-			auto id = map.valref("id").toInt();
+			auto id = rpcValueToRecId(map.valref("id"));
 			auto res = m_sqlApi->drop(table, id);
 			return res;
 		}

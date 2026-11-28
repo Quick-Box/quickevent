@@ -120,8 +120,9 @@ QVariant Query::value(const QString &field_name) const
 		qfError() << "Field" << field_name << "not found in the record!";
 		qfInfo() << "Available fields:" << sl.join(", ");
 	}
-	else
+	else {
 		ret = value(ix);
+	}
 	return ret;
 }
 

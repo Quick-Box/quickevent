@@ -261,7 +261,7 @@ int CardReaderPlugin::saveCardToSql(const quickevent::core::si::ReadCard &read_c
 			{"data", qf::core::Utils::qvariantToJson(read_card.data())},
 		};
 		auto id = app->qxSql()->createRecord("cards", rec, this);
-		return id;
+		return static_cast<int>(id.toInt64());
 	}
 	catch (const std::exception &e) {
 		qfError() << "Update runs error, query:" << e.what();
@@ -314,7 +314,7 @@ int CardReaderPlugin::savePunchRecordToSql(const quickevent::core::si::PunchReco
 			{"runTimeMs", punch.runtimems_isset()? punch.runtimems(): QVariant()},
 		};
 		auto id = app->qxSql()->createRecord("punches", rec, this);
-		return id;
+		return static_cast<int>(id.toInt64());
 	}
 	catch (const std::exception &e) {
 		qfError() << "Update runs error, query:" << e.what();

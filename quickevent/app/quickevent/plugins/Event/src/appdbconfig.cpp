@@ -7,13 +7,17 @@
 #include <qf/core/utils.h>
 #include <qf/core/sql/connection.h>
 #include <qf/core/sql/query.h>
+#include <qf/core/sql/qxsql.h>
 #include <qf/core/sql/querybuilder.h>
 #include <qf/core/log.h>
 
+#include <qf/gui/framework/application.h>
 #include <qf/gui/framework/mainwindow.h>
 #include <qf/gui/dialogs/messagebox.h>
 
 #include <QDateTime>
+#include <QSqlQuery>
+#include <QSqlRecord>
 
 using namespace Event;
 
@@ -26,7 +30,6 @@ constexpr auto OFEED = "ofeed";
 constexpr auto ORESULTS = "oresults";
 constexpr auto PUNCHING_TEST = "punchingtest";
 constexpr auto RADIO_SENDER = "radioSender";
-constexpr auto QX = "qx";
 
 QVariantMap changedValues(const QVariantMap &old_values, const QVariantMap &new_values)
 {
@@ -40,18 +43,22 @@ QVariantMap changedValues(const QVariantMap &old_values, const QVariantMap &new_
 
 }
 
-QxConfig QxConfig::fromVariantMap(const QVariantMap &map)
+int AppDbConfig::loadDbVersion(const qf::core::sql::Connection &conn)
 {
-	QxConfig ret;
-	ret.apiToken = map.value("apiToken").toString();
-	return ret;
-}
-
-QVariantMap QxConfig::toVariantMap() const
-{
-	QVariantMap ret;
-	ret["apiToken"] = apiToken;
-	return ret;
+	// called before migration too, event data can still have the old key column
+	// probe columns by query which cannot fail, failed query would abort current PSQL transaction
+	QSqlQuery q(conn);
+	if(!q.exec(QStringLiteral("SELECT * FROM config LIMIT 0"))) {
+		return 0;
+	}
+	const auto key_column = q.record().contains(QStringLiteral("ckey"))? QStringLiteral("ckey"): QStringLiteral("id");
+	if(!q.exec(QStringLiteral("SELECT cvalue FROM config WHERE %1 = 'db.version'").arg(key_column))) {
+		return 0;
+	}
+	if(q.next()) {
+		return q.value(0).toString().toInt();
+	}
+	return 0;
 }
 
 void AppDbConfig::load()
@@ -77,7 +84,7 @@ void AppDbConfig::load()
 
 	Query q(conn);
 	QueryBuilder qb;
-	qb.select("ckey, cvalue, ctype").from("config");
+	qb.select("id, cvalue, ctype").from("config");
 	if(q.exec(qb.toString(), qf::core::Exception::Throw)) {
 		while(q.next()) {
 			QString key = q.value(0).toString();
@@ -85,7 +92,7 @@ void AppDbConfig::load()
 			QString type = q.value(2).toString();
 			QVariant v = qf::core::Utils::retypeStringValue(val.toString(), type);
 			const auto group = key.section('.', 0, 0);
-			if (group == EVENT || group == QX || group == RADIO_SENDER) {
+			if (group == EVENT || group == RADIO_SENDER) {
 				set_group_value(group, key.section('.', 1), v);
 			} else if (group == STAGE || group == RECEIPTS || group == ORESULTS || group == OFEED || group == PUNCHING_TEST) {
 				auto stage_id = key.section('.', 1, 1).toInt();
@@ -99,7 +106,6 @@ void AppDbConfig::load()
 	m_dbVersion = config.value("db.version", 0).toInt();
 	Q_ASSERT(m_dbVersion > 0);
 
-	m_qxConfig = QxConfig::fromVariantMap(config.value(QX).toMap());
 	m_radioSenderConfig = services::RadioSenderConfig::fromVariantMap(config.value(RADIO_SENDER).toMap());
 	m_eventConfig = EventConfig::fromVariantMap(config.value(EVENT).toMap());
 	quickevent::core::og::TimeMs::setDefaultTimeMeasurementPrecision(m_eventConfig.timeMeasurementPrecision);
@@ -137,18 +143,15 @@ void AppDbConfig::save(const QString &prefix, int stage_id, const QVariantMap &d
 
 void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 {
-    if(data.isEmpty()) {
-        return;
-    }
+	if(data.isEmpty()) {
+		return;
+	}
 
-	using namespace qf::core::sql;
-	Connection conn = Connection::forName();
+	auto *qxsql = qf::gui::framework::Application::instance()->qxSql();
 
-	Query q_up(conn);
-	q_up.prepare("UPDATE config SET cvalue=:val WHERE ckey=:key", qf::core::Exception::Throw);
-	Query q_ins(conn);
-	q_ins.prepare("INSERT INTO config (ckey, cvalue, ctype) VALUES (:key, :val, :type)", qf::core::Exception::Throw);
 	for (const auto &[key, val] : data.asKeyValueRange()) {
+		auto full_key = prefix.isEmpty() ? key : prefix + "." + key;
+
 		QString val_str;
 		if(val.typeId() == qMetaTypeId<QDate>())
 			val_str = val.toDate().toString(Qt::ISODate);
@@ -160,16 +163,14 @@ void AppDbConfig::save(const QString &prefix, const QVariantMap &data)
 			val_str = qf::core::Utils::qvariantToJson(val);
 		else
 			val_str = val.toString();
-		auto full_key = prefix.isEmpty() ? key : prefix + "." + key;
-		q_up.bindValue(":key", full_key);
-		q_up.bindValue(":val", val_str);
-		q_up.exec(qf::core::Exception::Throw);
-		if(q_up.numRowsAffected() < 1) {
-			QString type = val.typeName();
-			q_ins.bindValue(":key", full_key);
-			q_ins.bindValue(":type", type);
-			q_ins.bindValue(":val", val_str);
-			q_ins.exec(qf::core::Exception::Throw);
+		qf::core::sql::Record record;
+		record["cvalue"] = val_str;
+		if (qxsql->readRecord("config", full_key, QStringList{"id"}).has_value()) {
+			qxsql->updateRecord("config", full_key, record, nullptr);
+		} else {
+			record["id"] = full_key;
+			record["ctype"] = val.typeName();
+			qxsql->createRecord("config", record, nullptr);
 		}
 	}
 }
@@ -267,11 +268,4 @@ void AppDbConfig::setPunchingTestConfig(int stage_id, const services::PunchingTe
 	const QVariantMap changed_values = changedValues(punchingTestConfig(stage_id).toVariantMap(), cfg.toVariantMap());
 	m_punchingTestConfig[stage_id] = cfg;
 	save(PUNCHING_TEST, stage_id, changed_values);
-}
-
-void AppDbConfig::setQxConfig(const QxConfig &config)
-{
-	const QVariantMap changed_values = changedValues(m_qxConfig.toVariantMap(), config.toVariantMap());
-	m_qxConfig = config;
-	save(QX, changed_values);
 }

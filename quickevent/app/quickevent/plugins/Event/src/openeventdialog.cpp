@@ -1,6 +1,6 @@
 #include "openeventdialog.h"
 #include "ui_openeventdialog.h"
-#include "appdbconfig.h"
+#include "dbschema.h"
 #include "eventdialogwidget.h"
 
 #include <qf/core/collator.h>
@@ -32,8 +32,6 @@ enum Col { ColId = 0, ColDate, ColName, ColSport, ColDiscipline, ColDbVersion, C
 // Roles above TableModel::FirstUnusedRole to avoid conflicts with libqf roles.
 constexpr int EventIdRole = qf::gui::model::TableModel::FirstUnusedRole;
 constexpr int IsOlderRole = qf::gui::model::TableModel::FirstUnusedRole + 1;
-
-} // namespace
 
 // Extends QSortFilterProxyModel with per-cell yellow highlighting for matching text.
 class EventFilterProxy : public QSortFilterProxyModel
@@ -103,7 +101,7 @@ public:
 		del_opt.iconSize = QSize(16, 16);
 		QApplication::style()->drawControl(QStyle::CE_PushButton, &del_opt, painter);
 	}
-
+protected:
 	bool editorEvent(QEvent *event, QAbstractItemModel *,
 	                 const QStyleOptionViewItem &option, const QModelIndex &index) override
 	{
@@ -145,6 +143,8 @@ private:
 	QIcon m_deleteIcon;
 };
 
+} // namespace
+
 // --- OpenEventDialog ---
 
 OpenEventDialog::OpenEventDialog(const QList<EventInfo> &events, int appDbVersion,
@@ -167,7 +167,8 @@ OpenEventDialog::OpenEventDialog(const QList<EventInfo> &events, int appDbVersio
 
 	for (int row = 0; row < events.count(); ++row) {
 		const EventInfo &info = events[row];
-		const bool older = (info.dbVersion > 0 && info.dbVersion < appDbVersion);
+		// events which can be migrated in place are upgraded when opened, others must be converted
+		const bool older = (info.dbVersion > 0 && info.dbVersion < appDbVersion && !DbSchema::canMigrate(info.dbVersion));
 		const QBrush bg(older ? older_bg : compatible_bg);
 
 		// TableViewProxyModel sorts via TableModel::SortRole; store text there so
